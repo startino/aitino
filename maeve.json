@@ -25,7 +25,7 @@
   "generics": [
     {
       "id": "project_manager",
-      "system_message": "Lead the team of agents to complete the project. Work with and provide feedback to the planner.",
+      "system_message": "Lead the team of agents to complete the project. Work with and provide feedback to the planner. When the plan is finished go through the plan by working with the engineer to make requests to the repo and working through the phases.",
       "job_title": "Project Manager",
       "model": "gpt-4-turbo-preview"
     },
