@@ -1,10 +1,9 @@
-import os
-from fastapi import FastAPI
-from dotenv import load_dotenv
-from autogen import AssistantAgent, UserProxyAgent, config_list_from_json
+import json
 
-load_dotenv()
-openai_key = os.getenv("OPENAI_API_KEY")
+import autogen
+from fastapi import FastAPI
+
+from maeve import Maeve
 
 app = FastAPI()
 
@@ -16,12 +15,11 @@ def read_root():
 
 @app.get("/run")
 def run_autogen():
-    config_list = config_list_from_json(env_or_file="OAI_CONFIG_LIST")
-    assistant = AssistantAgent("assistant", llm_config={"config_list": config_list})
-    user_proxy = UserProxyAgent(
-        "user_proxy", code_execution_config={"work_dir": "coding"}
+    with open("maeve.json", "r") as file:
+        data = json.load(file)
+
+    maeve = Maeve("gpt-4-turbo-preview", composition=data)
+
+    maeve.run(
+        "Come up with suggestions to improve the github repository https://github.com/Futino/futino"
     )
-    chat_result = user_proxy.initiate_chat(
-        assistant, message="Plot a chart of NVDA and TESLA stock price change YTD."
-    )
-    return {"chat_result": chat_result}
