@@ -1,13 +1,22 @@
-from typing import List
+from typing import List, Union
 
 import autogen
 
 
 class Maeve:
     def __init__(self, base_model, composition):
-        self.agents = composition["agents"]
-        self.generics = composition["generics"]
-        self.groups = composition["groups"]
+        self.validate_composition(composition)
+
+        self.user_proxy = autogen.UserProxyAgent(
+            name="Admin",
+            system_message="A human admin.",
+            code_execution_config=False,
+        )
+
+        self.agents: List[Union[autogen.ConversableAgent, autogen.Agent]] = (
+            self.create_agents(composition)
+        )
+
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
             filter_dict={
@@ -21,68 +30,45 @@ class Maeve:
             "timeout": 120,
         }
 
-    def validate_composition(self):
-        for group in self.groups:
+    def validate_composition(self, composition):
+        for group in composition:
             if len(group) < 2:
                 print("Each group must have at least two agents.")
                 return False
         return True
 
-    def get_generic(self, generic_id):
-        return next((item for item in self.generics if item["id"] == generic_id))
-
-    def create_agents(self) -> List[autogen.Agent]:
+    def create_agents(
+        self, composition
+    ) -> List[Union[autogen.ConversableAgent, autogen.Agent]]:
         agents = []
 
-        for agent in self.agents:
-            generic = self.get_generic(agent["generic_id"])
+        for agent in composition:
+            config_list = autogen.config_list_from_json(
+                "OAI_CONFIG_LIST",
+                filter_dict={
+                    "model": [agent["model"]],
+                },
+            )
 
-            # config_list = autogen.config_list_from_json(
-            #     "OAI_CONFIG_LIST",
-            #     filter_dict={
-            #         "model": [generic["model"]],
-            #     },
-            # )
-            # config = {
-            #     "cache_seed": 41,
-            #     "temperature": 0,
-            #     "config_list": config_list,
-            #     "timeout": 120,
-            # }
+            config = {
+                "cache_seed": 41,
+                "temperature": 0,
+                "config_list": config_list,
+                "timeout": 120,
+            }
+
             agents.append(
                 autogen.AssistantAgent(
                     name=agent["name"],
-                    system_message=generic["system_message"],
-                    llm_config=self.base_config,
+                    system_message=agent["system_message"],
+                    llm_config=config,
                 )
             )
         return agents
 
     def run(self, message):
-        if not self.validate_composition():
-            return
-
-        user_proxy = autogen.UserProxyAgent(
-            name="Admin",
-            system_message="A human admin. Interact with the planner to discuss the plan. Plan execution needs to be approved by this admin.",
-            code_execution_config=False,
-        )
-
-        executor = autogen.UserProxyAgent(
-            name="Executor",
-            system_message="Executor. Execute the code written by the engineer and report the result.",
-            human_input_mode="NEVER",
-            code_execution_config={
-                "last_n_messages": 3,
-                "work_dir": "paper",
-                "use_docker": True,
-            },
-        )
-
-        agents: List[autogen.Agent] = self.create_agents()
-
         groupchat = autogen.GroupChat(
-            agents=agents + [user_proxy, executor],
+            agents=self.agents + [self.user_proxy],
             messages=[],
             max_round=50,
         )
@@ -91,7 +77,7 @@ class Maeve:
             groupchat=groupchat, llm_config=self.base_config
         )
 
-        user_proxy.initiate_chat(
+        self.user_proxy.initiate_chat(
             manager,
             message=message,
         )

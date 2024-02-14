@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 pyautogen
 numpy
+mypy
+black
