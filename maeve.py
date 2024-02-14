@@ -1,4 +1,5 @@
 from typing import List, Union
+from autogen.graph_utils import visualize_speaker_transitions_dict
 
 import autogen
 
@@ -9,13 +10,17 @@ class Maeve:
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="A human admin.",
-            code_execution_config=False,
+            system_message="A human admin and code executor.",
+            code_execution_config={
+                "last_n_messages": 4,
+                "work_dir": "tasks",
+                "use_docker": True,
+            },
         )
 
-        self.agents: List[Union[autogen.ConversableAgent, autogen.Agent]] = (
-            self.create_agents(composition)
-        )
+        self.agents: List[
+            Union[autogen.ConversableAgent, autogen.Agent]
+        ] = self.create_agents(composition)
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -30,6 +35,8 @@ class Maeve:
             "timeout": 120,
         }
 
+        self.speaker_transitions_dict = {}
+
     def validate_composition(self, composition):
         for group in composition:
             if len(group) < 2:
@@ -42,7 +49,7 @@ class Maeve:
     ) -> List[Union[autogen.ConversableAgent, autogen.Agent]]:
         agents = []
 
-        for agent in composition:
+        for agent in composition["agents"]:
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -59,12 +66,23 @@ class Maeve:
 
             agents.append(
                 autogen.AssistantAgent(
-                    name=agent["name"],
-                    system_message=agent["system_message"],
+                    name=f"""{agent["job_title"].replace(' ', '')}-{agent["name"].replace(' ', '')}""",
+                    system_message=f"""{agent["job_title"]} {agent["name"]}. {agent["system_message"]}. Stick to your role, do not do something yourself which another team member can do better.""",
                     llm_config=config,
                 )
             )
         return agents
+
+    def graph(self):
+        groupchat = autogen.GroupChat(
+            agents=self.agents + [self.user_proxy],
+            messages=[],
+            max_round=50,
+        )
+
+        manager = autogen.GroupChatManager(
+            groupchat=groupchat, llm_config=self.base_config
+        )
 
     def run(self, message):
         groupchat = autogen.GroupChat(
