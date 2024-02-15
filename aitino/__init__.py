@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from dummy_maeve import composition
-from maeve import Maeve
+from .dummy_maeve import composition
+from .maeve import Maeve
 
 app = FastAPI()
 

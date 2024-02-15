@@ -1,5 +1,3 @@
-from autogen.graph_utils import visualize_speaker_transitions_dict
-
 import autogen
 
 
@@ -33,8 +31,6 @@ class Maeve:
             "config_list": self.base_config_list,
             "timeout": 120,
         }
-
-        self.speaker_transitions_dict = {}
 
     def validate_composition(self, composition):
         for group in composition:
@@ -72,22 +68,11 @@ class Maeve:
             )
         return agents
 
-    def graph(self):
-        groupchat = autogen.GroupChat(
-            agents=self.agents + [self.user_proxy],
-            messages=[],
-            max_round=50,
-        )
-
-        manager = autogen.GroupChatManager(
-            groupchat=groupchat, llm_config=self.base_config
-        )
-
     def run(self, message):
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=[],
-            max_round=50,
+            max_round=20,
         )
 
         manager = autogen.GroupChatManager(

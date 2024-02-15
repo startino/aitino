@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "aitino"
+version = "0.0.1"
+description = "Aitino's api"
+authors = [
+    "Jonas Lindberg <jonas.lindberg@futi.no>",
+    "Jorge Lewis <jorge.lewis@futi.no>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+uvicorn = "^0.24.0.post1"
+fastapi = "^0.104.1"
+tenacity = "^8.2.3"
+pyautogen = "^0.2.13"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.7.0"
+black = "^23.11.0"
+isort = "^5.12.0"
+autoflake = "^2.2.1"
+flake8 = "^6.1.0"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 80
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
