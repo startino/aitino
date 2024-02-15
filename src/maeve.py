@@ -1,4 +1,3 @@
-from typing import List, Union
 from autogen.graph_utils import visualize_speaker_transitions_dict
 
 import autogen
@@ -18,8 +17,8 @@ class Maeve:
             },
         )
 
-        self.agents: List[
-            Union[autogen.ConversableAgent, autogen.Agent]
+        self.agents: list[
+            autogen.ConversableAgent | autogen.Agent
         ] = self.create_agents(composition)
 
         self.base_config_list = autogen.config_list_from_json(
@@ -46,7 +45,7 @@ class Maeve:
 
     def create_agents(
         self, composition
-    ) -> List[Union[autogen.ConversableAgent, autogen.Agent]]:
+    ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
 
         for agent in composition["agents"]:

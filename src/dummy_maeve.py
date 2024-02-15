@@ -1,6 +1,4 @@
-from typing import Dict, Union, List
-
-composition: Dict[str, Union[str, List[Dict[str, Union[str, List[str]]]]]] = {
+composition: dict[str, str | list[dict[str, str | list[str]]]] = {
     "receiver_id": "project_manager_john_smith",
     "agents": [
         {
