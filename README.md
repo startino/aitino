@@ -35,7 +35,7 @@ Aitino is built on top of the [Autogen Framework](https://github.com/microsoft/a
 3. Run `uvicon aitino:app --reload` to start the server.
 4. Navigate to `localhost:8000/docs` 
 
-## Contribute
+## Contributing
 This project welcomes contributions and suggestions. If you are new to GitHub, here is a detailed help source on getting involved with development on GitHub.
 
 If you're passionate about what we're doing at Aitino and would like to get paid while developing, feel free to reach out. We're constantly looking for innovators and passionate developers.
