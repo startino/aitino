@@ -1,5 +1,5 @@
 # Aitino
-[The Cloud-hosted Web App](https://aiti.no)
+[Aitino Web](https://aiti.no) - Our cloud-hosted version of Aitino
 
 
 ## Roadmap
