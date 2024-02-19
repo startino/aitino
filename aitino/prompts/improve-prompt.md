@@ -246,52 +246,6 @@ Strategy: Give models time to "think"
 Tactic: Instruct the model to work out its own solution before rushing to a conclusion
 Sometimes we get better results when we explicitly instruct the model to reason from first principles before coming to a conclusion. Suppose for example we want a model to evaluate a student’s solution to a math problem. The most obvious way to approach this is to simply ask the model if the student's solution is correct or not.
 
-SYSTEM
-Determine if the student's solution is correct or not.
-USER
-Problem Statement: I'm building a solar power installation and I need help working out the financials.
-
-- Land costs $100 / square foot
-- I can buy solar panels for $250 / square foot
-- I negotiated a contract for maintenance that will cost me a flat $100k per year, and an additional $10 / square foot
-  What is the total cost for the first year of operations as a function of the number of square feet.
-
-Student's Solution: Let x be the size of the installation in square feet.
-
-1. Land cost: 100x
-2. Solar panel cost: 250x
-3. Maintenance cost: 100,000 + 100x
-   Total cost: 100x + 250x + 100,000 + 100x = 450x + 100,000
-   ASSISTANT
-   The student's solution is correct.
-
-   But the student's solution is actually not correct! We can get the model to successfully notice this by prompting the model to generate its own solution first.
-
-SYSTEM
-First work out your own solution to the problem. Then compare your solution to the student's solution and evaluate if the student's solution is correct or not. Don't decide if the student's solution is correct until you have done the problem yourself.
-USER
-Problem Statement: I'm building a solar power installation and I need help working out the financials.
-
-- Land costs $100 / square foot
-- I can buy solar panels for $250 / square foot
-- I negotiated a contract for maintenance that will cost me a flat $100k per year, and an additional $10 / square foot
-  What is the total cost for the first year of operations as a function of the number of square feet.
-
-Student's Solution: Let x be the size of the installation in square feet.
-
-1. Land cost: 100x
-2. Solar panel cost: 250x
-3. Maintenance cost: 100,000 + 100x
-   Total cost: 100x + 250x + 100,000 + 100x = 450x + 100,000
-   ASSISTANT
-   Let x be the size of the installation in square feet.
-4. Land cost: 100x
-5. Solar panel cost: 250x
-6. Maintenance cost: 100,000 + 10x
-   Total cost: 100x + 250x + 100,000 + 10x = 360x + 100,000
-
-The student's solution is incorrect. They made an error in the maintenance cost calculation, using 100x instead of 10x. The correct total cost for the first year of operations is 360x + 100,000.
-
 Tactic: Use inner monologue or a sequence of queries to hide the model's reasoning process
 The previous tactic demonstrates that it is sometimes important for the model to reason in detail about a problem before answering a specific question. For some applications, the reasoning process that a model uses to arrive at a final answer would be inappropriate to share with the user. For example, in tutoring applications we may want to encourage students to work out their own answers, but a model’s reasoning process about the student’s solution could reveal the answer to the student.
 
@@ -343,9 +297,6 @@ Student’s solution: """<insert student's solution>"""
 
 Analysis: """<insert model generated analysis from previous step>"""
 
-Tactic: Ask the model if it missed anything on previous passes
-Suppose that we are using a model to list excerpts from a source which are relevant to a particular question. After listing each excerpt the model needs to determine if it should start writing another or if it should stop. If the source document is large, it is common for a model to stop too early and fail to list all relevant excerpts. In that case, better performance can often be obtained by prompting the model with followup queries to find any excerpts it missed on previous passes.
-
 SYSTEM
 You will be provided with a document delimited by triple quotes. Your task is to select excerpts which pertain to the following question: "What significant paradigm shifts have occurred in the history of artificial intelligence."
 
@@ -369,8 +320,6 @@ A model can leverage external sources of information if provided as part of its 
 
 A text embedding is a vector that can measure the relatedness between text strings. Similar or relevant strings will be closer together than unrelated strings. This fact, along with the existence of fast vector search algorithms means that embeddings can be used to implement efficient knowledge retrieval. In particular, a text corpus can be split up into chunks, and each chunk can be embedded and stored. Then a given query can be embedded and vector search can be performed to find the embedded chunks of text from the corpus that are most related to the query (i.e. closest together in the embedding space).
 
-Example implementations can be found in the OpenAI Cookbook. See the tactic “Instruct the model to use retrieved knowledge to answer queries” for an example of how to use knowledge retrieval to minimize the likelihood that a model will make up incorrect facts.
-
 Tactic: Use code execution to perform more accurate calculations or call external APIs
 Language models cannot be relied upon to perform arithmetic or long calculations accurately on their own. In cases where this is needed, a model can be instructed to write and run code instead of making its own calculations. In particular, a model can be instructed to put code that is meant to be run into a designated format such as triple backtick. After an output is produced, the code can be extracted and run. Finally, if necessary, the output from the code execution engine (i.e. Python interpreter) can be provided as an input to the model for the next query.
 
@@ -389,126 +338,20 @@ import message
 message.write(to="John", message="Hey, want to meetup after work?")
 ```
 
-WARNING: Executing code produced by a model is not inherently safe and precautions should be taken in any application that seeks to do this. In particular, a sandboxed code execution environment is needed to limit the harm that untrusted code could cause.
-
 Tactic: Give the model access to specific functions
 The Chat Completions API allows passing a list of function descriptions in requests. This enables models to generate function arguments according to the provided schemas. Generated function arguments are returned by the API in JSON format and can be used to execute function calls. Output provided by function calls can then be fed back into a model in the following request to close the loop. This is the recommended way of using OpenAI models to call external functions. To learn more see the function calling section in our introductory text generation guide and more function calling examples in the OpenAI Cookbook.
 
-Strategy: Test changes systematically
-Sometimes it can be hard to tell whether a change — e.g., a new instruction or a new design — makes your system better or worse. Looking at a few examples may hint at which is better, but with small sample sizes it can be hard to distinguish between a true improvement or random luck. Maybe the change helps performance on some inputs, but hurts performance on others.
-
-Evaluation procedures (or "evals") are useful for optimizing system designs. Good evals are:
-
-Representative of real-world usage (or at least diverse)
-Contain many test cases for greater statistical power (see table below for guidelines)
-Easy to automate or repeat
-DIFFERENCE TO DETECT	SAMPLE SIZE NEEDED FOR 95% CONFIDENCE
-30%	~10
-10%	~100
-3%	~1,000
-1%	~10,000
-Evaluation of outputs can be done by computers, humans, or a mix. Computers can automate evals with objective criteria (e.g., questions with single correct answers) as well as some subjective or fuzzy criteria, in which model outputs are evaluated by other model queries. OpenAI Evals is an open-source software framework that provides tools for creating automated evals.
-
-Model-based evals can be useful when there exists a range of possible outputs that would be considered equally high in quality (e.g. for questions with long answers). The boundary between what can be realistically evaluated with a model-based eval and what requires a human to evaluate is fuzzy and is constantly shifting as models become more capable. We encourage experimentation to figure out how well model-based evals can work for your use case.
-
-Tactic: Evaluate model outputs with reference to gold-standard answers
-Suppose it is known that the correct answer to a question should make reference to a specific set of known facts. Then we can use a model query to count how many of the required facts are included in the answer.
-
-For example, using the following system message:
-
-SYSTEM
-You will be provided with text delimited by triple quotes that is supposed to be the answer to a question. Check if the following pieces of information are directly contained in the answer:
-
-- Neil Armstrong was the first person to walk on the moon.
-- The date Neil Armstrong first walked on the moon was July 21, 1969.
-
-For each of these points perform the following steps:
-
-1 - Restate the point.
-2 - Provide a citation from the answer which is closest to this point.
-3 - Consider if someone reading the citation who doesn't know the topic could directly infer the point. Explain why or why not before making up your mind.
-4 - Write "yes" if the answer to 3 was yes, otherwise write "no".
-
-Finally, provide a count of how many "yes" answers there are. Provide this count as {"count": <insert count here>}.
-
-Here's an example input where both points are satisfied:
-
-SYSTEM
-<insert system message above>
-USER
-"""Neil Armstrong is famous for being the first human to set foot on the Moon. This historic event took place on July 21, 1969, during the Apollo 11 mission."""
-
-Here's an example input where only one point is satisfied:
-
-SYSTEM
-<insert system message above>
-USER
-"""Neil Armstrong made history when he stepped off the lunar module, becoming the first person to walk on the moon."""
-
-Here's an example input where none are satisfied:
-
-SYSTEM
-<insert system message above>
-USER
-"""In the summer of '69, a voyage grand,
-Apollo 11, bold as legend's hand.
-Armstrong took a step, history unfurled,
-"One small step," he said, for a new world."""
-
-There are many possible variants on this type of model-based eval. Consider the following variation which tracks the kind of overlap between the candidate answer and the gold-standard answer, and also tracks whether the candidate answer contradicts any part of the gold-standard answer.
-
-SYSTEM
-Use the following steps to respond to user inputs. Fully restate each step before proceeding. i.e. "Step 1: Reason...".
-
-Step 1: Reason step-by-step about whether the information in the submitted answer compared to the expert answer is either: disjoint, equal, a subset, a superset, or overlapping (i.e. some intersection but not subset/superset).
-
-Step 2: Reason step-by-step about whether the submitted answer contradicts any aspect of the expert answer.
-
-Step 3: Output a JSON object structured like: {"type_of_overlap": "disjoint" or "equal" or "subset" or "superset" or "overlapping", "contradiction": true or false}
-
-Here's an example input with a substandard answer which nonetheless does not contradict the expert answer:
-
-SYSTEM
-<insert system message above>
-USER
-Question: """What event is Neil Armstrong most famous for and on what date did it occur? Assume UTC time."""
-
-Submitted Answer: """Didn't he walk on the moon or something?"""
-
-Expert Answer: """Neil Armstrong is most famous for being the first person to walk on the moon. This historic event occurred on July 21, 1969."""
-
-Here's an example input with answer that directly contradicts the expert answer:
-
-SYSTEM
-<insert system message above>
-USER
-Question: """What event is Neil Armstrong most famous for and on what date did it occur? Assume UTC time."""
-
-Submitted Answer: """On the 21st of July 1969, Neil Armstrong became the second person to walk on the moon, following after Buzz Aldrin."""
-
-Expert Answer: """Neil Armstrong is most famous for being the first person to walk on the moon. This historic event occurred on July 21, 1969."""
-
-Here's an example input with a correct answer that also provides a bit more detail than is necessary:
-
-SYSTEM
-<insert system message above>
-USER
-Question: """What event is Neil Armstrong most famous for and on what date did it occur? Assume UTC time."""
-
-Submitted Answer: """At approximately 02:56 UTC on July 21st 1969, Neil Armstrong became the first human to set foot on the lunar surface, marking a monumental achievement in human history."""
-
-Expert Answer: """Neil Armstrong is most famous for being the first person to walk on the moon. This historic event occurred on July 21, 1969."""
-
 END PROMPT WRITING KNOWLEDGE
 
-# STEPS:
+## STEPS:
 
 - Interpret what the input was trying to accomplish.
 - Read and understand the PROMPT WRITING KNOWLEDGE above.
 - Write and output a better version of the prompt using your knowledge of the techniques above.
 
-# OUTPUT INSTRUCTIONS:
+## OUTPUT INSTRUCTIONS:
 
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!"
+
