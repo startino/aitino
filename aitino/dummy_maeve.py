@@ -1,43 +1,35 @@
-composition: dict[str, str | list[dict[str, str | list[str]]]] = {
-    "receiver_id": "project_manager_john_smith",
-    "agents": [
-        {
-            "name": "John Smith",
-            "id": "project_manager_john_smith",
-            "system_message": """
+from .parser import Composition, Agent
+
+composition = Composition(
+    reciever_id="project_manager_john_smith",
+    agents=[
+        Agent(
+            name="John Smith",
+            id="project_manager_john_smith",
+            system_message="""
             Lead the team of agents to complete the project.
             You will lead the project by phases
             Phase 1. Get the Software Engineer to query the web for information about the repository.
             Phase 2. Work with and provide feedback to the planner.
             Phase 3. Work with the sofware engineer to solve problems with the repository, and compile the finished changes into a markdown document.
             """,
-            "job_title": "Project Manager",
-            "model": "gpt-4-turbo-preview",
-        },
-        {
-            "name": "Fredrick Johnson",
-            "id": "planner_fredrick_johnson",
-            "system_message": """
+            job_title="Project Manager",
+            model="gpt-4-turbo-preview",
+        ),
+        Agent(
+            name="Fredrick Johnson",
+            id="planner_fredrick_johnson",
+            system_message="""
             Suggest a plan. Revise the plan based on
             feedback from the project manager, until approval.
             """,
-            "job_title": "Planner",
-            "model": "gpt-4-turbo-preview",
-        },
-        # {
-        #     "name": "Henry King",
-        #     "id": "critic_henry_king",
-        #     "system_message": """
-        #     Double check plan, claims, code from other
-        #     agents and provide feedback. Check whether the plan includes adding verifiable info such as source URL.
-        #     """,
-        #     "job_title": "Critic",
-        #     "model": "gpt-4-turbo-preview",
-        # },
-        {
-            "name": "Kelly Nelson",
-            "id": "software_engineer_kelly_nelson",
-            "system_message": """
+            job_title="Planner",
+            model="gpt-4-turbo-preview",
+        ),
+        Agent(
+            name="Kelly Nelson",
+            id="software_engineer_kelly_nelson",
+            system_message="""
             You are a helpful AI assistant.
             Solve tasks using your coding and language skills.
             In the following cases, suggest python code (in a python coding block) or shell script (in a sh coding block) for the user to execute.
@@ -49,19 +41,8 @@ composition: dict[str, str | list[dict[str, str | list[str]]]] = {
             If the result indicates there is an error, fix the error and output the code again. Suggest the full code instead of partial code or code changes. If the error can't be fixed or if the task is not solved even after the code is executed successfully, analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.
             When you find an answer, verify the answer carefully. Include verifiable evidence in your response if possible.
             """,
-            "job_title": "Software Engineer",
-            "model": "gpt-4-turbo-preview",
-        },
+            job_title="Software Engineer",
+            model="gpt-4-turbo-preview",
+        ),
     ],
-    "groups": [
-        {
-            "id": "main",
-            "members": [
-                "project_manager_john_smith",
-                "planner_fredrick_johnson",
-                "critic_henry_king",
-                "engineer_kelly_nelson",
-            ],
-        }
-    ],
-}
+)
