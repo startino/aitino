@@ -32,10 +32,6 @@ def compile(maeve_id: str):
 
     message, composition = parse_input(response.data[0])
 
-    try:
-        _ = Maeve(composition)
-    except Exception as e:
-        return {"error": str(e)}
 
     return {"prompt": message, "composition": composition}
 

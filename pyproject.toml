@@ -5,6 +5,7 @@ description = "Aitino's api"
 authors = [
     "Jonas Lindberg <jonas.lindberg@futi.no>",
     "Jorge Lewis <jorge.lewis@futi.no>",
+    "Leon Nilsson <leonlamnilsson@gmail.com>",
 ]
 readme = "README.md"
 
