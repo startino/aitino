@@ -14,7 +14,7 @@ class Maeve:
             code_execution_config={
                 "last_n_messages": 4,
                 "work_dir": "tasks",
-                "use_docker": True,
+                "use_docker": False,
             },
         )
 
