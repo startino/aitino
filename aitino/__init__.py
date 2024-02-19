@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from .parser import parse_input
 from .maeve import Maeve
 from dotenv import load_dotenv
+from .dummy_maeve import composition as dummy_composition
 
 import os
 
@@ -48,7 +49,7 @@ def run(maeve_id: str):
     message, composition = parse_input(response.data[0])
 
     try:
-        maeve = Maeve(composition)
+        maeve = Maeve(dummy_composition)
     except Exception as e:
         return {"error": str(e)}
 
