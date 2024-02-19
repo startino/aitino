@@ -4,6 +4,7 @@ from .parser import parse_input
 from .maeve import Maeve
 from dotenv import load_dotenv
 from .dummy_maeve import composition as dummy_composition
+from .improver import improve_prompt
 
 import os
 
@@ -56,3 +57,8 @@ def run(maeve_id: str):
     result = maeve.run(message)
 
     return {"prompt": message, "composition": composition, "result": result}
+
+@app.get("/improve")
+def improve(prompt: str) -> str:
+
+    return improve_prompt(prompt)

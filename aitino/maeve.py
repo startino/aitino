@@ -4,7 +4,7 @@ from .parser import Composition
 
 
 class Maeve:
-    def __init__(self, composition: Composition, base_model: str = "gpt-4-turbo"):
+    def __init__(self, composition: Composition, base_model: str = "gpt-4-turbo-preview"):
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
