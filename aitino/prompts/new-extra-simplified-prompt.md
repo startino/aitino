@@ -76,3 +76,17 @@ For example, in product development, you could ask ChatGPT to generate an output
 
 12. Review and rate ChatGPT’s responses. 
 All of your interactions with ChatGPT can contribute to the tool’s continual improvement, as users’ chat histories can be used to train the model. Taking time to review and rate ChatGPT’s responses for quality and accuracy can lead to more significant upgrades. When users point out errors or provide suggestions, AI developers can collect more data to guide improvements and support accurate responses. To provide feedback, click one of the feedback indicators—the thumbs up or thumbs down icons in the upper right corner of the output—and add your suggestions.
+
+END PROMPT WRITING KNOWLEDGE
+
+# STEPS:
+
+- Interpret what the input was trying to accomplish.
+- Read and understand the PROMPT WRITING KNOWLEDGE above.
+- Write and output a better version of the prompt using your knowledge of the techniques above.
+
+# OUTPUT INSTRUCTIONS:
+
+1. Output the prompt in clean, human-readable Markdown format.
+2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
+3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!"
