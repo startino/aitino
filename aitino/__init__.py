@@ -59,6 +59,6 @@ def run(maeve_id: str):
     return {"prompt": message, "composition": composition, "result": result}
 
 @app.get("/improve")
-def improve(prompt: str) -> str:
+def improve(word_limit: int, prompt: str) -> str:
 
-    return improve_prompt(prompt)
+    return improve_prompt(word_limit, prompt)
