@@ -1,14 +1,14 @@
-from fastapi import FastAPI
-
-from .parser import parse_input
-from .maeve import Maeve
-from dotenv import load_dotenv
-from .dummy_maeve import composition as dummy_composition
-from .improver import improve_prompt
-
 import os
+import json
 
-from supabase import create_client, Client
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+from supabase import Client, create_client
+
+from .improver import improve_prompt
+from .maeve import Maeve
+from .parser import parse_input
 
 load_dotenv()
 
@@ -34,12 +34,10 @@ def compile(maeve_id: str):
 
     message, composition = parse_input(response.data[0])
 
-
     return {"prompt": message, "composition": composition}
 
 
-@app.get("/run")
-def run(maeve_id: str):
+def data_streamer(maeve_id: str):
     try:
         response = (
             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
@@ -48,15 +46,23 @@ def run(maeve_id: str):
         return {"error": "could not fetch composition, error: " + str(e)}
 
     message, composition = parse_input(response.data[0])
+    json.dumps({"event_id": 0, "data": message, "is_last_event": True})
+    json.dumps({"event_id": 1, "data": composition, "is_last_event": True})
 
     try:
-        maeve = Maeve(dummy_composition)
+        maeve = Maeve(composition)
     except Exception as e:
         return {"error": str(e)}
 
     result = maeve.run(message)
+    yield json.dumps({"event_id": 2, "data": result, "is_last_event": True})
 
-    return {"prompt": message, "composition": composition, "result": result}
+
+@app.get("/run")
+async def run(maeve_id: str):
+
+    return StreamingResponse(data_streamer(maeve_id), media_type="application/x-ndjson")
+
 
 @app.get("/improve")
 def improve(word_limit: int, prompt: str) -> str:

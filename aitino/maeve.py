@@ -4,13 +4,17 @@ from .parser import Composition
 
 
 class Maeve:
-    def __init__(self, composition: Composition, base_model: str = "gpt-4-turbo-preview"):
+    def __init__(
+        self, composition: Composition, base_model: str = "gpt-4-turbo-preview"
+    ):
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="A human admin and code executor.",
+            max_consecutive_auto_reply=1,
+            human_input_mode="NEVER",
             code_execution_config={
                 "last_n_messages": 4,
                 "work_dir": "tasks",
