@@ -21,14 +21,41 @@ supabase: Client = create_client(url, key)
 app = FastAPI()
 
 
-@app.get("/run")
-def run_autogen(maeve_id: str):
+@app.get("/compile")
+def compile(maeve_id: str):
     try:
         response = (
             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
         )
     except Exception as e:
-        return {"Error Getting Maeve: ": str(e)}
+        return {"error": "could not fetch composition, error: " + str(e)}
 
-    prompt, composition = parse_input(response.data[0])
-    return {"prompt": prompt, "composition": composition}
+    message, composition = parse_input(response.data[0])
+
+    try:
+        _ = Maeve(composition)
+    except Exception as e:
+        return {"error": str(e)}
+
+    return {"prompt": message, "composition": composition}
+
+
+@app.get("/run")
+def run(maeve_id: str):
+    try:
+        response = (
+            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+        )
+    except Exception as e:
+        return {"error": "could not fetch composition, error: " + str(e)}
+
+    message, composition = parse_input(response.data[0])
+
+    try:
+        maeve = Maeve(composition)
+    except Exception as e:
+        return {"error": str(e)}
+
+    result = maeve.run(message)
+
+    return {"prompt": message, "composition": composition, "result": result}
