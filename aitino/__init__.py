@@ -23,7 +23,7 @@ if url is None or key is None:
 
 supabase: Client = create_client(url, key)
 
-logger = logging.getLogger('root')
+logger = logging.getLogger("root")
 
 app = FastAPI()
 
@@ -60,9 +60,12 @@ html = """
     </body>
 </html>
 """
-@app.get("/chat")
+
+
+@app.get("/testing/chat")
 def load_html():
     return HTMLResponse(html)
+
 
 @app.get("/compile")
 def compile(maeve_id: str):
@@ -103,7 +106,9 @@ async def data_streamer(maeve_id: str):
     maeve.run(message)
 
     for i in range(10):
-        yield json.dumps({"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False})
+        yield json.dumps(
+            {"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False}
+        )
         time.sleep(1)
 
     yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
@@ -120,6 +125,7 @@ def improve(word_limit: int, prompt: str) -> str:
 
     return improve_prompt(word_limit, prompt)
 
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -129,19 +135,25 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         response = (
-            supabase.table("maeve_nodes").select("*").eq("id", "dfb9ede1-3c08-462f-af73-94cf6aa9185a").execute()
+            supabase.table("maeve_nodes")
+            .select("*")
+            .eq("id", "dfb9ede1-3c08-462f-af73-94cf6aa9185a")
+            .execute()
         )
     except Exception as e:
-        logger.info(json.dumps({"error": "could not fetch composition, error: " + str(e)}))
+        logger.info(
+            json.dumps({"error": "could not fetch composition, error: " + str(e)})
+        )
         return
 
     message, composition = parse_input(response.data[0])
     maeve = Maeve(composition, on_message, websocket)
     try:
         logger.info(composition)
-        
+
     except Exception as e:
         logger.info(json.dumps({"error": "couldn't create maeve: " + str(e)}))
         return
-    
+
     maeve.run(message)
+
