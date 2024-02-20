@@ -114,10 +114,12 @@ def improve(word_limit: int, prompt: str) -> str:
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    async def on_message(message: str) -> None:
+        await websocket.send_text(f"Message text was: {message}")
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
         for i in range(10):
             sent_message = {"event_id": i + 1, "data": f"{data}", "is_last_event": i == 9}
             time.sleep(1)
-            await websocket.send_text(f"Message text was: {sent_message}")
+            
