@@ -1,10 +1,11 @@
 import os
 import json
+import time
 
 from typing import Any
 from dotenv import load_dotenv
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import HTMLResponse, StreamingResponse
 from supabase import Client, create_client
 
 from .improver import improve_prompt
@@ -23,6 +24,42 @@ supabase: Client = create_client(url, key)
 
 app = FastAPI()
 
+html = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
+"""
+@app.get("/chat")
+def load_html():
+    return HTMLResponse(html)
 
 @app.get("/compile")
 def compile(maeve_id: str):
@@ -58,7 +95,8 @@ async def data_streamer(maeve_id: str):
     # result = maeve.run(message)
 
     for i in range(10):
-        yield json.dumps({"event_id": i + 1, "data": "Hello", "is_last_event": False})
+        yield json.dumps({"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False})
+        time.sleep(1)
 
     yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
 
@@ -73,3 +111,13 @@ async def run(maeve_id: str):
 def improve(word_limit: int, prompt: str) -> str:
 
     return improve_prompt(word_limit, prompt)
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        for i in range(10):
+            sent_message = {"event_id": i + 1, "data": f"{data}", "is_last_event": i == 9}
+            time.sleep(1)
+            await websocket.send_text(f"Message text was: {sent_message}")
