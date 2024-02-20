@@ -75,6 +75,10 @@ def compile(maeve_id: str):
     return {"prompt": message, "composition": composition}
 
 
+def callback_test(message: str) -> None:
+    print(message)
+
+
 async def data_streamer(maeve_id: str):
     try:
         response = (
@@ -87,12 +91,13 @@ async def data_streamer(maeve_id: str):
     message, composition = parse_input(response.data[0])
     json.dumps({"event_id": 0, "data": message, "is_last_event": False})
 
-    # try:
-    #     maeve = Maeve(composition)
-    # except Exception as e:
-    #     return {"error": str(e)}
+    try:
+        maeve = Maeve(composition, callback_test)
+    except Exception as e:
+        yield json.dumps({"error": "couldn't create maeve: " + str(e)})
+        return
 
-    # result = maeve.run(message)
+    maeve.run(message)
 
     for i in range(10):
         yield json.dumps({"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False})

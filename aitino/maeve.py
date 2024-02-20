@@ -1,12 +1,19 @@
+from typing import Callable
+
 import autogen
 
+from . import ret_agents
 from .parser import Composition
 
 
 class Maeve:
     def __init__(
-        self, composition: Composition, base_model: str = "gpt-4-turbo-preview"
+        self,
+        composition: Composition,
+        on_message: Callable[[str], None],
+        base_model: str = "gpt-4-turbo-preview",
     ):
+        self.on_message: Callable[[str], None] = on_message
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
@@ -78,10 +85,11 @@ class Maeve:
             }
 
             agents.append(
-                autogen.AssistantAgent(
+                ret_agents.RetAssistantAgent(
                     name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
                     system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
                     llm_config=config,
+                    on_message=self.on_message,
                 )
             )
         return agents
