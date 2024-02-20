@@ -1,6 +1,7 @@
 import os
 import json
 
+from typing import Any
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -37,24 +38,29 @@ def compile(maeve_id: str):
     return {"prompt": message, "composition": composition}
 
 
-def data_streamer(maeve_id: str):
+async def data_streamer(maeve_id: str):
     try:
         response = (
             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
         )
     except Exception as e:
-        return {"error": "could not fetch composition, error: " + str(e)}
+        yield json.dumps({"error": "could not fetch composition, error: " + str(e)})
+        return
 
     message, composition = parse_input(response.data[0])
-    json.dumps({"event_id": 0, "data": message, "is_last_event": True})
+    json.dumps({"event_id": 0, "data": message, "is_last_event": False})
 
-    try:
-        maeve = Maeve(composition)
-    except Exception as e:
-        return {"error": str(e)}
+    # try:
+    #     maeve = Maeve(composition)
+    # except Exception as e:
+    #     return {"error": str(e)}
 
-    result = maeve.run(message)
-    yield json.dumps({"event_id": 1, "data": result, "is_last_event": True})
+    # result = maeve.run(message)
+
+    for i in range(10):
+        yield json.dumps({"event_id": i + 1, "data": "Hello", "is_last_event": False})
+
+    yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
 
 
 @app.get("/run")
