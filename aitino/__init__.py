@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import logging
 
 from typing import Any
 from dotenv import load_dotenv
@@ -21,6 +22,8 @@ if url is None or key is None:
     raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
 
 supabase: Client = create_client(url, key)
+
+logger = logging.getLogger('root')
 
 app = FastAPI()
 
@@ -76,7 +79,7 @@ def compile(maeve_id: str):
 
 
 def callback_test(message: str) -> None:
-    print(message)
+    ...
 
 
 async def data_streamer(maeve_id: str):
@@ -119,12 +122,28 @@ def improve(word_limit: int, prompt: str) -> str:
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    async def on_message(message: str) -> None:
-        await websocket.send_text(f"Message text was: {message}")
     await websocket.accept()
+
+    async def on_message(message: str, websocket: WebSocket) -> None:
+        await websocket.send_text(f"Message text was: {message}")
+
+    try:
+        response = (
+            supabase.table("maeve_nodes").select("*").eq("id", "dfb9ede1-3c08-462f-af73-94cf6aa9185a").execute()
+        )
+    except Exception as e:
+        logger.info(json.dumps({"error": "could not fetch composition, error: " + str(e)}))
+        return
+
+    message, composition = parse_input(response.data[0])
+    maeve = Maeve(composition, on_message, websocket)
+    try:
+        logger.info(composition)
+        
+    except Exception as e:
+        logger.info(json.dumps({"error": "couldn't create maeve: " + str(e)}))
+        return
+    
+    maeve.run(message)
     while True:
-        data = await websocket.receive_text()
-        for i in range(10):
-            sent_message = {"event_id": i + 1, "data": f"{data}", "is_last_event": i == 9}
-            time.sleep(1)
-            
+        ...

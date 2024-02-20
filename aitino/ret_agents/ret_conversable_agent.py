@@ -1,6 +1,9 @@
-from typing import Callable, Dict, List, Optional, Union, Literal
+import asyncio
+from typing import Awaitable, Callable, Coroutine, Dict, List, Optional, Union, Literal
 
-from autogen import Agent, ConversableAgent, OpenAIWrapper
+from autogen import Agent, ConversableAgent, OpenAIWrapper, GroupChatManager
+from fastapi import WebSocket
+
 
 try:
     from termcolor import colored
@@ -9,12 +12,14 @@ except ImportError:
     def colored(x, *args, **kwargs):
         return x
 
+MessageCallback = Callable[[str], Awaitable[None]]
 
 class RetConversableAgent(ConversableAgent):
     def __init__(
         self,
         name: str,
-        on_message: Callable[[str], None] | None = None,
+        on_message: MessageCallback | None = None,
+        websocket: WebSocket | None = None,
         system_message: Optional[Union[str, List]] = "You are a helpful AI Assistant.",
         is_termination_msg: Optional[Callable[[Dict], bool]] = None,
         max_consecutive_auto_reply: Optional[int] = None,
@@ -81,8 +86,9 @@ class RetConversableAgent(ConversableAgent):
             description,
         )
         self.on_message = on_message
+        self.websocket = websocket
 
-    def _print_received_message(
+    async def _print_received_message(
         self, message: dict | str, sender: Agent, carry_over: str = ""
     ):
         output = carry_over
@@ -142,4 +148,20 @@ class RetConversableAgent(ConversableAgent):
 
         output += "\n" + "-" * 80 + "\n"
         if self.on_message:
-            self.on_message(output)
+            await self.on_message(output, self.websocket)
+
+    def _process_received_message(self, message: Union[Dict, str], sender: Agent, silent: bool):
+        # When the agent receives a message, the role of the message is "user". (If 'role' exists and is 'function', it will remain unchanged.)
+        valid = self._append_oai_message(message, "user", sender)
+        if not valid:
+            raise ValueError(
+                "Received message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
+            )
+        if not silent:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self._print_received_message(message, sender))
+            loop.close()
+
+class RetGroupChatManager(GroupChatManager, RetConversableAgent):
+    pass
