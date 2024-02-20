@@ -89,6 +89,7 @@ class Maeve:
                     name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
                     system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
                     llm_config=config,
+                    on_message=self.on_message,
                 )
             )
         return agents
