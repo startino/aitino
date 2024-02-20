@@ -149,19 +149,3 @@ class RetConversableAgent(ConversableAgent):
         output += "\n" + "-" * 80 + "\n"
         if self.on_message:
             await self.on_message(output, self.websocket)
-
-    def _process_received_message(self, message: Union[Dict, str], sender: Agent, silent: bool):
-        # When the agent receives a message, the role of the message is "user". (If 'role' exists and is 'function', it will remain unchanged.)
-        valid = self._append_oai_message(message, "user", sender)
-        if not valid:
-            raise ValueError(
-                "Received message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
-            )
-        if not silent:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(self._print_received_message(message, sender))
-            loop.close()
-
-class RetGroupChatManager(GroupChatManager, RetConversableAgent):
-    pass

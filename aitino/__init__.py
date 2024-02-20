@@ -79,7 +79,7 @@ def compile(maeve_id: str):
 
 
 def callback_test(message: str) -> None:
-    ...
+    print(message)
 
 
 async def data_streamer(maeve_id: str):
@@ -145,5 +145,3 @@ async def websocket_endpoint(websocket: WebSocket):
         return
     
     maeve.run(message)
-    while True:
-        ...

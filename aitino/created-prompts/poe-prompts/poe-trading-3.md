@@ -28,3 +28,5 @@
    - Use clear, straightforward language without assuming prior knowledge of the game's mechanics.
 
 **Desired Outcome:** The final output should serve as a comprehensive yet succinct guide to trading in Path of Exile, enabling players to navigate the trading system more effectively and engage with the community. It should empower new players with the knowledge needed to start trading while also offering valuable insights for seasoned traders.
+
+COMMENT: made with simplified improve prompt, before i had finished the whole thing and its way less concise, less detail and all but it followed the user prompt to limit to 500 words

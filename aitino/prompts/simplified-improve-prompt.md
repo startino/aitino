@@ -154,3 +154,4 @@ END PROMPT WRITING KNOWLEDGE
 
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
+3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!"

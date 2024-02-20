@@ -28,3 +28,5 @@ To compile a comprehensive overview of the trading system in the game \"Path of 
 - Clarity and organization of the presented information.
 
 Thank you for your assistance in compiling this research document on \"Path of Exile\" trading mechanics.
+
+COMMENT: I think this is from a very early simplified prompt

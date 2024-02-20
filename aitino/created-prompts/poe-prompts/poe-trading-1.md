@@ -39,3 +39,5 @@ To compile comprehensive and up-to-date information on the trading system within
 ## Additional Notes:
 - Ensure all information is accurate and up-to-date, reflecting any recent changes to the game's trading system or economy.
 - Avoid using jargon or terminology that may not be familiar to newer players without providing a definition or explanation.
+
+COMMENT: used the copy pasted improve prompt from the fabric patterns. user prompt didn't include the limit to 500 words
