@@ -47,7 +47,6 @@ def data_streamer(maeve_id: str):
 
     message, composition = parse_input(response.data[0])
     json.dumps({"event_id": 0, "data": message, "is_last_event": True})
-    json.dumps({"event_id": 1, "data": composition, "is_last_event": True})
 
     try:
         maeve = Maeve(composition)
@@ -55,7 +54,7 @@ def data_streamer(maeve_id: str):
         return {"error": str(e)}
 
     result = maeve.run(message)
-    yield json.dumps({"event_id": 2, "data": result, "is_last_event": True})
+    yield json.dumps({"event_id": 1, "data": result, "is_last_event": True})
 
 
 @app.get("/run")
