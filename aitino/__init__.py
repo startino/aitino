@@ -168,6 +168,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 )
 
             maeve_id = await websocket.receive_text()
+            _ = CacheService(41)
             await manager.send_personal_message(f"You ran: {maeve_id}", websocket)
             await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
             try:
@@ -195,7 +196,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 websocket,
             )
             logger.info(composition)
-            await maeve.run(message)
+            maeve.run(message)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

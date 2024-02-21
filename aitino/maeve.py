@@ -1,9 +1,7 @@
-from typing import Callable, Coroutine, Any
+from typing import Any
 
-from fastapi import WebSocket
 import autogen
-
-from . import ret_agents
+from fastapi import WebSocket
 from pydantic import BaseModel
 
 
@@ -27,8 +25,9 @@ class Maeve:
         on_message: Any | None = None,
         websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
-        cache_seed: int = 41,
+        seed: int = 41,
     ):
+        self.seed = seed
         self.on_message = on_message
         self.websocket = websocket
         if not self.validate_composition(composition):
@@ -40,10 +39,10 @@ class Maeve:
                 full satisfaction. Otherwise, reply CONTINUE, or the reason
                 why the task is not solved yet.""",
             max_consecutive_auto_reply=1,
-            human_input_mode="NEVER",
+            human_input_mode="ALWAYS",
             code_execution_config={
                 "last_n_messages": 4,
-                "work_dir": f".cache/{cache_seed}/scripts",
+                "work_dir": f".cache/{self.seed}/scripts",
                 "use_docker": False,
             },
         )
@@ -59,7 +58,7 @@ class Maeve:
             },
         )
         self.base_config = {
-            "cache_seed": cache_seed,
+            "seed": seed,
             "temperature": 0,
             "config_list": self.base_config_list,
             "timeout": 120,
@@ -97,24 +96,22 @@ class Maeve:
             )
 
             config = {
-                "cache_seed": self.cache_seed,
+                "seed": self.seed,
                 "temperature": 0,
                 "config_list": config_list,
                 "timeout": 120,
             }
 
             agents.append(
-                ret_agents.RetConversableAgent(
+                autogen.ConversableAgent(
                     name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
                     system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
                     llm_config=config,
-                    on_message=self.on_message,
-                    websocket=self.websocket,
                 )
             )
         return agents
 
-    async def run(self, message: str):
+    def run(self, message: str):
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=[],
@@ -125,7 +122,7 @@ class Maeve:
             groupchat=groupchat, llm_config=self.base_config
         )
 
-        result = await self.user_proxy.a_initiate_chat(
+        result = self.user_proxy.initiate_chat(
             manager,
             message=message,
         )
