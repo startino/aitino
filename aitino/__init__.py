@@ -188,7 +188,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 websocket,
             )
             logger.info(composition)
-            maeve.run(message)
+            await maeve.run(message)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
