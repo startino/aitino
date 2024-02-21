@@ -59,7 +59,7 @@ class Maeve:
             },
         )
         self.base_config = {
-            "cache_seed": 41,
+            "cache_seed": cache_seed,
             "temperature": 0,
             "config_list": self.base_config_list,
             "timeout": 120,
@@ -97,7 +97,7 @@ class Maeve:
             )
 
             config = {
-                "cache_seed": 41,
+                "cache_seed": self.cache_seed,
                 "temperature": 0,
                 "config_list": config_list,
                 "timeout": 120,
