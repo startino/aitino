@@ -1,7 +1,17 @@
 import asyncio
-from typing import Awaitable, Callable, Coroutine, Dict, List, Optional, Union, Literal
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Union,
+    Literal,
+)
 
-from autogen import Agent, ConversableAgent, OpenAIWrapper, GroupChatManager
+from autogen import Agent, ConversableAgent, OpenAIWrapper
 from fastapi import WebSocket
 
 
@@ -12,13 +22,12 @@ except ImportError:
     def colored(x, *args, **kwargs):
         return x
 
-MessageCallback = Callable[[str], Awaitable[None]]
 
 class RetConversableAgent(ConversableAgent):
     def __init__(
         self,
         name: str,
-        on_message: MessageCallback | None = None,
+        on_message: Any | None = None,
         websocket: WebSocket | None = None,
         system_message: Optional[Union[str, List]] = "You are a helpful AI Assistant.",
         is_termination_msg: Optional[Callable[[Dict], bool]] = None,
@@ -88,9 +97,9 @@ class RetConversableAgent(ConversableAgent):
         self.on_message = on_message
         self.websocket = websocket
 
-    async def _print_received_message(
+    def _print_received_message(
         self, message: dict | str, sender: Agent, carry_over: str = ""
-    ):
+    ) -> None:
         output = carry_over
         output += f"{sender.name} (to {self.name}):\n"
 
@@ -148,4 +157,4 @@ class RetConversableAgent(ConversableAgent):
 
         output += "\n" + "-" * 80 + "\n"
         if self.on_message:
-            await self.on_message(output, self.websocket)
+            asyncio.run(self.on_message(output, self.websocket))

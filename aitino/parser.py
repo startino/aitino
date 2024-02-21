@@ -1,17 +1,4 @@
-from pydantic import BaseModel
-
-
-class Agent(BaseModel):
-    id: str
-    name: str
-    job_title: str
-    system_message: str
-    model: str
-
-
-class Composition(BaseModel):
-    reciever_id: str
-    agents: list[Agent]
+from .maeve import Composition, Agent
 
 
 def parse_composition(nodes) -> Composition:

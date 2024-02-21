@@ -1,18 +1,30 @@
-from typing import Callable
+from typing import Callable, Coroutine, Any
 
 from fastapi import WebSocket
-from .ret_agents.ret_conversable_agent import MessageCallback
 import autogen
 
 from . import ret_agents
-from .parser import Composition
+from pydantic import BaseModel
+
+
+class Agent(BaseModel):
+    id: str
+    name: str
+    job_title: str
+    system_message: str
+    model: str
+
+
+class Composition(BaseModel):
+    reciever_id: str
+    agents: list[Agent]
 
 
 class Maeve:
     def __init__(
         self,
         composition: Composition,
-        on_message: MessageCallback | None = None,
+        on_message: Any | None = None,
         websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
     ):
@@ -106,7 +118,7 @@ class Maeve:
             max_round=20,
         )
 
-        manager = ret_agents.ret_conversable_agent.RetGroupChatManager(
+        manager = autogen.GroupChatManager(
             groupchat=groupchat, llm_config=self.base_config
         )
 

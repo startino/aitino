@@ -1,16 +1,16 @@
 import os
 import json
-import time
 import logging
+import asyncio
 
-from typing import Any
+from typing import Callable, Coroutine
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, StreamingResponse
 from supabase import Client, create_client
 
 from .improver import improve_prompt
-from .maeve import Maeve
+from .maeve import Maeve, Composition
 from .parser import parse_input
 
 load_dotenv()
@@ -35,6 +35,7 @@ html = """
     </head>
     <body>
         <h1>WebSocket Chat</h1>
+        <h2>Your ID: <span id="ws-id"></span></h2>
         <form action="" onsubmit="sendMessage(event)">
             <input type="text" id="messageText" autocomplete="off"/>
             <button>Send</button>
@@ -42,7 +43,9 @@ html = """
         <ul id='messages'>
         </ul>
         <script>
-            var ws = new WebSocket("ws://localhost:8000/ws");
+            var client_id = Date.now()
+            document.querySelector("#ws-id").textContent = client_id;
+            var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
@@ -68,7 +71,7 @@ def load_html():
 
 
 @app.get("/compile")
-def compile(maeve_id: str):
+def compile(maeve_id: str) -> dict[str, str | Composition]:
     try:
         response = (
             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
@@ -81,43 +84,41 @@ def compile(maeve_id: str):
     return {"prompt": message, "composition": composition}
 
 
-def callback_test(message: str) -> None:
-    print(message)
-
-
-async def data_streamer(maeve_id: str):
-    try:
-        response = (
-            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
-        )
-    except Exception as e:
-        yield json.dumps({"error": "could not fetch composition, error: " + str(e)})
-        return
-
-    message, composition = parse_input(response.data[0])
-    json.dumps({"event_id": 0, "data": message, "is_last_event": False})
-
-    try:
-        maeve = Maeve(composition, callback_test)
-    except Exception as e:
-        yield json.dumps({"error": "couldn't create maeve: " + str(e)})
-        return
-
-    maeve.run(message)
-
-    for i in range(10):
-        yield json.dumps(
-            {"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False}
-        )
-        time.sleep(1)
-
-    yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
-
-
-@app.get("/run")
-async def run(maeve_id: str):
-
-    return StreamingResponse(data_streamer(maeve_id), media_type="application/x-ndjson")
+# def callback_test(message: str) -> None:
+#     print(message)
+#
+#
+# async def data_streamer(maeve_id: str):
+#     try:
+#         response = (
+#             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+#         )
+#     except Exception as e:
+#         yield json.dumps({"error": "could not fetch composition, error: " + str(e)})
+#         return
+#
+#     message, composition = parse_input(response.data[0])
+#     json.dumps({"event_id": 0, "data": message, "is_last_event": False})
+#
+#     try:
+#         maeve = Maeve(composition, callback_test)
+#     except Exception as e:
+#         yield json.dumps({"error": "couldn't create maeve: " + str(e)})
+#         return
+#
+#     maeve.run(message)
+#
+#     for i in range(10):
+#         yield json.dumps(
+#             {"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False}
+#         )
+#         time.sleep(1)
+#
+#     yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
+# @app.get("/run")
+# async def run(maeve_id: str):
+#
+#     return StreamingResponse(data_streamer(maeve_id), media_type="application/x-ndjson")
 
 
 @app.get("/improve")
@@ -126,34 +127,69 @@ def improve(word_limit: int, prompt: str) -> str:
     return improve_prompt(word_limit, prompt)
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+
+manager = ConnectionManager()
+
+
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await websocket.accept()
-
-    async def on_message(message: str, websocket: WebSocket) -> None:
-        await websocket.send_text(f"Message text was: {message}")
-
     try:
-        response = (
-            supabase.table("maeve_nodes")
-            .select("*")
-            .eq("id", "dfb9ede1-3c08-462f-af73-94cf6aa9185a")
-            .execute()
-        )
-    except Exception as e:
-        logger.info(
-            json.dumps({"error": "could not fetch composition, error: " + str(e)})
-        )
-        return
+        while True:
 
-    message, composition = parse_input(response.data[0])
-    maeve = Maeve(composition, on_message, websocket)
-    try:
-        logger.info(composition)
+            async def on_message(message: str, websocket: WebSocket):
+                await manager.send_personal_message(
+                    f"Message text was: {message}", websocket
+                )
 
-    except Exception as e:
-        logger.info(json.dumps({"error": "couldn't create maeve: " + str(e)}))
-        return
+            maeve_id = await websocket.receive_text()
+            await manager.send_personal_message(f"You ran: {maeve_id}", websocket)
+            await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
+            try:
+                response = (
+                    supabase.table("maeve_nodes")
+                    .select("*")
+                    .eq("id", maeve_id)
+                    .execute()
+                ).data[0]
+            except Exception as e:
+                error = {"error": "could not fetch composition, error: " + str(e)}
+                await manager.send_personal_message(f"{error}", websocket)
+                continue
 
-    maeve.run(message)
+            try:
+                message, composition = parse_input(response)
+                maeve = Maeve(composition, on_message, websocket)
+            except Exception as e:
+                error = {"error": "couldn't create maeve: " + str(e)}
+                await manager.send_personal_message(f"{error}", websocket)
+                continue
 
+            await manager.send_personal_message(
+                f"Running with details:\nMaeve: {maeve_id}\nPrompt: {message}",
+                websocket,
+            )
+            logger.info(composition)
+            maeve.run(message)
+
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.broadcast(f"Client #{client_id} left the chat")
