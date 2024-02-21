@@ -74,7 +74,7 @@ def load_html():
 @app.get("/cache/{seed}")
 def get_cache(seed: int) -> dict:
     cache_service = CacheService(seed)
-    return {"cache": cache_service.list_tables()}
+    return {"cache": cache_service.get_as_json()}
 
 
 @app.get("/compile")
