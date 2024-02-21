@@ -73,8 +73,12 @@ def load_html():
 
 @app.get("/cache/{seed}")
 def get_cache(seed: int) -> dict:
-    cache_service = CacheService(seed)
-    return {"cache": cache_service.get_as_json()}
+    try:
+        cache_service = CacheService(seed)
+
+        return {"cache": cache_service.poll_cache()}
+    except Exception as e:
+        return {"error": "could not fetch cache, error: " + str(e)}
 
 
 @app.get("/compile")
