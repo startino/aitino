@@ -9,6 +9,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, StreamingResponse
 from supabase import Client, create_client
 
+from .cache_service import CacheService
 from .improver import improve_prompt
 from .maeve import Maeve, Composition
 from .parser import parse_input
@@ -68,6 +69,12 @@ html = """
 @app.get("/testing/chat")
 def load_html():
     return HTMLResponse(html)
+
+
+@app.get("/cache/{seed}")
+def get_cache(seed: int) -> dict:
+    cache_service = CacheService(seed)
+    return {"cache": cache_service.list_collections()}
 
 
 @app.get("/compile")
