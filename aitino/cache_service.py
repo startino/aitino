@@ -16,6 +16,11 @@ class CacheService:
         self.connection = sqlite3.connect(self.path)
         self.cursor = self.connection.cursor()
 
+        def on_change(sql):
+            print(f"Update hook called: {sql}")
+
+        self.connection.set_trace_callback(on_change)
+
     def get_as_json(self):
         # List all tables
         # Get a list of tables
