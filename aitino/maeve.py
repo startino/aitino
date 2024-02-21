@@ -27,6 +27,7 @@ class Maeve:
         on_message: Any | None = None,
         websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
+        cache_seed: int = 41,
     ):
         self.on_message = on_message
         self.websocket = websocket
@@ -35,12 +36,14 @@ class Maeve:
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="A human admin and code executor.",
+            system_message="""Reply TERMINATE if the task has been solved at
+                full satisfaction. Otherwise, reply CONTINUE, or the reason
+                why the task is not solved yet.""",
             max_consecutive_auto_reply=1,
             human_input_mode="NEVER",
             code_execution_config={
                 "last_n_messages": 4,
-                "work_dir": "tasks",
+                "work_dir": f".cache/{cache_seed}/scripts",
                 "use_docker": False,
             },
         )
