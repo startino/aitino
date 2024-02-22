@@ -109,10 +109,11 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 
 @app.get("/improve")
 def improve(
-    word_limit: int, prompt: str, type: Literal["generic", "system", "user"]
+    word_limit: int,
+    prompt: str,
+    prompt_type: Literal["generic", "system", "user"] = "generic",
 ) -> str:
-
-    return improve_prompt(word_limit, prompt)
+    return improve_prompt(word_limit, prompt, prompt_type)
 
 
 class ConnectionManager:

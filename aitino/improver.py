@@ -6,9 +6,9 @@ from typing import Literal
 
 
 def improve_prompt(
-    word_limit: int, prompt: str, type: Literal["generic", "system", "user"]
+    word_limit: int, prompt: str, prompt_type: Literal["generic", "system", "user"]
 ) -> str:
-    match type:
+    match prompt_type:
         case "generic" | "system" | "user":
             with open(
                 Path(os.getcwd(), "aitino", "prompts", "improve-prompt.md"),
