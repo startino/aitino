@@ -111,7 +111,7 @@ class Maeve:
             )
         return agents
 
-    def run(self, message: str):
+    async def run(self, message: str):
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=[],
@@ -122,7 +122,7 @@ class Maeve:
             groupchat=groupchat, llm_config=self.base_config
         )
 
-        result = self.user_proxy.initiate_chat(
+        result = await self.user_proxy.a_initiate_chat(
             manager,
             message=message,
         )

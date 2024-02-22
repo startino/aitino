@@ -1,12 +1,10 @@
 import os
-import json
 import logging
-import asyncio
 
-from typing import Callable, Coroutine
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from supabase import Client, create_client
 
 from .cache_service import CacheService
@@ -27,6 +25,19 @@ supabase: Client = create_client(url, key)
 logger = logging.getLogger("root")
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:8001",
+        "http://localhost:8081",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 html = """
 <!DOCTYPE html>
@@ -93,43 +104,6 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
     message, composition = parse_input(response.data[0])
 
     return {"prompt": message, "composition": composition}
-
-
-# def callback_test(message: str) -> None:
-#     print(message)
-#
-#
-# async def data_streamer(maeve_id: str):
-#     try:
-#         response = (
-#             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
-#         )
-#     except Exception as e:
-#         yield json.dumps({"error": "could not fetch composition, error: " + str(e)})
-#         return
-#
-#     message, composition = parse_input(response.data[0])
-#     json.dumps({"event_id": 0, "data": message, "is_last_event": False})
-#
-#     try:
-#         maeve = Maeve(composition, callback_test)
-#     except Exception as e:
-#         yield json.dumps({"error": "couldn't create maeve: " + str(e)})
-#         return
-#
-#     maeve.run(message)
-#
-#     for i in range(10):
-#         yield json.dumps(
-#             {"event_id": i + 1, "data": f"Hello {i}", "is_last_event": False}
-#         )
-#         time.sleep(1)
-#
-#     yield json.dumps({"event_id": 11, "data": "", "is_last_event": True})
-# @app.get("/run")
-# async def run(maeve_id: str):
-#
-#     return StreamingResponse(data_streamer(maeve_id), media_type="application/x-ndjson")
 
 
 @app.get("/improve")
@@ -200,7 +174,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 websocket,
             )
             logger.info(composition)
-            maeve.run(message)
+            await maeve.run(message)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
