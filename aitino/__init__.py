@@ -2,6 +2,7 @@ import json
 import logging
 import os
 
+from typing import Literal
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -107,7 +108,9 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 
 
 @app.get("/improve")
-def improve(word_limit: int, prompt: str) -> str:
+def improve(
+    word_limit: int, prompt: str, type: Literal["generic", "system", "user"]
+) -> str:
 
     return improve_prompt(word_limit, prompt)
 
