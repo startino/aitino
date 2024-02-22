@@ -173,14 +173,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 f"Running with details:\nMaeve: {maeve_id}\nPrompt: {message}",
                 websocket,
             )
-            result = await maeve.run(message)
-            await manager.send_personal_message(
-                json.dumps(result.chat_history, indent=2), websocket
-            )
-            await manager.send_personal_message(
-                f"{result.cost[0]}, {result.cost[1]}", websocket
-            )
-            await manager.send_personal_message(result.summary, websocket)
+            await maeve.run(message)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

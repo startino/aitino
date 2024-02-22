@@ -1,6 +1,7 @@
 from typing import Any
 
 import autogen
+from autogen.cache import Cache
 from fastapi import WebSocket
 from pydantic import BaseModel
 
@@ -64,7 +65,7 @@ class Maeve:
             "timeout": 120,
         }
 
-    def on_reply(
+    async def on_reply(
         self,
         recipient: autogen.ConversableAgent,
         messages: list[dict] | None = None,
@@ -72,7 +73,7 @@ class Maeve:
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
         if self.on_message and self.websocket and messages:
-            print(messages)
+            await self.on_message(messages, self.websocket)
         return False, None
 
     def validate_composition(self, composition: Composition):
@@ -114,7 +115,7 @@ class Maeve:
             }
             agent = autogen.ConversableAgent(
                 name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
+                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
             )
 
@@ -136,8 +137,9 @@ class Maeve:
         )
         manager.register_reply([autogen.Agent, None], self.on_reply)
 
-        result = self.user_proxy.initiate_chat(
-            manager,
-            message=message,
-        )
-        return result
+        with Cache.disk() as cache:
+            await self.user_proxy.a_initiate_chat(
+                manager,
+                message=message,
+                cache=cache,
+            )
