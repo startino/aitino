@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+import json
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -9,7 +10,7 @@ from supabase import Client, create_client
 
 from .cache_service import CacheService
 from .improver import improve_prompt
-from .maeve import Maeve, Composition
+from .maeve import Composition, Maeve
 from .parser import parse_input
 
 load_dotenv()
@@ -52,15 +53,15 @@ html = """
             <input type="text" id="messageText" autocomplete="off"/>
             <button>Send</button>
         </form>
-        <ul id='messages'>
-        </ul>
+        <div id='messages'>
+        </div>
         <script>
             var client_id = Date.now()
             document.querySelector("#ws-id").textContent = client_id;
             var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
-                var message = document.createElement('li')
+                var message = document.createElement('p')
                 var content = document.createTextNode(event.data)
                 message.appendChild(content)
                 messages.appendChild(message)
@@ -68,7 +69,6 @@ html = """
             function sendMessage(event) {
                 var input = document.getElementById("messageText")
                 ws.send(input.value)
-                input.value = ''
                 event.preventDefault()
             }
         </script>
@@ -173,8 +173,14 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 f"Running with details:\nMaeve: {maeve_id}\nPrompt: {message}",
                 websocket,
             )
-            logger.info(composition)
-            await maeve.run(message)
+            result = await maeve.run(message)
+            await manager.send_personal_message(
+                json.dumps(result.chat_history, indent=2), websocket
+            )
+            await manager.send_personal_message(
+                f"{result.cost[0]}, {result.cost[1]}", websocket
+            )
+            await manager.send_personal_message(result.summary, websocket)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
