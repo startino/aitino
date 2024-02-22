@@ -64,6 +64,17 @@ class Maeve:
             "timeout": 120,
         }
 
+    def on_reply(
+        self,
+        recipient: autogen.ConversableAgent,
+        messages: list[dict] | None = None,
+        sender: Agent | None = None,
+        config: Any | None = None,
+    ) -> tuple[bool, Any | None]:
+        if self.on_message and self.websocket and messages:
+            print(messages)
+        return False, None
+
     def validate_composition(self, composition: Composition):
         if len(composition.agents) == 0:
             return False
@@ -101,14 +112,16 @@ class Maeve:
                 "config_list": config_list,
                 "timeout": 120,
             }
-
-            agents.append(
-                autogen.ConversableAgent(
-                    name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                    system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
-                    llm_config=config,
-                )
+            agent = autogen.ConversableAgent(
+                name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
+                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
+                llm_config=config,
             )
+
+            if self.on_message:
+                agent.register_reply([autogen.Agent, None], self.on_reply)
+
+            agents.append(agent)
         return agents
 
     async def run(self, message: str, messages: list[dict[Any, Any]] = []):
@@ -121,6 +134,7 @@ class Maeve:
         manager = autogen.GroupChatManager(
             groupchat=groupchat, llm_config=self.base_config
         )
+        manager.register_reply([autogen.Agent, None], self.on_reply)
 
         result = self.user_proxy.initiate_chat(
             manager,
