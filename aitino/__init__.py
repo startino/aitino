@@ -115,10 +115,10 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 def improve(
     word_limit: int,
     prompt: str,
-    prompt_type: Literal["generic", "system", "user"] = "generic",
+    temperature: float,
+    prompt_type: PromptType
 ) -> str:
-    return improve_prompt(word_limit, prompt, prompt_type)
-
+    return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
 class AgentReply(BaseModel):
     recipient: str
