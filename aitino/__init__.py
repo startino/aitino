@@ -81,16 +81,6 @@ def load_html():
     return HTMLResponse(html)
 
 
-@app.get("/cache/{seed}")
-def get_cache(seed: int) -> dict:
-    try:
-        cache_service = CacheService(seed)
-
-        return {"cache": cache_service.poll_cache()}
-    except Exception as e:
-        return {"error": "could not fetch cache, error: " + str(e)}
-
-
 @app.get("/compile")
 def compile(maeve_id: str) -> dict[str, str | Composition]:
     try:
@@ -148,7 +138,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 )
 
             maeve_id = await websocket.receive_text()
-            _ = CacheService(41)
             await manager.send_personal_message(f"You ran: {maeve_id}", websocket)
             await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
             try:
