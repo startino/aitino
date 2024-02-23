@@ -5,7 +5,7 @@ import os
 from asyncio import Queue
 from pathlib import Path
 from threading import Thread
-from typing import Any, Literal
+from typing import Any, AsyncGenerator, Literal
 from uuid import UUID, uuid4
 
 from autogen import Agent, ConversableAgent
@@ -120,19 +120,23 @@ def improve(
     return improve_prompt(word_limit, prompt, prompt_type)
 
 
-class Reply(BaseModel):
+class AgentReply(BaseModel):
     recipient: str
     message: str
     sender: str | None = None
-    config: Any | None = None
+
+
+class Reply(BaseModel):
+    id: int
+    data: Any
+    last_message: bool = False
 
 
 @app.get("/meave")
 async def run_maeve(maeve_id: UUID):
-
     job_done = object()
 
-    q: Queue[Reply | object] = Queue(maxsize=1)
+    q: Queue[AgentReply | object] = Queue(maxsize=1)
 
     async def on_reply(
         recipient: ConversableAgent,
@@ -147,23 +151,26 @@ async def run_maeve(maeve_id: UUID):
 
         print(messages[-1])
         await q.put(
-            Reply(
+            AgentReply(
                 recipient=recipient.name,
                 message=messages[0]["content"],
                 sender=sender.name if sender else None,
-                config=config,
             )
         )
         await q.join()
 
     async def run_job():
-        res = supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+        response = (
+            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+        )
 
-        if len(res.data) == 0:
+        if len(response.data) == 0:
             raise HTTPException(status_code=404, detail="Item not found")
 
+        input = response.data[0]
+
         try:
-            message, composition = parse_input(res)
+            message, composition = parse_input(input)
             maeve = Maeve(composition, on_reply)
         except Exception as e:
             raise HTTPException(status_code=500, detail="Error: " + str(e))
@@ -176,9 +183,15 @@ async def run_maeve(maeve_id: UUID):
     thread = Thread(target=loop.run_until_complete, args=(run_job(),))
     thread.start()
 
-    while True:
-        next_item = await q.get()
-        if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
-            break
-        yield next_item
-        q.task_done()
+    async def run_generator() -> AsyncGenerator:
+        yield Reply(id=0, data="Starting")
+        i = 1
+        while True:
+            next_item = q.get()
+            if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
+                yield Reply(id=i, data="Done", last_message=True)
+                break
+            yield Reply(id=i, data=next_item)
+            q.task_done()
+
+    return StreamingResponse(run_generator())
