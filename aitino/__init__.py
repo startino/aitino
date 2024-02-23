@@ -1,7 +1,8 @@
 import logging
 import os
+from uuid import UUID, uuid4
 
-from typing import Literal
+from typing import Literal, Any
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -115,8 +116,14 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
+    async def send_text(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)
+
+    async def send_json(self, message: dict, websocket: WebSocket):
+        await websocket.send_json(message)
+
+    async def send_bytes(self, message: bytes, websocket: WebSocket):
+        await websocket.send_bytes(message)
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:
@@ -126,6 +133,11 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+class WebSocketResponse(BaseModel):
+    id: UUID
+    message: str
+
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await websocket.accept()
@@ -133,12 +145,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         while True:
 
             async def on_message(message: str, websocket: WebSocket):
-                await manager.send_personal_message(
-                    f"Message text was: {message}", websocket
-                )
+                await manager.send_json({"message": message}, websocket)
 
             maeve_id = await websocket.receive_text()
-            await manager.send_personal_message(f"You ran: {maeve_id}", websocket)
+            await manager.send_json({maeve_id}, websocket)
             await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
             try:
                 response = (
