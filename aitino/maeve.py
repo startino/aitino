@@ -72,7 +72,7 @@ class Maeve:
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
         if self.on_message and self.websocket and messages:
-            await self.on_message(messages, self.websocket)
+            await self.on_message(messages[-1], self.websocket)
         return False, None
 
     def validate_composition(self, composition: Composition):
