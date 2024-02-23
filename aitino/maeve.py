@@ -5,6 +5,8 @@ from autogen.cache import Cache
 from fastapi import WebSocket
 from pydantic import BaseModel
 
+from .models import CodeExecutionConfig
+
 
 class Agent(BaseModel):
     id: str
@@ -36,16 +38,13 @@ class Maeve:
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="""Reply TERMINATE if the task has been solved at
-                full satisfaction. Otherwise, reply CONTINUE, or the reason
-                why the task is not solved yet.""",
-            max_consecutive_auto_reply=1,
+            system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+            max_consecutive_auto_reply=2,
             human_input_mode="ALWAYS",
-            code_execution_config={
-                "last_n_messages": 4,
-                "work_dir": f".cache/{self.seed}/scripts",
-                "use_docker": False,
-            },
+            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            code_execution_config=CodeExecutionConfig(
+                work_dir=f".cache/{self.seed}/scripts"
+            ).model_dump(),
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
@@ -115,7 +114,7 @@ class Maeve:
             }
             agent = autogen.ConversableAgent(
                 name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
             )
 
