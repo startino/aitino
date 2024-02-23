@@ -40,7 +40,7 @@ class Maeve:
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
             max_consecutive_auto_reply=2,
-            human_input_mode="ALWAYS",
+            human_input_mode="NEVER",
             default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
             code_execution_config=CodeExecutionConfig(
                 work_dir=f".cache/{self.seed}/scripts"
@@ -124,7 +124,9 @@ class Maeve:
             agents.append(agent)
         return agents
 
-    async def run(self, message: str, messages: list[dict[Any, Any]] = []):
+    async def run(
+        self, message: str, messages: list[dict[Any, Any]] = []
+    ) -> autogen.ChatResult:
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=messages,
@@ -137,8 +139,10 @@ class Maeve:
         manager.register_reply([autogen.Agent, None], self.on_reply)
 
         with Cache.disk() as cache:
-            await self.user_proxy.a_initiate_chat(
+            result = await self.user_proxy.a_initiate_chat(
                 manager,
                 message=message,
                 cache=cache,
             )
+
+        return result
