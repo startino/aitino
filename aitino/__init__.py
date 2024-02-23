@@ -134,6 +134,7 @@ class Reply(BaseModel):
 
 @app.get("/meave")
 async def run_maeve(maeve_id: UUID):
+    logging.info("Running Maeve")
     job_done = object()
 
     q: Queue[AgentReply | object] = Queue(maxsize=1)
@@ -144,6 +145,7 @@ async def run_maeve(maeve_id: UUID):
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> None:
+        logging.info("On reply")
         if not messages:
             return
         if len(messages) == 0:
@@ -160,38 +162,53 @@ async def run_maeve(maeve_id: UUID):
         await q.join()
 
     async def run_job():
-        response = (
-            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
-        )
-
-        if len(response.data) == 0:
-            raise HTTPException(status_code=404, detail="Item not found")
-
-        input = response.data[0]
-
-        try:
-            message, composition = parse_input(input)
-            maeve = Maeve(composition, on_reply)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail="Error: " + str(e))
-
-        await q.put(await maeve.run(message))
+        logging.info("Running job")
+        for i in range(10):
+            logging.info("Sending message")
+            await q.put(AgentReply(recipient="maeve", message="Hello"))
+            await asyncio.sleep(0.5)
         await q.put(job_done)
+        # response = (
+        #     supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+        # )
+        #
+        # if len(response.data) == 0:
+        #     raise HTTPException(status_code=404, detail="Item not found")
+        #
+        # input = response.data[0]
+        #
+        # try:
+        #     message, composition = parse_input(input)
+        #     maeve = Maeve(composition, on_reply)
+        # except Exception as e:
+        #     raise HTTPException(status_code=500, detail="Error: " + str(e))
+        #
+        # await q.put(await maeve.run(message))
+        # await q.put(job_done)
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    thread = Thread(target=loop.run_until_complete, args=(run_job(),))
-    thread.start()
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
+    # thread = Thread(target=loop.run_until_complete, args=(run_job(),))
+    # thread.start()
+    async def process(i: int) -> dict:
+        logging.info("Waiting for next item")
+        next_item = await q.get()
+        logging.info("Got next item")
+        if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
+            return Reply(id=i, data="Done", last_message=True).model_dump()
+        q.task_done()
+        await asyncio.sleep(0.1)
+        logging.info("Done with item")
+        return Reply(id=i, data=next_item).model_dump()
 
     async def run_generator() -> AsyncGenerator:
-        yield Reply(id=0, data="Starting")
+        logging.info("Running generator")
+        yield Reply(id=0, data="Starting").model_dump_json()
         i = 1
-        while True:
-            next_item = q.get()
-            if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
-                yield Reply(id=i, data="Done", last_message=True)
+        for _ in range(100):
+            result = await process(i)
+            yield result
+            if result["last_message"]:
                 break
-            yield Reply(id=i, data=next_item)
-            q.task_done()
 
     return StreamingResponse(run_generator())
