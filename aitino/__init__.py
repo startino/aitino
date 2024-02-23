@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 
@@ -9,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from supabase import Client, create_client
 
-from .cache_service import CacheService
 from .improver import improve_prompt
 from .maeve import Composition, Maeve
 from .parser import parse_input
