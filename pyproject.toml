@@ -8,6 +8,7 @@ authors = [
     "Leon Nilsson <leonlamnilsson@gmail.com>",
 ]
 readme = "README.md"
+license = "BSL-1.1 (https://github.com/Futino/aitino/blob/alpha/LICENSE)"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
