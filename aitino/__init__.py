@@ -24,7 +24,7 @@ from pydantic import BaseModel
 from starlette.types import Send
 from supabase import Client, create_client
 
-from .improver import improve_prompt
+from .improver import improve_prompt, PromptType
 from .maeve import Composition, Maeve
 from .parser import parse_input
 
@@ -113,12 +113,10 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 
 @app.get("/improve")
 def improve(
-    word_limit: int,
-    prompt: str,
-    temperature: float,
-    prompt_type: PromptType
+    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
 ) -> str:
     return improve_prompt(word_limit, prompt, temperature, prompt_type)
+
 
 class AgentReply(BaseModel):
     recipient: str
