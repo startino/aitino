@@ -26,13 +26,11 @@ class Maeve:
         self,
         composition: Composition,
         on_message: Any | None = None,
-        websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
     ):
         self.seed = seed
-        self.on_message = on_message
-        self.websocket = websocket
+        self.on_reply = on_message
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
@@ -64,15 +62,17 @@ class Maeve:
             "timeout": 120,
         }
 
-    async def on_reply(
+    async def _on_reply(
         self,
         recipient: autogen.ConversableAgent,
         messages: list[dict] | None = None,
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
-        if self.on_message and self.websocket and messages:
-            await self.on_message(messages[-1], self.websocket)
+
+        if self.on_reply:
+            await self.on_reply(recipient, messages, sender, config)
+
         return False, None
 
     def validate_composition(self, composition: Composition):
@@ -118,8 +118,8 @@ class Maeve:
                 llm_config=config,
             )
 
-            if self.on_message:
-                agent.register_reply([autogen.Agent, None], self.on_reply)
+            if self.on_reply:
+                agent.register_reply([autogen.Agent, None], self._on_reply)
 
             agents.append(agent)
         return agents
@@ -136,7 +136,7 @@ class Maeve:
         manager = autogen.GroupChatManager(
             groupchat=groupchat, llm_config=self.base_config
         )
-        manager.register_reply([autogen.Agent, None], self.on_reply)
+        manager.register_reply([autogen.Agent, None], self._on_reply)
 
         with Cache.disk() as cache:
             result = await self.user_proxy.a_initiate_chat(

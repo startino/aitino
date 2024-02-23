@@ -1,12 +1,27 @@
+import asyncio
+import json
 import logging
 import os
+from asyncio import Queue
+from pathlib import Path
+from threading import Thread
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from typing import Literal, Any
+from autogen import Agent, ConversableAgent
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import (
+    BackgroundTasks,
+    FastAPI,
+    HTTPException,
+    Response,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
+from pydantic import BaseModel
+from starlette.types import Send
 from supabase import Client, create_client
 
 from .improver import improve_prompt
@@ -105,79 +120,65 @@ def improve(
     return improve_prompt(word_limit, prompt, prompt_type)
 
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_text(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def send_json(self, message: dict, websocket: WebSocket):
-        await websocket.send_json(message)
-
-    async def send_bytes(self, message: bytes, websocket: WebSocket):
-        await websocket.send_bytes(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-
-manager = ConnectionManager()
-
-
-class WebSocketResponse(BaseModel):
-    id: UUID
+class Reply(BaseModel):
+    recipient: str
     message: str
+    sender: str | None = None
+    config: Any | None = None
 
 
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await websocket.accept()
-    try:
-        while True:
+@app.get("/meave")
+async def run_maeve(maeve_id: UUID):
 
-            async def on_message(message: str, websocket: WebSocket):
-                await manager.send_json({"message": message}, websocket)
+    job_done = object()
 
-            maeve_id = await websocket.receive_text()
-            await manager.send_json({maeve_id}, websocket)
-            await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
-            try:
-                response = (
-                    supabase.table("maeve_nodes")
-                    .select("*")
-                    .eq("id", maeve_id)
-                    .execute()
-                ).data[0]
-            except Exception as e:
-                error = {"error": "could not fetch composition, error: " + str(e)}
-                await manager.send_personal_message(f"{error}", websocket)
-                continue
+    q: Queue[Reply | object] = Queue(maxsize=1)
 
-            try:
-                message, composition = parse_input(response)
-                maeve = Maeve(composition, on_message, websocket)
-            except Exception as e:
-                error = {"error": "couldn't create maeve: " + str(e)}
-                await manager.send_personal_message(f"{error}", websocket)
-                continue
+    async def on_reply(
+        recipient: ConversableAgent,
+        messages: list[dict] | None = None,
+        sender: Agent | None = None,
+        config: Any | None = None,
+    ) -> None:
+        if not messages:
+            return
+        if len(messages) == 0:
+            return
 
-            await manager.send_personal_message(
-                f"Running with details:\nMaeve: {maeve_id}\nPrompt: {message}",
-                websocket,
+        print(messages[-1])
+        await q.put(
+            Reply(
+                recipient=recipient.name,
+                message=messages[0]["content"],
+                sender=sender.name if sender else None,
+                config=config,
             )
-            result = await maeve.run(message)
+        )
+        await q.join()
 
-            await manager.send_personal_message(f"Summary: {result.summary}", websocket)
+    async def run_job():
+        res = supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
 
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
+        if len(res.data) == 0:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        try:
+            message, composition = parse_input(res)
+            maeve = Maeve(composition, on_reply)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Error: " + str(e))
+
+        await q.put(await maeve.run(message))
+        await q.put(job_done)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    thread = Thread(target=loop.run_until_complete, args=(run_job(),))
+    thread.start()
+
+    while True:
+        next_item = await q.get()
+        if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
+            break
+        yield next_item
+        q.task_done()
