@@ -111,10 +111,10 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 def improve(
     word_limit: int,
     prompt: str,
+    temperature: float,
     prompt_type: Literal["generic", "system", "user"] = "generic",
 ) -> str:
-    return improve_prompt(word_limit, prompt, prompt_type)
-
+    return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
 class ConnectionManager:
     def __init__(self):

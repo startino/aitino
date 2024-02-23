@@ -39,7 +39,7 @@ Use intent classification to identify the most relevant instructions for a user 
 For dialogue applications that require very long conversations, summarize or filter previous dialogue
 Summarize long documents piecewise and construct a full summary recursively
 Give the model time to "think"
-If asked to multiply 17 by 28, you might not know it instantly, but can still work it out with time. Similarly, models make more reasoning errors when trying to answer right away, rather than taking time to work out an answer. Asking for a "chain of thought" before an answer can help the model reason its way toward correct answers more reliably.
+Models make more reasoning errors when trying to answer right away, rather than taking time to work out an answer. Asking for a "chain of thought" before an answer can help the model reason its way toward correct answers more reliably.
 
 Tactics:
 
@@ -54,12 +54,8 @@ Tactics:
 Use embeddings-based search to implement efficient knowledge retrieval
 Use code execution to perform more accurate calculations or call external APIs
 Give the model access to specific functions
-Test changes systematically
 Improving performance is easier if you can measure it. In some cases a modification to a prompt will achieve better performance on a few isolated examples but lead to worse overall performance on a more representative set of examples. Therefore to be sure that a change is net positive to performance it may be necessary to define a comprehensive test suite (also known an as an "eval").
 
-Tactic:
-
-Evaluate model outputs with reference to gold-standard answers
 Tactics
 Each of the strategies listed above can be instantiated with specific tactics. These tactics are meant to provide ideas for things to try. They are by no means fully comprehensive, and you should feel free to try creative ideas not represented here.
 
@@ -68,9 +64,9 @@ Tactic: Include details in your query to get more relevant answers
 In order to get a highly relevant response, make sure that requests provide any important details or context. Otherwise you are leaving it up to the model to guess what you mean.
 
 Worse: How do I add numbers in Excel? Better: How do I add up a row of dollar amounts in Excel? I want to do this automatically for a whole sheet of rows with all the totals ending up on the right in a column called "Total".
-Who’s president? Who was the president of Mexico in 2021, and how frequently are elections held?
-Write code to calculate the Fibonacci sequence. Write a TypeScript function to efficiently calculate the Fibonacci sequence. Comment the code liberally to explain what each piece does and why it's written that way.
-Summarize the meeting notes. Summarize the meeting notes in a single paragraph. Then write a markdown list of the speakers and each of their key points. Finally, list the next steps or action items suggested by the speakers, if any.
+Worse: Who’s president? Better: Who was the president of Mexico in 2021, and how frequently are elections held?
+Worse: Write code to calculate the Fibonacci sequence. Better: Write a TypeScript function to efficiently calculate the Fibonacci sequence. Comment the code liberally to explain what each piece does and why it's written that way.
+Worse: Summarize the meeting notes. Better: Summarize the meeting notes in a single paragraph. Then write a markdown list of the speakers and each of their key points. Finally, list the next steps or action items suggested by the speakers, if any.
 Tactic: Ask the model to adopt a persona
 The system message can be used to specify the persona used by the model in its replies.
 
@@ -171,7 +167,7 @@ Question: <insert question here>
 
 Strategy: Split complex tasks into simpler subtasks
 Tactic: Use intent classification to identify the most relevant instructions for a user query
-For tasks in which lots of independent sets of instructions are needed to handle different cases, it can be beneficial to first classify the type of query and to use that classification to determine which instructions are needed. This can be achieved by defining fixed categories and hard-coding instructions that are relevant for handling tasks in a given category. This process can also be applied recursively to decompose a task into a sequence of stages. The advantage of this approach is that each query will contain only those instructions that are required to perform the next stage of a task which can result in lower error rates compared to using a single query to perform the whole task. This can also result in lower costs since larger prompts cost more to run (see pricing information).
+For tasks in which lots of independent sets of instructions are needed to handle different cases, it can be beneficial to first classify the type of query and to use that classification to determine which instructions are needed. This can be achieved by defining fixed categories and hard-coding instructions that are relevant for handling tasks in a given category. This process can also be applied recursively to decompose a task into a sequence of stages. The advantage of this approach is that each query will contain only those instructions that are required to perform the next stage of a task which can result in lower error rates compared to using a single query to perform the whole task.
 
 Suppose for example that for a customer service application, queries could be usefully classified as follows:
 
@@ -352,4 +348,3 @@ END PROMPT WRITING KNOWLEDGE
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!"
-
