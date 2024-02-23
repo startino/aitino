@@ -8,6 +8,6 @@ class LLMConfig(BaseModel):
 
     config_list: list[Any] = Field(default=[])
     temperature: float = 0
-    cache_seed: int | None = None
+    cache_seed: int
     timeout: int | None = None
     max_tokens: int | None = None
