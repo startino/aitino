@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 from supabase import Client, create_client
 
 from .cache_service import CacheService
-from .improver import improve_prompt
+from .improver import PromptType, improve_prompt
 from .maeve import Composition, Maeve
 from .parser import parse_input
 
@@ -112,7 +112,7 @@ def improve(
     word_limit: int,
     prompt: str,
     temperature: float,
-    prompt_type: Literal["generic", "system", "user"] = "generic",
+    prompt_type: PromptType
 ) -> str:
     return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
