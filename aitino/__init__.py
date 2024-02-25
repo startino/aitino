@@ -156,7 +156,14 @@ async def run_maeve(id: UUID):
     async def generator() -> AsyncGenerator:
         for i in range(int(max_run_time * (1 / message_delay) + 1)):
             await asyncio.sleep(message_delay)
-            reply = await iteration(i)
+            # Gets and dequeues item
+            next_item = await q.get()
+
+            # check if job is done or if it should be force stopped
+            if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
+                reply = False
+            else:
+                reply = Reply(id=i, data=next_item)
 
             if not reply:
                 yield json.dumps(
