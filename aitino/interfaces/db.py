@@ -3,7 +3,6 @@ import os
 from uuid import UUID
 
 from dotenv import load_dotenv
-from fastapi import HTTPException
 from supabase import Client, create_client
 
 from ..maeve import Composition

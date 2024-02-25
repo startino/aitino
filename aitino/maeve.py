@@ -1,6 +1,6 @@
 import logging
 from asyncio import Queue
-from typing import Any
+from typing import Any, cast
 
 import autogen
 from autogen.cache import Cache
@@ -48,9 +48,9 @@ class Maeve:
             ).model_dump(),
         )
 
-        self.agents: list[
-            autogen.ConversableAgent | autogen.Agent
-        ] = self.create_agents(composition)
+        self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
+            self.create_agents(composition)
+        )
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -77,7 +77,7 @@ class Maeve:
 
         return False, None
 
-    def validate_composition(self, composition: Composition):
+    def validate_composition(self, composition: Composition) -> bool:
         if len(composition.agents) == 0:
             return False
 
@@ -132,7 +132,7 @@ class Maeve:
         messages: list[dict[Any, Any]] = [],
         q: Queue | None = None,
         job_done: object | None = None,
-    ):
+    ) -> None:
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=messages,
@@ -147,7 +147,7 @@ class Maeve:
         logger.info("Starting Maeve")
         with Cache.disk() as cache:
             await self.user_proxy.a_initiate_chat(
-                manager, message=message, cache=cache, silent=True
+                manager, message=message, cache=cast(Cache, cache), silent=True
             )
 
         if q and job_done:

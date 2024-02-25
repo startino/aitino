@@ -37,7 +37,7 @@ app.add_middleware(
 
 
 @app.get("/")
-def redirect_to_docs():
+def redirect_to_docs() -> RedirectResponse:
     return RedirectResponse(url="/docs")
 
 
@@ -65,7 +65,7 @@ class AgentReply(BaseModel):
 
 
 @app.get("/maeve")
-async def run_maeve(id: UUID):
+async def run_maeve(id: UUID) -> StreamingResponse:
     q: Queue[AgentReply | object] = Queue()
     job_done = object()
 
@@ -113,9 +113,16 @@ async def run_maeve(id: UUID):
     message, composition = db.get_complied(id)
 
     if not message or not composition:
-        await q.put(AgentReply(recipient="maeve", message="maeve id is invalid"))
-        await q.put(job_done)
-        return
+        return StreamingResponse(
+            json.dumps(
+                StreamReply(
+                    id=0,
+                    status="error",
+                    data=f"Maeve with id {id} not found",
+                ).model_dump()
+            ),
+            media_type="application/x-ndjson",
+        )
 
     maeve = Maeve(composition, on_reply)
 
