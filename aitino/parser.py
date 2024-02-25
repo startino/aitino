@@ -1,4 +1,4 @@
-from .maeve import Composition, Agent
+from .maeve import Agent, Composition
 
 
 def parse_composition(nodes) -> Composition:

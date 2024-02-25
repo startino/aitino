@@ -18,7 +18,6 @@ from .interfaces import db
 from .maeve import Composition, Maeve
 from .models import APIReply
 
-
 logger = logging.getLogger("root")
 
 app = FastAPI()

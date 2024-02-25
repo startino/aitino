@@ -6,14 +6,13 @@ from typing import (
     Coroutine,
     Dict,
     List,
+    Literal,
     Optional,
     Union,
-    Literal,
 )
 
 from autogen import Agent, ConversableAgent, OpenAIWrapper
 from fastapi import WebSocket
-
 
 try:
     from termcolor import colored

@@ -3,8 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from .llm_config import LLMConfig
 from .code_execution_config import CodeExecutionConfig
+from .llm_config import LLMConfig
 
 
 class AgentConfig(BaseModel):

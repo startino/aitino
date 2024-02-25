@@ -1,11 +1,11 @@
 import asyncio
-import autogen
 import copy
 import functools
 import inspect
 import json
 import logging
 import re
+import warnings
 from collections import defaultdict
 from typing import (
     Any,
@@ -19,35 +19,32 @@ from typing import (
     TypeVar,
     Union,
 )
-import warnings
-from openai import BadRequestError
 
-from autogen.coding.base import CodeExecutor
-from autogen.coding.factory import CodeExecutorFactory
-
-from autogen.oai.client import OpenAIWrapper, ModelClient
-from autogen.runtime_logging import logging_enabled, log_new_agent
+import autogen
+from autogen._pydantic import model_dump
+from autogen.agentchat.agent import Agent, LLMAgent
+from autogen.agentchat.chat import ChatResult, initiate_chats
+from autogen.agentchat.utils import consolidate_chat_info, gather_usage_summary
 from autogen.cache.cache import Cache
 from autogen.code_utils import (
     UNKNOWN,
-    content_str,
     check_can_use_docker_or_throw,
+    content_str,
     decide_use_docker,
     execute_code,
     extract_code,
     infer_lang,
 )
-from autogen.agentchat.utils import gather_usage_summary, consolidate_chat_info
-from autogen.agentchat.chat import ChatResult, initiate_chats
-
-
+from autogen.coding.base import CodeExecutor
+from autogen.coding.factory import CodeExecutorFactory
 from autogen.function_utils import (
     get_function_schema,
     load_basemodels_if_needed,
     serialize_to_str,
 )
-from autogen.agentchat.agent import Agent, LLMAgent
-from autogen._pydantic import model_dump
+from autogen.oai.client import ModelClient, OpenAIWrapper
+from autogen.runtime_logging import log_new_agent, logging_enabled
+from openai import BadRequestError
 
 try:
     from termcolor import colored

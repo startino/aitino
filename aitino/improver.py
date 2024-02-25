@@ -1,9 +1,10 @@
-from pathlib import Path
 import os
+from enum import Enum
+from pathlib import Path
+from typing import Literal
+
 from openai import OpenAI
 from pydantic import BaseModel
-from typing import Literal
-from enum import Enum
 
 
 class PromptType(Enum):

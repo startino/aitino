@@ -1,7 +1,8 @@
-import aiohttp
 import asyncio
 import json
 import sys
+
+import aiohttp
 
 
 async def call_maeve(url):
