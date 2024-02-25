@@ -535,9 +535,9 @@ class RetConversableAgent(LLMAgent):
         }
         if "content" not in oai_message:
             if "function_call" in oai_message or "tool_calls" in oai_message:
-                oai_message["content"] = (
-                    None  # if only function_call is provided, content will be set to None.
-                )
+                oai_message[
+                    "content"
+                ] = None  # if only function_call is provided, content will be set to None.
             else:
                 return False
 
@@ -549,9 +549,9 @@ class RetConversableAgent(LLMAgent):
         if oai_message.get("function_call", False) or oai_message.get(
             "tool_calls", False
         ):
-            oai_message["role"] = (
-                "assistant"  # only messages with role 'assistant' can have a function call.
-            )
+            oai_message[
+                "role"
+            ] = "assistant"  # only messages with role 'assistant' can have a function call.
         self._oai_messages[conversation_id].append(oai_message)
         return True
 

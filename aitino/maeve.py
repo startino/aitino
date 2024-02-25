@@ -48,9 +48,9 @@ class Maeve:
             ).model_dump(),
         )
 
-        self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
-            self.create_agents(composition)
-        )
+        self.agents: list[
+            autogen.ConversableAgent | autogen.Agent
+        ] = self.create_agents(composition)
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -72,7 +72,6 @@ class Maeve:
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
-
         if self.on_reply:
             await self.on_reply(recipient, messages, sender, config)
 

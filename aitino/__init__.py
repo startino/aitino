@@ -141,7 +141,8 @@ async def run_maeve(id: UUID):
     q: Queue[AgentReply | object] = Queue()
     job_done = object()
 
-    async def generator() -> AsyncGenerator:
+    async def watch_queue() -> AsyncGenerator:
+        # Watch the queue and yield items (messages) as they arrive
         i = 0
         while True:
             # Gets and dequeues item
@@ -167,6 +168,7 @@ async def run_maeve(id: UUID):
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> None:
+        # This function is called when an LLM model replies
         if not messages:
             return
         if len(messages) == 0:
@@ -181,6 +183,7 @@ async def run_maeve(id: UUID):
         )
 
     async def start_maeve(maeve_id: UUID):
+        # Runs Maeve (started in a separate thread)
         response = (
             supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
         )
@@ -199,10 +202,10 @@ async def run_maeve(id: UUID):
         await maeve.run(message)
         await q.put(job_done)
 
-    # Start the separate thread for adding items to the queue
+    # Start the separate thread for running the maeve and adding items to the queue
     asyncio.run_coroutine_threadsafe(
         start_maeve(id),
         asyncio.get_event_loop(),
     )
 
-    return StreamingResponse(generator(), media_type="application/x-ndjson")
+    return StreamingResponse(watch_queue(), media_type="application/x-ndjson")
