@@ -110,15 +110,18 @@ async def run_maeve(id: UUID):
             )
         )
 
-    async def start_maeve(maeve_id: UUID):
-        message, composition = db.get_complied(maeve_id)
-        maeve = Maeve(composition, on_reply)
-        await maeve.run(message)
-        await q.put(job_done)
+    message, composition = db.get_complied(id)
 
-    # Start the separate thread for running the maeve and adding items to the queue
+    if not message or not composition:
+        await q.put(AgentReply(recipient="maeve", message="maeve id is invalid"))
+        await q.put(job_done)
+        return
+
+    maeve = Maeve(composition, on_reply)
+
+    # "maeve.run(message)" is run in a seperate thread
     asyncio.run_coroutine_threadsafe(
-        start_maeve(id),
+        maeve.run(message),
         asyncio.get_event_loop(),
     )
 

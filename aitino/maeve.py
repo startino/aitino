@@ -1,9 +1,9 @@
 import logging
+from asyncio import Queue
 from typing import Any
 
 import autogen
 from autogen.cache import Cache
-from fastapi import WebSocket
 from pydantic import BaseModel
 
 from .models import CodeExecutionConfig
@@ -127,8 +127,12 @@ class Maeve:
         return agents
 
     async def run(
-        self, message: str, messages: list[dict[Any, Any]] = []
-    ) -> autogen.ChatResult:
+        self,
+        message: str,
+        messages: list[dict[Any, Any]] = [],
+        q: Queue | None = None,
+        job_done: object | None = None,
+    ):
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=messages,
@@ -142,8 +146,9 @@ class Maeve:
 
         logger.info("Starting Maeve")
         with Cache.disk() as cache:
-            result = await self.user_proxy.a_initiate_chat(
+            await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cache, silent=True
             )
 
-        return result
+        if q and job_done:
+            await q.put(job_done)
