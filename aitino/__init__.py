@@ -126,8 +126,8 @@ def improve(
 
 class AgentReply(BaseModel):
     recipient: str
-    message: str
     sender: str | None = None
+    message: str
 
 
 class Reply(BaseModel):
@@ -151,7 +151,7 @@ async def run_maeve(id: UUID):
             if (
                 next_item is job_done
                 or os.path.exists(Path(os.getcwd(), "STOP"))
-                or i == 10000  # failsafe because while True scary
+                or i == 1000  # failsafe because while True scary
             ):
                 yield json.dumps(
                     Reply(id=i, status="success", data="done").model_dump()
@@ -175,8 +175,8 @@ async def run_maeve(id: UUID):
         await q.put(
             AgentReply(
                 recipient=recipient.name,
-                message=messages[-1]["content"],
                 sender=sender.name if sender else None,
+                message=messages[-1]["content"],
             )
         )
 

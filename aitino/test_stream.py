@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+import json
 import sys
 
 
@@ -24,7 +25,7 @@ async def main():
     i = 0
     async for event in call_maeve(url):
         i += 1
-        print(event.strip())
+        print(json.dumps(json.loads(event.strip()), indent=2))
 
 
 if __name__ == "__main__":
