@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import autogen
@@ -6,6 +7,8 @@ from fastapi import WebSocket
 from pydantic import BaseModel
 
 from .models import CodeExecutionConfig
+
+logger = logging.getLogger("root")
 
 
 class Agent(BaseModel):
@@ -138,11 +141,10 @@ class Maeve:
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
 
+        logger.info("Starting Maeve")
         with Cache.disk() as cache:
             result = await self.user_proxy.a_initiate_chat(
-                manager,
-                message=message,
-                cache=cache,
+                manager, message=message, cache=cache, silent=True
             )
 
         return result
