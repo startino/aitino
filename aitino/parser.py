@@ -1,7 +1,7 @@
-from .maeve import Composition, Agent
+from .maeve import Agent, Composition
 
 
-def parse_composition(nodes) -> Composition:
+def parse_composition(nodes: dict) -> Composition:
     composition = Composition(
         reciever_id="auto",
         agents=list(),
@@ -21,7 +21,7 @@ def parse_composition(nodes) -> Composition:
     return composition
 
 
-def parse_prompts(nodes) -> str:
+def parse_prompts(nodes: dict) -> str:
     prompt = []
     for node in nodes:
         if node["type"] == "prompt":
@@ -29,7 +29,7 @@ def parse_prompts(nodes) -> str:
     return "\n\n".join(prompt)
 
 
-def parse_input(input_data) -> tuple[str, Composition]:
+def parse_input(input_data: dict) -> tuple[str, Composition]:
     nodes = input_data["nodes"]
     composition = parse_composition(nodes)
     message = parse_prompts(nodes)

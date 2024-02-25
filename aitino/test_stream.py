@@ -1,9 +1,12 @@
-import aiohttp
 import asyncio
+import json
 import sys
+from typing import AsyncGenerator
+
+import aiohttp
 
 
-async def call_maeve(url):
+async def call_maeve(url: str) -> AsyncGenerator[str, None]:
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             while True:
@@ -14,7 +17,7 @@ async def call_maeve(url):
                 yield line.decode("utf-8")
 
 
-async def main():
+async def main() -> None:
     if len(sys.argv) != 2:
         print("Usage: python test.py <url>")
         return
@@ -24,7 +27,7 @@ async def main():
     i = 0
     async for event in call_maeve(url):
         i += 1
-        print(event.strip())
+        print(json.dumps(json.loads(event.strip()), indent=2))
 
 
 if __name__ == "__main__":

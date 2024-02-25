@@ -1,9 +1,9 @@
 import logging
-from typing import Any
+from asyncio import Queue
+from typing import Any, cast
 
 import autogen
 from autogen.cache import Cache
-from fastapi import WebSocket
 from pydantic import BaseModel
 
 from .models import CodeExecutionConfig
@@ -72,13 +72,12 @@ class Maeve:
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
-
         if self.on_reply:
             await self.on_reply(recipient, messages, sender, config)
 
         return False, None
 
-    def validate_composition(self, composition: Composition):
+    def validate_composition(self, composition: Composition) -> bool:
         if len(composition.agents) == 0:
             return False
 
@@ -115,7 +114,7 @@ class Maeve:
                 "config_list": config_list,
                 "timeout": 120,
             }
-            agent = autogen.ConversableAgent(
+            agent = autogen.AssistantAgent(
                 name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
                 system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
@@ -128,8 +127,12 @@ class Maeve:
         return agents
 
     async def run(
-        self, message: str, messages: list[dict[Any, Any]] = []
-    ) -> autogen.ChatResult:
+        self,
+        message: str,
+        messages: list[dict[Any, Any]] = [],
+        q: Queue | None = None,
+        job_done: object | None = None,
+    ) -> None:
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=messages,
@@ -143,8 +146,9 @@ class Maeve:
 
         logger.info("Starting Maeve")
         with Cache.disk() as cache:
-            result = await self.user_proxy.a_initiate_chat(
-                manager, message=message, cache=cache, silent=True
+            await self.user_proxy.a_initiate_chat(
+                manager, message=message, cache=cast(Cache, cache), silent=True
             )
 
-        return result
+        if q and job_done:
+            await q.put(job_done)
