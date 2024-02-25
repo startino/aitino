@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .maeve import Composition, Maeve
-from .models import APIReply
+from .models import StreamReply
 
 logger = logging.getLogger("root")
 
@@ -45,7 +45,10 @@ def redirect_to_docs():
 def compile(id: UUID) -> dict[str, str | Composition]:
     message, composition = db.get_complied(id)
 
-    return {"prompt": message, "composition": composition}
+    return {
+        "prompt": message if message else "Not Found",
+        "composition": composition if composition else "Not Found",
+    }
 
 
 @app.get("/improve")
@@ -80,11 +83,11 @@ async def run_maeve(id: UUID):
                 or i == 1000  # failsafe because while True scary
             ):
                 yield json.dumps(
-                    APIReply(id=i, status="success", data="done").model_dump()
+                    StreamReply(id=i, status="success", data="done").model_dump()
                 ) + "\n"
                 break
 
-            yield json.dumps(APIReply(id=i, data=next_item).model_dump()) + "\n"
+            yield json.dumps(StreamReply(id=i, data=next_item).model_dump()) + "\n"
             i += 1
 
     async def on_reply(

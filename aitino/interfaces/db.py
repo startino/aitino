@@ -22,10 +22,10 @@ supabase: Client = create_client(url, key)
 logger = logging.getLogger("root")
 
 
-def get_complied(id: UUID) -> tuple[str, Composition]:
+def get_complied(id: UUID) -> tuple[str, Composition] | tuple[None, None]:
     response = supabase.table("maeve_nodes").select("*").eq("id", id).execute()
 
     if len(response.data) == 0:
-        raise HTTPException(status_code=404, detail="Item not found")
+        return None, None
 
     return parse_input(response.data[0])
