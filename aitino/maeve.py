@@ -115,7 +115,7 @@ class Maeve:
                 "config_list": config_list,
                 "timeout": 120,
             }
-            agent = autogen.ConversableAgent(
+            agent = autogen.AssistantAgent(
                 name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
                 system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
