@@ -137,7 +137,7 @@ class Reply(BaseModel):
 
 
 @app.get("/maeve")
-async def run_maeve():
+async def run_maeve(id: UUID):
     q: Queue[AgentReply | object] = Queue()
     job_done = object()
     message_delay = 0.5  # seconds
@@ -157,10 +157,6 @@ async def run_maeve():
         for i in range(int(max_run_time * (1 / message_delay) + 1)):
             await asyncio.sleep(message_delay)
             reply = await iteration(i)
-
-            yield json.dumps(
-                Reply(id=i, status="success", data="iter").model_dump()
-            ) + "\n"
 
             if not reply:
                 yield json.dumps(
@@ -211,7 +207,7 @@ async def run_maeve():
 
     # Start the separate thread for adding items to the queue
     asyncio.run_coroutine_threadsafe(
-        start_maeve(UUID("dfb9ede1-3c08-462f-af73-94cf6aa9185a")),
+        start_maeve(id),
         asyncio.get_event_loop(),
     )
 
