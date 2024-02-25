@@ -140,19 +140,22 @@ class Reply(BaseModel):
 async def run_maeve():
     q: Queue[AgentReply | object] = Queue()
     job_done = object()
+    message_delay = 0.5  # seconds
+    max_run_time = 300  # seconds
 
     async def iteration(i: int) -> Reply | Literal[False]:
-        # Get item and indicate the task has been performed to other threads
+        # Gets and dequeues item
         next_item = await q.get()
 
-        # check if job is done
+        # check if job is done or if it should be force stopped
         if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
             return False
 
         return Reply(id=i, data=next_item)
 
     async def generator() -> AsyncGenerator:
-        for i in range(20):
+        for i in range(int(max_run_time * (1 / message_delay) + 1)):
+            await asyncio.sleep(message_delay)
             reply = await iteration(i)
 
             yield json.dumps(
@@ -167,7 +170,6 @@ async def run_maeve():
 
             yield json.dumps(reply.model_dump()) + "\n"
 
-    # START MAEVE
     async def on_reply(
         recipient: ConversableAgent,
         messages: list[dict] | None = None,
@@ -204,7 +206,7 @@ async def run_maeve():
         except Exception as e:
             raise HTTPException(status_code=500, detail="Error: " + str(e))
 
-        await q.put(Reply(id=1001, status="success", data=await maeve.run(message)))
+        await q.put(await maeve.run(message))
         await q.put(job_done)
 
     # Start the separate thread for adding items to the queue
@@ -212,7 +214,5 @@ async def run_maeve():
         start_maeve(UUID("dfb9ede1-3c08-462f-af73-94cf6aa9185a")),
         asyncio.get_event_loop(),
     )
-
-    # END MAEVE
 
     return StreamingResponse(generator(), media_type="application/x-ndjson")
