@@ -2,42 +2,22 @@ import asyncio
 import json
 import logging
 import os
-import threading
 from asyncio import Queue
 from pathlib import Path
-from typing import Any, AsyncGenerator, Generator, Literal
-from uuid import UUID, uuid4
+from typing import Any, AsyncGenerator
+from uuid import UUID
 
 from autogen import Agent, ConversableAgent
-from dotenv import load_dotenv
-from fastapi import (
-    BackgroundTasks,
-    FastAPI,
-    HTTPException,
-    Response,
-    WebSocket,
-    WebSocketDisconnect,
-)
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from pydantic import BaseModel
-from starlette.responses import ContentStream
-from starlette.types import Send
-from supabase import Client, create_client
 
 from .improver import PromptType, improve_prompt
+from .interfaces import db
 from .maeve import Composition, Maeve
-from .parser import parse_input
+from .models import APIReply
 
-load_dotenv()
-
-url: str | None = os.environ.get("SUPABASE_URL")
-key: str | None = os.environ.get("SUPABASE_ANON_KEY")
-
-if url is None or key is None:
-    raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
-
-supabase: Client = create_client(url, key)
 
 logger = logging.getLogger("root")
 
@@ -56,63 +36,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <div id='messages'>
-        </div>
-        <script>
-            var client_id = Date.now()
-            document.querySelector("#ws-id").textContent = client_id;
-            var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('p')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                ws.send(input.value)
-                event.preventDefault()
-            }
-        </script>
-    </body>
-</html>
-"""
-
 
 @app.get("/")
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/test/chat")
-def load_html():
-    return HTMLResponse(html)
-
-
 @app.get("/compile")
-def compile(maeve_id: str) -> dict[str, str | Composition]:
-    try:
-        response = (
-            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
-        )
-    except Exception as e:
-        return {"error": "could not fetch composition, error: " + str(e)}
-
-    message, composition = parse_input(response.data[0])
+def compile(id: UUID) -> dict[str, str | Composition]:
+    message, composition = db.get_complied(id)
 
     return {"prompt": message, "composition": composition}
 
@@ -128,12 +60,6 @@ class AgentReply(BaseModel):
     recipient: str
     sender: str | None = None
     message: str
-
-
-class Reply(BaseModel):
-    id: int
-    status: Literal["success"] | Literal["error"] = "success"
-    data: Any
 
 
 @app.get("/maeve")
@@ -155,11 +81,11 @@ async def run_maeve(id: UUID):
                 or i == 1000  # failsafe because while True scary
             ):
                 yield json.dumps(
-                    Reply(id=i, status="success", data="done").model_dump()
+                    APIReply(id=i, status="success", data="done").model_dump()
                 ) + "\n"
                 break
 
-            yield json.dumps(Reply(id=i, data=next_item).model_dump()) + "\n"
+            yield json.dumps(APIReply(id=i, data=next_item).model_dump()) + "\n"
             i += 1
 
     async def on_reply(
@@ -183,22 +109,8 @@ async def run_maeve(id: UUID):
         )
 
     async def start_maeve(maeve_id: UUID):
-        # Runs Maeve (started in a separate thread)
-        response = (
-            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
-        )
-
-        if len(response.data) == 0:
-            raise HTTPException(status_code=404, detail="Item not found")
-
-        input = response.data[0]
-
-        try:
-            message, composition = parse_input(input)
-            maeve = Maeve(composition, on_reply)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail="Error: " + str(e))
-
+        message, composition = db.get_complied(maeve_id)
+        maeve = Maeve(composition, on_reply)
         await maeve.run(message)
         await q.put(job_done)
 

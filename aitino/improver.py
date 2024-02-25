@@ -12,10 +12,18 @@ class PromptType(Enum):
     USER = "user"
 
 
-def improve_prompt(word_limit: int, prompt: str, temperature: float, prompt_type: PromptType) -> str:
-    with open(Path(os.getcwd(), "aitino", "prompts", f"{prompt_type}-improve-prompt.md"), "r", encoding="utf-8",) as f:
-            system_prompt = f.read()
-            system_prompt += (f"\n4. Limit the amount of words in this prompt to {word_limit} words")
+def improve_prompt(
+    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
+) -> str:
+    with open(
+        Path(os.getcwd(), "aitino", "prompts", f"{prompt_type}-improve-prompt.md"),
+        "r",
+        encoding="utf-8",
+    ) as f:
+        system_prompt = f.read()
+        system_prompt += (
+            f"\n4. Limit the amount of words in this prompt to {word_limit} words"
+        )
 
     client = OpenAI()
     result = client.chat.completions.create(

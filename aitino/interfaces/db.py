@@ -1,11 +1,28 @@
-from ..maeve import Composition
-from ..parser import parse_input
-from fastapi import HTTPException
-import supabase
+import logging
+import os
 from uuid import UUID
 
+from dotenv import load_dotenv
+from fastapi import HTTPException
+from supabase import Client, create_client
 
-def get_composition(id: UUID) -> tuple[str, Composition]:
+from ..maeve import Composition
+from ..parser import parse_input
+
+load_dotenv()
+
+url: str | None = os.environ.get("SUPABASE_URL")
+key: str | None = os.environ.get("SUPABASE_ANON_KEY")
+
+if url is None or key is None:
+    raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
+
+supabase: Client = create_client(url, key)
+
+logger = logging.getLogger("root")
+
+
+def get_complied(id: UUID) -> tuple[str, Composition]:
     response = supabase.table("maeve_nodes").select("*").eq("id", id).execute()
 
     if len(response.data) == 0:
