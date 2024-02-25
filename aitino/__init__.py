@@ -1,15 +1,30 @@
+import asyncio
 import json
 import logging
 import os
+import threading
+from asyncio import Queue
+from pathlib import Path
+from typing import Any, AsyncGenerator, Generator, Literal
+from uuid import UUID, uuid4
 
-from typing import Literal
+from autogen import Agent, ConversableAgent
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import (
+    BackgroundTasks,
+    FastAPI,
+    HTTPException,
+    Response,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
+from pydantic import BaseModel
+from starlette.responses import ContentStream
+from starlette.types import Send
 from supabase import Client, create_client
 
-from .cache_service import CacheService
 from .improver import PromptType, improve_prompt
 from .maeve import Composition, Maeve
 from .parser import parse_input
@@ -78,19 +93,14 @@ html = """
 """
 
 
-@app.get("/testing/chat")
+@app.get("/")
+def redirect_to_docs():
+    return RedirectResponse(url="/docs")
+
+
+@app.get("/test/chat")
 def load_html():
     return HTMLResponse(html)
-
-
-@app.get("/cache/{seed}")
-def get_cache(seed: int) -> dict:
-    try:
-        cache_service = CacheService(seed)
-
-        return {"cache": cache_service.poll_cache()}
-    except Exception as e:
-        return {"error": "could not fetch cache, error: " + str(e)}
 
 
 @app.get("/compile")
@@ -109,76 +119,100 @@ def compile(maeve_id: str) -> dict[str, str | Composition]:
 
 @app.get("/improve")
 def improve(
-    word_limit: int,
-    prompt: str,
-    temperature: float,
-    prompt_type: PromptType
+    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
 ) -> str:
     return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+class AgentReply(BaseModel):
+    recipient: str
+    message: str
+    sender: str | None = None
 
 
-manager = ConnectionManager()
+class Reply(BaseModel):
+    id: int
+    status: Literal["success"] | Literal["error"] = "success"
+    data: Any
 
 
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await websocket.accept()
-    try:
-        while True:
+@app.get("/maeve")
+async def run_maeve():
+    q: Queue[AgentReply | object] = Queue()
+    job_done = object()
+    message_delay = 0.5  # seconds
+    max_run_time = 300  # seconds
 
-            async def on_message(message: str, websocket: WebSocket):
-                await manager.send_personal_message(
-                    f"Message text was: {message}", websocket
-                )
+    async def iteration(i: int) -> Reply | Literal[False]:
+        # Gets and dequeues item
+        next_item = await q.get()
 
-            maeve_id = await websocket.receive_text()
-            _ = CacheService(41)
-            await manager.send_personal_message(f"You ran: {maeve_id}", websocket)
-            await manager.broadcast(f"Client #{client_id} says: {maeve_id}")
-            try:
-                response = (
-                    supabase.table("maeve_nodes")
-                    .select("*")
-                    .eq("id", maeve_id)
-                    .execute()
-                ).data[0]
-            except Exception as e:
-                error = {"error": "could not fetch composition, error: " + str(e)}
-                await manager.send_personal_message(f"{error}", websocket)
-                continue
+        # check if job is done or if it should be force stopped
+        if next_item is job_done or os.path.exists(Path(os.getcwd(), "STOP")):
+            return False
 
-            try:
-                message, composition = parse_input(response)
-                maeve = Maeve(composition, on_message, websocket)
-            except Exception as e:
-                error = {"error": "couldn't create maeve: " + str(e)}
-                await manager.send_personal_message(f"{error}", websocket)
-                continue
+        return Reply(id=i, data=next_item)
 
-            await manager.send_personal_message(
-                f"Running with details:\nMaeve: {maeve_id}\nPrompt: {message}",
-                websocket,
+    async def generator() -> AsyncGenerator:
+        for i in range(int(max_run_time * (1 / message_delay) + 1)):
+            await asyncio.sleep(message_delay)
+            reply = await iteration(i)
+
+            yield json.dumps(
+                Reply(id=i, status="success", data="iter").model_dump()
+            ) + "\n"
+
+            if not reply:
+                yield json.dumps(
+                    Reply(id=i, status="success", data="done").model_dump()
+                ) + "\n"
+                break
+
+            yield json.dumps(reply.model_dump()) + "\n"
+
+    async def on_reply(
+        recipient: ConversableAgent,
+        messages: list[dict] | None = None,
+        sender: Agent | None = None,
+        config: Any | None = None,
+    ) -> None:
+        logging.info("On reply")
+        if not messages:
+            return
+        if len(messages) == 0:
+            return
+
+        await q.put(
+            AgentReply(
+                recipient=recipient.name,
+                message=messages[-1]["content"],
+                sender=sender.name if sender else None,
             )
-            await maeve.run(message)
+        )
 
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
+    async def start_maeve(maeve_id: UUID):
+        response = (
+            supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+        )
+
+        if len(response.data) == 0:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        input = response.data[0]
+
+        try:
+            message, composition = parse_input(input)
+            maeve = Maeve(composition, on_reply)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Error: " + str(e))
+
+        await q.put(await maeve.run(message))
+        await q.put(job_done)
+
+    # Start the separate thread for adding items to the queue
+    asyncio.run_coroutine_threadsafe(
+        start_maeve(UUID("dfb9ede1-3c08-462f-af73-94cf6aa9185a")),
+        asyncio.get_event_loop(),
+    )
+
+    return StreamingResponse(generator(), media_type="application/x-ndjson")

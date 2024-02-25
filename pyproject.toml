@@ -20,6 +20,7 @@ chromadb = "^0.4.22"
 sentence-transformers = "^2.3.1"
 supabase = "^2.3.5"
 postgrest = "^0.15.0"
+aiohttp = "^3.9.3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"

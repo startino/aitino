@@ -1,9 +1,14 @@
+import logging
 from typing import Any
 
 import autogen
 from autogen.cache import Cache
 from fastapi import WebSocket
 from pydantic import BaseModel
+
+from .models import CodeExecutionConfig
+
+logger = logging.getLogger("root")
 
 
 class Agent(BaseModel):
@@ -24,28 +29,23 @@ class Maeve:
         self,
         composition: Composition,
         on_message: Any | None = None,
-        websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
     ):
         self.seed = seed
-        self.on_message = on_message
-        self.websocket = websocket
+        self.on_reply = on_message
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="""Reply TERMINATE if the task has been solved at
-                full satisfaction. Otherwise, reply CONTINUE, or the reason
-                why the task is not solved yet.""",
-            max_consecutive_auto_reply=1,
-            human_input_mode="ALWAYS",
-            code_execution_config={
-                "last_n_messages": 4,
-                "work_dir": f".cache/{self.seed}/scripts",
-                "use_docker": False,
-            },
+            system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+            max_consecutive_auto_reply=2,
+            human_input_mode="NEVER",
+            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            code_execution_config=CodeExecutionConfig(
+                work_dir=f".cache/{self.seed}/scripts"
+            ).model_dump(),
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
@@ -65,15 +65,17 @@ class Maeve:
             "timeout": 120,
         }
 
-    async def on_reply(
+    async def _on_reply(
         self,
         recipient: autogen.ConversableAgent,
         messages: list[dict] | None = None,
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
-        if self.on_message and self.websocket and messages:
-            await self.on_message(messages, self.websocket)
+
+        if self.on_reply:
+            await self.on_reply(recipient, messages, sender, config)
+
         return False, None
 
     def validate_composition(self, composition: Composition):
@@ -115,17 +117,19 @@ class Maeve:
             }
             agent = autogen.ConversableAgent(
                 name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
             )
 
-            if self.on_message:
-                agent.register_reply([autogen.Agent, None], self.on_reply)
+            if self.on_reply:
+                agent.register_reply([autogen.Agent, None], self._on_reply)
 
             agents.append(agent)
         return agents
 
-    async def run(self, message: str, messages: list[dict[Any, Any]] = []):
+    async def run(
+        self, message: str, messages: list[dict[Any, Any]] = []
+    ) -> autogen.ChatResult:
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=messages,
@@ -135,11 +139,12 @@ class Maeve:
         manager = autogen.GroupChatManager(
             groupchat=groupchat, llm_config=self.base_config
         )
-        manager.register_reply([autogen.Agent, None], self.on_reply)
+        manager.register_reply([autogen.Agent, None], self._on_reply)
 
+        logger.info("Starting Maeve")
         with Cache.disk() as cache:
-            await self.user_proxy.a_initiate_chat(
-                manager,
-                message=message,
-                cache=cache,
+            result = await self.user_proxy.a_initiate_chat(
+                manager, message=message, cache=cache, silent=True
             )
+
+        return result
