@@ -158,7 +158,7 @@ async def run_maeve(
             content=messages[-1]["content"],
             role=messages[-1]["role"],
         )
-        # db.post_message(message)
+        db.post_message(message)
         await q.put(message)
 
     maeve = Maeve(composition, on_reply)
