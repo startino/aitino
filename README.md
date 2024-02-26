@@ -36,6 +36,6 @@ Aitino is built on top of the [Autogen Framework](https://github.com/microsoft/a
 4. Navigate to `localhost:8000/docs` 
 
 ## Contributing
-This project welcomes contributions and suggestions. If you are new to GitHub, here is a detailed help source on getting involved with development on GitHub.
+This project welcomes contributions and suggestions.
 
 If you're passionate about what we're doing at Aitino and would like to get paid while developing, feel free to reach out. We're constantly looking for innovators and passionate developers.
