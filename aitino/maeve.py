@@ -6,7 +6,7 @@ import autogen
 from autogen.cache import Cache
 from pydantic import BaseModel
 
-from .models import CodeExecutionConfig
+from .models import CodeExecutionConfig, Message
 
 logger = logging.getLogger("root")
 
@@ -129,13 +129,17 @@ class Maeve:
     async def run(
         self,
         message: str,
-        messages: list[dict[Any, Any]] = [],
+        messages: list[Message] | None = None,
         q: Queue | None = None,
         job_done: object | None = None,
     ) -> None:
+
+        # convert Message list to dict list
+        dict_messages = [m.model_dump() for m in (messages if messages else [])]
+
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
-            messages=messages,
+            messages=dict_messages,
             max_round=20,
         )
 
