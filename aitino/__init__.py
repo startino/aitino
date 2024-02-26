@@ -8,7 +8,7 @@ from typing import Any, AsyncGenerator, cast
 from uuid import UUID
 
 from autogen import Agent, ConversableAgent
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
 from pydantic import BaseModel
@@ -59,20 +59,62 @@ def improve(
 
 
 @app.get("/maeve")
-async def run_maeve(id: UUID, session_id: UUID | None = None) -> StreamingResponse:
-    q: Queue[Message | object] = Queue()
-    job_done = object()
+async def run_maeve(
+    id: UUID, session_id: UUID | None = None, reply: str | None = None
+) -> StreamingResponse:
+    if reply and not session_id:
+        raise HTTPException(
+            status_code=400,
+            detail="If a reply is provided, a session_id must also be provided.",
+        )
+    if session_id and not reply:
+        raise HTTPException(
+            status_code=400,
+            detail="If a session_id is provided, a reply must also be provided.",
+        )
 
-    # Get or create session
-    session = None
-    if session_id:
-        session = db.get_session(session_id)
+    message, composition = db.get_complied(id)
+
+    if reply:
+        message = reply
+
+    if not message or not composition:
+        raise HTTPException(status_code=400, detail=f"Maeve with id {id} not found")
+
+    session = db.get_session(session_id) if session_id else None
+    messages = db.get_messages(session_id) if session_id else None
+
+    if session_id and not session:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Session with id {session_id} not found",
+        )
+
+    if session_id and not messages:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Session with id {session_id} found, but has no messages",
+        )
+
     if session is None:
         session = Session()
+        db.post_session(session)
+
+    q: Queue[Message | object] = Queue()
+    job_done = object()
 
     async def watch_queue() -> AsyncGenerator:
         # Watch the queue and yield items (messages) as they arrive
         i = 0
+
+        # Yield session
+        yield json.dumps(
+            StreamReply(id=i, data={"session_id": str(session.id)}).model_dump(),
+            default=str,
+        ) + "\n"
+
+        i += 1
+
         while True:
             # Gets and dequeues item
             next_item = await q.get()
@@ -109,30 +151,15 @@ async def run_maeve(id: UUID, session_id: UUID | None = None) -> StreamingRespon
             return
 
         logger.info(f"on_reply: {recipient.name} {messages[-1]}")
-        await q.put(
-            Message(
-                session_id=session.id,
-                recipient=recipient.name,
-                name=messages[-1]["name"],
-                content=messages[-1]["content"],
-                role=messages[-1]["role"],
-            )
+        message = Message(
+            session_id=session.id,
+            recipient=recipient.name,
+            name=messages[-1]["name"],
+            content=messages[-1]["content"],
+            role=messages[-1]["role"],
         )
-
-    message, composition = db.get_complied(id)
-
-    if not message or not composition:
-        return StreamingResponse(
-            json.dumps(
-                StreamReply(
-                    id=0,
-                    status="error",
-                    data=f"Maeve with id {id} not found",
-                ).model_dump(),
-                default=str,
-            ),
-            media_type="application/x-ndjson",
-        )
+        db.post_message(message)
+        await q.put(message)
 
     maeve = Maeve(composition, on_reply)
 
