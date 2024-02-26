@@ -3,20 +3,20 @@ import json
 import logging
 import os
 from asyncio import Queue
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, AsyncGenerator
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from autogen import Agent, ConversableAgent
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
-from pydantic import BaseModel
 
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .maeve import Composition, Maeve
-from .models import StreamReply
+from .models import Message, Session, StreamReply
 
 logger = logging.getLogger("root")
 
@@ -58,16 +58,15 @@ def improve(
     return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
 
-class AgentReply(BaseModel):
-    recipient: str
-    sender: str | None = None
-    message: str
-
-
 @app.get("/maeve")
-async def run_maeve(id: UUID) -> StreamingResponse:
-    q: Queue[AgentReply | object] = Queue()
+async def run_maeve(id: UUID, session_id=None) -> StreamingResponse:
+    q: Queue[Message | object] = Queue()
     job_done = object()
+
+    session = Session()
+
+    if session_id:
+        session = db.get_session(session_id)
 
     async def watch_queue() -> AsyncGenerator:
         # Watch the queue and yield items (messages) as they arrive
@@ -96,19 +95,22 @@ async def run_maeve(id: UUID) -> StreamingResponse:
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> None:
+        logger.debug(f"on_reply: {recipient.name}, {messages}, {sender}, {config}")
         # This function is called when an LLM model replies
         if not messages:
             return
         if len(messages) == 0:
             return
 
-        await q.put(
-            AgentReply(
-                recipient=recipient.name,
-                sender=sender.name if sender else None,
-                message=messages[-1]["content"],
-            )
+        message = Message(
+            session_id=session.id,
+            recipient=recipient.name,
+            content=messages[-1]["content"],
+            role=messages[-1]["role"],
+            name=messages[-1]["name"],  # sender
         )
+        await q.put(message)
+        logger.debug("on_reply: finished")
 
     message, composition = db.get_complied(id)
 
