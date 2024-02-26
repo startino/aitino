@@ -22,7 +22,7 @@ aiohttp = "^3.9.3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
-black = "^23.11.0"
+black = "^24.2.0"
 isort = "^5.12.0"
 autoflake = "^2.2.1"
 flake8 = "^7.0.0"
