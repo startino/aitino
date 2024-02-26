@@ -1,6 +1,6 @@
 <div align="center">
 
-![Logo of crewAI, two people rowing on a boat](https://aiti.no/favicon.png)
+![Logo of Aitino, one node on top of two nodes connected by square edges](https://aiti.no/logo/logo_rounded_64px.png)
 
 # **Aitino**
 
@@ -8,13 +8,14 @@
 
 <h3>
 
-[Homepage](https://aiti.no) | [Documentation](https://docs.crewai.com/) [Discord](https://discord.gg/vXJfpPneJK)
+[Homepage](https://aiti.no) | [Discord](https://discord.gg/vXJfpPneJK)
 
 </h3>
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/futino/aitino)](https://github.com/futino/aitino)
 
 </div>
+
 # Aitino
 [Aitino Web](https://aiti.no) - Our cloud-hosted version of Aitino
 
