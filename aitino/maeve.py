@@ -144,13 +144,11 @@ class Maeve:
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
 
-        logger.info("starting Maeve")
+        logger.info("Starting Maeve")
         with Cache.disk() as cache:
-            logger.debug("cache created")
             await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache), silent=True
             )
 
-        logger.info("maeve done")
         if q and job_done:
             await q.put(job_done)
