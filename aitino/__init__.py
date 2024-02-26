@@ -53,9 +53,9 @@ def compile(id: UUID) -> dict[str, str | Composition]:
 
 @app.get("/improve")
 def improve(
-    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
+    word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
-    return improve_prompt(word_limit, prompt, temperature, prompt_type)
+    return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
 @app.get("/maeve")
