@@ -28,7 +28,7 @@ autoflake = "^2.2.1"
 flake8 = "^7.0.0"
 pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
-pyright = "^1.1.350"
+pyright = "^1.1.351"
 
 [tool.isort]
 multi_line_output = 3
