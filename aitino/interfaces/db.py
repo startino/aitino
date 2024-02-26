@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from uuid import UUID
 
 from dotenv import load_dotenv
@@ -49,7 +50,9 @@ def post_session(session: Session) -> None:
     """
     Post a session to the database.
     """
-    supabase.table("sessions").upsert(session.model_dump()).execute()
+    supabase.table("sessions").upsert(
+        json.loads(json.dumps(session.model_dump(), default=str))
+    ).execute()
 
 
 def get_messages(session_id: UUID) -> list[Message] | None:
@@ -74,4 +77,6 @@ def post_message(message: Message) -> None:
     """
     Post a message to the database.
     """
-    supabase.table("sessions").upsert(message.model_dump()).execute()
+    supabase.table("messages").upsert(
+        json.loads(json.dumps(message.model_dump(), default=str))
+    ).execute()
