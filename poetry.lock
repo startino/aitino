@@ -2682,13 +2682,13 @@ test = ["pylint", "pytest", "pytest-black", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "supabase"
-version = "2.3.5"
+version = "2.3.6"
 description = "Supabase client for Python."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "supabase-2.3.5-py3-none-any.whl", hash = "sha256:0555ca74ac4607e9597c6f5cf8236d121777f14506c5f7633e4c56d7a22cbc4e"},
-    {file = "supabase-2.3.5.tar.gz", hash = "sha256:3bebf5e8cc80e0a416f4458880a60292ff255de63f6ebf03de04db8c4b4e1f7e"},
+    {file = "supabase-2.3.6-py3-none-any.whl", hash = "sha256:4288ba658c1c7f33ba3c232a6b9eae8b549ba3355ee8ff061bad9085e5d1326e"},
+    {file = "supabase-2.3.6.tar.gz", hash = "sha256:eb3c0d6f087b5da3b84a04da3430ee55a854d81f92f2bbc6c8b45fcf34be6f85"},
 ]
 
 [package.dependencies]
@@ -3454,4 +3454,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "870d791aaf35cb8dac92a27f90aa9f088279308cd4aac10e014262b483a27f26"
+content-hash = "2fba342fb084a5661f61310cb07111dbcfd48517cb870a8cb2684886b1443e06"
