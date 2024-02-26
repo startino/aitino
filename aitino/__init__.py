@@ -4,7 +4,7 @@ import logging
 import os
 from asyncio import Queue
 from pathlib import Path
-from typing import Any, AsyncGenerator
+from typing import Any, AsyncGenerator, cast
 from uuid import UUID
 
 from autogen import Agent, ConversableAgent
@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .maeve import Composition, Maeve
-from .models import StreamReply
+from .models import StreamReply, Session, Message
 
 logger = logging.getLogger("root")
 
@@ -58,16 +58,17 @@ def improve(
     return improve_prompt(word_limit, prompt, temperature, prompt_type)
 
 
-class AgentReply(BaseModel):
-    recipient: str
-    sender: str | None = None
-    message: str
-
-
 @app.get("/maeve")
-async def run_maeve(id: UUID) -> StreamingResponse:
-    q: Queue[AgentReply | object] = Queue()
+async def run_maeve(id: UUID, session_id: UUID | None = None) -> StreamingResponse:
+    q: Queue[Message | object] = Queue()
     job_done = object()
+
+    # Get or create session
+    session = None
+    if session_id:
+        session = db.get_session(session_id)
+    if session is None:
+        session = Session()
 
     async def watch_queue() -> AsyncGenerator:
         # Watch the queue and yield items (messages) as they arrive
@@ -83,11 +84,14 @@ async def run_maeve(id: UUID) -> StreamingResponse:
                 or i == 1000  # failsafe because while True scary
             ):
                 yield json.dumps(
-                    StreamReply(id=i, status="success", data="done").model_dump()
+                    StreamReply(id=i, status="success", data="done").model_dump(),
+                    default=str,
                 ) + "\n"
                 break
 
-            yield json.dumps(StreamReply(id=i, data=next_item).model_dump()) + "\n"
+            yield json.dumps(
+                StreamReply(id=i, data=next_item).model_dump(), default=str
+            ) + "\n"
             i += 1
 
     async def on_reply(
@@ -101,12 +105,17 @@ async def run_maeve(id: UUID) -> StreamingResponse:
             return
         if len(messages) == 0:
             return
+        if not messages[-1].get("name"):
+            return
 
+        logger.info(f"on_reply: {recipient.name} {messages[-1]}")
         await q.put(
-            AgentReply(
+            Message(
+                session_id=session.id,
                 recipient=recipient.name,
-                sender=sender.name if sender else None,
-                message=messages[-1]["content"],
+                name=messages[-1]["name"],
+                content=messages[-1]["content"],
+                role=messages[-1]["role"],
             )
         )
 
@@ -119,7 +128,8 @@ async def run_maeve(id: UUID) -> StreamingResponse:
                     id=0,
                     status="error",
                     data=f"Maeve with id {id} not found",
-                ).model_dump()
+                ).model_dump(),
+                default=str,
             ),
             media_type="application/x-ndjson",
         )
