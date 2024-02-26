@@ -19,6 +19,7 @@ pyautogen = "^0.2.13"
 chromadb = "^0.4.22"
 supabase = "^2.3.6"
 aiohttp = "^3.9.3"
+returns = "^0.22.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
