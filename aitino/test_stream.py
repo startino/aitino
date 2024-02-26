@@ -11,7 +11,6 @@ async def call_maeve(url: str) -> AsyncGenerator[str, None]:
         async with session.get(url) as response:
             while True:
                 line = await response.content.readline()
-                await asyncio.sleep(0.1)
                 if not line:
                     break
                 yield line.decode("utf-8")
