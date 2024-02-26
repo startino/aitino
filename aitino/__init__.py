@@ -165,7 +165,7 @@ async def run_maeve(
 
     # "maeve.run(message)" is run in a seperate thread
     asyncio.run_coroutine_threadsafe(
-        maeve.run(message),
+        maeve.run(message, q=q, job_done=job_done),
         asyncio.get_event_loop(),
     )
 
