@@ -82,7 +82,7 @@ async def run_maeve(
         raise HTTPException(status_code=400, detail=f"Maeve with id {id} not found")
 
     session = db.get_session(session_id) if session_id else None
-    messages = db.get_messages(session_id) if session_id else None
+    cached_messages = db.get_messages(session_id) if session_id else None
 
     if session_id and not session:
         raise HTTPException(
@@ -90,7 +90,7 @@ async def run_maeve(
             detail=f"Session with id {session_id} not found",
         )
 
-    if session_id and not messages:
+    if session_id and not cached_messages:
         raise HTTPException(
             status_code=400,
             detail=f"Session with id {session_id} found, but has no messages",
@@ -165,7 +165,7 @@ async def run_maeve(
 
     # "maeve.run(message)" is run in a seperate thread
     asyncio.run_coroutine_threadsafe(
-        maeve.run(message, q=q, job_done=job_done),
+        maeve.run(message, messages=cached_messages, q=q, job_done=job_done),
         asyncio.get_event_loop(),
     )
 
