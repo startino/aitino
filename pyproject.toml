@@ -17,7 +17,7 @@ fastapi = "^0.109.1"
 tenacity = "^8.2.3"
 pyautogen = "^0.2.13"
 chromadb = "^0.4.22"
-supabase = "^2.3.5"
+supabase = "^2.3.6"
 aiohttp = "^3.9.3"
 returns = "^0.22.0"
 
