@@ -9,7 +9,7 @@ PromptType = Literal["generic", "system", "user"]
 
 
 def improve_prompt(
-    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
+    word_limit: int, prompt: str, prompt_type: PromptType, temperature: float = 0.0
 ) -> str:
     with open(
         Path(os.getcwd(), "aitino", "prompts", "improve", prompt_type + ".md"),
