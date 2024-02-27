@@ -344,4 +344,8 @@ END PROMPT WRITING KNOWLEDGE
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!". No additional commentary or explanation should be included either.
+<<<<<<< HEAD:aitino/prompts/generic-improve-prompt.md
 4. Do not 
+=======
+
+>>>>>>> origin/alpha:aitino/prompts/improve/generic.md

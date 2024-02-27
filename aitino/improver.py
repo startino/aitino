@@ -1,23 +1,18 @@
 import os
-from enum import Enum
 from pathlib import Path
 from typing import Literal
 
 from openai import OpenAI
-from pydantic import BaseModel
 
 
-class PromptType(Enum):
-    GENERIC = "generic"
-    SYSTEM = "system"
-    USER = "user"
+PromptType = Literal["generic", "system", "user"]
 
 
 def improve_prompt(
-    word_limit: int, prompt: str, prompt_type: PromptType, temperature: float = 0.0 
+    word_limit: int, prompt: str, temperature: float, prompt_type: PromptType
 ) -> str:
     with open(
-        Path(os.getcwd(), "aitino", "prompts", f"{prompt_type}-improve-prompt.md"),
+        Path(os.getcwd(), "aitino", "prompts", "improve", prompt_type + ".md"),
         "r",
         encoding="utf-8",
     ) as f:

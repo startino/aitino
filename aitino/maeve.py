@@ -6,7 +6,7 @@ import autogen
 from autogen.cache import Cache
 from pydantic import BaseModel
 
-from .models import CodeExecutionConfig
+from .models import CodeExecutionConfig, Message
 
 logger = logging.getLogger("root")
 
@@ -40,7 +40,7 @@ class Maeve:
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
-            max_consecutive_auto_reply=2,
+            max_consecutive_auto_reply=1,
             human_input_mode="NEVER",
             default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
             code_execution_config=CodeExecutionConfig(
@@ -129,13 +129,17 @@ class Maeve:
     async def run(
         self,
         message: str,
-        messages: list[dict[Any, Any]] = [],
+        messages: list[Message] | None = None,
         q: Queue | None = None,
         job_done: object | None = None,
     ) -> None:
+
+        # convert Message list to dict list
+        dict_messages = [m.model_dump() for m in (messages if messages else [])]
+
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
-            messages=messages,
+            messages=dict_messages,
             max_round=20,
         )
 
@@ -152,3 +156,5 @@ class Maeve:
 
         if q and job_done:
             await q.put(job_done)
+        else:
+            logger.warning("No queue or job_done object provided")
