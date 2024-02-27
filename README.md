@@ -1,3 +1,21 @@
+<div align="center">
+
+![Logo of Aitino, one node on top of two nodes connected by square edges](https://aiti.no/logo/logo_rounded_64px.png)
+
+# **Aitino**
+
+🤖 **Aitino**: Aitino is an open-source platform that allows for the creation of teams of AI Agents to help users automate high-level tasks and solve complex problems without the need for lengthy and complicated setups.
+
+<h3>
+
+[Homepage](https://aiti.no) | [Discord](https://discord.gg/vXJfpPneJK)
+
+</h3>
+
+[![GitHub Repo stars](https://img.shields.io/github/stars/futino/aitino)](https://github.com/futino/aitino)
+
+</div>
+
 # Aitino
 [Aitino Web](https://aiti.no) - Our cloud-hosted version of Aitino
 
