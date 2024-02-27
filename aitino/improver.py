@@ -1,16 +1,11 @@
 import os
-from enum import Enum
 from pathlib import Path
 from typing import Literal
 
 from openai import OpenAI
-from pydantic import BaseModel
 
 
-class PromptType(Enum):
-    GENERIC = "generic"
-    SYSTEM = "system"
-    USER = "user"
+PromptType = Literal["generic", "system", "user"]
 
 
 def improve_prompt(
