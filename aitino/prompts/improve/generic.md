@@ -7,10 +7,6 @@ START PROMPT WRITING KNOWLEDGE
 Prompt engineering
 This guide shares strategies and tactics for getting better results from large language models (sometimes referred to as GPT models) like GPT-4. The methods described here can sometimes be deployed in combination for greater effect. We encourage experimentation to find the methods that work best for you.
 
-You can also explore example prompts which showcase what our models are capable of:
-
-Prompt examples
-Explore prompt examples to learn what GPT models can do
 Six strategies for getting better results
 Write clear instructions
 These models can’t read your mind. If outputs are too long, ask for brief replies. If outputs are too simple, ask for expert-level writing. If you dislike the format, demonstrate the format you’d like to see. The less the model has to guess at what you want, the more likely you’ll get it.
@@ -347,4 +343,5 @@ END PROMPT WRITING KNOWLEDGE
 
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
-3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!"
+3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!". No additional commentary or explanation should be included either.
+
