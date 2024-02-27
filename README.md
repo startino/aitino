@@ -23,7 +23,7 @@
 ## Roadmap
 🔥 Feb 16 - Waitlist Launch
 
-⏳ Feb 22 - v0.1.0 Release - Simple functionality for creating and running a team of AI Agents.
+⏳ Feb 28 - v0.1.0 Release - Simple functionality for creating and running a team of AI Agents.
 
 ⏳ Mar 26 - v0.2.0 Release - Enhanced functionalities (auto-build, applet builder, community features, multi-modal task solving) and making Aitino stand out.
 
