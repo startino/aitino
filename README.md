@@ -6,13 +6,11 @@
 
 🤖 **Aitino**: Aitino is an open-source platform that allows for the creation of teams of AI Agents to help users automate high-level tasks and solve complex problems without the need for lengthy and complicated setups.
 
-<h3>
-
-[Homepage](https://aiti.no) | [Discord](https://discord.gg/vXJfpPneJK)
-
-</h3>
+### [Homepage](https://aiti.no) | [Discord](https://discord.gg/vXJfpPneJK)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/futino/aitino)](https://github.com/futino/aitino)
+
+[SonarCloud Issues](https://sonarcloud.io/project/issues?resolved=false&id=Futino_aitino)
 
 </div>
 
@@ -23,7 +21,7 @@
 ## Roadmap
 🔥 Feb 16 - Waitlist Launch
 
-⏳ Feb 22 - v0.1.0 Release - Simple functionality for creating and running a team of AI Agents.
+⏳ Feb 28 - v0.1.0 Release - Simple functionality for creating and running a team of AI Agents.
 
 ⏳ Mar 26 - v0.2.0 Release - Enhanced functionalities (auto-build, applet builder, community features, multi-modal task solving) and making Aitino stand out.
 
