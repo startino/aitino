@@ -329,7 +329,7 @@ message.write(to="John", message="Hey, want to meetup after work?")
 ```
 
 Tactic: Give the model access to specific functions
-The Chat Completions API allows passing a list of function descriptions in requests. This enables models to generate function arguments according to the provided schemas. Generated function arguments are returned by the API in JSON format and can be used to execute function calls. Output provided by function calls can then be fed back into a model in the following request to close the loop. This is the recommended way of using OpenAI models to call external functions. To learn more see the function calling section in our introductory text generation guide and more function calling examples in the OpenAI Cookbook.
+The Chat Completions API allows passing a list of function descriptions in requests. This enables models to generate function arguments according to the provided schemas. Generated function arguments are returned by the API in JSON format and can be used to execute function calls. Output provided by function calls can then be fed back into a model in the following request to close the loop. This is the recommended way of using OpenAI models to call external functions.
 
 END PROMPT WRITING KNOWLEDGE
 
@@ -344,4 +344,3 @@ END PROMPT WRITING KNOWLEDGE
 1. Output the prompt in clean, human-readable Markdown format.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!". No additional commentary or explanation should be included either.
-
