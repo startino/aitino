@@ -16,7 +16,7 @@ uvicorn = "^0.27.1"
 fastapi = "^0.110.0"
 tenacity = "^8.2.3"
 pyautogen = "^0.2.13"
-chromadb = "^0.4.22"
+chromadb = "^0.4.24"
 supabase = "^2.3.6"
 aiohttp = "^3.9.3"
 
