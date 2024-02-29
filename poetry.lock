@@ -2741,19 +2741,19 @@ test = ["pylint", "pytest", "pytest-black", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "supabase"
-version = "2.3.7"
+version = "2.4.0"
 description = "Supabase client for Python."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "supabase-2.3.7-py3-none-any.whl", hash = "sha256:a4616aa9149231d20f6e61884b90b7e5bdbde0ef0c2f0c12ced14536f39055bc"},
-    {file = "supabase-2.3.7.tar.gz", hash = "sha256:d70dc986b7cd2a97c1916da1fa0ea6abae25690521cc9dd78016ab0e0c07116e"},
+    {file = "supabase-2.4.0-py3-none-any.whl", hash = "sha256:f2f02b0e7903247ef9e2b3cb5dde067924a19a068f1c8befbdf40fb091bf8dd3"},
+    {file = "supabase-2.4.0.tar.gz", hash = "sha256:d51556d3884f2e6f4588c33f1fcac954d4304238253bc35e9a87fdd22c43bafb"},
 ]
 
 [package.dependencies]
 gotrue = ">=1.3,<3.0"
 httpx = ">=0.24,<0.26"
-postgrest = ">=0.10.8,<0.16.0"
+postgrest = ">=0.10.8,<0.17.0"
 realtime = ">=1.0.0,<2.0.0"
 storage3 = ">=0.5.3,<0.8.0"
 supafunc = ">=0.3.1,<0.4.0"
@@ -3513,4 +3513,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "a31dc9186222eb94338b3d922021ef7254a8337af7bb64a2c7c3336ebb0e7efe"
+content-hash = "2c1154850e847029f6282703686189a95a5933b53c8bbc755679cb87009397cd"
