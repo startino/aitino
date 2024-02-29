@@ -65,7 +65,9 @@ def compile(id: UUID) -> dict[str, str | Composition]:
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
-    return improve_prompt(word_limit, prompt, prompt_type, OpenAI().chat.completions, temperature)
+    return improve_prompt(
+        word_limit, prompt, prompt_type, OpenAI().chat.completions, temperature
+    )
 
 
 @app.get("/maeve")
@@ -152,6 +154,7 @@ async def run_maeve(
         sender: Agent | None = None,
         config: Any | None = None,
     ) -> None:
+        logger.debug(f"on_reply: {recipient.name} {messages}")
         # This function is called when an LLM model replies
         if not messages:
             return
