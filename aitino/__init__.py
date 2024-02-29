@@ -11,6 +11,7 @@ from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
+from openai import OpenAI
 from pydantic import BaseModel
 
 from .improver import PromptType, improve_prompt
@@ -64,7 +65,7 @@ def compile(id: UUID) -> dict[str, str | Composition]:
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
-    return improve_prompt(word_limit, prompt, prompt_type, temperature)
+    return improve_prompt(word_limit, prompt, prompt_type, OpenAI().chat.completions, temperature)
 
 
 @app.get("/maeve")
