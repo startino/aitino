@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from asyncio import Queue
 from typing import Any, cast
 
@@ -153,6 +154,8 @@ class Maeve:
             await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache), silent=True
             )
+
+        await asyncio.sleep(1)
 
         if q and job_done:
             await q.put(job_done)
