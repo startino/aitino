@@ -29,7 +29,7 @@ def get_complied(maeve_id: UUID) -> tuple[str, Composition] | tuple[None, None]:
     Get the complied message and composition for a given Maeve ID.
     """
     logger.debug(f"Getting complied message and composition for {maeve_id}")
-    response = supabase.table("maeve_nodes").select("*").eq("id", maeve_id).execute()
+    response = supabase.table("maeves").select("*").eq("id", maeve_id).execute()
 
     if len(response.data) == 0:
         return None, None

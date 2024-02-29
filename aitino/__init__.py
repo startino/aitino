@@ -11,8 +11,6 @@ from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
-from openai import OpenAI
-from pydantic import BaseModel
 
 from .improver import PromptType, improve_prompt
 from .interfaces import db
@@ -65,14 +63,12 @@ def compile(id: UUID) -> dict[str, str | Composition]:
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
-    return improve_prompt(
-        word_limit, prompt, prompt_type, OpenAI().chat.completions, temperature
-    )
+    return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
 @app.get("/maeve")
 async def run_maeve(
-    id: UUID, session_id: UUID | None = None, reply: str | None = None
+    id: UUID, profile_id: UUID, session_id: UUID | None = None, reply: str | None = None
 ) -> StreamingResponse:
     if reply and not session_id:
         raise HTTPException(
@@ -109,7 +105,10 @@ async def run_maeve(
         )
 
     if session is None:
-        session = Session()
+        session = Session(
+            maeve_id=id,
+            profile_id=profile_id,
+        )
         db.post_session(session)
 
     q: Queue[Message | object] = Queue()
