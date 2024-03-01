@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+
 from asyncio import Queue
 from pathlib import Path
 from typing import Any, AsyncGenerator, cast
@@ -11,11 +12,14 @@ from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
+from openai import OpenAI
 
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .maeve import Composition, Maeve
 from .models import StreamReply, Session, Message
+from .autobuilder import build_agents
+ 
 
 logger = logging.getLogger("root")
 
@@ -182,3 +186,12 @@ async def run_maeve(
     )
 
     return StreamingResponse(watch_queue(), media_type="application/x-ndjson")
+
+@app.get("/auto-build")
+def auto_build_maeve(
+    general_task: str
+    ): #return maeve so maeve_run can run it
+        agents = build_agents.BuildAgents()
+        task_simplifier = agents.create_task_simplifier()
+        agent_employer = agents.create_employer()
+        client = OpenAI()
