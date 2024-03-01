@@ -2117,13 +2117,13 @@ pyasn1 = ">=0.4.6,<0.6.0"
 
 [[package]]
 name = "pyautogen"
-version = "0.2.15"
+version = "0.2.16"
 description = "Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "pyautogen-0.2.15-py3-none-any.whl", hash = "sha256:6bd8b551ce7afb66c729c9bf263b9bf4633d287a3fd9b321c372d67b2c869b8d"},
-    {file = "pyautogen-0.2.15.tar.gz", hash = "sha256:62db6de3e510256c832fcb5125553bc5d34ab4850fb83d5f4172e54cd4470b11"},
+    {file = "pyautogen-0.2.16-py3-none-any.whl", hash = "sha256:629f2cefa37d66ea02add8da1a230c6acc9c6f8f539de27978248de9faa5116d"},
+    {file = "pyautogen-0.2.16.tar.gz", hash = "sha256:6c5196ff7f3612cf2911c89a5dadb4bf058b95e2955a82d96079030435aed3b9"},
 ]
 
 [package.dependencies]
@@ -2140,9 +2140,8 @@ tiktoken = "*"
 autobuild = ["chromadb", "huggingface-hub", "sentence-transformers"]
 blendsearch = ["flaml[blendsearch]"]
 graph = ["matplotlib", "networkx"]
-ipython = ["ipykernel (>=6.29.0)", "jupyter-client (>=8.6.0)"]
+jupyter-executor = ["ipykernel (>=6.29.0)", "jupyter-client (>=8.6.0)", "jupyter-kernel-gateway", "requests", "websocket-client"]
 lmm = ["pillow", "replicate"]
-local-jupyter-exec = ["ipykernel", "jupyter-kernel-gateway", "requests", "websocket-client"]
 mathchat = ["pydantic (==1.10.9)", "sympy", "wolframalpha"]
 redis = ["redis"]
 retrievechat = ["chromadb", "ipython", "pypdf", "sentence-transformers"]
@@ -3513,4 +3512,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "59e2ebec8ff7cba212f08b93facacc9b94e6e6160e7ee8081d2e668d7bf43750"
+content-hash = "0a7cccf50f73e38e96e7944569cc8eda5a34a6487ac08b8e176d9eb01b8e75f2"
