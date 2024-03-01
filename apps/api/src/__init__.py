@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+import autogen
 
 from asyncio import Queue
 from pathlib import Path
@@ -192,6 +193,17 @@ def auto_build_maeve(
     general_task: str
     ): #return maeve so maeve_run can run it
         agents = build_agents.BuildAgents()
-        task_simplifier = agents.create_task_simplifier()
-        agent_employer = agents.create_employer()
+        auto_build_agent = agents.create_all_in_one_agent()
+        #task_simplifier = agents.create_task_simplifier(general_task)
+        #agent_employer = agents.create_employer()
+        user_proxy = autogen.UserProxyAgent(
+            name="user_proxy",
+            system_message="test admin",
+            code_execution_config=False,
+            human_input_mode="NEVER",
+        )
+        user_proxy.initiate_chat(
+            auto_build_agent,
+            message="I want to create a software that scrapes the web for stock trends."
+        )
         client = OpenAI()
