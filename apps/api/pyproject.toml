@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "aitino"
+name = "aitino-api"
 version = "0.0.1"
 description = "Aitino's api"
 authors = [
@@ -8,6 +8,9 @@ authors = [
     "Leon Nilsson <leonlamnilsson@gmail.com>",
 ]
 readme = "README.md"
+homepage = "https://aiti.no"
+repository = "https://github.com/Futino/aitino"
+documentation = "https://api.aiti.no/docs"
 license = "BSL-1.1 (https://github.com/Futino/aitino/blob/alpha/LICENSE)"
 
 [tool.poetry.dependencies]
