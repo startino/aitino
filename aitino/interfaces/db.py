@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from ..maeve import Composition
+from ..crew import Composition
 from ..models import Message, Session
 from ..parser import parse_input
 
@@ -24,12 +24,12 @@ supabase: Client = create_client(url, key)
 logger = logging.getLogger("root")
 
 
-def get_complied(maeve_id: UUID) -> tuple[str, Composition] | tuple[None, None]:
+def get_complied(crew_id: UUID) -> tuple[str, Composition] | tuple[None, None]:
     """
-    Get the complied message and composition for a given Maeve ID.
+    Get the complied message and composition for a given Crew ID.
     """
-    logger.debug(f"Getting complied message and composition for {maeve_id}")
-    response = supabase.table("maeves").select("*").eq("id", maeve_id).execute()
+    logger.debug(f"Getting complied message and composition for {crew_id}")
+    response = supabase.table("crews").select("*").eq("id", crew_id).execute()
 
     if len(response.data) == 0:
         return None, None

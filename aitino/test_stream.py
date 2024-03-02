@@ -6,7 +6,7 @@ from typing import AsyncGenerator
 import aiohttp
 
 
-async def call_maeve(url: str) -> AsyncGenerator[str, None]:
+async def call_crew(url: str) -> AsyncGenerator[str, None]:
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             while True:
@@ -24,7 +24,7 @@ async def main() -> None:
     url = sys.argv[1]
 
     i = 0
-    async for event in call_maeve(url):
+    async for event in call_crew(url):
         i += 1
         print(json.dumps(json.loads(event.strip()), indent=2))
 

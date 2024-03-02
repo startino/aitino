@@ -25,7 +25,7 @@ class Composition(BaseModel):
     agents: list[Agent]
 
 
-class Maeve:
+class Crew:
     def __init__(
         self,
         composition: Composition,
@@ -149,7 +149,7 @@ class Maeve:
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
 
-        logger.info("Starting Maeve")
+        logger.info("Starting Crew")
         with Cache.disk() as cache:
             await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache), silent=True
