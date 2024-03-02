@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "aitino-api"
+name = "src"
 version = "0.0.1"
 description = "Aitino's api"
 authors = [
@@ -7,7 +7,7 @@ authors = [
     "Jorge Lewis <jorge.lewis@futi.no>",
     "Leon Nilsson <leonlamnilsson@gmail.com>",
 ]
-readme = "README.md"
+readme = "../../README.md"
 homepage = "https://aiti.no"
 repository = "https://github.com/Futino/aitino"
 documentation = "https://api.aiti.no/docs"
