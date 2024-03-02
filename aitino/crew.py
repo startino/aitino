@@ -1,10 +1,15 @@
-from typing import Callable, Coroutine, Any
+import logging
+import asyncio
+from asyncio import Queue
+from typing import Any, cast
 
-from fastapi import WebSocket
 import autogen
-
-from . import ret_agents
+from autogen.cache import Cache
 from pydantic import BaseModel
+
+from .models import CodeExecutionConfig, Message
+
+logger = logging.getLogger("root")
 
 
 class Agent(BaseModel):
@@ -25,27 +30,23 @@ class Crew:
         self,
         composition: Composition,
         on_message: Any | None = None,
-        websocket: WebSocket | None = None,
         base_model: str = "gpt-4-turbo-preview",
-        cache_seed: int = 41,
+        seed: int = 41,
     ):
-        self.on_message = on_message
-        self.websocket = websocket
+        self.seed = seed
+        self.on_reply = on_message
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="""Reply TERMINATE if the task has been solved at
-                full satisfaction. Otherwise, reply CONTINUE, or the reason
-                why the task is not solved yet.""",
+            system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
             max_consecutive_auto_reply=1,
             human_input_mode="NEVER",
-            code_execution_config={
-                "last_n_messages": 4,
-                "work_dir": f".cache/{cache_seed}/scripts",
-                "use_docker": False,
-            },
+            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            code_execution_config=CodeExecutionConfig(
+                work_dir=f".cache/{self.seed}/scripts"
+            ).model_dump(),
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
@@ -59,13 +60,25 @@ class Crew:
             },
         )
         self.base_config = {
-            "cache_seed": 41,
+            "seed": seed,
             "temperature": 0,
             "config_list": self.base_config_list,
             "timeout": 120,
         }
 
-    def validate_composition(self, composition: Composition):
+    async def _on_reply(
+        self,
+        recipient: autogen.ConversableAgent,
+        messages: list[dict] | None = None,
+        sender: Agent | None = None,
+        config: Any | None = None,
+    ) -> tuple[bool, Any | None]:
+        if self.on_reply:
+            await self.on_reply(recipient, messages, sender, config)
+
+        return False, None
+
+    def validate_composition(self, composition: Composition) -> bool:
         if len(composition.agents) == 0:
             return False
 
@@ -97,36 +110,54 @@ class Crew:
             )
 
             config = {
-                "cache_seed": 41,
+                "seed": self.seed,
                 "temperature": 0,
                 "config_list": config_list,
                 "timeout": 120,
             }
-
-            agents.append(
-                ret_agents.RetConversableAgent(
-                    name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                    system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Stick to your role, do not do something yourself which another team member can do better.""",
-                    llm_config=config,
-                    on_message=self.on_message,
-                    websocket=self.websocket,
-                )
+            agent = autogen.AssistantAgent(
+                name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
+                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+                llm_config=config,
             )
+
+            if self.on_reply:
+                agent.register_reply([autogen.Agent, None], self._on_reply)
+
+            agents.append(agent)
         return agents
 
-    async def run(self, message: str):
+    async def run(
+        self,
+        message: str,
+        messages: list[Message] | None = None,
+        q: Queue | None = None,
+        job_done: object | None = None,
+    ) -> None:
+
+        # convert Message list to dict list
+        dict_messages = [m.model_dump() for m in (messages if messages else [])]
+
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
-            messages=[],
+            messages=dict_messages,
             max_round=20,
         )
 
         manager = autogen.GroupChatManager(
             groupchat=groupchat, llm_config=self.base_config
         )
+        manager.register_reply([autogen.Agent, None], self._on_reply)
 
-        result = await self.user_proxy.a_initiate_chat(
-            manager,
-            message=message,
-        )
-        return result
+        logger.info("Starting Crew")
+        with Cache.disk() as cache:
+            await self.user_proxy.a_initiate_chat(
+                manager, message=message, cache=cast(Cache, cache), silent=True
+            )
+
+        await asyncio.sleep(1)
+
+        if q and job_done:
+            await q.put(job_done)
+        else:
+            logger.warning("No queue or job_done object provided")
