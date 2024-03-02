@@ -14,7 +14,7 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .maeve import Composition, Maeve
+from .crew import Composition, Crew
 from .models import StreamReply, Session, Message
 
 logger = logging.getLogger("root")
@@ -66,8 +66,8 @@ def improve(
     return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
-@app.get("/maeve")
-async def run_maeve(
+@app.get("/crew")
+async def run_crew(
     id: UUID, profile_id: UUID, session_id: UUID | None = None, reply: str | None = None
 ) -> StreamingResponse:
     if reply and not session_id:
@@ -87,7 +87,7 @@ async def run_maeve(
         message = reply
 
     if not message or not composition:
-        raise HTTPException(status_code=400, detail=f"Maeve with id {id} not found")
+        raise HTTPException(status_code=400, detail=f"Crew with id {id} not found")
 
     session = db.get_session(session_id) if session_id else None
     cached_messages = db.get_messages(session_id) if session_id else None
@@ -106,7 +106,7 @@ async def run_maeve(
 
     if session is None:
         session = Session(
-            maeve_id=id,
+            crew_id=id,
             profile_id=profile_id,
         )
         db.post_session(session)
@@ -173,11 +173,11 @@ async def run_maeve(
         db.post_message(message)
         await q.put(message)
 
-    maeve = Maeve(composition, on_reply)
+    crew = Crew(composition, on_reply)
 
-    # "maeve.run(message)" is run in a seperate thread
+    # "crew.run(message)" is run in a seperate thread
     asyncio.run_coroutine_threadsafe(
-        maeve.run(message, messages=cached_messages, q=q, job_done=job_done),
+        crew.run(message, messages=cached_messages, q=q, job_done=job_done),
         asyncio.get_event_loop(),
     )
 
