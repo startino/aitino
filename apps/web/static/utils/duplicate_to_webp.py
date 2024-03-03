@@ -13,10 +13,11 @@ def convert_to_webp(directory):
 def replace_in_code(directory):
     # Find all code files in the given directory and its subdirectories
     for code_file in glob.glob(directory + '/**', recursive=True):
-        if code_file.endswith('.py'):  # or any other file types you want to process
+        if code_file.endswith(('.svelte', '.ts', '.py', '.html', '.js')):  
             # Open the code file, read its contents
             with open(code_file, 'r') as file:
                 contents = file.read()
+                print("Replacing in: ", code_file, "... \n")
             # Replace all occurrences of the image file names with the .webp extension
             contents = re.sub(r'(\.png|\.jpg|\.jpeg)', '.webp', contents, flags=re.IGNORECASE)
             # Write the modified contents back to the file
@@ -24,5 +25,5 @@ def replace_in_code(directory):
                 file.write(contents)
 
 # Call the functions with the desired directory paths
-convert_to_webp('./static_1')
-replace_in_code('./src_1')
+convert_to_webp('./static')
+replace_in_code('./src')
