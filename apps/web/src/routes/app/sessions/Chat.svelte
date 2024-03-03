@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Send } from "lucide-svelte";
-	import { Button } from "$lib/components/ui/button";
-	import { Textarea } from "$lib/components/ui/textarea";
-	import Message from "./Message.svelte";
-	import { afterUpdate } from "svelte";
+	import { Send } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import Message from './Message.svelte';
+	import { afterUpdate } from 'svelte';
 
 	export let sessionId: string;
 	export let messages: {
@@ -25,13 +25,13 @@
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;
-		rows = newMessageContent.split("\n").length;
+		rows = newMessageContent.split('\n').length;
 	}
 
-	let newMessageContent = "";
+	let newMessageContent = '';
 	function sendMessage() {
 		if (newMessageContent.trim().length <= 5) {
-			console.warn("Message too short");
+			console.warn('Message too short');
 			// TODO: show sonner warning to user
 		}
 
@@ -40,14 +40,14 @@
 		const newMessage = {
 			id: crypto.randomUUID(),
 			session_id: sessionId,
-			recipient: "",
+			recipient: '',
 			content: newMessageContent,
-			role: "user",
-			name: "Admin",
-			created_at: new Date().toISOString().replace("T", " ")
+			role: 'user',
+			name: 'Admin',
+			created_at: new Date().toISOString().replace('T', ' ')
 		};
 		messages = [...messages, newMessage];
-		newMessageContent = "";
+		newMessageContent = '';
 	}
 
 	let chatContainerElement: HTMLDivElement;
@@ -58,7 +58,7 @@
 	});
 </script>
 
-<div class="container flex h-screen max-w-6xl flex-col justify-end">
+<div class="container flex max-w-6xl flex-col justify-end">
 	<div
 		class="no-scrollbar flex h-screen w-full flex-col gap-4 overflow-y-auto pb-16 pt-20"
 		bind:this={chatContainerElement}
@@ -68,7 +68,7 @@
 			<Message {message} />
 
 			{#if index !== messages.length - 1}
-				<hr class="prose my-20 w-full max-w-none border-t border-nsecondary px-12" />
+				<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
 			{/if}
 		{/each}
 		{#if awaitingReply}
@@ -83,7 +83,7 @@
 				></Textarea>
 				<Button
 					variant="ghost"
-					class="hover:bg-default hover:scale-95 hover:text-primary"
+					class="hover:bg-default hover:text-primary hover:scale-95"
 					disabled={newMessageContent.length <= 5}
 					on:click={sendMessage}
 				>
