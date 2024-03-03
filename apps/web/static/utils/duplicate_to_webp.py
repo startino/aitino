@@ -10,10 +10,14 @@ def convert_to_webp(directory):
             # Open the image file, convert it to webp, and save it
             Image.open(image_file).save(image_file.rsplit('.', 1)[0] + '.webp')
 
+        if image_file.lower().endswith(('.png', '.jpg', '.jpeg')):
+            # Open the image file, convert it to webp, and save it
+            Image.open(image_file).save(image_file.rsplit('.', 1)[0] + '.webp')
+
 def replace_in_code(directory):
     # Find all code files in the given directory and its subdirectories
     for code_file in glob.glob(directory + '/**', recursive=True):
-        if code_file.endswith(('.svelte', '.ts', '.py', '.html', '.js')):  
+        if code_file.endswith(('.svelte', '.ts', '.html', '.js')):  
             # Open the code file, read its contents
             with open(code_file, 'r') as file:
                 contents = file.read()
@@ -25,5 +29,5 @@ def replace_in_code(directory):
                 file.write(contents)
 
 # Call the functions with the desired directory paths
-convert_to_webp('./static')
-replace_in_code('./src')
+convert_to_webp('./apps/web/static')
+replace_in_code('./apps/web/static')
