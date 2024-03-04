@@ -60,7 +60,7 @@
 
 <div class="container flex max-w-6xl flex-col justify-end">
 	<div
-		class="no-scrollbar flex h-screen w-full flex-col gap-4 overflow-y-auto pb-16 pt-20"
+		class="flex h-screen w-full flex-col gap-4 overflow-y-auto pb-16 pt-20"
 		bind:this={chatContainerElement}
 	>
 		<!-- TODO: add scroll to the bottom of the chat button -->

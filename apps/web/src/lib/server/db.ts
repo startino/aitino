@@ -52,12 +52,15 @@ export async function getCrews(profileId: string) {
 	return crews;
 }
 
-export async function getSessions(profileId: string, crewId: string) {
-	const { data, error: err } = await supabase
+export async function getSessions(profileId: string, crewId: string | null = null) {
+	// Filter by profile_id and crewId if it exists
+	const { data, error: err } = crewId ? await supabase
 		.from("sessions")
 		.select("*")
 		.eq("profile_id", profileId)
-		.eq("crew_id", crewId);
+		.eq("crew_id", crewId) : await supabase.from("sessions")
+		.select("*")
+		.eq("profile_id", profileId);
 
 	if (err) {
 		return [];
@@ -69,4 +72,44 @@ export async function getSessions(profileId: string, crewId: string) {
 	const sessions: Session[] = data as Session[];
 
 	return sessions;
+}
+
+// Get the most recent session
+export async function getRecentSession(profileId: string) {
+	// Filter by profile_id and crewId if it exists
+	const { data, error: err } = await supabase
+		.from("sessions")
+		.select("*")
+		.eq("profile_id", profileId).order("created_at", { ascending: false }).limit(1);
+
+	if (err) {
+		return null;
+	}
+	if (data.length === 0) {
+		return null;
+	}
+
+	const session: Session = data[0] as Session;
+
+	return session;
+}
+
+// Get the most recently modified Crew
+export async function getRecentCrew(profileId: string) {
+	// Filter by profile_id and crewId if it exists
+	const { data, error: err } = await supabase
+		.from("crews")
+		.select("*")
+		.eq("profile_id", profileId).order("updated_at", { ascending: false }).limit(1);
+
+	if (err) {
+		return null;
+	}
+	if (data.length === 0) {
+		return null;
+	}
+
+	const crew: Crew = data[0] as Crew;
+
+	return crew;
 }
