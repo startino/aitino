@@ -17,7 +17,7 @@ def parse_composition(nodes: dict) -> Composition:
                 model=node["data"]["model"]["value"],
             )
             composition.agents.append(agent)
-
+    print(composition)
     return composition
 
 

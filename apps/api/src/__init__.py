@@ -201,9 +201,13 @@ def auto_build_maeve(
             system_message="test admin",
             code_execution_config=False,
             human_input_mode="NEVER",
+            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
             max_consecutive_auto_reply=1
         )
-        user_proxy.initiate_chat(
+        chat_result = user_proxy.initiate_chat(
             auto_build_agent,
             message=general_task,
+            silent=True
         )
+        return (chat_result.chat_history[1]["content"])
+        #client = OpenAI()
