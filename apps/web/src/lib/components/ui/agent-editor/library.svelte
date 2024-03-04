@@ -56,6 +56,26 @@
 		displayedAgent = agent.find((a) => a.id === id);
 		console.log(displayedAgent, 'new Agent');
 	};
+
+	function timeSince(dateIsoString: Date | string) {
+		const date = new Date(dateIsoString);
+		const now = new Date();
+		const diffInSeconds = Math.round((now - date) / 1000);
+
+		console.log(diffInSeconds, 'diffInSeconds \n', now, 'now \n', date, 'date');
+
+		if (diffInSeconds < 60) {
+			return 'just now';
+		} else if (diffInSeconds < 3600) {
+			return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+		} else if (diffInSeconds < 86400) {
+			return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+		} else if (diffInSeconds < 172800) {
+			return 'yesterday';
+		} else {
+			return `${Math.floor(diffInSeconds / 86400)} days ago`;
+		}
+	}
 </script>
 
 <div class="w-full max-w-6xl py-4">
@@ -137,7 +157,8 @@
 								<p class="max-w-4xl px-6">
 									{agent.summary}
 								</p>
-								<div class="justify-self-end">{agent.updated_at.split('T')[0]}</div>
+								{#if agent.updated_at !== null}
+									<div class="justify-self-end">{timeSince(agent.updated_at)}</div>{/if}
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -158,7 +179,7 @@
 				<div
 					class="cursor-pointer hover:scale-[101%]"
 					transition:fade={{ delay: 500, duration: 400 }}
-					on:click={() => (showDetails = true,showDetailInTheModal(agent.id))}
+					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
 				>
 					<Card.Root>
 						<div class="flex items-center justify-between px-6">
@@ -187,7 +208,8 @@
 								<p class="max-w-4xl px-6">
 									{agent.summary}
 								</p>
-								<div class="justify-self-end">{agent.updated_at.split('T')[0]}</div>
+								{#if agent.updated_at !== null}
+									<div class="justify-self-end">{timeSince(agent.updated_at)}</div>{/if}
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -202,43 +224,50 @@
 
 <div class="w-full max-w-6xl border">
 	<Dialog.Root open={showDetails} onOpenChange={() => (showDetails = false)}>
-		<Dialog.Content class="w-full max-w-6xl">
-			<Dialog.Header>
-				<div class="flex justify-between">
-					<div class="flex h-20 w-20 items-center justify-center rounded-full border">
-						<img src={displayedAgent.avatar_url} alt={displayedAgent.name} class="rounded-full" />
-					</div>
-					<div class="flex flex-col">
-						<small class="mt-4">last update: {displayedAgent.updated_at.split('T')[0]}</small>
-						<small>published at: {displayedAgent.created_at.split('T')[0]}</small>
-					</div>
-				</div>
-				<Dialog.Description class="flex flex-col gap-y-4">
-					<div>Name: {displayedAgent.name}</div>
-					<div>Author: {displayedAgent.author}</div>
-				</Dialog.Description>
-			</Dialog.Header>
-			<div class="flex w-full flex-col">
-				Description:
-				{#each displayedAgent.description as description}
-					<ul>
-						<li>{description}</li>
-					</ul>
-				{/each}
-				<div class=" w-full text-nowrap">
-					{displayedAgent.summary}
-				</div>
-				<!-- add loop later  -->
-				<ul>
-					tools:
+		<Dialog.Content class="w-full max-w-6xl space-y-8 px-12">
+			<div class="flex w-full justify-center">
+				<img
+					src={displayedAgent.avatar_url}
+					alt={displayedAgent.name}
+					class="h-40 w-40 rounded-full p-0"
+				/>
+				<p class="text-primary -ml-4 flex items-end">
+					V <small class="font-thin"> {displayedAgent.version}</small>
+				</p>
+			</div>
 
-					{#each displayedAgent.tools as tool}
-						<li>{tool}</li>
+			<div class="grid w-full grid-cols-2">
+				<div class="flex flex-col justify-center">
+					<div class="text-3xl font-bold">{displayedAgent.name}</div>
+					<div class="max-w-4xl">{displayedAgent.summary}</div>
+					<div class="text-secondary">by {displayedAgent.author}</div>
+				</div>
+
+				<div class="flex flex-col justify-self-end">
+					{#if displayedAgent.updated_at !== null}
+						<small class="text-primary">{timeSince(displayedAgent.updated_at)}</small>{/if}
+					<small>{timeSince(displayedAgent.created_at)}</small>
+				</div>
+			</div>
+
+			<div class="flex w-full flex-col">
+				<div class="text-2xl font-semibold">Description:</div>
+				<ul class="px-16">
+					{#each displayedAgent.description as description}
+						<li class="max-w-4xl">{description}</li>
 					{/each}
 				</ul>
-				<div>
-					model: <br />
-					{displayedAgent.model}
+
+				<!-- add loop later  -->
+				<div class="text-2xl font-semibold">Tools:</div>
+				<ul class="px-16">
+					{#each displayedAgent.tools as tool}
+						<li class="max-w-4xl">{tool}</li>
+					{/each}
+				</ul>
+				<div class="flex flex-col">
+					<div class="text-2xl font-semibold">Models:</div>
+					<div class="px-16">{displayedAgent.model}</div>
 				</div>
 			</div>
 		</Dialog.Content>
