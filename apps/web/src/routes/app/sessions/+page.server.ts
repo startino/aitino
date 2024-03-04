@@ -42,4 +42,9 @@ export const actions: Actions = {
 		await db.renameSession(sessionId, newName);
 		console.log("sessionId", sessionId, "newName", newName);
 	},
+	delete: async ({request}) => {
+		const { sessionId } = await request.json();
+		if (!sessionId) throw error(400, "No session ID provided.");
+		await db.deleteSession(sessionId);
+	}
 };

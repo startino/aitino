@@ -25,7 +25,13 @@ export async function renameSession(sessionId: string, newName: string) {
 	if (err) {
 		throw error(500, "Failed attempt at renaming session.");
 	}
+}
 
+export async function deleteSession(sessionId: string) {
+	const { data, error: err } = await supabase.from("sessions").delete().eq("id", sessionId);
+	if (err) {
+		throw error(500, "Failed attempt at deleting session.");
+	}
 }
 
 export async function postCrew(data: TablesInsert<"crews">) {

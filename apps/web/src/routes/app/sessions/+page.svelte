@@ -17,6 +17,7 @@
 		ArrowRightToLine,
 		CheckCircle,
 		Loader,
+		Loader2,
 		MoreHorizontal
 	} from 'lucide-svelte';
 	import { Description } from '$lib/components/ui/alert';
@@ -34,32 +35,50 @@
 	let activeSession = recentSession;
 	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
 
-	// Reactivity
-	let rightSideBarOpen = true;
+	// Reactivity for renaming
 	let renamePopoverOpen = false;
-	let renamingItem = -1;
+	let renamingSession = '';
 	let renamingValue = '';
 	let renamingInProgress = false;
 
+	// Reactivity for deleting
+	let deletingInProgress = false;
+	let deletingSession = '';
+
 	// Helper function to reset the UI after renaming or if its cancelled
 	function resetRenamingUI() {
+		renamePopoverOpen = false;
 		renamingInProgress = false;
-		renamingItem = -1;
+		renamingSession = '';
 		renamingValue = '';
 	}
 
+	function resetDeletingUI() {
+		deletingInProgress = false;
+		deletingSession = '';
+	}
+
 	async function renameSession(sessionId: string) {
+		// If multiple queues to submit the rename request, ignore the rest.
+		if (renamingInProgress) {
+			return;
+		}
+
 		const currentName = (await allSessions).find((session) => session.id === sessionId);
+
+		// If no session is being renamed, ignore
 		if (!currentName) {
 			resetRenamingUI();
 			return;
 		}
+		// If no changes were made, reset the UI and ignore
 		if (currentName?.name == renamingValue) {
 			resetRenamingUI();
 			return;
 		}
 
 		renamingInProgress = true;
+		console.log('renaming', renamingValue, sessionId);
 		const response = await fetch(`?/rename`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId, newName: renamingValue })
@@ -74,10 +93,27 @@
 			return session as Session;
 		});
 		// Reset the renaming variables
-		renamingInProgress = false;
-		renamingItem = -1;
-		renamingValue = '';
+		resetRenamingUI();
 		console.log('rename', renamingValue);
+	}
+
+	async function deleteSession(sessionId: string) {
+		deletingInProgress = true;
+		deletingSession = sessionId;
+		const response = await fetch(`?/delete`, {
+			method: 'POST',
+			body: JSON.stringify({ sessionId })
+		});
+		const data = await response.json();
+		// Update the session locally in order to not refetch
+		const localSessions = await allSessions;
+		allSessions = localSessions.filter((session) => session.id !== sessionId);
+		resetDeletingUI();
+
+		if (activeSession?.id === sessionId) {
+			activeSession = null;
+			messages = [];
+		}
 	}
 
 	onMount(async () => {
@@ -232,14 +268,10 @@
 			</code>
 		</div>
 	</div>
-	<Sheet.Root onOutsideClick={() => resetRenamingUI()}>
+	<Sheet.Root onOutsideClick={() => renameSession(renamingSession)}>
 		<Sheet.Trigger asChild let:builder>
 			<Button builders={[builder]} class="h-14 w-14">
-				{#if rightSideBarOpen}
-					<ArrowRightToLine size="24" />
-				{:else}
-					<ArrowLeftFromLine size="24" />
-				{/if}
+				<ArrowLeftFromLine size="24" />
 			</Button>
 		</Sheet.Trigger>
 		<Sheet.Content side="right">
@@ -265,13 +297,13 @@
 							{#await allSessions}
 								<p>Loading...</p>
 							{:then allSessions}
-								{#each allSessions as session, i}
+								{#each allSessions as session}
 									<li class="flex w-full flex-row gap-2">
-										{#if renamePopoverOpen && renamingItem === i}
+										{#if renamePopoverOpen && renamingSession === session.id}
 											<Input
 												type="text"
 												class="-ml-4 w-full"
-												placeholder={session.name ?? 'Unamed'}
+												placeholder={session.name ?? 'Empty'}
 												disabled={renamingInProgress}
 												on:focusout={() => renameSession(session.id)}
 												on:keydown={(e) => {
@@ -311,16 +343,26 @@
 										{/if}
 										<DropdownMenu.Root>
 											<DropdownMenu.Trigger asChild let:builder>
-												<Button builders={[builder]} variant="icon" class="aspect-square h-full"
-													><MoreHorizontal size="18" /></Button
+												<Button
+													builders={[builder]}
+													disabled={deletingSession === session.id}
+													variant="icon"
+													class="aspect-square h-full"
 												>
+													{#if deletingInProgress && deletingSession === session.id}
+														<Loader size="18" class="mx-auto my-auto " />
+													{:else}
+														<MoreHorizontal size="18" />
+													{/if}
+												</Button>
 											</DropdownMenu.Trigger>
+
 											<DropdownMenu.Content class="w-56">
 												<DropdownMenu.Group>
 													<DropdownMenu.Item
 														on:click={() => {
 															renamePopoverOpen = true;
-															renamingItem = i;
+															renamingSession = session.id;
 														}}
 													>
 														Rename
@@ -329,7 +371,7 @@
 												</DropdownMenu.Group>
 												<DropdownMenu.Separator />
 												<DropdownMenu.Group>
-													<DropdownMenu.Item>
+													<DropdownMenu.Item on:click={() => deleteSession(session.id)}>
 														Delete
 														<DropdownMenu.Shortcut>d</DropdownMenu.Shortcut>
 													</DropdownMenu.Item>
