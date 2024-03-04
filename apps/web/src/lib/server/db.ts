@@ -3,10 +3,8 @@ import type { TablesInsert } from "$lib/types/supabase";
 import { error } from "@sveltejs/kit";
 import type { Crew, Message, Session } from "$lib/types/models";
 
-export async function getMessages(session_id: string | null) {
-	if (!session_id) {
-		return [];
-	}
+export async function getMessages(session_id: string) {
+
 	const { data, error: err } = await supabase
 		.from("messages")
 		.select("*")
@@ -20,6 +18,14 @@ export async function getMessages(session_id: string | null) {
 	}
 
 	return data as Message[];
+}
+
+export async function renameSession(sessionId: string, newName: string) {
+	const { data, error: err } = await supabase.from("sessions").update({ name: newName }).eq("id", sessionId);
+	if (err) {
+		throw error(500, "Failed attempt at renaming session.");
+	}
+
 }
 
 export async function postCrew(data: TablesInsert<"crews">) {
@@ -91,6 +97,24 @@ export async function getRecentSession(profileId: string) {
 	}
 
 	const session: Session = data[0] as Session;
+
+	return session;
+}
+
+export async function getSession(sessionId: string) {
+	const { data, error: err } = await supabase
+		.from("sessions")
+		.select("*")
+		.eq("id", sessionId).single();
+
+	if (err) {
+		return null;
+	}
+	if (data.length === 0) {
+		return null;
+	}
+
+	const session: Session = data as Session;
 
 	return session;
 }

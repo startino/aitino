@@ -220,6 +220,14 @@ export function formatDate(date: string, dateStyle: DateStyle = "medium", locale
 	return formatter.format(new Date(date));
 }
 
+export function daysRelativeToToday(date: string): string {
+	const now = new Date();
+	const then = new Date(date);
+	const diff = now.getTime() - then.getTime();
+	const daysSince = Math.floor(diff / (1000 * 60 * 60 * 24));
+	return daysSince == 0 ? "Today" : daysSince == 1 ? "Yesterday" : daysSince.toString();
+}
+
 // Create our number formatter.
 const formatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',

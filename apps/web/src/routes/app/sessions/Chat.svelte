@@ -2,20 +2,13 @@
 	import { Send } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import Message from './Message.svelte';
+	import MessageItem from './Message.svelte';
+	import type { Message as MessageType } from '$lib/types/models';
 	import { afterUpdate } from 'svelte';
 
 	export let sessionId: string;
 	export let name: string;
-	export let messages: {
-		id: string;
-		session_id: string;
-		recipient: string;
-		content: string;
-		role: string;
-		name: string;
-		created_at: string;
-	}[] = [];
+	export let messages: MessageType[] | Promise<MessageType[]>;
 
 	export let awaitingReply = false;
 
@@ -59,20 +52,27 @@
 	});
 </script>
 
-<div class="container flex max-w-6xl flex-col justify-end">
+<div class="container flex max-w-6xl flex-col justify-end overflow-y-hidden">
 	<div
-		class="flex h-screen w-full flex-col gap-4 overflow-y-auto pb-16 pt-20"
+		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-16 pt-20"
 		bind:this={chatContainerElement}
 	>
 		<h1 class="text-center text-3xl font-bold">{name}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
-		{#each messages as message, index}
-			<Message {message} />
+		{#await messages}
+			<div class="flex w-full items-center justify-center gap-4">
+				<p>Loading messages...</p>
+			</div>
+		{:then messages}
+			{#each messages as message, index}
+				<MessageItem {message} />
 
-			{#if index !== messages.length - 1}
-				<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
-			{/if}
-		{/each}
+				{#if index !== messages.length - 1}
+					<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+				{/if}
+			{/each}
+		{/await}
+
 		{#if awaitingReply}
 			<div class="flex w-full flex-row items-center justify-center gap-1 p-1">
 				<Textarea
