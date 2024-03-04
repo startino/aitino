@@ -62,8 +62,8 @@ class BuildAgents():
             name="""agentemployer-testagent""",
             system_message=f"""You will take a given task and split it into multiple subtasks. All these subtasks will work to solve the given main task. 
             After doing this you will create agents who will solve each of these subtasks. You will give the agents a name, a role and its task. You can also create teams
-            of agents to work together if you deem their tasks similar enough. """,
-            #should add something to parse a list of good agents from the database, give them to this agent and give those agents as examples for it to use during team creation
-            #should also add something that is better at dynamically making teams of agents that work together (my solution here is to tell it to make teams, which is not optimal)
+            of agents to work together if you deem their tasks to be similar enough. """,
+            # should add something to parse a list of good agents from the database, give them to this agent and give those agents as examples for it to use during team creation
+            # should also add something that is better at dynamically making teams of agents that work together (my solution here is to tell it to make teams, which is not optimal)
             llm_config=config,
         )

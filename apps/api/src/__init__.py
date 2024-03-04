@@ -201,9 +201,9 @@ def auto_build_maeve(
             system_message="test admin",
             code_execution_config=False,
             human_input_mode="NEVER",
+            max_consecutive_auto_reply=1
         )
         user_proxy.initiate_chat(
             auto_build_agent,
-            message="I want to create a software that scrapes the web for stock trends."
+            message=general_task,
         )
-        client = OpenAI()
