@@ -41,7 +41,24 @@
 	let renamingValue = '';
 	let renamingInProgress = false;
 
+	// Helper function to reset the UI after renaming or if its cancelled
+	function resetRenamingUI() {
+		renamingInProgress = false;
+		renamingItem = -1;
+		renamingValue = '';
+	}
+
 	async function renameSession(sessionId: string) {
+		const currentName = (await allSessions).find((session) => session.id === sessionId);
+		if (!currentName) {
+			resetRenamingUI();
+			return;
+		}
+		if (currentName?.name == renamingValue) {
+			resetRenamingUI();
+			return;
+		}
+
 		renamingInProgress = true;
 		const response = await fetch(`?/rename`, {
 			method: 'POST',
@@ -215,7 +232,7 @@
 			</code>
 		</div>
 	</div>
-	<Sheet.Root>
+	<Sheet.Root onOutsideClick={() => resetRenamingUI()}>
 		<Sheet.Trigger asChild let:builder>
 			<Button builders={[builder]} class="h-14 w-14">
 				{#if rightSideBarOpen}
@@ -282,8 +299,8 @@
 												builders={[builder]}
 												variant="outline"
 												class="flex w-full flex-row justify-between {activeSession?.id == session.id
-													? 'bg-accent/50'
-													: ''}"
+													? 'bg-accent text-accent-foreground'
+													: 'hover:bg-accent/20 hover:text-foreground'}"
 												on:click={() => loadSession(session.id, session.crew_id)}
 											>
 												{session.name}
