@@ -8,19 +8,20 @@
 	import type { Message, Session } from '$lib/types/models';
 	import { get, writable } from 'svelte/store';
 	import type { PageData } from './$types';
+	import { MoreHorizontal } from 'lucide-svelte';
 
 	export let data: PageData;
 
-	const { recentSession, allSessions } = data;
+	const { recentSession, allSessions, recentCrew } = data;
 
-	let loading = true;
+	let loadingSession = true;
 	let awaitingReply = false;
 
 	let activeSession = recentSession;
 	let messages: Message[] = [];
 
 	onMount(() => {
-		loading = false;
+		loadingSession = false;
 
 		if (messages.length > 0) {
 			awaitingReply = true;
@@ -78,7 +79,7 @@
 					profile_id: e.data.profile_id,
 					created_at: e.data.created_at
 				};
-				loading = false;
+				loadingSession = false;
 				console.log('got session id', e.data.session_id);
 				continue;
 			}
@@ -96,9 +97,20 @@
 	function startSession(crewId: string) {
 		activeSession.session = null;
 		messages = [];
-		loading = true;
+		loadingSession = true;
 
 		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${activeSession.profileId}`;
+
+		main(url);
+	}
+
+	async function loadSession(sessionId: string, crewId: string) {
+		activeSession.session = null;
+		let response = await fetch(`/api/get-messages?sessionId=${sessionId}`);
+		messages = await response.json();
+		loadingSession = true;
+
+		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${activeSession.profileId}&session_id=${sessionId}&reply=""`;
 
 		main(url);
 	}
@@ -120,7 +132,7 @@
 
 <main class="flex h-full flex-row">
 	<div class="w-full">
-		{#if loading}
+		{#if loadingSession}
 			<div
 				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 			>
@@ -129,19 +141,20 @@
 		{:else if activeSession.session}
 			<Chat
 				sessionId={activeSession?.session?.id}
+				name={activeSession?.session.name}
 				{messages}
 				{awaitingReply}
 				replyCallback={replySession}
 			/>
-		{:else if data.recentCrew}
+		{:else if recentCrew}
 			<div
 				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 			>
 				<h1>It looks like you don't have session yet...</h1>
-				{#await data.recentCrew}
+				{#await recentCrew}
 					<p>Loading...</p>
 				{:then recentCrew}
-					<Button on:click={() => startSession(data.recentCrew?.id)}>Run Your Crew!</Button>
+					<Button on:click={() => startSession(recentCrew.id)}>Run Your Crew!</Button>
 				{:catch}
 					<p>Failed to load crew</p>
 				{/await}
@@ -157,7 +170,7 @@
 		<div class="absolute bottom-1 mx-auto flex h-min w-full flex-col items-center justify-center">
 			<code class="text-muted">debug:</code>
 			<code class="text-muted">
-				crew id: {activeSession?.crewId ?? 'missing'} - session id: {activeSession?.session?.id ??
+				crew id: {recentCrew?.id ?? 'missing'} - session id: {activeSession?.session?.id ??
 					'missing'}
 			</code>
 		</div>
@@ -166,20 +179,34 @@
 		<div class="flex flex-col items-center justify-center gap-4 p-4">
 			<h1 class="text-2xl">Select Session</h1>
 
-			{#if data.recentCrew}
-				<Button on:click={() => startSession(data.recentCrew.id)}>Start New Session</Button>
+			{#if recentCrew}
+				<Button class="mb-6 w-full" on:click={() => startSession(recentCrew.id)}
+					>Start New Session</Button
+				>
 			{/if}
-			<ul>
+			<ul class="flex w-full flex-col gap-2">
 				{#await allSessions}
 					<p>Loading...</p>
 				{:then allSessions}
 					{#each allSessions as session}
-						<li>
-							<Button on:click={() => startSession(session.crew_id)}>{session.id}</Button>
+						<li class="w-full">
+							<Button
+								variant="outline"
+								class="w-full {activeSession.session == session ? 'bg-accent/10' : ''}"
+								on:click={() => loadSession(session.id, session.crew_id)}
+								>{session.name}
+								{#if activeSession.session == session}
+									<Button variant="icon"><MoreHorizontal size="16" /></Button>
+								{/if}
+							</Button>
 						</li>
 					{/each}
 				{/await}
 			</ul>
+			{activeSession}
+			{activeSession.session}
+			{activeSession.session?.name}
+			{recentCrew}
 		</div>
 	</div>
 </main>

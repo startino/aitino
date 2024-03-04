@@ -6,6 +6,7 @@
 	import { afterUpdate } from 'svelte';
 
 	export let sessionId: string;
+	export let name: string;
 	export let messages: {
 		id: string;
 		session_id: string;
@@ -63,6 +64,7 @@
 		class="flex h-screen w-full flex-col gap-4 overflow-y-auto pb-16 pt-20"
 		bind:this={chatContainerElement}
 	>
+		<h1 class="text-center text-3xl font-bold">{name}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#each messages as message, index}
 			<Message {message} />

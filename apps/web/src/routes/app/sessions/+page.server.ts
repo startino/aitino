@@ -29,13 +29,5 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) 
 };
 
 export const actions: Actions = {
-	// create: async ({ request }) => {
-	// 	const data = await request.formData();
-	// 	db.createTodo(cookies.get('userid'), data.get('description'));
-	// },
-	//
-	// delete: async ({ request }) => {
-	// 	const data = await request.formData();
-	// 	db.deleteTodo(cookies.get('userid'), data.get('id'));
-	// }
+
 };

@@ -1,7 +1,7 @@
 import { supabase } from "$lib/supabase";
 import type { TablesInsert } from "$lib/types/supabase";
 import { error } from "@sveltejs/kit";
-import type { Crew, Session } from "$lib/types/models";
+import type { Crew, Message, Session } from "$lib/types/models";
 
 export async function getMessages(session_id: string | null) {
 	if (!session_id) {
@@ -19,7 +19,7 @@ export async function getMessages(session_id: string | null) {
 		return [];
 	}
 
-	return data;
+	return data as Message[];
 }
 
 export async function postCrew(data: TablesInsert<"crews">) {
