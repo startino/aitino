@@ -1,7 +1,8 @@
+from unittest.mock import patch
+
 import pytest
 
-from ..improver import improve_prompt, InvalidPromptTypeError
-from unittest.mock import patch
+from ..improver import InvalidPromptTypeError, improve_prompt
 
 
 class MockContent:
