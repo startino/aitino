@@ -1,4 +1,4 @@
-import type { Edge, Node } from "@xyflow/svelte";
+import type { Edge, Node } from '@xyflow/svelte';
 
 export type Message = {
 	id: string;
@@ -26,4 +26,19 @@ export type Session = {
 	crew_id: string;
 	profile_id: string;
 	created_at: string;
+};
+
+export type Agent = {
+	id: string;
+	created_at: string;
+	updated_at: string;
+	name: string;
+	description: string[];
+	summary: string;
+	author: string;
+	model: string;
+	published: boolean;
+	profile_id: string;
+	tools: string[];
+	avatar_url: string
 };

@@ -13,4 +13,5 @@ export type SessionLoad = {
 export type CrewLoad = {
 	profileId: string;
 	crew: models.Crew;
+	agents: models.Agent[];
 };

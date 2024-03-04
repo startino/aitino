@@ -1,7 +1,7 @@
 import { supabase } from "$lib/supabase";
 import type { TablesInsert } from "$lib/types/supabase";
 import { error } from "@sveltejs/kit";
-import type { Crew, Session } from "$lib/types/models";
+import type { Crew, Session, Agent } from "$lib/types/models";
 
 export async function getMessages(session_id: string | null) {
 	if (!session_id) {
@@ -50,6 +50,20 @@ export async function getCrews(profileId: string) {
 	const crews: Crew[] = data as Crew[];
 
 	return crews;
+}
+
+export async function getAgents() {
+	const { data, error: err} = await supabase.from("agents").select("*");
+
+	if(err){
+		return []
+	}
+	if(data.length === 0){
+		return []
+	}
+	
+	const agents: Agent[] = data as Agent[]
+	return agents
 }
 
 export async function getSessions(profileId: string, crewId: string) {
