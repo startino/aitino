@@ -1,7 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { superValidate } from "sveltekit-superforms/server";
-import { formSchema } from "$lib/schma";
+import { formSchema } from "$lib/schema";
 import { type Provider } from "@supabase/supabase-js";
 
 export const load = async () => {
@@ -94,6 +94,6 @@ export const actions: Actions = {
 			}
 		}
 
-		throw redirect(301, "/");
+		throw redirect(200, "/app");
 	}
 };

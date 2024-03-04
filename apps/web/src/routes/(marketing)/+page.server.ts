@@ -4,10 +4,8 @@ import { z } from "zod";
 import { superValidate } from "sveltekit-superforms/server";
 import { formSchema } from "../schema";
 import type { PageServerLoad, Actions } from "./$types";
+import { waitlistSchema } from "$lib/schema";
 
-const waitlistSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" })
-});
 
 export const load: PageServerLoad = async (event) => {
 	const contactForm = await superValidate(formSchema);

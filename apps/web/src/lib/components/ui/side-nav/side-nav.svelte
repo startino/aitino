@@ -39,11 +39,11 @@
 			]
 		}
 	];
-	export let bottomNavigation = [{ name: 'Logout', href: 'logout', icon: LogOut, current: false }];
+	export let bottomNavigation = [{ name: 'Logout', href: '/', icon: LogOut, current: false }]; // TODO: Make this button actually log out the user
 </script>
 
 <!-- Static sidebar for desktop -->
-<div class="hidden h-full py-8 pl-4 lg:z-50 lg:flex lg:w-72 lg:flex-col{$$props.class}">
+<div class=" flex h-full py-8 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
 	<!-- Sidebar component, swap this element with another sidebar if you like -->
 	<div
 		class="bg-primary-950/30 flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border px-6 pb-6 text-white"
@@ -52,7 +52,7 @@
 			<a href="/app/auto-build" class="mr-4 flex place-items-center space-x-2">
 				<Logo />
 				<span class="self-center whitespace-nowrap text-2xl font-semibold text-white"
-					>Aitino <span class="text-sm">[v0.2.0]</span></span
+					>Aitino <span class="text-sm">[v0.1.0]</span></span
 				>
 			</a>
 		</div>
