@@ -196,7 +196,7 @@
 									/>
 								</div>
 								<div class="flex flex-col">
-									<div class="text-2xl font-extrabold">{agent.name}</div>
+									<div class="bg-gradient-to-r from-green-500 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent">{agent.name}</div>
 									<div class="text-lg italic text-gray-500">{agent.author}</div>
 								</div>
 							</div>
