@@ -1,6 +1,7 @@
 import autogen
 
-class BuildAgents():
+
+class BuildAgents:
     def create_task_simplifier(self):
         config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -23,6 +24,7 @@ class BuildAgents():
             For example: a list with the objects banana, apple and orange would be written as "[banana, apple, orange]" """,
             llm_config=config,
         )
+
     def create_employer(self):
         config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -44,6 +46,7 @@ class BuildAgents():
             Format the prompts in markdown. """,
             llm_config=config,
         )
+
     def create_all_in_one_agent(self):
         config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -51,7 +54,7 @@ class BuildAgents():
                 "model": ["gpt-4-turbo-preview"],
             },
         )
-        
+
         config = {
             "seed": 41,
             "temperature": 0.0,

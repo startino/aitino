@@ -21,4 +21,6 @@ class AgentConfig(BaseModel):
     )
     llm_config: LLMConfig | Literal[False] = False
     code_execution_config: CodeExecutionConfig | Literal[False] = False
-    default_auto_reply: str = "Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet."
+    default_auto_reply: str = (
+        "Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet."
+    )

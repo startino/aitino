@@ -1,5 +1,5 @@
-import logging
 import asyncio
+import logging
 from asyncio import Queue
 from typing import Any, cast
 
