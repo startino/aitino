@@ -1,20 +1,21 @@
 <script lang="ts">
-	import { Position, type NodeProps, useSvelteFlow, useConnection } from "@xyflow/svelte";
-	import { type Writable } from "svelte/store";
-	import { X } from "lucide-svelte";
+	import { Position, type NodeProps, useSvelteFlow, useConnection } from '@xyflow/svelte';
+	import { type Writable } from 'svelte/store';
+	import { X } from 'lucide-svelte';
 
 	// 👇 always import the styles
-	import "@xyflow/svelte/dist/style.css";
-	import * as Card from "$lib/components/ui/card";
-	import * as Select from "$lib/components/ui/select";
-	import { Input } from "$lib/components/ui/input";
-	import Handle from "$lib/components/Handle.svelte";
-	import { getContext } from "$lib/utils";
-	import { PromptEditor } from "$lib/components/ui/prompt-editor";
+	import '@xyflow/svelte/dist/style.css';
+	import * as Card from '$lib/components/ui/card';
+	import * as Select from '$lib/components/ui/select';
+	import { Input } from '$lib/components/ui/input';
+	import Handle from '$lib/components/Handle.svelte';
+	import { getContext } from '$lib/utils';
+	import { PromptEditor } from '$lib/components/ui/prompt-editor';
+	import { Avatar } from '../avatar/';
 
 	type $$Props = NodeProps;
 
-	const { receiver, count } = getContext("crew");
+	const { receiver, count } = getContext('crew');
 
 	export let data: {
 		avatar: string;
@@ -28,16 +29,16 @@
 
 	const models = [
 		{
-			label: "GPT-4 Turbo",
-			value: "gpt-4-turbo-preview"
+			label: 'GPT-4 Turbo',
+			value: 'gpt-4-turbo-preview'
 		},
 		{
-			label: "GPT-3.5 Turbo",
-			value: "gpt-3.5-turbo"
+			label: 'GPT-3.5 Turbo',
+			value: 'gpt-3.5-turbo'
 		}
 	];
 
-	export let id: NodeProps["id"];
+	export let id: NodeProps['id'];
 
 	const connection = useConnection();
 
@@ -52,7 +53,7 @@
 </script>
 
 <Card.Root
-	class="{isTarget ? 'border-2 border-dashed bg-card ' : ''} {isReceiver
+	class="{isTarget ? 'bg-card border-2 border-dashed ' : ''} {isReceiver
 		? 'bg-primary-950'
 		: ''} aspect-1transition"
 >
@@ -70,18 +71,19 @@
 	>
 
 	<Card.Header class="flex">
-		<Card.Title>
-			Agent
+		<Card.Title class="mt-4">
 			{#if isReceiver}
-				(receiver)
+				(Receiver)
 			{/if}
+			<Input placeholder="Name..." class="text-center" bind:value={$name} />
 		</Card.Title>
+		{#if avatar}
+			<Avatar class="mx-auto h-24 w-24">
+				<img src={avatar} alt="" class="scale-125" />
+			</Avatar>
+		{/if}
 	</Card.Header>
 	<Card.Content class="grid w-[300px] gap-2">
-		{#if avatar}
-			<img class="mx-auto max-w-[90px]" src="/avatars/{avatar}" alt="" />
-		{/if}
-		<Input placeholder="Name..." bind:value={$name} />
 		<Input placeholder="Job title..." bind:value={$job_title} />
 		<Select.Root bind:selected={$model}>
 			<Select.Trigger>
