@@ -134,11 +134,15 @@
 						<div class="flex items-center justify-between px-6">
 							<div class="flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
-									<img src={agent.avatar_url} alt={agent.name} class="rounded-full" />
+									<img
+										src={agent.avatar_url}
+										alt={agent.name}
+										class="border-primary rounded-full border-4 object-cover shadow-2xl"
+									/>
 								</div>
 								<div class="flex flex-col">
-									<div>{agent.name}</div>
-									<div>{agent.author}</div>
+									<div class="bg-gradient-to-r from-green-500 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent">{agent.name}</div>
+									<div class="text-lg italic text-gray-500">{agent.author}</div>
 								</div>
 							</div>
 							<div class="flex h-full items-center justify-between">
@@ -185,11 +189,15 @@
 						<div class="flex items-center justify-between px-6">
 							<div class="z-50 flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
-									<img src={agent.avatar_url} alt={agent.name} class="rounded-full" />
+									<img
+										src={agent.avatar_url}
+										alt={agent.name}
+										class="border-primary rounded-full border-4 object-cover shadow-2xl"
+									/>
 								</div>
 								<div class="flex flex-col">
-									<div>{agent.name}</div>
-									<div>{agent.author}</div>
+									<div class="text-2xl font-extrabold">{agent.name}</div>
+									<div class="text-lg italic text-gray-500">{agent.author}</div>
 								</div>
 							</div>
 							<div class="flex h-full items-center justify-between">
@@ -222,53 +230,63 @@
 	</Tabs.Root>
 </div>
 
-<div class="w-full max-w-6xl border">
+<div class="mx-auto w-full max-w-6xl">
 	<Dialog.Root open={showDetails} onOpenChange={() => (showDetails = false)}>
-		<Dialog.Content class="w-full max-w-6xl space-y-8 px-12">
-			<div class="flex w-full justify-center">
-				<img
-					src={displayedAgent.avatar_url}
-					alt={displayedAgent.name}
-					class="h-40 w-40 rounded-full p-0"
-				/>
-				<p class="text-primary -ml-4 flex items-end">
-					V <small class="font-thin"> {displayedAgent.version}</small>
-				</p>
-			</div>
-
-			<div class="grid w-full grid-cols-2">
-				<div class="flex flex-col justify-center">
-					<div class="text-3xl font-bold">{displayedAgent.name}</div>
-					<div class="max-w-4xl">{displayedAgent.summary}</div>
-					<div class="text-secondary">by {displayedAgent.author}</div>
-				</div>
-
-				<div class="flex flex-col justify-self-end">
-					{#if displayedAgent.updated_at !== null}
-						<small class="text-primary">{timeSince(displayedAgent.updated_at)}</small>{/if}
-					<small>{timeSince(displayedAgent.created_at)}</small>
+		<Dialog.Content
+			class="h-5/6 w-full max-w-6xl space-y-8 overflow-y-auto rounded-lg p-8 shadow-2xl [&::-webkit-scrollbar]:hidden"
+		>
+			<div class="mb-4 flex justify-center">
+				<div class="relative">
+					<img
+						src={displayedAgent.avatar_url}
+						alt={displayedAgent.name}
+						class="border-primary h-48 w-48 rounded-full border-4 object-cover shadow-2xl"
+					/>
+					<div
+						class="absolute -bottom-2 -right-2 animate-pulse rounded-full bg-blue-500 px-3 py-2 text-xs font-semibold text-white"
+					>
+						V {displayedAgent.version}
+					</div>
 				</div>
 			</div>
 
-			<div class="flex w-full flex-col">
-				<div class="text-2xl font-semibold">Description:</div>
-				<ul class="px-16">
+			<div class="space-y-4 text-center">
+				<h2
+					class="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-6xl font-extrabold text-transparent"
+				>
+					{displayedAgent.name}
+				</h2>
+				<p class="mx-auto max-w-3xl text-xl text-gray-400">{displayedAgent.summary}</p>
+				<p class="text-lg italic text-gray-500">— {displayedAgent.author}</p>
+				{#if displayedAgent.updated_at !== null}
+					<p class="text-sm text-gray-400">Updated {timeSince(displayedAgent.updated_at)}</p>
+				{/if}
+			</div>
+
+			<div class="text-white">
+				<h3 class="border-b-2 border-gray-700 pb-2 text-2xl font-semibold">Description</h3>
+				<ul class="mt-4 list-inside list-disc space-y-2 text-gray-400">
 					{#each displayedAgent.description as description}
-						<li class="max-w-4xl">{description}</li>
+						<li>{description}</li>
 					{/each}
 				</ul>
+			</div>
 
-				<!-- add loop later  -->
-				<div class="text-2xl font-semibold">Tools:</div>
-				<ul class="px-16">
+			<div class="mt-6 text-white">
+				<h3 class="border-b-2 border-gray-700 pb-2 text-2xl font-semibold">Tools</h3>
+				<div class="mt-4 flex flex-wrap gap-2">
 					{#each displayedAgent.tools as tool}
-						<li class="max-w-4xl">{tool}</li>
+						<span
+							class="rounded-full bg-gray-700 px-4 py-2 text-sm transition-colors duration-200 hover:bg-gray-600"
+							>{tool}</span
+						>
 					{/each}
-				</ul>
-				<div class="flex flex-col">
-					<div class="text-2xl font-semibold">Models:</div>
-					<div class="px-16">{displayedAgent.model}</div>
 				</div>
+			</div>
+
+			<div class="mt-6 text-white">
+				<h3 class="border-b-2 border-gray-700 pb-2 text-2xl font-semibold">Model</h3>
+				<p class="mt-2 text-gray-400">{displayedAgent.model}</p>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>
