@@ -141,7 +141,11 @@
 									/>
 								</div>
 								<div class="flex flex-col">
-									<div class="bg-gradient-to-r from-green-500 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent">{agent.name}</div>
+									<div
+										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
+									>
+										{agent.name}
+									</div>
 									<div class="text-lg italic text-gray-500">{agent.author}</div>
 								</div>
 							</div>
@@ -196,7 +200,11 @@
 									/>
 								</div>
 								<div class="flex flex-col">
-									<div class="bg-gradient-to-r from-green-500 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent">{agent.name}</div>
+									<div
+										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
+									>
+										{agent.name}
+									</div>
 									<div class="text-lg italic text-gray-500">{agent.author}</div>
 								</div>
 							</div>
@@ -235,7 +243,7 @@
 		<Dialog.Content
 			class="h-5/6 w-full max-w-6xl space-y-8 overflow-y-auto rounded-lg p-8 shadow-2xl [&::-webkit-scrollbar]:hidden"
 		>
-			<div class="mb-4 flex justify-center">
+			<div class="mb-8 flex flex-col items-center justify-center">
 				<div class="relative">
 					<img
 						src={displayedAgent.avatar_url}
@@ -248,6 +256,11 @@
 						V {displayedAgent.version}
 					</div>
 				</div>
+				{#if displayedAgent.created_at}
+					<p class="mt-4 text-sm text-gray-400">
+						Created {timeSince(displayedAgent.created_at)}
+					</p>
+				{/if}
 			</div>
 
 			<div class="space-y-4 text-center">
