@@ -28,12 +28,13 @@
 
 	let { recentSession, allSessions, recentCrew, recentSessionMessages } = data;
 
-	let loadingSession = true;
-	let loadingMessages = true;
-	let awaitingReply = false;
-
 	let activeSession = recentSession;
 	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
+
+	// Reactivity for the Crew chat
+	let loadingSession = true;
+	let loadingMessages = true;
+	let waitingforUser = false;
 
 	// Reactivity for renaming
 	let renamePopoverOpen = false;
@@ -177,7 +178,7 @@
 				continue;
 			}
 			if (e.data === 'done') {
-				awaitingReply = true;
+				waitingforUser = true;
 				console.log('done');
 
 				return;
@@ -212,7 +213,7 @@
 		if (!activeSession) {
 			throw error(500, 'Cannot reply without session');
 		}
-		awaitingReply = false;
+		waitingforUser = false;
 		const url = `${PUBLIC_API_URL}/crew?id=${activeSession.crew_id}&profile_id=${activeSession.profile_id}&session_id=${activeSession.id}&reply=${message}`;
 
 		main(url);
@@ -236,7 +237,7 @@
 				sessionId={activeSession?.id}
 				name={activeSession?.name}
 				{messages}
-				{awaitingReply}
+				awaitingReply={waitingforUser}
 				replyCallback={replySession}
 			/>
 		{:else if recentCrew}
@@ -260,17 +261,10 @@
 				<Button on:click={redirectToCrewEditor}>Go Create One!</Button>
 			</div>
 		{/if}
-		<div class="absolute bottom-1 mx-auto flex h-min w-fit flex-col items-center justify-center">
-			<code class="text-muted">debug:</code>
-			<code class="text-muted">
-				crew id: {recentCrew?.id ?? 'missing'} - session id: {activeSession?.session?.id ??
-					'missing'}
-			</code>
-		</div>
 	</div>
 	<Sheet.Root onOutsideClick={() => renameSession(renamingSession)}>
 		<Sheet.Trigger asChild let:builder>
-			<Button builders={[builder]} class="h-14 w-14">
+			<Button builders={[builder]} class="my-auto mr-8 h-14 w-14">
 				<ArrowLeftFromLine size="24" />
 			</Button>
 		</Sheet.Trigger>
