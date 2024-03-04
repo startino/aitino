@@ -12,6 +12,7 @@
 	import { getContext } from '$lib/utils';
 	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 	import { Avatar } from '../avatar/';
+	import Skeleton from '../skeleton/skeleton.svelte';
 
 	type $$Props = NodeProps;
 
@@ -70,7 +71,7 @@
 		class="absolute right-2 top-2"><X /></button
 	>
 
-	<Card.Header class="flex">
+	<Card.Header class="flex gap-2">
 		<Card.Title class="mt-4">
 			{#if isReceiver}
 				(Receiver)
@@ -79,9 +80,10 @@
 		</Card.Title>
 		{#if avatar}
 			<Avatar class="mx-auto h-24 w-24">
+				<Skeleton class="h-24 w-24 rounded-full" />
 				<img src={avatar} alt="" class="scale-125" />
 			</Avatar>
-		{/if}
+		{:else}{/if}
 	</Card.Header>
 	<Card.Content class="grid w-[300px] gap-2">
 		<Input placeholder="Job title..." bind:value={$job_title} />

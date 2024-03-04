@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { SessionLoad } from "$lib/types/loads";
-	import { Button } from "$lib/components/ui/button";
-	import Chat from "./Chat.svelte";
-	import { onMount } from "svelte";
-    import { PUBLIC_API_URL } from "$env/static/public";
-	import { error } from "@sveltejs/kit";
+	import type { SessionLoad } from '$lib/types/loads';
+	import { Button } from '$lib/components/ui/button';
+	import Chat from './Chat.svelte';
+	import { onMount } from 'svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { error } from '@sveltejs/kit';
 
 	export let data: SessionLoad;
 
@@ -24,7 +24,7 @@
 		const reader = response.body?.getReader();
 
 		if (!reader) {
-			throw new Error("Invalid response");
+			throw new Error('Invalid response');
 		}
 
 		while (true) {
@@ -46,7 +46,7 @@
 
 	async function main(url: string): Promise<void> {
 		if (!url) {
-			console.log("Usage: Provide a valid URL as a parameter");
+			console.log('Usage: Provide a valid URL as a parameter');
 			return;
 		}
 
@@ -54,7 +54,7 @@
 			let e = null;
 			try {
 				e = JSON.parse(event.trim());
-				console.log("got message", e);
+				console.log('got message', e);
 			} catch (error) {
 				console.error(`Error parsing JSON ${error}:`, event);
 				continue;
@@ -70,12 +70,12 @@
 					profile_id: e.data.profile_id
 				};
 				loading = false;
-				console.log("got session id", e.data.session_id);
+				console.log('got session id', e.data.session_id);
 				continue;
 			}
-			if (e.data === "done") {
+			if (e.data === 'done') {
 				awaitingReply = true;
-				console.log("done");
+				console.log('done');
 
 				return;
 			}
@@ -96,7 +96,7 @@
 
 	function replySession(message: string) {
 		if (!data.session) {
-			throw error(500, "Cannot reply without session");
+			throw error(500, 'Cannot reply without session');
 		}
 		awaitingReply = false;
 		const url = `${PUBLIC_API_URL}/crew?id=${data.crewId}&profile_id=${data.profileId}&session_id=${data.session.id}&reply=${message}`;
@@ -105,13 +105,13 @@
 	}
 
 	function redirectToCrewEditor() {
-		window.location.href = "/app/editors/crew";
+		window.location.href = '/app/editor/crew';
 	}
 </script>
 
 {#if loading}
 	<div
-		class="xl:prose-md prose prose-sm prose-main mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center md:prose-base 2xl:prose-lg"
+		class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 	>
 		<h1>Loading...</h1>
 	</div>
@@ -129,14 +129,14 @@
 	</div>
 {:else if data.crewId}
 	<div
-		class="xl:prose-md prose prose-sm prose-main mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center md:prose-base 2xl:prose-lg"
+		class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 	>
 		<h1>It looks like you don't have session yet...</h1>
 		<Button on:click={startSession}>Run Your Crew!</Button>
 	</div>
 {:else}
 	<div
-		class="xl:prose-md prose prose-sm prose-main mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center md:prose-base 2xl:prose-lg"
+		class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 	>
 		<h1>It looks like you haven't created a crew yet...</h1>
 		<Button on:click={redirectToCrewEditor}>Go Create One!</Button>
@@ -145,6 +145,6 @@
 <div class="absolute bottom-1 mx-auto flex h-min w-full flex-col items-center justify-center">
 	<code class="text-muted">debug:</code>
 	<code class="text-muted">
-		crew id: {data.crewId} - session id: {data.session ? data.session.id : "missing"}
+		crew id: {data.crewId} - session id: {data.session ? data.session.id : 'missing'}
 	</code>
 </div>

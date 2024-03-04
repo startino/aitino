@@ -1,41 +1,41 @@
 <script lang="ts">
-	import { applyAction, enhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
-	import { Button } from "$lib/components/ui/button";
-	import { ArrowRight, Loader, Github, X, Youtube, Loader2 } from "lucide-svelte";
-	import Input from "./ui/input/input.svelte";
-	import { toast } from "svelte-sonner";
-	import * as Dialog from "./ui/dialog";
-	import { Label } from "./ui/label";
-	import { Textarea } from "./ui/textarea";
-	import { superForm } from "sveltekit-superforms/client";
-	import SuperDebug from "sveltekit-superforms/client/SuperDebug.svelte";
-	import * as Form from "$lib/components/ui/form";
-	import { formSchema, waitlistSchema, type FormSchema } from "../../routes/schema";
-	import type { ActionData } from "../../routes/$types";
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
+	import { ArrowRight, Loader, Github, X, Youtube, Loader2 } from 'lucide-svelte';
+	import Input from './ui/input/input.svelte';
+	import { toast } from 'svelte-sonner';
+	import * as Dialog from './ui/dialog';
+	import { Label } from './ui/label';
+	import { Textarea } from './ui/textarea';
+	import { superForm } from 'sveltekit-superforms/client';
+	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import * as Form from '$lib/components/ui/form';
+	import { formSchema, waitlistSchema, type FormSchema } from '../../routes/schema';
+	import type { ActionData } from '../../routes/$types';
 
 	export let mainform: ActionData;
 	export let notform: any;
 
-	console.log(mainform, "mainform data");
-	let input = "";
+	console.log(mainform, 'mainform data');
+	let input = '';
 
 	let isLoading = false;
 
 	const { form, errors } = superForm(notform.contactForm);
 	const { form: join_waitlist_Form, errors: join_waitlist_Error } = superForm(notform.waitlistForm);
 
-	$: console.log("Form values:", $join_waitlist_Form);
-	$: console.log("Form errors:", $join_waitlist_Error);
-	$: console.log("Form errors contact:", $errors);
-	$: console.log("Form form contact:", $form);
+	$: console.log('Form values:', $join_waitlist_Form);
+	$: console.log('Form errors:', $join_waitlist_Error);
+	$: console.log('Form errors contact:', $errors);
+	$: console.log('Form form contact:', $form);
 </script>
 
 <!-- Uncomment this to debug the superform and zod -->
 <!-- <SuperDebug data={notform.contactForm} /> -->
 <!-- <SuperDebug data={notform.waitlistForm} /> -->
 <div class="grid w-full max-w-lg grid-cols-2 gap-4">
-	<Button class="p-8 text-xl" href="/register">Try for Free</Button>
+	<Button class="p-8 text-xl" href="/app">Try for Free</Button>
 	<Button class="p-8 text-xl" variant="outline" href="mailto:contact@futi.no">Contact Us</Button>
 </div>
 <!-- 
@@ -119,7 +119,7 @@
 	class="mx-auto mt-2 flex h-fit w-fit flex-wrap-reverse items-center justify-between gap-2 sm:flex-row md:p-4 lg:mt-6 xl:mt-12"
 >
 	<Button
-		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground "
+		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95 "
 		href="https://github.com/Futino/"
 		target="_blank"
 	>
@@ -134,7 +134,7 @@
 	</Button>
 
 	<Button
-		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground"
+		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95"
 		href="https://www.youtube.com/@futinolimited"
 		target="_blank"
 	>
@@ -148,7 +148,7 @@
 		</div>
 	</Button>
 	<Button
-		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground"
+		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95"
 		href="https://discord.gg/6M3dSFnufV"
 		target="_blank"
 	>
