@@ -76,6 +76,7 @@ export async function getSessions(profileId: string, crewId: string | null = nul
 
 // Get the most recent session
 export async function getRecentSession(profileId: string) {
+
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = await supabase
 		.from("sessions")
