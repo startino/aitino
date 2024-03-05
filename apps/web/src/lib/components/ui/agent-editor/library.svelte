@@ -12,12 +12,12 @@
 	import type { Agent } from '$lib/types/models';
 	// import Agent from '../custom-node/agent.svelte';
 
-	export let agent: Agent[];
-
-	console.log(agent, 'from library');
+	export let myAgents: Agent[];
+	export let publishedAgents: Agent[];
 
 	let searchQuery = '';
-	console.log(searchQuery, 'search query');
+	console.log(myAgents, 'search query');
+	console.log(publishedAgents, 'search query');
 	let filterPublished = false;
 	let filterModel = '';
 	function updateSearchQuery(event: Event) {
@@ -37,7 +37,7 @@
 		}
 	}
 
-	$: filteredAgents = agent.filter(
+	$: filteredMyAgents = myAgents.filter(
 		(a) =>
 			(searchQuery === '' ||
 				a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -48,12 +48,24 @@
 			(filterModel === '' || a.model === filterModel)
 	);
 
-	$: showNoResults = filteredAgents.length === 0 && searchQuery !== '';
+	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
+	$: filteredPublishedAgents = publishedAgents.filter(
+		(a) =>
+			(searchQuery === '' ||
+				a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.description.some((desc) => desc.toLowerCase().includes(searchQuery.toLowerCase()))) &&
+			(!filterPublished || a.published) &&
+			(filterModel === '' || a.model === filterModel)
+	);
+
+	$: showNoResultsForPublished = filteredMyAgents.length === 0 && searchQuery !== '';
 
 	let showDetails = false;
 	let displayedAgent: Agent;
 	let showDetailInTheModal = async (id: string) => {
-		displayedAgent = agent.find((a) => a.id === id);
+		displayedAgent = myAgents.find((a) => a.id === id) || publishedAgents.find((a) => a.id === id);
 		console.log(displayedAgent, 'new Agent');
 	};
 
@@ -122,7 +134,7 @@
 			value="personal"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredAgents as agent}
+			{#each filteredMyAgents as agent}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -181,7 +193,7 @@
 			value="community"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredAgents.filter((a) => a.published) as agent}
+			{#each filteredPublishedAgents as agent}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -231,7 +243,7 @@
 					</Card.Root>
 				</div>
 			{/each}
-			{#if showNoResults}
+			{#if showNoResultsForPublished}
 				<div class="no-results">No search results found</div>
 			{/if}
 		</Tabs.Content>
@@ -256,16 +268,21 @@
 						V {displayedAgent.version}
 					</div>
 				</div>
-				{#if displayedAgent.created_at}
-					<p class="mt-4 text-sm text-gray-400">
-						Created {timeSince(displayedAgent.created_at)}
-					</p>
-				{/if}
+				<div class="mt-4 flex flex-col items-center">
+					{#if displayedAgent.created_at}
+						<p class="text-sm text-gray-400">Created {timeSince(displayedAgent.created_at)}</p>
+					{/if}
+					<!-- Enhanced Model info with badge-like component -->
+					<div
+						class="mt-2 inline-flex items-center justify-center rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white shadow"
+					>
+						Model: {displayedAgent.model}
+					</div>
+				</div>
 			</div>
-
 			<div class="space-y-4 text-center">
 				<h2
-					class="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-6xl font-extrabold text-transparent"
+					class="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text py-2 text-6xl font-extrabold text-transparent"
 				>
 					{displayedAgent.name}
 				</h2>
@@ -295,11 +312,6 @@
 						>
 					{/each}
 				</div>
-			</div>
-
-			<div class="mt-6 text-white">
-				<h3 class="border-b-2 border-gray-700 pb-2 text-2xl font-semibold">Model</h3>
-				<p class="mt-2 text-gray-400">{displayedAgent.model}</p>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>

@@ -37,7 +37,7 @@
 	export let data: CrewLoad;
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-
+console.log(data, 'from page crews');
 	let title = data.crew.title;
 	$: data.crew.title = title;
 	let description = data.crew.description;
@@ -318,7 +318,7 @@
 	<div class="w-full max-w-6xl">
 		<Dialog.Root open={openAgentEditor} onOpenChange={() => (openAgentEditor = false)}>
 			<Dialog.Content class="max-w-6xl">
-				<AgentEditor agent={data.agents}/>
+				<AgentEditor myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>
