@@ -3,16 +3,18 @@ import type { CrewLoad } from '$lib/types/loads';
 import type { PageServerLoad, Actions } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, locals: {getSession} }) => {
+export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) => {
 	const session = await getSession();
 	const profileId = session?.user?.id;
 	const agent = await db.getAgents();
 
 	const myAgents = agent.filter((a) => session.user.id === a.profile_id);
 	const publishedAgents = agent.filter((a) => a.published === true);
+	const allCrews = await db.getAllCrews();
+	const myCrews = allCrews.filter((a) => 'edb9a148-a8fc-48bd-beb9-4bf5de602b78' === a.profile_id);
+	const publishedCrews = allCrews.filter((a) => a.published === true);
 
-	console.log(myAgents.length, 'myAgents');
-	console.log(publishedAgents.length, 'myAgents');
+
 	const data: CrewLoad = {
 		profileId: profileId,
 		crew: {
@@ -23,14 +25,18 @@ export const load: PageServerLoad = async ({ cookies, locals: {getSession} }) =>
 			description: '',
 			nodes: [],
 			edges: [],
-			created_at: ''
+			created_at: '',
+			published: false
 		},
+		myCrews: myCrews,
+		pulishedCrews: publishedCrews,
 		myAgents: myAgents,
-        publishedAgents: publishedAgents
+		publishedAgents: publishedAgents
 	};
 
-	const crews = await db.getCrews(profileId);
 
+
+	const crews = await db.getCrews(profileId);
 	if (crews.length !== 0) {
 		data.crew = crews[0]; // TODO: select most recent crew by default and add support for managing crew
 	}

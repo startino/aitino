@@ -35,9 +35,9 @@
 	import { AgentEditor } from '$lib/components/ui/agent-editor';
 
 	export let data: CrewLoad;
+console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-console.log(data, 'from page crews');
 	let title = data.crew.title;
 	$: data.crew.title = title;
 	let description = data.crew.description;
@@ -295,8 +295,10 @@ console.log(data, 'from page crews');
 								{action.name}
 							</Button>
 						</Dialog.Trigger>
-						<Dialog.Content class="max-w-5xl">
+						<Dialog.Content class="max-w-6xl">
 							<Library
+								myCrews={data.myCrews}
+								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
 									const crew = e.detail.crew;
 									$count = getNodesCount(crew.nodes);

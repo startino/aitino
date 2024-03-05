@@ -1,23 +1,18 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Input } from '$lib/components/ui/input';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Card from '$lib/components/ui/card';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import User from 'lucide-svelte/icons/user';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import type { Agent } from '$lib/types/models';
-	// import Agent from '../custom-node/agent.svelte';
 
 	export let myAgents: Agent[];
 	export let publishedAgents: Agent[];
 
 	let searchQuery = '';
-	console.log(myAgents, 'search query');
-	console.log(publishedAgents, 'search query');
 	let filterPublished = false;
 	let filterModel = '';
 	function updateSearchQuery(event: Event) {

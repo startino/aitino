@@ -19,6 +19,7 @@ export type Crew = {
 	nodes: Node[];
 	edges: Edge[];
 	created_at: string;
+	published: boolean;
 };
 
 export type Session = {
