@@ -23,6 +23,7 @@
 	import { Description } from '$lib/components/ui/alert';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { supabase } from '$lib/supabase';
 
 	export let data: PageData;
 
@@ -45,6 +46,24 @@
 	// Reactivity for deleting
 	let deletingInProgress = false;
 	let deletingSession = '';
+
+	const channel = supabase
+		.channel('message-insert-channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'INSERT',
+				schema: 'public',
+				table: 'messages',
+				filter: `session_id=eq.${activeSession?.id}`
+			},
+			(payload) => loadNewMessage()
+		)
+		.subscribe();
+
+	function loadNewMessage() {
+		console.log('new message');
+	}
 
 	// Helper function to reset the UI after renaming or if its cancelled
 	function resetRenamingUI() {
@@ -122,76 +141,6 @@
 		}
 	});
 
-	async function* callCrew(url: string): AsyncGenerator<string, void, unknown> {
-		const response = await fetch(url);
-		const reader = response.body?.getReader();
-
-		if (!reader) {
-			throw new Error('Invalid response');
-		}
-
-		while (true) {
-			const { done, value } = await reader.read();
-
-			if (done) {
-				break;
-			}
-
-			const line = new TextDecoder().decode(value);
-
-			if (!line) {
-				break;
-			}
-
-			yield line;
-		}
-	}
-
-	async function main(url: string): Promise<void> {
-		console.log('main');
-		if (!url) {
-			console.log('Usage: Provide a valid URL as a parameter');
-			return;
-		}
-
-		for await (const event of callCrew(url)) {
-			console.log('For await, event: ', event);
-			let e = null;
-			try {
-				e = JSON.parse(event.trim());
-				console.log('got message', e);
-			} catch (error) {
-				console.error(`Error parsing JSON ${error}:`, event);
-				continue;
-			}
-			if (!e) {
-				continue;
-			}
-
-			if (e.id === 0) {
-				console.log('First event');
-				activeSession = {
-					name: e.data.name,
-					id: e.data.session_id,
-					crew_id: e.data.maeva_id,
-					profile_id: e.data.profile_id,
-					created_at: e.data.created_at
-				};
-				loadingSession = false;
-				console.log('got session id', e.data.session_id);
-				continue;
-			}
-			if (e.data === 'done') {
-				waitingforUser = true;
-				console.log('done');
-
-				return;
-			}
-
-			messages = [...(await messages), e.data];
-		}
-	}
-
 	function startNewSession(crewId: string, title: string) {
 		activeSession = null;
 		messages = [];
@@ -199,7 +148,7 @@
 
 		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`;
 
-		main(url);
+		//main(url);
 	}
 
 	async function loadSession(sessionId: string, crewId: string) {
@@ -223,7 +172,7 @@
 		waitingforUser = false;
 		const url = `${PUBLIC_API_URL}/crew?id=${activeSession.crew_id}&profile_id=${activeSession.profile_id}&session_id=${activeSession.id}&reply=${message}`;
 
-		main(url);
+		//main(url);
 	}
 
 	function redirectToCrewEditor() {
