@@ -33,6 +33,7 @@
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
 	import type { CrewLoad } from '$lib/types/loads';
 	import { goto } from '$app/navigation';
+	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
 
@@ -44,13 +45,23 @@
 	let description = data.crew.description;
 	$: data.crew.description = description;
 
+	// Reactivity for loading states
+	$: tryingToRun = false;
+	let tryingToSave = false;
+
 	const actions: PanelAction[] = [
 		{
 			name: 'Run',
+			loading: tryingToRun, // TODO: Implement reactivity for loading
 			buttonVariant: 'default',
 			onclick: async () => {
+				tryingToRun = true;
 				const { error } = await save();
-				if (error) return;
+				if (error) {
+					tryingToRun = false;
+					return;
+				}
+				tryingToRun = false;
 				goto('/app/sessions');
 			}
 		},
@@ -85,16 +96,18 @@
 		},
 		{
 			name: 'Save',
+			loading: tryingToSave,
 			buttonVariant: 'outline',
-			onclick: async () => await save()
+			onclick: async () => {
+				tryingToSave = true;
+				await save();
+				tryingToSave = false;
+			}
 		},
 		{
 			name: 'Layout',
 			buttonVariant: 'outline',
-			onclick: async () => {
-				layout();
-				await save();
-			}
+			onclick: layout
 		}
 	];
 
@@ -151,6 +164,7 @@
 	$: data.crew.edges = $edges;
 
 	async function save(): Promise<SaveResult> {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 		if (!data.crew.id) {
 			data.crew.id = crypto.randomUUID();
 		}
