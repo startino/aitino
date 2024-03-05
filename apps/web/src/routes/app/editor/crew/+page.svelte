@@ -88,7 +88,14 @@
 			buttonVariant: 'outline',
 			onclick: async () => await save()
 		},
-		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
+		{
+			name: 'Layout',
+			buttonVariant: 'outline',
+			onclick: async () => {
+				layout();
+				await save();
+			}
+		}
 	];
 
 	const nodeTypes = {
@@ -156,12 +163,13 @@
 		).json();
 
 		if (response.error) {
+			console.log(response.error);
 			toast.error(response.error.message);
 			return { error: true, message: response.error.message };
 		}
 
-		return { error: false, message: 'Nodes successfully saved!' };
 		toast.success('Nodes successfully saved!');
+		return { error: false, message: 'Nodes successfully saved!' };
 	}
 
 	function setReceiver(id: string | null | undefined) {

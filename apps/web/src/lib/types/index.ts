@@ -47,6 +47,6 @@ export type Categories =
 	| "science-fiction";
 
 export type SaveResult = {
-	error: boolean | null;
+	error: boolean;
 	message: string | null;
 };

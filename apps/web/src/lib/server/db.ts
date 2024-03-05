@@ -36,10 +36,10 @@ export async function deleteSession(sessionId: string) {
 
 export async function postCrew(data: TablesInsert<"crews">) {
 	if (!data.id) throw error(400, "Invalid Crew ID");
-	if (!data.profile_id) throw error(400, "Invalid Profile ID");
-	if (!data.title) throw error(400, "Invalid Crew Title");
-	if (!data.description) throw error(400, "Invalid Crew Description");
-	if (!data.receiver_id) throw error(400, "Invalid Receiver ID");
+	if (!data.profile_id) throw error(400, "There is no profile connected to this crew. Try logging in again.");
+	if (!data.title) throw error(400, "Crew is missing a title");
+	if (!data.description) throw error(400, "Crew is missing a description");
+	if (!data.receiver_id) throw error(400, "There's no receiver connected to this crew. Connect the prompt");
 	if (!data.nodes) throw error(400, "Invalid Crew Nodes");
 	if (!data.edges) throw error(400, "Invalid Crew Edges");
 
