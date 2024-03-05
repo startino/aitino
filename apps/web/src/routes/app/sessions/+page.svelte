@@ -26,7 +26,7 @@
 
 	export let data: PageData;
 
-	let { recentSession, allSessions, recentCrew, recentSessionMessages, crewId } = data;
+	let { recentSession, allSessions, recentCrew, recentSessionMessages, newSession } = data;
 
 	let activeSession = recentSession;
 	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
@@ -65,15 +65,15 @@
 			return;
 		}
 
-		const currentName = (await allSessions).find((session) => session.id === sessionId);
+		const currentTitle = (await allSessions).find((session) => session.id === sessionId);
 
 		// If no session is being renamed, ignore
-		if (!currentName) {
+		if (!activeSession) {
 			resetRenamingUI();
 			return;
 		}
 		// If no changes were made, reset the UI and ignore
-		if (currentName?.name == renamingValue) {
+		if (activeSession?.title == renamingValue) {
 			resetRenamingUI();
 			return;
 		}
@@ -82,20 +82,19 @@
 		console.log('renaming', renamingValue, sessionId);
 		const response = await fetch(`?/rename`, {
 			method: 'POST',
-			body: JSON.stringify({ sessionId, newName: renamingValue })
+			body: JSON.stringify({ sessionId, newTitle: renamingValue })
 		});
 		const data = await response.json();
 		// Update the session locally in order to not refetch
 		const localVariable = await allSessions;
 		allSessions = localVariable.map((session) => {
 			if (session.id === sessionId) {
-				session.name = renamingValue;
+				session.title = renamingValue;
 			}
 			return session as Session;
 		});
 		// Reset the renaming variables
 		resetRenamingUI();
-		console.log('rename', renamingValue);
 	}
 
 	async function deleteSession(sessionId: string) {
@@ -118,9 +117,8 @@
 	}
 
 	onMount(async () => {
-		if (crewId) {
-			console.log('Starting new session from mount');
-			startNewSession(crewId);
+		if (newSession.crewId && newSession.title) {
+			startNewSession(newSession.crewId, newSession.title);
 		}
 	});
 
@@ -194,12 +192,12 @@
 		}
 	}
 
-	function startNewSession(crewId: string) {
+	function startNewSession(crewId: string, title: string) {
 		activeSession = null;
 		messages = [];
 		loadingSession = true;
 
-		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}`;
+		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`;
 
 		main(url);
 	}
@@ -306,7 +304,7 @@
 											<Input
 												type="text"
 												class="-ml-4 w-full"
-												placeholder={session.name ?? 'Empty'}
+												placeholder={session.title ?? 'Empty'}
 												disabled={renamingInProgress}
 												on:focusout={() => renameSession(session.id)}
 												on:keydown={(e) => {
@@ -338,7 +336,7 @@
 													: 'hover:bg-accent/20 hover:text-foreground'}"
 												on:click={() => loadSession(session.id, session.crew_id)}
 											>
-												{session.name}
+												{session.title}
 												<div class="text-foreground/75 text-right text-xs">
 													Last opened {utils.daysRelativeToToday(session.created_at).toLowerCase()}
 												</div>

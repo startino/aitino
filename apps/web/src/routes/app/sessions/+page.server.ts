@@ -12,7 +12,10 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 	const profileId = session.user.id;
 
 	// If there is a crewId in the URL, we will use that to start a new session
-	const crewId: string | null = url.searchParams.get("crewId");
+	const newSession: {name: string | null; crewId: string | null} = {
+		name: url.searchParams.get("title"),
+		crewId: url.searchParams.get("crewId"),
+	};
 
 	const recentSession = await db.getRecentSession(profileId);  
 
@@ -20,7 +23,7 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 		recentSession: recentSession,
 		recentSessionMessages: recentSession ? db.getMessages(recentSession.id) : [] ,
 		allSessions: db.getSessions(profileId),
-		crewId, // Used to start a maeve
+		newSession, // Used to start a maeve
 		recentCrew: await db.getRecentCrew(profileId), // TODO: this will be obsolete when library feature is done. Instead a crew will be selected manually.
 	}
 };
@@ -41,11 +44,11 @@ export const actions: Actions = {
 		return json(session);
 	},
 	rename:  async ({request}) => {
-		const { sessionId, newName} = await request.json();
+		const { sessionId, newTitle} = await request.json();
 		if (!sessionId) throw error(400, "No session ID provided.");
-		if (newName == "") throw error(400, "No new name provided.");
-		await db.renameSession(sessionId, newName);
-		console.log("sessionId", sessionId, "newName", newName);
+		if (newTitle == "") throw error(400, "No new name provided.");
+		await db.renameSession(sessionId, newTitle);
+		console.log("sessionId", sessionId, "newName", newTitle);
 	},
 	delete: async ({request}) => {
 		const { sessionId } = await request.json();

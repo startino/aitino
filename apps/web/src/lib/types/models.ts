@@ -23,7 +23,7 @@ export type Crew = {
 
 export type Session = {
 	id: string;
-	name: string;
+	title: string;
 	crew_id: string;
 	profile_id: string;
 	created_at: string;
