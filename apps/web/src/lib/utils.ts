@@ -223,9 +223,11 @@ export function formatDate(date: string, dateStyle: DateStyle = "medium", locale
 export function daysRelativeToToday(date: string): string {
 	const now = new Date();
 	const then = new Date(date);
+	if (now.toDateString() === then.toDateString()) return "Today";
+	if (now.toDateString() === new Date(then.getTime() + 86400000).toDateString()) return "Yesterday";
 	const diff = now.getTime() - then.getTime();
 	const daysSince = Math.floor(diff / (1000 * 60 * 60 * 24));
-	return daysSince == 0 ? "Today" : daysSince == 1 ? "Yesterday" : daysSince.toString();
+	return daysSince.toString();
 }
 
 // Create our number formatter.

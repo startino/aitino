@@ -45,3 +45,8 @@ export type Categories =
 	| "music"
 	| "technology"
 	| "science-fiction";
+
+export type SaveResult = {
+	error: boolean | null;
+	message: string | null;
+};

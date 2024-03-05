@@ -330,8 +330,8 @@
 												on:click={() => loadSession(session.id, session.crew_id)}
 											>
 												{session.name}
-												<div class="text-right">
-													Last opened {utils.daysRelativeToToday(session.created_at)}
+												<div class="text-foreground/75 text-right text-xs">
+													Last opened {utils.daysRelativeToToday(session.created_at).toLowerCase()}
 												</div>
 											</Button>
 										{/if}
