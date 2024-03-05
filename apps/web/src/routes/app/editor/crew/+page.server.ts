@@ -3,27 +3,10 @@ import type { CrewLoad } from '$lib/types/loads';
 import type { PageServerLoad, Actions } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, locals }) => {
-	// BEGIN TEMP FORCE PROFILE
-	const profileId = 'edb9a148-a8fc-48bd-beb9-4bf5de602b78'; //cookies.get("profileId");
-	const expirationDate = new Date();
-	expirationDate.setMonth(expirationDate.getMonth() + 1);
-	cookies.set('profileId', profileId, {
-		path: '/',
-		httpOnly: true,
-		sameSite: 'strict',
-		secure: process.env.NODE_ENV === 'production',
-		expires: expirationDate
-	});
-	// END TEMP FORCE PROFILE
-
-	if (!profileId) {
-		throw error(401, 'Unauthorized');
-	}
-	const session = await locals.getSession();
-	console.log(session, 'from crew');
+export const load: PageServerLoad = async ({ cookies, locals: {getSession} }) => {
+	const session = await getSession();
+	const profileId = session?.user?.id;
 	const agent = await db.getAgents();
-	console.log(agent);
 
 	const myAgents = agent.filter((a) => session.user.id === a.profile_id);
 	const publishedAgents = agent.filter((a) => a.published === true);

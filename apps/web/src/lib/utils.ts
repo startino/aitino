@@ -10,6 +10,7 @@ import { writable } from "svelte/store";
 import type { ContextKey, ContextMap, Crew } from "$lib/types";
 import { browser } from "$app/environment";
 import { AVATARS, SAMPLE_FULL_NAMES } from "$lib/config";
+import { supabase } from "./supabase";
 
 export function getNodesCount(nodes: Node[]) {
 	return {
@@ -22,7 +23,11 @@ export function pickRandomName() {
 	return SAMPLE_FULL_NAMES[getRandomIndex(SAMPLE_FULL_NAMES)];
 }
 export function pickRandomAvatar() {
-	return AVATARS[getRandomIndex(AVATARS)];
+	// Images in agent-avatars bucket are named between 0-49, inclusive
+	const index = Math.floor(Math.random() * 50);
+	const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`)
+	console.log(data.publicUrl)
+	return data.publicUrl;
 }
 
 function getRandomIndex(array: Array<unknown>) {

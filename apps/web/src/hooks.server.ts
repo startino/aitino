@@ -5,7 +5,6 @@ import { createSupabaseServerClient } from "@supabase/auth-helpers-sveltekit";
 import { redirect, type Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
-	authenticateUser(event);
 
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,

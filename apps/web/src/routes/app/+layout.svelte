@@ -46,6 +46,12 @@
 					href: '/app/auto-build',
 					icon: Zap,
 					current: false
+				},
+				{
+					name: 'Sessions',
+					href: '/app/sessions',
+					icon: MessagesSquare,
+					current: false
 				}
 			]
 		},
@@ -53,14 +59,14 @@
 			name: '',
 			items: [
 				{
-					name: 'Sessions',
-					href: '/app/sessions',
-					icon: MessagesSquare,
+					name: 'Crew Library',
+					href: '/app/library/crew',
+					icon: Globe,
 					current: false
 				},
 				{
-					name: 'Community',
-					href: '/app/community',
+					name: 'Agent Library',
+					href: '/app/library/agent',
 					icon: Globe,
 					current: false
 				}
@@ -71,11 +77,11 @@
 			items: [
 				{
 					name: 'Crew Editor',
-					href: '/app/editors/crew',
+					href: '/app/editor/crew',
 					icon: UsersRound,
 					current: false
 				},
-				{ name: 'Agent Editor', href: '/app/editors/agent', icon: Dna, current: false }
+				{ name: 'Agent Editor', href: '/app/editor/agent', icon: Dna, current: false }
 			]
 		},
 		{
