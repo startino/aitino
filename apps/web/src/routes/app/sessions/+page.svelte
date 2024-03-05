@@ -26,7 +26,7 @@
 
 	export let data: PageData;
 
-	let { recentSession, allSessions, recentCrew, recentSessionMessages } = data;
+	let { recentSession, allSessions, recentCrew, recentSessionMessages, crewId } = data;
 
 	let activeSession = recentSession;
 	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
@@ -118,7 +118,10 @@
 	}
 
 	onMount(async () => {
-		loadingSession = false;
+		if (crewId) {
+			console.log('Starting new session from mount');
+			startNewSession(crewId);
+		}
 	});
 
 	async function* callCrew(url: string): AsyncGenerator<string, void, unknown> {
@@ -147,12 +150,14 @@
 	}
 
 	async function main(url: string): Promise<void> {
+		console.log('main');
 		if (!url) {
 			console.log('Usage: Provide a valid URL as a parameter');
 			return;
 		}
 
 		for await (const event of callCrew(url)) {
+			console.log('For await, event: ', event);
 			let e = null;
 			try {
 				e = JSON.parse(event.trim());
@@ -166,6 +171,7 @@
 			}
 
 			if (e.id === 0) {
+				console.log('First event');
 				activeSession = {
 					name: e.data.name,
 					id: e.data.session_id,
@@ -207,9 +213,12 @@
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
 		messages = await messageResponse.json();
 		loadingMessages = false;
+
+		replySession('CONTINUE');
 	}
 
 	function replySession(message: string) {
+		console.log('replying', message);
 		if (!activeSession) {
 			throw error(500, 'Cannot reply without session');
 		}
@@ -224,20 +233,20 @@
 	}
 </script>
 
-<main class="flex flex-row">
-	<div class="w-full">
+<div class="flex h-full flex-row place-items-center">
+	<div class="flex h-full w-full">
 		{#if loadingSession}
 			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
+				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 			>
-				<h1>Loading...</h1>
+				<h1>Loading the session...</h1>
 			</div>
 		{:else if activeSession}
 			<Chat
 				sessionId={activeSession?.id}
 				name={activeSession?.name}
 				{messages}
-				awaitingReply={waitingforUser}
+				waitingForUser={waitingforUser}
 				replyCallback={replySession}
 			/>
 		{:else if recentCrew}
@@ -381,4 +390,4 @@
 			</Sheet.Footer>
 		</Sheet.Content>
 	</Sheet.Root>
-</main>
+</div>

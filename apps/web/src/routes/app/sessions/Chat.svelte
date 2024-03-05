@@ -9,7 +9,7 @@
 	export let name: string;
 	export let messages: MessageType[] | Promise<MessageType[]>;
 
-	export let awaitingReply = false;
+	export let waitingForUser = false;
 
 	export let replyCallback: (message: string) => void;
 
@@ -72,7 +72,7 @@
 					{/if}
 				{/if}
 			{/each}
-			{#if !awaitingReply}
+			{#if !waitingForUser}
 				<div class="flex w-full gap-4 text-lg">
 					<p>Waiting for the crew to reply...</p>
 					<Loader2 class="animate-spin" size="24" />
@@ -84,24 +84,24 @@
 			class="bg-surface absolute bottom-4 left-1/2 flex w-full max-w-5xl -translate-x-1/2 flex-row items-center justify-center gap-1"
 		>
 			<div
-				class="bg-card border-border mx-auto flex w-full max-w-4xl flex-row rounded-md border {awaitingReply
+				class="bg-card border-border mx-auto flex w-full max-w-4xl flex-row rounded-md border {waitingForUser
 					? ''
 					: 'cursor-not-allowed'}"
 			>
 				<div class="flex place-items-center rounded-md">
 					<div
-						class="m-4 h-3 w-3 animate-ping rounded-full {awaitingReply
+						class="m-4 h-3 w-3 animate-ping rounded-full {waitingForUser
 							? 'bg-emerald-500'
 							: ' bg-amber-500'}"
 					></div>
 				</div>
 				<Textarea
 					class="prose prose-main bg-card w-full max-w-none resize-none rounded-l border-none text-lg"
-					placeholder={awaitingReply
+					placeholder={waitingForUser
 						? 'Give Feedback to the agents'
 						: 'Shh... the crew is working!'}
 					bind:value={newMessageContent}
-					disabled={!awaitingReply}
+					disabled={!waitingForUser}
 					{minRows}
 					maxRows={minRows}
 					on:input={handleInputChange}
@@ -109,7 +109,7 @@
 				<Button
 					variant="ghost"
 					class="hover:bg-default hover:text-primary flex place-items-center hover:scale-95"
-					disabled={newMessageContent.length <= 5 || !awaitingReply}
+					disabled={newMessageContent.length <= 5 || !waitingForUser}
 					on:click={sendMessage}
 				>
 					<SendHorizonal size="24" class="mx-auto my-auto" />

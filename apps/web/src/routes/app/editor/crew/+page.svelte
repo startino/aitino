@@ -62,7 +62,7 @@
 					return;
 				}
 				tryingToRun = false;
-				goto('/app/sessions');
+				goto('/app/sessions/?crewId=' + data.crew.id);
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
