@@ -64,10 +64,12 @@
 			</div>
 		{:then messages}
 			{#each messages as message, index}
-				<MessageItem {message} />
+				{#if message.content != 'CONTINUE'}
+					<MessageItem {message} />
 
-				{#if index !== messages.length - 1}
-					<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+					{#if index !== messages.length - 1}
+						<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+					{/if}
 				{/if}
 			{/each}
 			{#if !awaitingReply}
