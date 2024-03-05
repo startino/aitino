@@ -1,16 +1,16 @@
+
 import { supabase } from "$lib/supabase";
 import type { TablesInsert } from "$lib/types/supabase";
 import { error } from "@sveltejs/kit";
-import type { Crew, Message, Session } from "$lib/types/models";
+import type { Crew, Message, Session, Agent  } from "$lib/types/models";
 
 export async function getMessages(session_id: string) {
-
 	const { data, error: err } = await supabase
-		.from("messages")
-		.select("*")
-		.eq("session_id", session_id);
+		.from('messages')
+		.select('*')
+		.eq('session_id', session_id);
 	if (err) {
-		throw error(500, "Failed attempt at retrieving messages. Please reload the page.");
+		throw error(500, 'Failed attempt at retrieving messages. Please reload the page.');
 	}
 
 	if (data.length === 0) {
@@ -43,14 +43,11 @@ export async function postCrew(data: TablesInsert<"crews">) {
 	if (!data.nodes) throw error(400, "Invalid Crew Nodes");
 	if (!data.edges) throw error(400, "Invalid Crew Edges");
 
-	return supabase.from("crews").upsert(data);
+	return supabase.from('crews').upsert(data);
 }
 
 export async function getCrews(profileId: string) {
-	const { data, error: err } = await supabase
-		.from("crews")
-		.select("*")
-		.eq("profile_id", profileId);
+	const { data, error: err } = await supabase.from('crews').select('*').eq('profile_id', profileId);
 
 	if (err) {
 		return [];
@@ -59,6 +56,63 @@ export async function getCrews(profileId: string) {
 		return [];
 	}
 
+	const crews: Crew[] = data as Crew[];
+
+	return crews;
+}
+
+export async function getAllCrews() {
+	const { data, error: err } = await supabase.from('crews').select('*');
+
+	if (err) {
+		return [];
+	}
+	if (data.length === 0) {
+		return [];
+	}
+
+	const crews: Crew[] = data as Crew[];
+
+	return crews;
+}
+
+export async function getAgents(profileId: string) {
+	const { data, error: err } = await supabase.from('agents').select('*').eq('profile_id', profileId);
+	if (err) {
+		return [];
+	}
+	if (data.length === 0) {
+		return [];
+	}
+	const agents: Agent[] = data as Agent[];
+
+	return agents;
+
+}
+
+export async function getPublishedAgents() {
+	const { data, error: err } = await supabase.from('agents').select('*').eq('published', true);
+	
+	if (err) {
+		return [];
+	}
+	if (data.length === 0) {
+		return [];
+	}
+	const agents: Agent[] = data as Agent[];
+
+	return agents;
+}
+
+export async function getPublishedCrews() {
+	const { data, error: err } = await supabase.from('crews').select('*').eq('published', true);
+	
+	if (err) {
+		return [];
+	}
+	if (data.length === 0) {
+		return [];
+	}
 	const crews: Crew[] = data as Crew[];
 
 	return crews;
