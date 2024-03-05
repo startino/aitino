@@ -35,14 +35,6 @@ export const actions: Actions = {
 	save: async ({ cookies, request }) => {
 		const data = await request.json();
 
-		if (!data.id) throw error(400, "Invalid Crew ID");
-		if (!data.profile_id) throw error(400, "Invalid Profile ID");
-		if (!data.title) throw error(400, "Invalid Crew Title");
-		if (!data.description) throw error(400, "Invalid Crew Description");
-		if (!data.receiver_id) throw error(400, "Invalid Receiver ID");
-		if (!data.nodes) throw error(400, "Invalid Crew Nodes");
-		if (!data.edges) throw error(400, "Invalid Crew Edges");
-
 		const { error: err } = await db.postCrew({
 			id: data.id,
 			profile_id: data.profile_id,
