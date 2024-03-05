@@ -12,15 +12,12 @@
 		type Edge
 	} from '@xyflow/svelte';
 	import { toast } from 'svelte-sonner';
-
 	import '@xyflow/svelte/dist/style.css';
-
 	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Library } from '$lib/components/ui/library';
+	import { AgentLibrary, CrewLibrary } from '$lib/components/ui/library';
 	import * as CustomNode from '$lib/components/ui/custom-node';
-
 	import {
 		getContext,
 		getWritableNodes,
@@ -29,13 +26,15 @@
 		pickRandomName,
 		getNodesCount
 	} from '$lib/utils';
-	import type { PanelAction } from '$lib/types';
+	import type { PanelAction, SaveResult } from '$lib/types';
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
 	import type { CrewLoad } from '$lib/types/loads';
-	import { AgentEditor } from '$lib/components/ui/agent-editor';
+	import { goto } from '$app/navigation';
+	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
-console.log(data.myCrews, 'myCrews', data.pulishedCrews);
+	console.log(data.myCrews, 'myCrews', data.pulishedCrews);
+
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
 	let title = data.crew.title;
@@ -43,25 +42,42 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 	let description = data.crew.description;
 	$: data.crew.description = description;
 
-	let openAgentEditor = false;
+	let openAgentLibrary = false;
+
+	// Reactivity for loading states
+	$: tryingToRun = false;
+	let tryingToSave = false;
 
 	const actions: PanelAction[] = [
 		{
 			name: 'Run',
+			loading: tryingToRun, // TODO: Implement reactivity for loading
 			buttonVariant: 'default',
 			onclick: async () => {
-				await save();
-				window.location.href = '/app/sessions';
+				tryingToRun = true;
+				const { error } = await save();
+				if (error) {
+					tryingToRun = false;
+					return;
+				}
+				tryingToRun = false;
+				goto('/app/sessions/?crewId=' + data.crew.id);
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
-		{ name: 'Add Agent', buttonVariant: 'outline', onclick: addNewAgent },
+		{
+			name: 'Load Agent',
+			buttonVariant: 'outline',
+			onclick: () => {
+				openAgentLibrary = true;
+			}
+		},
 		{ name: 'Load Crew', buttonVariant: 'outline', isCustom: true },
 		{
 			name: 'Load Agent',
 			buttonVariant: 'outline',
 			onclick: () => {
-				openAgentEditor = true;
+				openAgentLibrary = true;
 			}
 		},
 		{
@@ -93,7 +109,12 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 		{
 			name: 'Save',
 			buttonVariant: 'outline',
-			onclick: async () => await save()
+			loading: tryingToSave,
+			onclick: async () => {
+				tryingToSave = true;
+				await save();
+				tryingToSave = false;
+			}
 		},
 		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
 	];
@@ -150,7 +171,8 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 	const edges = writable<Edge[]>(data.crew.edges);
 	$: data.crew.edges = $edges;
 
-	async function save() {
+	async function save(): Promise<SaveResult> {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 		if (!data.crew.id) {
 			data.crew.id = crypto.randomUUID();
 		}
@@ -163,11 +185,13 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 		).json();
 
 		if (response.error) {
+			console.log(response.error);
 			toast.error(response.error.message);
-			return;
+			return { error: true, message: response.error.message };
 		}
 
 		toast.success('Nodes successfully saved!');
+		return { error: false, message: 'Nodes successfully saved!' };
 	}
 
 	function setReceiver(id: string | null | undefined) {
@@ -296,7 +320,7 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 							</Button>
 						</Dialog.Trigger>
 						<Dialog.Content class="max-w-6xl">
-							<Library
+							<CrewLibrary
 								myCrews={data.myCrews}
 								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
@@ -318,9 +342,9 @@ console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 	</SvelteFlow>
 
 	<div class="w-full max-w-6xl">
-		<Dialog.Root open={openAgentEditor} onOpenChange={() => (openAgentEditor = false)}>
+		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
 			<Dialog.Content class="max-w-6xl">
-				<AgentEditor myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
+				<AgentLibrary myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>

@@ -26,7 +26,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const session = await event.locals.getSession();
 	if (event.url.pathname.startsWith("/app")) {
-		console.log(session, 'session')
 		if (!session) {
 			// If there's no session, redirect to login page
 			throw redirect(302, "/login");
