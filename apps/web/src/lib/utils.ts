@@ -220,6 +220,15 @@ export function formatDate(date: string, dateStyle: DateStyle = "medium", locale
 	return formatter.format(new Date(date));
 }
 
+// Uses timezone and time to return the HH:MM format
+export function getLocalTime(date: string): string {
+	// TODO: use time zone to get user's actual time
+	const sessionDate = new Date(date);
+	const hour = sessionDate.getHours();
+	const minutes = sessionDate.getMinutes();
+	return `${hour}:${minutes.toString().padStart(2, '0')}`;
+}
+
 export function daysRelativeToToday(date: string): string {
 	const now = new Date();
 	const then = new Date(date);
