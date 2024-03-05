@@ -12,15 +12,12 @@
 		type Edge
 	} from '@xyflow/svelte';
 	import { toast } from 'svelte-sonner';
-
 	import '@xyflow/svelte/dist/style.css';
-
 	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Library } from '$lib/components/ui/library';
+	import { AgentLibrary, CrewLibrary } from '$lib/components/ui/library';
 	import * as CustomNode from '$lib/components/ui/custom-node';
-
 	import {
 		getContext,
 		getWritableNodes,
@@ -36,14 +33,16 @@
 	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
+	console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-
 	let title = data.crew.title;
 	$: data.crew.title = title;
 	let description = data.crew.description;
 	$: data.crew.description = description;
+
+	let openAgentLibrary = false;
 
 	// Reactivity for loading states
 	$: tryingToRun = false;
@@ -66,7 +65,13 @@
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
-		{ name: 'Add Agent', buttonVariant: 'outline', onclick: addNewAgent },
+		{
+			name: 'Load Agent',
+			buttonVariant: 'outline',
+			onclick: () => {
+				openAgentLibrary = true;
+			}
+		},
 		{ name: 'Load Crew', buttonVariant: 'outline', isCustom: true },
 		{
 			name: 'Export',
@@ -96,19 +101,15 @@
 		},
 		{
 			name: 'Save',
-			loading: tryingToSave,
 			buttonVariant: 'outline',
+			loading: tryingToSave,
 			onclick: async () => {
 				tryingToSave = true;
 				await save();
 				tryingToSave = false;
 			}
 		},
-		{
-			name: 'Layout',
-			buttonVariant: 'outline',
-			onclick: layout
-		}
+		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
 	];
 
 	const nodeTypes = {
@@ -311,8 +312,10 @@
 								{action.name}
 							</Button>
 						</Dialog.Trigger>
-						<Dialog.Content class="max-w-5xl">
-							<Library
+						<Dialog.Content class="max-w-6xl">
+							<CrewLibrary
+								myCrews={data.myCrews}
+								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
 									const crew = e.detail.crew;
 									$count = getNodesCount(crew.nodes);
@@ -330,4 +333,12 @@
 			</RightEditorSidebar>
 		</Panel>
 	</SvelteFlow>
+
+	<div class="w-full max-w-6xl">
+		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
+			<Dialog.Content class="max-w-6xl">
+				<AgentLibrary myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
+			</Dialog.Content>
+		</Dialog.Root>
+	</div>
 </div>
