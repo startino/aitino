@@ -190,7 +190,7 @@ async def run_crew(
 
 @app.get("/auto-build")
 def auto_build_maeve(
-    general_task: str
+    general_task: str, profile_id: UUID
     ): #return maeve so maeve_run can run it
         agents = build_agents.BuildAgents()
         auto_build_agent = agents.create_all_in_one_agent()
@@ -209,5 +209,9 @@ def auto_build_maeve(
             message=general_task,
             silent=True
         )
-        return (chat_result.chat_history[1]["content"])
+        crew_frame = chat_result.chat_history[1]["content"]
+        print(crew_frame)
+        return (crew_frame)
+        #some_comp = some_json_parser_and_comp_creator(crew_frame) 
+
         #client = OpenAI()
