@@ -16,6 +16,9 @@
 	import type { ComponentType } from 'svelte';
 	import type { Icon } from 'lucide-svelte';
 	import { Logo } from '../logo';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	export let navigations: {
 		name: string;
@@ -40,13 +43,15 @@
 		}
 	];
 	export let bottomNavigation = [{ name: 'Logout', href: '/', icon: LogOut, current: false }]; // TODO: Make this button actually log out the user
+
+	let tiersOpen = false;
 </script>
 
 <!-- Static sidebar for desktop -->
 <div class=" flex h-full py-8 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
 	<!-- Sidebar component, swap this element with another sidebar if you like -->
 	<div
-		class="bg-primary-950/30 flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border px-6 pb-6 text-white"
+		class="flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border bg-primary-950/30 px-6 pb-6 text-white"
 	>
 		<div class="flex h-16 shrink-0 items-center px-2 pt-6">
 			<a href="/app/auto-build" class="mr-4 flex place-items-center space-x-2">
@@ -57,7 +62,7 @@
 			</a>
 		</div>
 		<nav class="flex h-full flex-col sm:mt-0 sm:pt-0">
-			<ul role="list" class="flex h-full list-none flex-col gap-y-0 pl-0 pt-6 sm:mt-0 sm:pl-0">
+			<ul role="list" class="mb-5 flex h-full list-none flex-col gap-y-0 pl-0 pt-6 sm:mt-0 sm:pl-0">
 				<li class="my-0 pl-0 sm:my-0 sm:pl-0">
 					{#each navigations as { name, items }}
 						<ul role="list" class=" mb-6 list-none gap-4 pl-0 sm:mb-8 sm:pl-0">
@@ -71,13 +76,13 @@
 											href
 										)
 											? 'bg-accent/90 text-accent-foreground hover:bg-accent '
-											: 'text-foreground hover:text-accent hover:bg-primary/5 opacity-100'}"
+											: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
 									>
 										<svelte:component this={icon} />
 										{name}
 										{#if pendingCount}
 											<span
-												class="bg-accent text-accent-foreground ml-auto rounded-full px-2 py-1 text-xs font-semibold"
+												class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
 											>
 												{pendingCount}
 											</span>
@@ -98,7 +103,7 @@
 										href
 									)
 										? 'bg-accent/90 text-foreground hover:bg-accent '
-										: 'text-foreground hover:text-accent hover:bg-primary/5 opacity-100'}"
+										: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
 								>
 									<svelte:component this={icon} />
 									{name}
@@ -108,6 +113,20 @@
 					</ul>
 				</li>
 			</ul>
+
+			<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
+				<Dialog.Trigger>
+					<Button>Upgrade</Button>
+				</Dialog.Trigger>
+				<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
+					<PricingTiers
+						on:choose={() => {
+							tiersOpen = false;
+						}}
+					/>
+				</Dialog.Content>
+				<Dialog.Overlay />
+			</Dialog.Root>
 		</nav>
 	</div>
 </div>

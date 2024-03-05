@@ -44,6 +44,7 @@
 	"dependencies": {
 		"@cartamd/plugin-code": "^3.0.1",
 		"@dagrejs/dagre": "^1.0.4",
+		"@stripe/stripe-js": "^3.0.7",
 		"@supabase/auth-helpers-sveltekit": "^0.10.7",
 		"@supabase/supabase-js": "^2.39.7",
 		"@sveltejs/adapter-vercel": "^4.0.5",
@@ -62,8 +63,10 @@
 		"mdsvex": "^0.11.0",
 		"mode-watcher": "^0.2.1",
 		"object-hash": "^3.0.0",
+		"stripe": "^14.19.0",
 		"svelte-markdown": "^0.4.1",
 		"svelte-sonner": "^0.3.19",
+		"svelte-stripe": "^1.1.4",
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.1.20",
 		"uuid": "^9.0.1"
