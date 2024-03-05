@@ -33,13 +33,6 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) 
 		publishedAgents: await publishedAgents
 	};
 
-
-
-	const crews = await db.getCrews(profileId);
-	if (userCrews.length !== 0) {
-		data.crew = userCrews[0]; // TODO: select most recent crew by default and add support for managing crew
-	}
-
 	return data;
 };
 

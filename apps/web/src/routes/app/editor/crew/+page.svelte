@@ -74,13 +74,6 @@
 		},
 		{ name: 'Load Crew', buttonVariant: 'outline', isCustom: true },
 		{
-			name: 'Load Agent',
-			buttonVariant: 'outline',
-			onclick: () => {
-				openAgentLibrary = true;
-			}
-		},
-		{
 			name: 'Export',
 			buttonVariant: 'outline',
 			onclick: () => {
