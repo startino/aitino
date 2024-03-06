@@ -8,9 +8,12 @@
 	import { fade } from 'svelte/transition';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import type { Agent } from '$lib/types/models';
+	import { createEventDispatcher } from 'svelte';
 
 	export let myAgents: Agent[];
 	export let publishedAgents: Agent[];
+
+	const dispatch = createEventDispatcher();
 
 	let searchQuery = '';
 	let filterPublished = false;
@@ -143,7 +146,7 @@
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
 									<img
 										src={agent.avatar_url}
-										alt={agent.name}
+										alt={agent.title}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/>
 								</div>
@@ -151,9 +154,9 @@
 									<div
 										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
 									>
-										{agent.name}
+										{agent.title}
 									</div>
-									<div class="text-lg italic text-gray-500">{agent.author}</div>
+									<!-- <div class="text-lg italic text-gray-500">{agent.author}</div> -->
 								</div>
 							</div>
 							<div class="flex h-full items-center justify-between">
@@ -162,18 +165,26 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={(event) => console.log('not showing the details')}
-									>Load</button
+									on:click|stopPropagation={() =>
+										dispatch('loadAgent', {
+											id: agent.id,
+											name: agent.title,
+											avatar: agent.avatar_url,
+											model: agent.model,
+											job: agent.role,
+											summary: agent.title
+										})}
 								>
+									Load
+								</button>
 							</div>
 						</div>
 						<Card.Content>
 							<div class="flex justify-between">
 								<p class="max-w-4xl px-6">
-									{agent.summary}
+									{agent.role}
 								</p>
-								{#if agent.updated_at !== null}
-									<div class="justify-self-end">{timeSince(agent.updated_at)}</div>{/if}
+								<div class="justify-self-end">{timeSince(agent.created_at)}</div>
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -202,7 +213,7 @@
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
 									<img
 										src={agent.avatar_url}
-										alt={agent.name}
+										alt={agent.title}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/>
 								</div>
@@ -210,9 +221,9 @@
 									<div
 										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
 									>
-										{agent.name}
+										{agent.title}
 									</div>
-									<div class="text-lg italic text-gray-500">{agent.author}</div>
+									<!-- <div class="text-lg italic text-gray-500">{agent.author}</div> -->
 								</div>
 							</div>
 							<div class="flex h-full items-center justify-between">
@@ -229,10 +240,9 @@
 						<Card.Content>
 							<div class="flex justify-between" on:click={() => (showDetails = true)}>
 								<p class="max-w-4xl px-6">
-									{agent.summary}
+									{agent.role}
 								</p>
-								{#if agent.updated_at !== null}
-									<div class="justify-self-end">{timeSince(agent.updated_at)}</div>{/if}
+								<div class="justify-self-end">{timeSince(agent.created_at)}</div>
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -254,7 +264,7 @@
 				<div class="relative">
 					<img
 						src={displayedAgent.avatar_url}
-						alt={displayedAgent.name}
+						alt={displayedAgent.title}
 						class="border-primary h-48 w-48 rounded-full border-4 object-cover shadow-2xl"
 					/>
 					<div
@@ -267,7 +277,6 @@
 					{#if displayedAgent.created_at}
 						<p class="text-sm text-gray-400">Created {timeSince(displayedAgent.created_at)}</p>
 					{/if}
-					<!-- Enhanced Model info with badge-like component -->
 					<div
 						class="mt-2 inline-flex items-center justify-center rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white shadow"
 					>
@@ -279,13 +288,10 @@
 				<h2
 					class="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text py-2 text-6xl font-extrabold text-transparent"
 				>
-					{displayedAgent.name}
+					{displayedAgent.title}
 				</h2>
-				<p class="mx-auto max-w-3xl text-xl text-gray-400">{displayedAgent.summary}</p>
-				<p class="text-lg italic text-gray-500">— {displayedAgent.author}</p>
-				{#if displayedAgent.updated_at !== null}
-					<p class="text-sm text-gray-400">Updated {timeSince(displayedAgent.updated_at)}</p>
-				{/if}
+				<p class="mx-auto max-w-3xl text-xl text-gray-400">{displayedAgent.role}</p>
+				<!-- <p class="text-lg italic text-gray-500">— {displayedAgent.author}</p> -->
 			</div>
 
 			<div class="text-white">

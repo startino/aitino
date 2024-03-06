@@ -33,7 +33,6 @@
 	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
-	console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
@@ -201,32 +200,63 @@
 		$edges = layoutedElements.edges;
 	}
 
-	function addNewAgent() {
+	// function addNewAgent() {
+	// 	if ($count.agents >= AGENT_LIMIT) return;
+
+	// 	const position = { ...getViewport() };
+
+	// 	let name = '';
+
+	// 	do {
+	// 		name = pickRandomName();
+	// 	} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
+
+	// 	// setCenter(position.x, position.y, { zoom: position.zoom });
+
+	// 	nodes.update((v) => [
+	// 		...v,
+	// 		{
+	// 			id: crypto.randomUUID(),
+	// 			type: 'agent',
+	// 			position,
+	// 			selectable: false,
+	// 			data: {
+	// 				name: writable(name),
+	// 				job_title: writable(''),
+	// 				prompt: writable(''),
+	// 				model: writable({ label: '', value: '' }),
+	// 				avatar: pickRandomAvatar()
+	// 			}
+	// 		}
+	// 	]);
+
+	// 	$count.agents++;
+	// }
+
+	function addNewAgent(
+		id: string,
+		agentName: string,
+		agentModel: string,
+		job: string,
+		summary: string,
+		agentAvatar: string
+	) {
 		if ($count.agents >= AGENT_LIMIT) return;
-
+		console.log(agentName, agentModel, agentAvatar, id, 'from add new agent');
 		const position = { ...getViewport() };
-
-		let name = '';
-
-		do {
-			name = pickRandomName();
-		} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
-
-		// setCenter(position.x, position.y, { zoom: position.zoom });
-
 		nodes.update((v) => [
 			...v,
 			{
-				id: crypto.randomUUID(),
+				id: id,
 				type: 'agent',
 				position,
 				selectable: false,
 				data: {
-					name: writable(name),
-					job_title: writable(''),
-					prompt: writable(''),
-					model: writable({ label: '', value: '' }),
-					avatar: pickRandomAvatar()
+					name: writable(agentName),
+					model: writable(agentModel),
+					prompt: writable(summary),
+					job_title: writable(job),
+					avatar: agentAvatar
 				}
 			}
 		]);
@@ -337,8 +367,35 @@
 	<div class="w-full max-w-6xl">
 		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
 			<Dialog.Content class="max-w-6xl">
-				<AgentLibrary myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
+				<AgentLibrary
+					myAgents={data.myAgents}
+					publishedAgents={data.publishedAgents}
+					on:crewLoad={({ detail }) => {
+						const crew = detail.crew;
+						console.log(crew, 'crew');
+						$count = getNodesCount(detail.nodes);
+						nodes.set(getWritableNodes(detail.nodes));
+						edges.set(detail.edges);
+						libraryOpen = false;
+						title = detail.title;
+						description = detail.description;
+						setReceiver(detail.receiver_id);
+					}}
+				/>
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>
 </div>
+
+<!-- this to load the agent using the load button on the agent libaray -->
+<!-- 
+	on:loadAgent={({ detail }) =>
+						addNewAgent(
+							detail.id,
+							detail.name,
+							detail.model,
+							detail.job,
+							detail.summary,
+							detail.avatar
+						)}
+ -->

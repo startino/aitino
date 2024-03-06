@@ -34,9 +34,9 @@ export type Agent = {
 	id: string;
 	created_at: string;
 	updated_at: string;
-	name: string;
+	title: string;
 	description: string[];
-	summary: string;
+	role: string;
 	author: string;
 	model: string;
 	published: boolean;
