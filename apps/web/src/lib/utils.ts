@@ -1,21 +1,21 @@
-import { type ClassValue, clsx } from "clsx";
-import { get } from "svelte/store";
-import type { Node } from "@xyflow/svelte";
-import { twMerge } from "tailwind-merge";
-import { cubicOut } from "svelte/easing";
-import type { RequestEvent } from "@sveltejs/kit";
-import type { TransitionConfig } from "svelte/transition";
-import { getContext as getSvelteContext, setContext as setSvelteContext } from "svelte";
-import { writable } from "svelte/store";
-import type { ContextKey, ContextMap, Crew } from "$lib/types";
-import { browser } from "$app/environment";
-import { AVATARS, SAMPLE_FULL_NAMES } from "$lib/config";
-import { supabase } from "./supabase";
+import { type ClassValue, clsx } from 'clsx';
+import { get } from 'svelte/store';
+import type { Node } from '@xyflow/svelte';
+import { twMerge } from 'tailwind-merge';
+import { cubicOut } from 'svelte/easing';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { TransitionConfig } from 'svelte/transition';
+import { getContext as getSvelteContext, setContext as setSvelteContext } from 'svelte';
+import { writable } from 'svelte/store';
+import type { ContextMap, Crew } from '$lib/types';
+import { browser } from '$app/environment';
+import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
+import { supabase } from './supabase';
 
 export function getNodesCount(nodes: Node[]) {
 	return {
-		agents: nodes.filter((n) => n.type === "agent").length,
-		prompts: nodes.filter((n) => n.type === "prompt").length
+		agents: nodes.filter((n) => n.type === 'agent').length,
+		prompts: nodes.filter((n) => n.type === 'prompt').length
 	};
 }
 
@@ -25,8 +25,8 @@ export function pickRandomName() {
 export function pickRandomAvatar() {
 	// Images in agent-avatars bucket are named between 0-49, inclusive
 	const index = Math.floor(Math.random() * 50);
-	const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`)
-	console.log(data.publicUrl)
+	const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`);
+	console.log(data.publicUrl);
 	return data.publicUrl;
 }
 
@@ -37,25 +37,25 @@ function getRandomIndex(array: Array<unknown>) {
 }
 
 export const authenticateUser = ({ cookies }: RequestEvent) => {
-	if (cookies.get("profileId")) return;
+	if (cookies.get('profileId')) return;
 
-	const profileId = "edb9a148-a8fc-48bd-beb9-4bf5de602b78"; //crypto.randomUUID();
+	const profileId = 'edb9a148-a8fc-48bd-beb9-4bf5de602b78'; //crypto.randomUUID();
 
 	const expirationDate = new Date();
 	expirationDate.setMonth(expirationDate.getMonth() + 1);
 
-	cookies.set("profileId", profileId, {
-		path: "/",
+	cookies.set('profileId', profileId, {
+		path: '/',
 		httpOnly: true,
-		sameSite: "strict",
-		secure: process.env.NODE_ENV === "production",
+		sameSite: 'strict',
+		secure: process.env.NODE_ENV === 'production',
 		expires: expirationDate
 	});
 };
 
 export function getPremadeInputsMap() {
 	if (browser) {
-		const inputStr = localStorage.getItem("premade-inputs");
+		const inputStr = localStorage.getItem('premade-inputs');
 
 		if (inputStr) {
 			return JSON.parse(inputStr) as Record<string, string>;
@@ -88,7 +88,7 @@ export function injectPremadeValues(str: string) {
 export function getLocalCrew() {
 	let crewStr: string | null = null;
 	if (browser) {
-		crewStr = localStorage.getItem("crew");
+		crewStr = localStorage.getItem('crew');
 	}
 	if (!crewStr) return null;
 
@@ -98,7 +98,7 @@ export function getLocalCrew() {
 // creates an array of nodes without the stores
 export function getCleanNodes(nodes: Node[]): Node[] {
 	const agents = nodes
-		.filter((n) => n.type === "agent")
+		.filter((n) => n.type === 'agent')
 		.map((n) => {
 			const { prompt, name, job_title, model } = n.data;
 			return {
@@ -114,7 +114,7 @@ export function getCleanNodes(nodes: Node[]): Node[] {
 		});
 
 	const prompts = nodes
-		.filter((n) => n.type === "prompt")
+		.filter((n) => n.type === 'prompt')
 		.map((n) => {
 			const { title, content } = n.data;
 			return {
@@ -133,13 +133,13 @@ export function getCleanNodes(nodes: Node[]): Node[] {
 export function getWritableNodes(nodes: Node[]): Node[] {
 	return [
 		...nodes
-			.filter((n) => n.type === "prompt")
+			.filter((n) => n.type === 'prompt')
 			.map((n) => ({
 				...n,
 				data: { title: writable(n.data.title), content: writable(n.data.content) }
 			})),
 		...nodes
-			.filter((n) => n.type === "agent")
+			.filter((n) => n.type === 'agent')
 			.map((n) => ({
 				...n,
 				data: {
@@ -153,12 +153,12 @@ export function getWritableNodes(nodes: Node[]): Node[] {
 	];
 }
 
-export function setContext(key: ContextKey, value: ContextMap[typeof key]) {
+export function setContext<K extends keyof ContextMap>(key: K, value: ContextMap[K]) {
 	return setSvelteContext(key, value);
 }
 
-export function getContext(key: ContextKey) {
-	return getSvelteContext<ContextMap[typeof key]>(key);
+export function getContext<K extends keyof ContextMap>(key: K): ContextMap[K] {
+	return getSvelteContext<ContextMap[K]>(key);
 }
 
 export function cn(...inputs: ClassValue[]) {
@@ -177,7 +177,7 @@ export const flyAndScale = (
 	params: FlyAndScaleParams = { y: -8, x: 0, start: 0.95, duration: 150 }
 ): TransitionConfig => {
 	const style = getComputedStyle(node);
-	const transform = style.transform === "none" ? "" : style.transform;
+	const transform = style.transform === 'none' ? '' : style.transform;
 
 	const scaleConversion = (valueA: number, scaleA: [number, number], scaleB: [number, number]) => {
 		const [minA, maxA] = scaleA;
@@ -193,7 +193,7 @@ export const flyAndScale = (
 		return Object.keys(style).reduce((str, key) => {
 			if (style[key] === undefined) return str;
 			return str + `${key}:${style[key]};`;
-		}, "");
+		}, '');
 	};
 
 	return {
@@ -213,9 +213,9 @@ export const flyAndScale = (
 	};
 };
 
-type DateStyle = Intl.DateTimeFormatOptions["dateStyle"];
+type DateStyle = Intl.DateTimeFormatOptions['dateStyle'];
 
-export function formatDate(date: string, dateStyle: DateStyle = "medium", locales = "en") {
+export function formatDate(date: string, dateStyle: DateStyle = 'medium', locales = 'en') {
 	const formatter = new Intl.DateTimeFormat(locales, { dateStyle });
 	return formatter.format(new Date(date));
 }
@@ -232,8 +232,8 @@ export function getLocalTime(date: string): string {
 export function daysRelativeToToday(date: string): string {
 	const now = new Date();
 	const then = new Date(date);
-	if (now.toDateString() === then.toDateString()) return "Today";
-	if (now.toDateString() === new Date(then.getTime() + 86400000).toDateString()) return "Yesterday";
+	if (now.toDateString() === then.toDateString()) return 'Today';
+	if (now.toDateString() === new Date(then.getTime() + 86400000).toDateString()) return 'Yesterday';
 	const diff = now.getTime() - then.getTime();
 	const daysSince = Math.floor(diff / (1000 * 60 * 60 * 24));
 	return daysSince.toString();

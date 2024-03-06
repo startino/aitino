@@ -1,16 +1,19 @@
-import { authenticateUser } from "$lib/utils";
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public";
-import { createSupabaseServerClient } from "@supabase/auth-helpers-sveltekit";
+import Stripe from 'stripe';
+import { authenticateUser } from '$lib/utils';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { STRIPE_SECRET_KEY } from '$env/static/private';
+import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 
-import { redirect, type Handle } from "@sveltejs/kit";
+import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
 		event
 	});
+
+	event.locals.stripe = new Stripe(STRIPE_SECRET_KEY);
 
 	/**
 	 * a little helper that is written for convenience so that instead
@@ -25,15 +28,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	const session = await event.locals.getSession();
-	if (event.url.pathname.startsWith("/app")) {
+	if (event.url.pathname.startsWith('/app')) {
 		if (!session) {
 			// If there's no session, redirect to login page
-			throw redirect(302, "/login");
+			throw redirect(302, '/login');
 		}
 	}
 	return await resolve(event, {
 		filterSerializedResponseHeaders(name) {
-			return name === "content-range";
+			return name === 'content-range';
 		}
 	});
 };
