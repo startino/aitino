@@ -1,24 +1,21 @@
+import re
 import asyncio
-import json
 import logging
-import os
-from asyncio import Queue
-from pathlib import Path
-from typing import Any, AsyncGenerator, cast
+import autogen
+
+from typing import Any
 from uuid import UUID
 
-import autogen
 from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse, StreamingResponse
-from openai import OpenAI
+from fastapi.responses import RedirectResponse
 
 from .autobuilder import build_agents
-from .crew import Composition, Crew
+from .crew import Crew
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Message, Session, StreamReply
+from .models import Message, Session, Composition
 
 logger = logging.getLogger("root")
 
@@ -40,6 +37,7 @@ app.add_middleware(
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8081",
         "https://aiti.no",
+        "https://api.aiti.no",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -72,7 +70,7 @@ def improve(
 @app.get("/crew")
 async def run_crew(
     id: UUID, profile_id: UUID, session_id: UUID | None = None, reply: str | None = None
-) -> StreamingResponse:
+) -> dict:
     if reply and not session_id:
         raise HTTPException(
             status_code=400,
@@ -114,42 +112,6 @@ async def run_crew(
         )
         db.post_session(session)
 
-    q: Queue[Message | object] = Queue()
-    job_done = object()
-
-    async def watch_queue() -> AsyncGenerator:
-        # Watch the queue and yield items (messages) as they arrive
-        i = 0
-
-        # Yield session
-        yield json.dumps(
-            StreamReply(id=i, data={"session_id": str(session.id)}).model_dump(),
-            default=str,
-        ) + "\n"
-
-        i += 1
-
-        while True:
-            # Gets and dequeues item
-            next_item = await q.get()
-
-            # check if job is done or if it should be force stopped
-            if (
-                next_item is job_done
-                or os.path.exists(Path(os.getcwd(), "STOP"))
-                or i == 1000  # failsafe because while True scary
-            ):
-                yield json.dumps(
-                    StreamReply(id=i, status="success", data="done").model_dump(),
-                    default=str,
-                ) + "\n"
-                break
-
-            yield json.dumps(
-                StreamReply(id=i, data=next_item).model_dump(), default=str
-            ) + "\n"
-            i += 1
-
     async def on_reply(
         recipient: ConversableAgent,
         messages: list[dict] | None = None,
@@ -159,48 +121,93 @@ async def run_crew(
         logger.debug(f"on_reply: {recipient.name} {messages}")
         # This function is called when an LLM model replies
         if not messages:
+            logger.error("on_reply: No messages")
             return
         if len(messages) == 0:
-            return
-        if not messages[-1].get("name"):
+            logger.error("on_reply: No messages")
             return
 
-        logger.info(f"on_reply: {recipient.name} {messages[-1]}")
+        raw_msg = messages[-1]
+
+        if not raw_msg.get("name"):
+            logger.error(f"on_reply: No name\n{raw_msg}")
+            return
+        if not raw_msg.get("content"):
+            logger.error(f"on_reply: No content\n{raw_msg}")
+            return
+        if not raw_msg.get("role"):
+            logger.error(f"on_reply: No role\n{raw_msg}")
+            return
+
+        def get_name_and_job_title(input_string):
+            # Use regular expressions to insert spaces in camelCase and replace hyphens
+            formatted_string = re.sub(r"([a-z])([A-Z])", r"\1 \2", input_string)
+            formatted_string = re.sub(
+                r"([A-Z])([A-Z][a-z])", r"\1 \2", formatted_string
+            )
+            formatted_string = formatted_string.replace("-", " - ")
+
+            # Split the formatted string into name and job title
+            name, job_title = map(str.strip, formatted_string.split(" - "))
+
+            return name, job_title
+
+        if get_name_and_job_title(raw_msg["name"])[0] not in [
+            agent.name for agent in composition.agents
+        ]:
+            logger.error(f"on_reply: sender {raw_msg['name']} not in composition")
+            return
+
+        if get_name_and_job_title(recipient.name)[1] not in [
+            agent.name for agent in composition.agents
+        ]:
+            logger.error(f"on_reply: recipient {recipient.name} not in composition")
+            return
+
+        logger.info(f"on_reply: {recipient.name} {raw_msg}")
+
+        for agent in composition.agents:
+            if agent.name == recipient.name:
+                recipient_id = agent.id
+            if agent.name == raw_msg["name"]:
+                sender_id = agent.id
+
         message = Message(
             session_id=session.id,
-            recipient=recipient.name,
-            name=messages[-1]["name"],
-            content=messages[-1]["content"],
-            role=messages[-1]["role"],
+            recipient_id=recipient_id,
+            sender_id=sender_id,
+            content=raw_msg["content"],
+            role=raw_msg["role"],
         )
+
         db.post_message(message)
-        await q.put(message)
 
     crew = Crew(composition, on_reply)
 
     # "crew.run(message)" is run in a seperate thread
     asyncio.run_coroutine_threadsafe(
-        crew.run(message, messages=cached_messages, q=q, job_done=job_done),
+        crew.run(message, messages=cached_messages),
         asyncio.get_event_loop(),
     )
 
-    return StreamingResponse(watch_queue(), media_type="application/x-ndjson")
+    return {"status": "success", "data": {"session": session.model_dump()}}
 
 
 @app.get("/auto-build")
-def auto_build_maeve(general_task: str):  # return maeve so maeve_run can run it
+def auto_build_crew(general_task: str):
     agents = build_agents.BuildAgents()
     auto_build_agent = agents.create_all_in_one_agent()
-    # task_simplifier = agents.create_task_simplifier(general_task)
-    # agent_employer = agents.create_employer()
     user_proxy = autogen.UserProxyAgent(
         name="user_proxy",
         system_message="test admin",
         code_execution_config=False,
         human_input_mode="NEVER",
+        default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
         max_consecutive_auto_reply=1,
     )
-    user_proxy.initiate_chat(
-        auto_build_agent,
-        message=general_task,
+    chat_result = user_proxy.initiate_chat(
+        auto_build_agent, message=general_task, silent=True
     )
+    crew_frame = chat_result.chat_history[1]["content"]
+    print(crew_frame)
+    return crew_frame

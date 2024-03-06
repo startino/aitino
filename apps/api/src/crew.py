@@ -2,27 +2,15 @@ import asyncio
 import logging
 from asyncio import Queue
 from typing import Any, cast
+from uuid import UUID, uuid4
 
 import autogen
 from autogen.cache import Cache
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from .models import CodeExecutionConfig, Message
+from .models import CodeExecutionConfig, Composition, Message
 
 logger = logging.getLogger("root")
-
-
-class Agent(BaseModel):
-    id: str
-    name: str
-    job_title: str
-    system_message: str
-    model: str
-
-
-class Composition(BaseModel):
-    reciever_id: str
-    agents: list[Agent]
 
 
 class Crew:
@@ -70,7 +58,7 @@ class Crew:
         self,
         recipient: autogen.ConversableAgent,
         messages: list[dict] | None = None,
-        sender: Agent | None = None,
+        sender: autogen.Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
         if self.on_reply:
