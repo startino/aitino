@@ -38,9 +38,9 @@
 	$: filteredMyAgents = myAgents.filter(
 		(a) =>
 			(searchQuery === '' ||
-				a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				a.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				a.description.some((desc) => desc.toLowerCase().includes(searchQuery.toLowerCase()))) &&
 			(!filterPublished || a.published) &&
 			(filterModel === '' || a.model === filterModel)
@@ -166,14 +166,7 @@
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 									on:click|stopPropagation={() =>
-										dispatch('loadAgent', {
-											id: agent.id,
-											name: agent.title,
-											avatar: agent.avatar_url,
-											model: agent.model,
-											job: agent.role,
-											summary: agent.title
-										})}
+										console.log('not showing the details')}
 								>
 									Load
 								</button>

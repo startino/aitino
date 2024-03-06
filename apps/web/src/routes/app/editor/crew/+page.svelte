@@ -348,13 +348,24 @@
 								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
 									const crew = e.detail.crew;
-									$count = getNodesCount(crew.nodes);
+									$count = crew.nodes;
 									nodes.set(getWritableNodes(crew.nodes));
 									edges.set(crew.edges);
 									libraryOpen = false;
 									title = crew.title;
 									description = crew.description;
 									setReceiver(crew.receiver_id);
+								}}
+								on:crewLoad={({ detail }) => {
+									const crew = detail.crew;
+									console.log(crew, 'crew');
+									$count = getNodesCount(detail.nodes);
+									nodes.set(getWritableNodes(detail.nodes));
+									edges.set(detail.edges);
+									libraryOpen = false;
+									title = detail.title;
+									description = detail.description;
+									setReceiver(detail.id);
 								}}
 							/>
 						</Dialog.Content>
@@ -370,32 +381,9 @@
 				<AgentLibrary
 					myAgents={data.myAgents}
 					publishedAgents={data.publishedAgents}
-					on:crewLoad={({ detail }) => {
-						const crew = detail.crew;
-						console.log(crew, 'crew');
-						$count = getNodesCount(detail.nodes);
-						nodes.set(getWritableNodes(detail.nodes));
-						edges.set(detail.edges);
-						libraryOpen = false;
-						title = detail.title;
-						description = detail.description;
-						setReceiver(detail.receiver_id);
-					}}
 				/>
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>
 </div>
 
-<!-- this to load the agent using the load button on the agent libaray -->
-<!-- 
-	on:loadAgent={({ detail }) =>
-						addNewAgent(
-							detail.id,
-							detail.name,
-							detail.model,
-							detail.job,
-							detail.summary,
-							detail.avatar
-						)}
- -->

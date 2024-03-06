@@ -33,8 +33,12 @@
 	}
 
 	function updateFilterModel(model: string) {
+		console.log(model, 'model');
 		filterModel = filterModel === model ? '' : model;
+		console.log(filterModel, 'filterModel');
 	}
+
+	
 
 	// Adjusted filtering logic for myCrews and publishedCrews
 	$: filteredMyCrews = myCrews.filter(
@@ -49,6 +53,9 @@
 			) &&
 				(!filterPublished || crew.published) &&
 				(filterModel === '' || crew.nodes.some((node) => node.data.model?.label === filterModel)))
+
+
+				
 	);
 
 	$: filteredPublishedCrews = publishedCrews.filter(
@@ -133,7 +140,7 @@
 							checked={filterModel === 'gpt-3.5 turbo'}
 							on:click={() => updateFilterModel('gpt-3.5 turbo')}
 						>
-							GPT-3.5
+							GPT-3.5 Turbo
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
 							checked={filterModel === 'gpt-4'}
@@ -219,8 +226,14 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={() => dispatch('crewLoad', { crew: myCrews })}
-									>Load</button
+									on:click|stopPropagation={() =>
+										dispatch('crewLoad', {
+											id: agent.receiver_id,
+											title: agent.title,
+											nodes: agent.nodes,
+											edges: agent.edges,
+											description: agent.description
+										})}>Load</button
 								>
 							</div>
 						</div>
@@ -283,8 +296,14 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={() => dispatch('crewLoad', { crew: publishedCrews })}
-									>Load</button
+									on:click|stopPropagation={() =>
+										dispatch('crewLoad', {
+											id: agent.receiver_id,
+											title: agent.title,
+											nodes: agent.nodes,
+											edges: agent.edges,
+											description: agent.description
+										})}>Load</button
 								>
 							</div>
 						</div>
