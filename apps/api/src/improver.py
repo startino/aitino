@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 from typing import Literal, Protocol
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()

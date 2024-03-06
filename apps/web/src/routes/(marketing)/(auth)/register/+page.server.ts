@@ -14,7 +14,6 @@ export const actions: Actions = {
 	register: async ({ request, locals, url }) => {
 		const body = Object.fromEntries(await request.formData());
 		const session = await locals.getSession();
-		console.log(session, 'session');
 
 		const provider = url.searchParams.get("provider") as Provider;
 

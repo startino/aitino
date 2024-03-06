@@ -12,6 +12,7 @@ export type SvelteEvent<E extends Event = Event, T extends EventTarget = Element
 
 export type PanelAction = {
 	name: string;
+	loading?: boolean; 
 	buttonVariant: Variant;
 	onclick?: (e: Event) => void;
 	isCustom?: boolean;
@@ -45,3 +46,8 @@ export type Categories =
 	| "music"
 	| "technology"
 	| "science-fiction";
+
+export type SaveResult = {
+	error: boolean;
+	message: string | null;
+};

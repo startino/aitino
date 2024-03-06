@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { writable, get } from "svelte/store";
-	import dagre from "@dagrejs/dagre";
+	import { writable, get } from 'svelte/store';
+	import dagre from '@dagrejs/dagre';
 	import {
 		SvelteFlow,
 		Background,
@@ -10,17 +10,14 @@
 		useSvelteFlow,
 		type Node,
 		type Edge
-	} from "@xyflow/svelte";
-	import { toast } from "svelte-sonner";
-
-	import "@xyflow/svelte/dist/style.css";
-
-	import RightEditorSidebar from "$lib/components/RightEditorSidebar.svelte";
-	import { Button } from "$lib/components/ui/button";
-	import * as Dialog from "$lib/components/ui/dialog";
-	import { Library } from "$lib/components/ui/library";
-	import * as CustomNode from "$lib/components/ui/custom-node";
-
+	} from '@xyflow/svelte';
+	import { toast } from 'svelte-sonner';
+	import '@xyflow/svelte/dist/style.css';
+	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { AgentLibrary, CrewLibrary } from '$lib/components/ui/library';
+	import * as CustomNode from '$lib/components/ui/custom-node';
 	import {
 		getContext,
 		getWritableNodes,
@@ -28,36 +25,57 @@
 		pickRandomAvatar,
 		pickRandomName,
 		getNodesCount
-	} from "$lib/utils";
-	import type { PanelAction } from "$lib/types";
-	import { AGENT_LIMIT, PROMPT_LIMIT } from "$lib/config.js";
-	import type { CrewLoad } from "$lib/types/loads";
+	} from '$lib/utils';
+	import type { PanelAction, SaveResult } from '$lib/types';
+	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
+	import type { CrewLoad } from '$lib/types/loads';
+	import { goto } from '$app/navigation';
+	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
+	console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 
-	const { receiver, count } = getContext("crew");
+	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-
 	let title = data.crew.title;
 	$: data.crew.title = title;
 	let description = data.crew.description;
 	$: data.crew.description = description;
 
+	let openAgentLibrary = false;
+
+	// Reactivity for loading states
+	$: tryingToRun = false;
+	let tryingToSave = false;
+
 	const actions: PanelAction[] = [
 		{
-			name: "Run",
-			buttonVariant: "default",
+			name: 'Run',
+			loading: tryingToRun, // TODO: Implement reactivity for loading
+			buttonVariant: 'default',
 			onclick: async () => {
-				await save();
-				window.location.href = "/app/sessions";
+				tryingToRun = true;
+				const { error } = await save();
+				if (error) {
+					tryingToRun = false;
+					return;
+				}
+				tryingToRun = false;
+				goto('/app/sessions/?crewId=' + data.crew.id);
 			}
 		},
-		{ name: "Add Prompt", buttonVariant: "outline", onclick: addNewPrompt },
-		{ name: "Add Agent", buttonVariant: "outline", onclick: addNewAgent },
-		{ name: "Load Crew", buttonVariant: "outline", isCustom: true },
+		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
 		{
-			name: "Export",
-			buttonVariant: "outline",
+			name: 'Load Agent',
+			buttonVariant: 'outline',
+			onclick: () => {
+				openAgentLibrary = true;
+			}
+		},
+		{ name: 'Load Crew', buttonVariant: 'outline', isCustom: true },
+		{
+			name: 'Export',
+			buttonVariant: 'outline',
 			onclick: () => {
 				const jsonString = JSON.stringify(
 					{
@@ -70,11 +88,11 @@
 					null,
 					2
 				);
-				const blob = new Blob([jsonString], { type: "application/json" });
+				const blob = new Blob([jsonString], { type: 'application/json' });
 				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement("a");
+				const a = document.createElement('a');
 				a.href = url;
-				a.download = "crew.json";
+				a.download = 'crew.json';
 				document.body.appendChild(a);
 				a.click();
 				window.URL.revokeObjectURL(url);
@@ -82,11 +100,16 @@
 			}
 		},
 		{
-			name: "Save",
-			buttonVariant: "outline",
-			onclick: async () => await save()
+			name: 'Save',
+			buttonVariant: 'outline',
+			loading: tryingToSave,
+			onclick: async () => {
+				tryingToSave = true;
+				await save();
+				tryingToSave = false;
+			}
 		},
-		{ name: "Layout", buttonVariant: "outline", onclick: layout }
+		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
 	];
 
 	const nodeTypes = {
@@ -104,8 +127,8 @@
 
 	const { deleteElements, getNodes, getViewport, setCenter } = useSvelteFlow();
 
-	function getLayoutedElements(nodes: Node[], edges: Edge[], direction = "TB") {
-		const isHorizontal = direction === "LR";
+	function getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
+		const isHorizontal = direction === 'LR';
 		dagreGraph.setGraph({ rankdir: direction });
 
 		if (nodes.length > 0) {
@@ -141,24 +164,27 @@
 	const edges = writable<Edge[]>(data.crew.edges);
 	$: data.crew.edges = $edges;
 
-	async function save() {
+	async function save(): Promise<SaveResult> {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 		if (!data.crew.id) {
 			data.crew.id = crypto.randomUUID();
 		}
 
 		const response = await (
-			await fetch("?/save", {
-				method: "POST",
+			await fetch('?/save', {
+				method: 'POST',
 				body: JSON.stringify(data.crew)
 			})
 		).json();
 
 		if (response.error) {
+			console.log(response.error);
 			toast.error(response.error.message);
-			return;
+			return { error: true, message: response.error.message };
 		}
 
-		toast.success("Nodes successfully saved!");
+		toast.success('Nodes successfully saved!');
+		return { error: false, message: 'Nodes successfully saved!' };
 	}
 
 	function setReceiver(id: string | null | undefined) {
@@ -180,11 +206,11 @@
 
 		const position = { ...getViewport() };
 
-		let name = "";
+		let name = '';
 
 		do {
 			name = pickRandomName();
-		} while ($nodes.find((n) => n.type === "agent" && get(n.data.name) === name));
+		} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
 
 		// setCenter(position.x, position.y, { zoom: position.zoom });
 
@@ -192,14 +218,14 @@
 			...v,
 			{
 				id: crypto.randomUUID(),
-				type: "agent",
+				type: 'agent',
 				position,
 				selectable: false,
 				data: {
 					name: writable(name),
-					job_title: writable(""),
-					prompt: writable(""),
-					model: writable({ label: "", value: "" }),
+					job_title: writable(''),
+					prompt: writable(''),
+					model: writable({ label: '', value: '' }),
 					avatar: pickRandomAvatar()
 				}
 			}
@@ -218,12 +244,12 @@
 			...v,
 			{
 				id: crypto.randomUUID(),
-				type: "prompt",
+				type: 'prompt',
 				selectable: false,
 				position,
 				data: {
-					title: writable(""),
-					content: writable("")
+					title: writable(''),
+					content: writable('')
 				}
 			}
 		]);
@@ -231,7 +257,7 @@
 		$count.prompts++;
 	}
 
-	console.log(data.crew.id, "from save node 0");
+	console.log(data.crew.id, 'from save node 0');
 </script>
 
 <div style="height:100vh;">
@@ -245,7 +271,7 @@
 			setReceiver(data.crew.receiver_id);
 		}}
 		connectionLineType={ConnectionLineType.SmoothStep}
-		defaultEdgeOptions={{ type: "smoothstep", animated: true }}
+		defaultEdgeOptions={{ type: 'smoothstep', animated: true }}
 		on:edgeclick={(e) => {
 			const edge = e.detail.edge;
 			deleteElements({ edges: [{ id: edge.id }] });
@@ -257,7 +283,7 @@
 		}}
 		onedgecreate={(c) => {
 			const [source, target] = getNodes([c.source, c.target]);
-			if (source.type === "prompt" && target.type === "agent") {
+			if (source.type === 'prompt' && target.type === 'agent') {
 				if ($receiver) {
 					if (target.id !== $receiver.node.id) {
 						return;
@@ -269,7 +295,7 @@
 				}
 			}
 
-			if (source.type === "agent" && target.type === "agent" && $receiver?.node.id === target.id) {
+			if (source.type === 'agent' && target.type === 'agent' && $receiver?.node.id === target.id) {
 				return;
 			}
 			return c;
@@ -286,8 +312,10 @@
 								{action.name}
 							</Button>
 						</Dialog.Trigger>
-						<Dialog.Content class="max-w-5xl">
-							<Library
+						<Dialog.Content class="max-w-6xl">
+							<CrewLibrary
+								myCrews={data.myCrews}
+								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
 									const crew = e.detail.crew;
 									$count = getNodesCount(crew.nodes);
@@ -305,4 +333,12 @@
 			</RightEditorSidebar>
 		</Panel>
 	</SvelteFlow>
+
+	<div class="w-full max-w-6xl">
+		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
+			<Dialog.Content class="max-w-6xl">
+				<AgentLibrary myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
+			</Dialog.Content>
+		</Dialog.Root>
+	</div>
 </div>

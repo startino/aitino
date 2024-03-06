@@ -1,7 +1,5 @@
-from __future__ import annotations
-
-import logging
 import asyncio
+import logging
 from asyncio import Queue
 from typing import Any, cast
 from uuid import UUID, uuid4
