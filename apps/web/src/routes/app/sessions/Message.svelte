@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import Agent from '$lib/components/ui/custom-node/agent.svelte';
+	import { fade, fly, slide } from 'svelte/transition';
 
 	export let message: models.Message;
 
@@ -20,7 +21,7 @@
 	let agent: Promise<models.Agent> | null = null;
 
 	async function getAgent(agentId: string) {
-		const res = await fetch(`/get-agent?agentId=${agentId}`);
+		const res = await fetch(`/api/get-agent?agentId=${agentId}`);
 		const data = await res.json();
 		return data.agent as models.Agent;
 	}

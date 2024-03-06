@@ -41,12 +41,12 @@ export const actions: Actions = {
 		const sessionId = url.searchParams.get("sessionId");
 		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
 		const session: Session | null = await db.getSession(sessionId);
-		return session;
+		return json({session});
 	},
 	"get-agent": async ({url}) => {
-		// TODO: this is not being called. the route /get-agent is being used.
+		// TODO: this is not being called. the route /api/get-agent is being used.
 		// I wasn't able to call this from Message.svelte in fetch.
-		// So it is temporarily being called from /get-agent. This should be used instead if possible.
+		// So it is temporarily being called from /api/get-agent. This should be used instead if possible.
 		console.log("getting agent")
 		const agentId = url.searchParams.get("agentId");
 		if (!agentId) throw error(400, "No agent ID provided.");

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Send, SendHorizonal, Shell, Loader2 } from 'lucide-svelte';
+	import { Send, SendHorizonal, Shell, Loader2, Loader } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
@@ -12,7 +12,7 @@
 	export let messages: Message[];
 
 	// Reactivity
-	export let waitingForUser = false;
+	export let waitingForUser = true;
 
 	export let replyCallback: (message: string) => void;
 
@@ -42,12 +42,17 @@
 	}
 
 	async function loadNewMessage(message: Message) {
-		messages.push(message);
-
-		// Check if its the user's turn to speak
-		const response = await fetch(`?/get-session?sessionId=${sessionId}`);
-		const data = await response.json().session;
-		console.log(data);
+		messages = [...messages, message];
+		console.log('new message: ', messages);
+		chatContainerElement.scrollTop = chatContainerElement.scrollHeight + 500;
+		// // Check if its the user's turn to speak
+		// const response = await fetch(`http:/localhost:5173/api/get-session?sessionId=${sessionId}`);
+		// const session = await response.json();
+		// if (session.status === 'awaiting_user') {
+		// 	waitingForUser = true;
+		// } else {
+		// 	waitingForUser = false;
+		// }
 	}
 
 	function handleInputChange(event: { target: { value: string } }) {
@@ -87,7 +92,7 @@
 
 <main class="container relative flex max-w-5xl flex-col justify-end overflow-y-hidden">
 	<div
-		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20"
+		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
 		<h1 class="text-center text-3xl font-bold">{name}</h1>
@@ -106,12 +111,6 @@
 					{/if}
 				{/if}
 			{/each}
-			{#if !waitingForUser}
-				<div class="flex w-full gap-4 text-lg">
-					<p>Waiting for the crew to reply...</p>
-					<Loader2 class="animate-spin" size="24" />
-				</div>
-			{/if}
 		{/await}
 
 		<div
@@ -123,17 +122,16 @@
 					: 'cursor-not-allowed'}"
 			>
 				<div class="flex place-items-center rounded-md">
-					<div
-						class="m-4 h-3 w-3 animate-ping rounded-full {waitingForUser
-							? 'bg-emerald-500'
-							: ' bg-amber-500'}"
-					></div>
+					<Loader2
+						size="24"
+						class="ml-2 animate-spin rounded-full {waitingForUser ? 'hidden' : ' text-amber-500'}"
+					/>
 				</div>
 				<Textarea
 					class="prose prose-main bg-card w-full max-w-none resize-none rounded-l border-none text-lg"
 					placeholder={waitingForUser
 						? 'Give Feedback to the agents'
-						: 'Shh... the crew is working!'}
+						: 'Waiting for the crew to finish...'}
 					bind:value={newMessageContent}
 					disabled={!waitingForUser}
 					{minRows}

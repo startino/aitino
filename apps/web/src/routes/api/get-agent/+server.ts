@@ -8,5 +8,5 @@ export async function GET({url}) {
     if (!agentId) throw error(400, "No agent ID provided.");
     const agent = await db.getAgent(agentId);
     console.log("agent got. returning: ", agent)
-	return json({agent: agent});
+	return json({agent});
 }
