@@ -10,12 +10,12 @@ export const load = async ({ locals: { supabase, stripe, getSession }, params, p
 		.eq('id', session?.user.id)
 		.single();
 
-	const { stripeSubscription } = await parent();
+	const { stripeSub } = await parent();
 
 	let hasAcess = true;
-	if (stripeSubscription) {
+	if (stripeSub) {
 		try {
-			if (stripeSubscription.status === 'active') {
+			if (stripeSub.status === 'active') {
 				console.log('subscription active');
 
 				hasAcess = false;
@@ -27,17 +27,17 @@ export const load = async ({ locals: { supabase, stripe, getSession }, params, p
 
 	if (!hasAcess) throw redirect(302, '/app/subscription');
 
-	let subscription: Stripe.Response<Stripe.Subscription>;
-	const { data: tier, error: tiersError } = await supabase
+	let newSubscription: Stripe.Response<Stripe.Subscription>;
+	const { data: newTier, error: tiersError } = await supabase
 		.from('tiers')
 		.select()
 		.eq('slug', params.tierSlug)
 		.single();
 
-	if (!tier || tiersError) {
+	if (!newTier || tiersError) {
 		throw error(404, 'Page not found');
 	}
-	const price = await stripe.prices.retrieve(tier.stripe_price_id);
+	const price = await stripe.prices.retrieve(newTier.stripe_price_id);
 
 	const dollars = ((price.unit_amount as number) / 100).toLocaleString('en-US', {
 		style: 'currency',
@@ -45,11 +45,11 @@ export const load = async ({ locals: { supabase, stripe, getSession }, params, p
 	});
 
 	try {
-		subscription = await stripe.subscriptions.create({
+		newSubscription = await stripe.subscriptions.create({
 			customer: profile.stripe_customer_id,
 			items: [
 				{
-					price: tier.stripe_price_id
+					price: newTier.stripe_price_id
 				}
 			],
 			payment_behavior: 'default_incomplete',
@@ -63,9 +63,9 @@ export const load = async ({ locals: { supabase, stripe, getSession }, params, p
 	}
 
 	return {
-		tier,
-		clientSecret: subscription.latest_invoice?.payment_intent.client_secret,
-		subscriptionId: subscription.id,
+		newTier,
+		clientSecret: newSubscription.latest_invoice?.payment_intent.client_secret,
+		newSubscriptionId: newSubscription.id,
 		price: dollars,
 		interval: price.recurring?.interval
 	};

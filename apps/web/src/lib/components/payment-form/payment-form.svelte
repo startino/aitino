@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { PUBLIC_STRIPE_KEY } from "$env/static/public";
-	import { invalidate } from "$app/navigation";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import Label from "$lib/components/ui/label/label.svelte";
-	import { Elements, CardNumber, CardCvc, CardExpiry } from "svelte-stripe";
-	import { onMount } from "svelte";
+	import { PUBLIC_STRIPE_KEY } from '$env/static/public';
+	import { invalidate } from '$app/navigation';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { Elements, CardNumber, CardCvc, CardExpiry } from 'svelte-stripe';
+	import { onMount } from 'svelte';
 	import {
 		loadStripe,
 		type PaymentMethod,
 		type Stripe,
 		type StripeElements
-	} from "@stripe/stripe-js";
-	import { Button } from "$lib/components/ui/button";
-	import { goto } from "$app/navigation";
+	} from '@stripe/stripe-js';
+	import { Button } from '$lib/components/ui/button';
+	import { goto } from '$app/navigation';
 
 	export let clientSecret: string;
 	export let returnUrl: string;
@@ -25,7 +25,7 @@
 
 	let elements: StripeElements;
 
-	const cardStyle = { base: { color: "#fff" } };
+	const cardStyle = { base: { color: '#fff' } };
 
 	onMount(async () => {
 		stripe = (await loadStripe(PUBLIC_STRIPE_KEY)) as Stripe;
@@ -46,7 +46,7 @@
 			return;
 		}
 
-		await invalidate("/app/subscription");
+		await invalidate('/app');
 		if (paymentIntent) {
 			goto(`${returnUrl}&payment_intent=${paymentIntent.id}`);
 		}
@@ -57,22 +57,22 @@
 
 		processing = true;
 
-		const cardNumber = elements.getElement("cardNumber");
+		const cardNumber = elements.getElement('cardNumber');
 		if (!cardNumber) {
-			console.log("No card number");
+			console.log('No card number');
 			return;
 		}
 		if (save) {
 			const { paymentMethod } = await stripe.createPaymentMethod({
-				type: "card",
+				type: 'card',
 				card: cardNumber
 			});
 
-			const response = await fetch("/api/save-payment-method", {
-				method: "POST",
+			const response = await fetch('/api/save-payment-method', {
+				method: 'POST',
 				body: JSON.stringify({ paymentMethod: paymentMethod?.id }),
 				headers: {
-					"Content-Type": "application/json"
+					'Content-Type': 'application/json'
 				}
 			});
 
@@ -98,7 +98,7 @@
 			return;
 		}
 
-		await invalidate("/app/subscription");
+		await invalidate('/app');
 		if (paymentIntent) {
 			goto(`${returnUrl}&payment_intent=${paymentIntent.id}`);
 		}
@@ -114,16 +114,16 @@
 		</p>
 
 		<Button class="mt-4" disabled={processing} on:click={payFromSavedCard}>
-			{processing ? "Processing..." : "Pay"}
+			{processing ? 'Processing...' : 'Pay'}
 		</Button>
 	{:else}
 		<Elements {stripe} bind:elements>
 			<form class="grid gap-3 rounded-2xl" on:submit|preventDefault={submit}>
-				<CardNumber style={cardStyle} classes={{ base: "input" }} />
+				<CardNumber style={cardStyle} classes={{ base: 'input' }} />
 
 				<div class="flex gap-2 [&>*]:w-1/5">
-					<CardExpiry style={cardStyle} classes={{ base: "input" }} />
-					<CardCvc style={cardStyle} classes={{ base: "input" }} />
+					<CardExpiry style={cardStyle} classes={{ base: 'input' }} />
+					<CardCvc style={cardStyle} classes={{ base: 'input' }} />
 				</div>
 
 				<div class="mt-6 flex items-center space-x-2">
@@ -137,7 +137,7 @@
 				</div>
 
 				<Button type="submit" class="mt-4 w-full" disabled={processing}>
-					{processing ? "Processing..." : "Pay"}
+					{processing ? 'Processing...' : 'Pay'}
 				</Button>
 			</form>
 		</Elements>

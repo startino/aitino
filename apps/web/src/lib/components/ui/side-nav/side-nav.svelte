@@ -1,24 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {
-		Building,
-		CircleUserRound,
-		Dna,
-		Globe,
-		HelpCircle,
-		LogOut,
-		MessagesSquare,
-		Paperclip,
-		ReceiptText,
-		UsersRound,
-		Zap
-	} from 'lucide-svelte';
+	import { LogOut, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import type { Icon } from 'lucide-svelte';
 	import { Logo } from '../logo';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
 	import { Button } from '$lib/components/ui/button';
+
+	export let subscribed = false;
 
 	export let navigations: {
 		name: string;
@@ -67,27 +57,43 @@
 					{#each navigations as { name, items }}
 						<ul role="list" class=" mb-6 list-none gap-4 pl-0 sm:mb-8 sm:pl-0">
 							<p class="text m-0 px-2 pb-2 text-xs font-semibold sm:m-0">{name}</p>
-							{#each items as { name, href, icon, current, pendingCount }}
+							{#each items as { name, href, icon, pendingCount }}
 								<li class="m-0 pl-0 sm:m-0 sm:pl-0">
 									<!-- Current: "bg-gray-800 text-primary-foreground", Default: "text-gray-400 hover:text-primary-foreground hover:bg-gray-800" -->
-									<a
-										{href}
-										class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
-											href
-										)
-											? 'bg-accent/90 text-accent-foreground hover:bg-accent '
-											: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
-									>
-										<svelte:component this={icon} />
-										{name}
-										{#if pendingCount}
-											<span
-												class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
-											>
-												{pendingCount}
-											</span>
-										{/if}
-									</a>
+									{#if name === 'Subscription' && !subscribed}
+										<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
+											<Dialog.Trigger class="mx-auto mt-4 block">
+												<Button>Upgrade</Button>
+											</Dialog.Trigger>
+											<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
+												<PricingTiers
+													on:choose={() => {
+														tiersOpen = false;
+													}}
+												/>
+											</Dialog.Content>
+											<Dialog.Overlay />
+										</Dialog.Root>
+									{:else}
+										<a
+											{href}
+											class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
+												href
+											)
+												? 'bg-accent/90 text-accent-foreground hover:bg-accent '
+												: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
+										>
+											<svelte:component this={icon} />
+											{name}
+											{#if pendingCount}
+												<span
+													class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
+												>
+													{pendingCount}
+												</span>
+											{/if}
+										</a>
+									{/if}
 								</li>
 							{/each}
 						</ul>
@@ -113,20 +119,6 @@
 					</ul>
 				</li>
 			</ul>
-
-			<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
-				<Dialog.Trigger>
-					<Button>Upgrade</Button>
-				</Dialog.Trigger>
-				<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
-					<PricingTiers
-						on:choose={() => {
-							tiersOpen = false;
-						}}
-					/>
-				</Dialog.Content>
-				<Dialog.Overlay />
-			</Dialog.Root>
 		</nav>
 	</div>
 </div>

@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
+import type Stripe from 'stripe';
 
-export const load = async ({ url, locals: { stripe, supabase, getSession } }) => {
+export const load = async ({ url, locals: { stripe, supabase, getSession }, parent }) => {
+	const { tiersList } = await parent();
 	const session = await getSession();
 	const id = url.searchParams.get('payment_intent');
 	const subscriptionId = url.searchParams.get('subscription_id');
@@ -12,6 +14,9 @@ export const load = async ({ url, locals: { stripe, supabase, getSession } }) =>
 
 	let message: string = '';
 
+	let newSub: Stripe.Subscription | null = null;
+	let newTier: any;
+
 	switch (paymentIntent.status) {
 		case 'succeeded':
 			message = 'Your subscription is successfully completed!';
@@ -21,6 +26,10 @@ export const load = async ({ url, locals: { stripe, supabase, getSession } }) =>
 				.upsert({ profile_id: session?.user.id, stripe_subscription_id: subscriptionId });
 
 			await supabase.from('profiles').update({ tier_id: tierId }).eq('id', session?.user.id);
+
+			newSub = await stripe.subscriptions.retrieve(subscriptionId);
+
+			newTier = tiersList.find((t) => t.id === tierId);
 
 			// TODO: provision account here
 
@@ -39,5 +48,5 @@ export const load = async ({ url, locals: { stripe, supabase, getSession } }) =>
 			break;
 	}
 
-	return { message };
+	return { message, newSub, newTier };
 };

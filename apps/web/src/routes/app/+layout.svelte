@@ -1,32 +1,33 @@
 <script lang="ts">
-	import { SvelteFlowProvider } from '@xyflow/svelte';
-	import { Menu } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
-	import { Button } from '$lib/components/ui/button';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { setContext } from '$lib/utils';
 	import { Shell } from '$lib/components/layout/shell';
 	import { SideNav } from '$lib/components/ui/side-nav';
 
-	let menuOpen = false;
-
 	import {
-		Building,
 		CircleUserRound,
 		Dna,
 		Globe,
-		HelpCircle,
 		LogOut,
 		MessagesSquare,
-		Paperclip,
-		ReceiptText,
 		UsersRound,
 		Zap
 	} from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
-	import type { Icon } from 'lucide-svelte';
-	import { Logo } from '$lib/components/ui/logo';
+	import { UserCheck, type Icon } from 'lucide-svelte';
+	import { setContext } from '$lib/utils';
+
+	export let data;
+
+	const subscriptionStore = writable({
+		sub: data.stripeSub,
+		tier: data.userTier,
+		paymentMethod: data.paymentMethod
+	});
+
+	setContext('subscriptionStore', subscriptionStore);
+
+	$: subscribed = Boolean($subscriptionStore.sub);
 
 	let navigations: {
 		name: string;
@@ -92,6 +93,12 @@
 					href: '/app/account',
 					icon: CircleUserRound,
 					current: false
+				},
+				{
+					name: 'Subscription',
+					href: '/app/subscription',
+					icon: UserCheck,
+					current: false
 				}
 			]
 		}
@@ -101,7 +108,9 @@
 
 <Shell class="h-screen">
 	<svelte:fragment slot="sidebarLeft">
-		<SideNav {navigations} {bottomNavigation} />
+		{#key subscribed}
+			<SideNav {navigations} {bottomNavigation} {subscribed} />
+		{/key}
 	</svelte:fragment>
 
 	<slot />

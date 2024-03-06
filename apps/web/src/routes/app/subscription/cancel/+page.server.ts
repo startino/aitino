@@ -1,19 +1,19 @@
-import { error, redirect } from "@sveltejs/kit";
+import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ locals: { stripe }, parent }) => {
-	const { stripeSubscription } = await parent();
+	const { stripeSub } = await parent();
 
-	if (!stripeSubscription) {
-		throw redirect(303, "/app");
+	if (!stripeSub) {
+		throw redirect(303, '/app');
 	}
 	try {
-		await stripe.subscriptions.cancel(stripeSubscription.id);
+		await stripe.subscriptions.cancel(stripeSub.id);
 	} catch (err) {
-		throw redirect(303, "/app");
+		throw redirect(303, '/app');
 	}
 
 	return {
-		title: "Cancellation completed",
-		message: "Your subscription has been canceled"
+		title: 'Cancellation completed',
+		message: 'Your subscription has been canceled'
 	};
 };
