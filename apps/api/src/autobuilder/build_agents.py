@@ -1,5 +1,7 @@
 import autogen
+import os
 
+from pathlib import Path
 
 class BuildAgents:
     def create_task_simplifier(self):
@@ -61,12 +63,17 @@ class BuildAgents:
             "config_list": config_list,
             "timeout": 120,
         }
-        return autogen.AssistantAgent(
-            name="""agentemployer-testagent""",
-            system_message=f"""You will take a given task and split it into multiple subtasks. All these subtasks will work to solve the given main task. 
-            After doing this you will create agents who will solve each of these subtasks. You will give the agents a name, a role and its task. You can also create teams
-            of agents to work together if you deem their tasks to be similar enough. """,
-            # should add something to parse a list of good agents from the database, give them to this agent and give those agents as examples for it to use during team creation
-            # should also add something that is better at dynamically making teams of agents that work together (my solution here is to tell it to make teams, which is not optimal)
-            llm_config=config,
-        )
+
+        with open(
+            Path(os.getcwd(), "src", "prompts", "autobuild", "team-specialist.md"),
+            "r",
+            encoding="utf-8",
+        ) as f:
+            system_prompt = f.read()
+            return autogen.AssistantAgent(
+                name="""teamspecialist""",
+                system_message=system_prompt,
+                # should add something to parse a list of good agents from the database, give them to this agent and give those agents as examples for it to use during team creation
+                # should also add something that is better at dynamically making teams of agents that work together (my solution here is to tell it to make teams, which is not optimal)
+                llm_config=config,
+            )
