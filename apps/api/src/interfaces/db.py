@@ -1,14 +1,13 @@
+import json
 import logging
 import os
-import json
 from uuid import UUID
 
 from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from src.crew import Agent, Composition
-from src.models import Message, Session
+from src.models import Message, Session, Agent, Composition
 from src.parser import parse_input, parse_autobuild
 
 
@@ -93,16 +92,9 @@ def post_agents(agents: list[Agent]) -> None:
     Post a list of agents to the database.
     """
     logger.debug(f"Posting agents: {agents}")
-    supabase.table("agents").insert(
-        [agent.model_dump() for agent in agents]
-    ).execute()
+    supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
 def post_crew(message: Message, composition: Composition) -> None:
     post_agents(Composition.agents)
     # TODO: (Leon) Implement posting the rest of the crew
-
-#message, composition = parse_autobuild('"composition": {"message": "create a website for designing your own lamps","agents":[{"job_title": "UI/UX Designer","system_message": "Design the user interface and user experience for the lamp designing website. This includes creating wireframes, mockups, and interactive prototypes to ensure a user-friendly and visually appealing design."},{"job_title": "React Developer","system_message": "Develop the front-end of the lamp designing website using React. This includes implementing the UI/UX designs into functional web pages, ensuring responsiveness, and integrating any necessary APIs for lamp design functionalities."},{"job_title": "Backend Developer","system_message": "Create and manage the server, database, and application logic for the lamp designing website. This includes setting up the server, creating database schemas, and developing APIs for user management, lamp design storage, and retrieval."},{"job_title": "Quality Assurance Engineer","system_message": "Test the lamp designing website for bugs, performance issues, and usability. This includes conducting both automated and manual tests to ensure the website is reliable, efficient, and user-friendly."}]}') 
-#if composition:
-#    agent_list = composition.agents
-#post_agents(agent_list)

@@ -221,5 +221,4 @@ def auto_build_maeve(
         #client = OpenAI()
 
 @app.get("/test")
-@limiter.limit
 def rate_limit(profile_id: )

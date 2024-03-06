@@ -6,10 +6,8 @@ from src.interfaces.db import supabase
 
 
 class RateLimit:
-    #async def init_redis(self):
-    #    self.redis = await aioredis.create_redis_pool("redis://localhost")
-    def __init__(self, redis_host: str, redis_port: int):
-        self.redis_pool = redis.ConnectionPool(host=redis_host, port=redis_port, db=0, decode_responses=True)
+    async def init_redis(self):
+        self.redis = await aioredis.create_redis("redis://localhost")
     def limit(self):
         async def decorator(func):
             async def wrapper(profile_id: str, *args, **kwargs):
