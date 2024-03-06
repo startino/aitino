@@ -52,7 +52,7 @@
 				</Avatar.Root>
 
 				<div class="flex w-full items-end justify-between gap-4">
-					<h2 class="m-0 sm:m-0">{agent.name}</h2>
+					<h2 class="m-0 sm:m-0">{agent.title}</h2>
 					<p class="m-0 sm:m-0">
 						{utils.getLocalTime(message.created_at)}
 					</p>
