@@ -3,7 +3,7 @@ import os
 
 from pathlib import Path
 
-class BuildAgents():
+class BuildAgents:
     def create_task_simplifier(self):
         config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
