@@ -1,4 +1,4 @@
-from .crew import Agent, Composition
+from .models import Agent, Composition
 
 
 def parse_composition(nodes: dict) -> Composition:

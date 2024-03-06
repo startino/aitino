@@ -7,9 +7,8 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from ..crew import Composition
-from ..models import Message, Session
-from ..parser import parse_input
+from src.models import Message, Session, Composition
+from src.parser import parse_input
 
 load_dotenv()
 
