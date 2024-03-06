@@ -27,10 +27,10 @@
 
 	export let data: PageData;
 
-	let { recentSession, allSessions, recentCrew, recentSessionMessages, newSession } = data;
+	let { recentSession, allSessions, recentCrew, sessionMessages, newSession } = data;
 
 	let activeSession = recentSession;
-	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
+	let messages: Message[] = sessionMessages;
 
 	// Reactivity for the Crew chat
 	let loadingSession = true;
@@ -46,24 +46,6 @@
 	// Reactivity for deleting
 	let deletingInProgress = false;
 	let deletingSession = '';
-
-	const channel = supabase
-		.channel('message-insert-channel')
-		.on(
-			'postgres_changes',
-			{
-				event: 'INSERT',
-				schema: 'public',
-				table: 'messages',
-				filter: `session_id=eq.${activeSession?.id}`
-			},
-			(payload) => loadNewMessage()
-		)
-		.subscribe();
-
-	function loadNewMessage() {
-		console.log('new message');
-	}
 
 	// Helper function to reset the UI after renaming or if its cancelled
 	function resetRenamingUI() {
@@ -136,24 +118,50 @@
 	}
 
 	onMount(async () => {
+		console.log('Loaded, messages: ', messages);
 		if (newSession.crewId && newSession.title) {
 			startNewSession(newSession.crewId, newSession.title);
 		}
 	});
 
-	function startNewSession(crewId: string, title: string) {
+	async function startNewSession(crewId: string, title: string) {
+		console.log('Starting new session...');
+		// Reset the UI and local variables
 		activeSession = null;
 		messages = [];
 		loadingSession = true;
 
-		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`;
+		// Instantiate and get the new session
+		// const response = await fetch(
+		// 	`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`
+		// ).json();
+		const reponse = {
+			status: 'success',
+			data: {
+				session: {
+					id: '1',
+					crew_id: '1',
+					profile_id: '1',
+					title: title,
+					created_at: '2021-10-10T00:00:00Z'
+				}
+			}
+		};
 
-		//main(url);
+		// Set it up locally
+		activeSession = {
+			id: reponse.data.session.id,
+			crew_id: reponse.data.session.crew_id,
+			profile_id: reponse.data.session.profile_id,
+			title: reponse.data.session.title,
+			created_at: reponse.data.session.created_at
+		};
+		loadingSession = false;
 	}
 
 	async function loadSession(sessionId: string, crewId: string) {
 		loadingSession = true;
-		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}&crewId=${crewId}`);
+		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
 		activeSession = await sessionResponse.json();
 		loadingSession = false;
 		loadingMessages = true;
@@ -182,40 +190,36 @@
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
-		{#if loadingSession}
+		{#if !activeSession}
 			<div
 				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 			>
 				<h1>Loading the session...</h1>
 			</div>
-		{:else if activeSession}
+			{#if !recentCrew}
+				<div
+					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
+				>
+					<h1>It looks like you don't have session yet...</h1>
+					{#await recentCrew}
+						<p>Loading...</p>
+					{:then recentCrew}
+						<Button on:click={() => startNewSession(recentCrew.id, 'New Session')}
+							>Run Your Crew!</Button
+						>
+					{:catch}
+						<p>Failed to load crew</p>
+					{/await}
+				</div>
+			{/if}
+		{:else}
 			<Chat
 				sessionId={activeSession?.id}
-				name={activeSession?.name}
+				name={activeSession?.title}
 				{messages}
 				waitingForUser={waitingforUser}
 				replyCallback={replySession}
 			/>
-		{:else if recentCrew}
-			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
-			>
-				<h1>It looks like you don't have session yet...</h1>
-				{#await recentCrew}
-					<p>Loading...</p>
-				{:then recentCrew}
-					<Button on:click={() => startNewSession(recentCrew.id)}>Run Your Crew!</Button>
-				{:catch}
-					<p>Failed to load crew</p>
-				{/await}
-			</div>
-		{:else}
-			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
-			>
-				<h1>It looks like you haven't created a crew yet...</h1>
-				<Button on:click={redirectToCrewEditor}>Go Create One!</Button>
-			</div>
 		{/if}
 	</div>
 	<Sheet.Root onOutsideClick={() => renameSession(renamingSession)}>

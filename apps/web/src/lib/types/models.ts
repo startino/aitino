@@ -3,10 +3,9 @@ import type { Edge, Node } from '@xyflow/svelte';
 export type Message = {
 	id: string;
 	session_id: string;
-	recipient: string;
 	content: string;
-	role: string;
-	name: string;
+	sender_id: string;
+	recipient_id: string;
 	created_at: string;
 };
 

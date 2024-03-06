@@ -3,18 +3,52 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
-	import type { Message as MessageType } from '$lib/types/models';
+	import type { Message } from '$lib/types/models';
 	import { afterUpdate } from 'svelte';
+	import { supabase } from '$lib/supabase';
+	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	export let sessionId: string;
 	export let name: string;
-	export let messages: MessageType[] | Promise<MessageType[]>;
+	export let messages: Message[];
 
+	// Reactivity
 	export let waitingForUser = false;
 
 	export let replyCallback: (message: string) => void;
 
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
+
+	const channel = supabase
+		.channel('message-insert-channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'INSERT',
+				schema: 'public',
+				table: 'messages',
+				filter: `session_id=eq.${sessionId}`
+			},
+			(payload) => loadNewMessage(payload.new as Message)
+		)
+		.subscribe((status) => sessionSubscribed(status));
+
+	function sessionSubscribed(status: string) {
+		if (status === 'SUBSCRIBED') {
+			console.log('connected');
+		} else {
+			console.log(status);
+		}
+	}
+
+	async function loadNewMessage(message: Message) {
+		messages.push(message);
+
+		// Check if its the user's turn to speak
+		const response = await fetch(`?/get-session?sessionId=${sessionId}`);
+		const data = await response.json().session;
+		console.log(data);
+	}
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;

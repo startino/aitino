@@ -1,7 +1,7 @@
 import { crews } from "$lib/dummy-data/temp-crew";
 import * as db from "$lib/server/db";
 import type { SessionLoad } from "$lib/types/loads";
-import type { Crew, Session } from "$lib/types/models";
+import type { Crew, Message, Session } from "$lib/types/models";
 import type { PageServerLoad, Actions } from "./$types";
 import { error, json} from "@sveltejs/kit";
 
@@ -12,8 +12,8 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 	const profileId = session.user.id;
 
 	// If there is a crewId in the URL, we will use that to start a new session
-	const newSession: {name: string | null; crewId: string | null} = {
-		name: url.searchParams.get("title"),
+	const newSession: {title: string | null; crewId: string | null} = {
+		title: url.searchParams.get("title"),
 		crewId: url.searchParams.get("crewId"),
 	};
 
@@ -21,9 +21,9 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 
 	return {
 		recentSession: recentSession,
-		recentSessionMessages: recentSession ? db.getMessages(recentSession.id) : [] ,
 		allSessions: db.getSessions(profileId),
 		newSession, // Used to start a maeve
+		sessionMessages:  recentSession ? await db.getMessages(recentSession.id) : [] as Message[],
 		recentCrew: await db.getRecentCrew(profileId), // TODO: this will be obsolete when library feature is done. Instead a crew will be selected manually.
 	}
 };
@@ -41,7 +41,18 @@ export const actions: Actions = {
 		const sessionId = url.searchParams.get("sessionId");
 		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
 		const session: Session | null = await db.getSession(sessionId);
-		return json(session);
+		return session;
+	},
+	"get-agent": async ({url}) => {
+		// TODO: this is not being called. the route /get-agent is being used.
+		// I wasn't able to call this from Message.svelte in fetch.
+		// So it is temporarily being called from /get-agent. This should be used instead if possible.
+		console.log("getting agent")
+		const agentId = url.searchParams.get("agentId");
+		if (!agentId) throw error(400, "No agent ID provided.");
+		const agent = await db.getAgent(agentId);
+		console.log('agent: ', agent);
+		return json(agent);
 	},
 	rename:  async ({request}) => {
 		const { sessionId, newTitle} = await request.json();
