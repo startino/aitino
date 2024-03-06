@@ -8,22 +8,9 @@ import autogen
 from autogen.cache import Cache
 from pydantic import BaseModel, Field
 
-from .models import CodeExecutionConfig, Message
+from .models import CodeExecutionConfig, Composition, Message
 
 logger = logging.getLogger("root")
-
-
-class Agent(BaseModel):
-    id: str = str(uuid4())
-    name: str = ""
-    job_title: str
-    system_message: str
-    model: str = "gpt-3.5-turbo"
-
-
-class Composition(BaseModel):
-    reciever_id: str
-    agents: list[Agent]
 
 
 class Crew:
@@ -71,7 +58,7 @@ class Crew:
         self,
         recipient: autogen.ConversableAgent,
         messages: list[dict] | None = None,
-        sender: Agent | None = None,
+        sender: autogen.Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
         if self.on_reply:

@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from src.crew import Agent, Composition
-from src.models import Message, Session
+from src.models import Message, Session, Agent, Composition
 from src.parser import parse_input, parse_autobuild
 
 
@@ -93,9 +92,7 @@ def post_agents(agents: list[Agent]) -> None:
     Post a list of agents to the database.
     """
     logger.debug(f"Posting agents: {agents}")
-    supabase.table("agents").insert(
-        [agent.model_dump() for agent in agents]
-    ).execute()
+    supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
 def post_crew(message: Message, composition: Composition) -> None:

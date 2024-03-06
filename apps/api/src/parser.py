@@ -1,11 +1,9 @@
 import logging
 import json
 
-from re import A
 from typing import Literal
 
-from src.crew import Agent, Composition
-from src.interfaces import db
+from src.models import Agent, Composition
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)
@@ -45,7 +43,9 @@ def parse_input(input_data: dict) -> tuple[str, Composition]:
     return message, composition
 
 
-def parse_autobuild(input_data: str) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+def parse_autobuild(
+    input_data: str,
+) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
     input_data = input_data.replace("\n", "")
     try:
         dict_input = json.loads(input_data)
@@ -65,8 +65,8 @@ def parse_autobuild(input_data: str) -> tuple[str, Composition] | tuple[Literal[
     agents = [Agent(**agent) for agent in dict_input["composition"]["agents"]]
     return message, Composition(reciever_id="auto", agents=agents)
 
-if __name__ == '__main__': 
+
+if __name__ == "__main__":
     message, composition = parse_autobuild(
         '"composition": {"message": "create a website for designing your own lamps","agents":[{"job_title": "UI/UX Designer","system_message": "Design the user interface and user experience for the lamp designing website. This includes creating wireframes, mockups, and interactive prototypes to ensure a user-friendly and visually appealing design."},{"job_title": "React Developer","system_message": "Develop the front-end of the lamp designing website using React. This includes implementing the UI/UX designs into functional web pages, ensuring responsiveness, and integrating any necessary APIs for lamp design functionalities."},{"job_title": "Backend Developer","system_message": "Create and manage the server, database, and application logic for the lamp designing website. This includes setting up the server, creating database schemas, and developing APIs for user management, lamp design storage, and retrieval."},{"job_title": "Quality Assurance Engineer","system_message": "Test the lamp designing website for bugs, performance issues, and usability. This includes conducting both automated and manual tests to ensure the website is reliable, efficient, and user-friendly."}]}'
     )
-    print(f"message: {message} \ncomposition: {composition}")
