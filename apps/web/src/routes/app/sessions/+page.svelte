@@ -183,6 +183,13 @@
 		//main(url);
 	}
 
+	async function loadMessage(sessionId: string) {
+		const res = await fetch(`?/get-session?sessionId=${sessionId}`);
+		const data = await res.json();
+		const session = data.session;
+		console.log('session from +page: ', session);
+	}
+
 	function redirectToCrewEditor() {
 		window.location.href = '/app/editor/crew';
 	}
@@ -219,6 +226,7 @@
 				{messages}
 				waitingForUser={waitingforUser}
 				replyCallback={replySession}
+				loadNewMessageCallback={loadMessage}
 			/>
 		{/if}
 	</div>

@@ -4,9 +4,11 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
 	import type { Message } from '$lib/types/models';
-	import { afterUpdate } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { browser } from '$app/environment';
+
 	export let sessionId: string;
 	export let name: string;
 	export let messages: Message[];
@@ -15,6 +17,7 @@
 	export let waitingForUser = true;
 
 	export let replyCallback: (message: string) => void;
+	export let loadNewMessageCallback: (sessionId: string) => void;
 
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
@@ -29,7 +32,7 @@
 				table: 'messages',
 				filter: `session_id=eq.${sessionId}`
 			},
-			(payload) => loadNewMessage(payload.new as Message)
+			async (payload) => loadNewMessage(payload.new as Message)
 		)
 		.subscribe((status) => sessionSubscribed(status));
 
@@ -44,15 +47,25 @@
 	async function loadNewMessage(message: Message) {
 		messages = [...messages, message];
 		console.log('new message: ', messages);
-		chatContainerElement.scrollTop = chatContainerElement.scrollHeight + 500;
-		// // Check if its the user's turn to speak
-		// const response = await fetch(`http:/localhost:5173/api/get-session?sessionId=${sessionId}`);
-		// const session = await response.json();
-		// if (session.status === 'awaiting_user') {
-		// 	waitingForUser = true;
-		// } else {
-		// 	waitingForUser = false;
-		// }
+		console.log(sessionId);
+
+		loadNewMessageCallback(sessionId);
+
+		try {
+			if (browser) {
+				//chatContainerElement.scrollTop = chatContainerElement.scrollHeight + 500;
+				// Check if its the user's turn to speak
+				const response = await fetch(`/api/get-session?sessionId=${sessionId}`);
+				const session = await response.json();
+				if (session.status === 'awaiting_user') {
+					waitingForUser = true;
+				} else {
+					waitingForUser = false;
+				}
+			}
+		} catch (error) {
+			console.error('Error when loading new message:', error);
+		}
 	}
 
 	function handleInputChange(event: { target: { value: string } }) {
