@@ -1,0 +1,59 @@
+erDiagram
+    profiles ||--o{ crews : has
+    profiles ||--o{ agents : has
+
+    agents |o--o{ agent_instances : in
+    crews |o--o{ agent_instances : has
+
+    agent_instances |o--o{ sub_crews : delegates
+    crews |o--o{ sub_crews : has
+    crews |o--o{ sub_crews : in
+
+    profiles {
+        uuid id pk
+        text display_name
+        text stripe_customer_id
+        text tier_id
+        timestamptz created_at
+    }
+
+    crews {
+        uuid id pk
+        uuid profile_id fk
+        text title
+        text description
+        uuid reciever_id
+        bool published
+        timestamptz created_at
+    }
+
+    sub_crews {
+        uuid parent_crew_id pk,fk
+        uuid child_crew_id pk,fk
+        uuid delegator_id pk,fk
+        timestamptz created_at
+    }
+
+    agents {
+        uuid id pk
+        uuid profile_id fk
+        text title
+        text description
+        text role
+        enum model
+        json nodes
+        json edges
+        bool published
+        bool public
+        timestamptz created_at
+    }
+
+    agent_instances {
+        uuid id pk
+        uuid crew_id fk
+        uuid agent_id fk
+        text name
+        json props
+        text avatar
+        timestamptz created_at
+    }

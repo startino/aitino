@@ -1,0 +1,36 @@
+erDiagram
+    profiles ||--o{ crews : has
+    profiles ||--o{ agents : has
+
+    profiles {
+        uuid id pk
+        text display_name
+        text stripe_customer_id
+        text tier_id
+        timestamptz created_at
+    }
+
+    crews {
+        uuid id pk
+        uuid profile_id fk
+        text title
+        text description
+        json nodes "Agent nodes only store agent_id, not other agent data."
+        json edges
+        uuid reciever_id
+        bool published
+        timestamptz created_at
+    }
+
+    agents {
+        uuid id pk
+        uuid profile_id fk
+        text avatar
+        text title
+        text role
+        text[] description
+        text prompt
+        enum model
+        bool published
+        timestamptz created_at
+    }
