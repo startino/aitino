@@ -5,7 +5,7 @@
 
 	export let data;
 
-	let { clientSecret, paymentMethod, newSubscriptionId, newTier, price, interval } = data;
+	$: ({ clientSecret, paymentMethod, newSubscriptionId, newTier, price, interval } = data);
 </script>
 
 <Card.Root class="mx-auto w-full">
