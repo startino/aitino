@@ -1,0 +1,122 @@
+{
+	"/(marketing)/(auth)": [
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(marketing)": [
+		"src/routes/(marketing)/+page.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/account": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/auto-build": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/editor": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/editor/agent": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/editor/crew": [
+		"src/routes/app/editor/crew/+page.ts",
+		"src/routes/app/editor/crew/+page.server.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/library": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/library/agent": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/library/crew": [
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/sessions": [
+		"src/routes/app/sessions/+page.server.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/auth/callback": [
+		"src/routes/auth/callback/+server.ts"
+	],
+	"/(marketing)/blog/(blog-article)": [
+		"src/routes/(marketing)/blog/(blog-article)/+layout.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(marketing)/blog": [
+		"src/routes/(marketing)/blog/+page.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(marketing)/blog/(blog-article)/[slug]": [
+		"src/routes/(marketing)/blog/(blog-article)/[slug]/+page.server.ts",
+		"src/routes/(marketing)/blog/(blog-article)/+layout.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(marketing)/(auth)/login": [
+		"src/routes/(marketing)/(auth)/login/+page.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(marketing)/(auth)/register": [
+		"src/routes/(marketing)/(auth)/register/+page.server.ts",
+		"src/routes/(marketing)/+layout.ts",
+		"src/routes/(marketing)/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	]
+}

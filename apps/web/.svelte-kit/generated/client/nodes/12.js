@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/(marketing)/blog/(blog-article)/[slug]/+page.svelte";
