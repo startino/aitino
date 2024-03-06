@@ -1,66 +1,58 @@
+import { crews } from "$lib/dummy-data/temp-crew";
 import * as db from "$lib/server/db";
 import type { SessionLoad } from "$lib/types/loads";
 import type { Crew, Session } from "$lib/types/models";
 import type { PageServerLoad, Actions } from "./$types";
-import { error } from "@sveltejs/kit";
+import { error, json} from "@sveltejs/kit";
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	// BEGIN TEMP FORCE PROFILE
-	const profileId = "edb9a148-a8fc-48bd-beb9-4bf5de602b78"; //cookies.get("profileId");
-	const expirationDate = new Date();
-	expirationDate.setMonth(expirationDate.getMonth() + 1);
-	cookies.set("profileId", profileId, {
-		path: "/",
-		httpOnly: true,
-		sameSite: "strict",
-		secure: process.env.NODE_ENV === "production",
-		expires: expirationDate
-	});
-	// END TEMP FORCE PROFILE
+export const load: PageServerLoad = async ({url, cookies, locals: { getSession } }) => {
 
-	if (!profileId) {
-		throw error(401, "Unauthorized");
-	}
+	const session = await getSession();
+	if (!session) throw error(401, "You are not logged in. Please log in and try again.");
+	const profileId = session.user.id;
 
-	cookies.set("profileId", profileId, {
-		path: "/",
-		httpOnly: true,
-		sameSite: "strict",
-		secure: process.env.NODE_ENV === "production",
-		expires: expirationDate
-	});
-
-	const data: SessionLoad = {
-		profileId: profileId,
-		crewId: null,
-		session: null,
-		messages: [],
-		reply: ""
+	// If there is a crewId in the URL, we will use that to start a new session
+	const newSession: {name: string | null; crewId: string | null} = {
+		name: url.searchParams.get("title"),
+		crewId: url.searchParams.get("crewId"),
 	};
 
-	const crews: Crew[] = await db.getCrews(profileId);
-	if (crews.length !== 0) {
-		data.crewId = crews[0].id;
+	const recentSession = await db.getRecentSession(profileId);  
 
-		const sessions: Session[] = await db.getSessions(data.profileId, data.crewId);
-		if (sessions.length !== 0) {
-			data.session = sessions[0];
-
-			data.messages = await db.getMessages(data.session.id);
-		}
+	return {
+		recentSession: recentSession,
+		recentSessionMessages: recentSession ? db.getMessages(recentSession.id) : [] ,
+		allSessions: db.getSessions(profileId),
+		newSession, // Used to start a maeve
+		recentCrew: await db.getRecentCrew(profileId), // TODO: this will be obsolete when library feature is done. Instead a crew will be selected manually.
 	}
-
-	return data;
 };
 
 export const actions: Actions = {
-	// create: async ({ request }) => {
-	// 	const data = await request.formData();
-	// 	db.createTodo(cookies.get('userid'), data.get('description'));
-	// },
-	//
-	// delete: async ({ request }) => {
-	// 	const data = await request.formData();
-	// 	db.deleteTodo(cookies.get('userid'), data.get('id'));
-	// }
+	"get-messages": async ({ url}) => {
+		const sessionId = url.searchParams.get("sessionId");
+		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
+		const messages = await db.getMessages(sessionId);
+
+		return json(messages);
+		
+	},
+	"get-session": async ({url}) => {
+		const sessionId = url.searchParams.get("sessionId");
+		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
+		const session: Session | null = await db.getSession(sessionId);
+		return json(session);
+	},
+	rename:  async ({request}) => {
+		const { sessionId, newTitle} = await request.json();
+		if (!sessionId) throw error(400, "No session ID provided.");
+		if (newTitle == "") throw error(400, "No new name provided.");
+		await db.renameSession(sessionId, newTitle);
+		console.log("sessionId", sessionId, "newName", newTitle);
+	},
+	delete: async ({request}) => {
+		const { sessionId } = await request.json();
+		if (!sessionId) throw error(400, "No session ID provided.");
+		await db.deleteSession(sessionId);
+	}
 };

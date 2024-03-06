@@ -220,6 +220,25 @@ export function formatDate(date: string, dateStyle: DateStyle = "medium", locale
 	return formatter.format(new Date(date));
 }
 
+// Uses timezone and time to return the HH:MM format
+export function getLocalTime(date: string): string {
+	// TODO: use time zone to get user's actual time
+	const sessionDate = new Date(date);
+	const hour = sessionDate.getHours();
+	const minutes = sessionDate.getMinutes();
+	return `${hour}:${minutes.toString().padStart(2, '0')}`;
+}
+
+export function daysRelativeToToday(date: string): string {
+	const now = new Date();
+	const then = new Date(date);
+	if (now.toDateString() === then.toDateString()) return "Today";
+	if (now.toDateString() === new Date(then.getTime() + 86400000).toDateString()) return "Yesterday";
+	const diff = now.getTime() - then.getTime();
+	const daysSince = Math.floor(diff / (1000 * 60 * 60 * 24));
+	return daysSince.toString();
+}
+
 // Create our number formatter.
 const formatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
