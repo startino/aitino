@@ -185,11 +185,11 @@ async def run_crew(
 
     crew = Crew(composition, on_reply)
 
-    # # "crew.run(message)" is run in a seperate thread
-    # asyncio.run_coroutine_threadsafe(
-    #     crew.run(message, messages=cached_messages),
-    #     asyncio.get_event_loop(),
-    # )
+    # "crew.run(message)" is run in a seperate thread
+    asyncio.run_coroutine_threadsafe(
+        crew.run(message, messages=cached_messages),
+        asyncio.get_event_loop(),
+    )
 
     return {"status": "success", "data": {"session": session.model_dump()}}
 
