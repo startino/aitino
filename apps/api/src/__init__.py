@@ -2,23 +2,25 @@ import asyncio
 import json
 import logging
 import os
+import autogen
+
 from asyncio import Queue
 from pathlib import Path
 from typing import Any, AsyncGenerator, cast
 from uuid import UUID
 
-import autogen
 from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
 from openai import OpenAI
 
-from .autobuilder import build_agents
-from .crew import Composition, Crew
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Message, Session, StreamReply
+from .crew import Composition, Crew
+from .models import StreamReply, Session, Message
+from .autobuilder import build_agents
+ 
 
 logger = logging.getLogger("root")
 
@@ -186,21 +188,30 @@ async def run_crew(
 
     return StreamingResponse(watch_queue(), media_type="application/x-ndjson")
 
-
 @app.get("/auto-build")
-def auto_build_maeve(general_task: str):  # return maeve so maeve_run can run it
-    agents = build_agents.BuildAgents()
-    auto_build_agent = agents.create_all_in_one_agent()
-    # task_simplifier = agents.create_task_simplifier(general_task)
-    # agent_employer = agents.create_employer()
-    user_proxy = autogen.UserProxyAgent(
-        name="user_proxy",
-        system_message="test admin",
-        code_execution_config=False,
-        human_input_mode="NEVER",
-        max_consecutive_auto_reply=1,
-    )
-    user_proxy.initiate_chat(
-        auto_build_agent,
-        message=general_task,
-    )
+def auto_build_maeve(
+    general_task: str, profile_id: UUID
+    ): #return maeve so maeve_run can run it
+        agents = build_agents.BuildAgents()
+        auto_build_agent = agents.create_all_in_one_agent()
+        #task_simplifier = agents.create_task_simplifier(general_task)
+        #agent_employer = agents.create_employer()
+        user_proxy = autogen.UserProxyAgent(
+            name="user_proxy",
+            system_message="test admin",
+            code_execution_config=False,
+            human_input_mode="NEVER",
+            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            max_consecutive_auto_reply=1
+        )
+        chat_result = user_proxy.initiate_chat(
+            auto_build_agent,
+            message=general_task,
+            silent=True
+        )
+        crew_frame = chat_result.chat_history[1]["content"]
+        print(crew_frame)
+        return (crew_frame)
+        #some_comp = some_json_parser_and_comp_creator(crew_frame) 
+
+        #client = OpenAI()

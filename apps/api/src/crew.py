@@ -2,10 +2,11 @@ import asyncio
 import logging
 from asyncio import Queue
 from typing import Any, cast
+from uuid import UUID, uuid4
 
 import autogen
 from autogen.cache import Cache
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .models import CodeExecutionConfig, Message
 
@@ -13,11 +14,11 @@ logger = logging.getLogger("root")
 
 
 class Agent(BaseModel):
-    id: str
-    name: str
+    id: str = str(uuid4())
+    name: str = ""
     job_title: str
     system_message: str
-    model: str
+    model: str = "gpt-3.5-turbo"
 
 
 class Composition(BaseModel):
