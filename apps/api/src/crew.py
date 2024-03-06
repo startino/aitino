@@ -2,9 +2,11 @@ import asyncio
 import logging
 from asyncio import Queue
 from typing import Any, cast
+from uuid import UUID, uuid4
 
 import autogen
 from autogen.cache import Cache
+from pydantic import BaseModel, Field
 
 from .models import CodeExecutionConfig, Composition, Message
 
