@@ -1,9 +1,8 @@
 <script lang="ts">
-	import * as Card from "$lib/components/ui/card";
-	import { Button } from "$lib/components/ui/button";
-	import { Separator } from "$lib/components/ui/separator";
-	import * as AlertDialog from "$lib/components/ui/alert-dialog";
-	import PricingTiers from "$lib/components/pricing/PricingTiers.svelte";
+	import * as Card from '$lib/components/ui/card';
+	import { Button } from '$lib/components/ui/button';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
 
 	export let data;
 
@@ -13,18 +12,14 @@
 <h1 class="pb-10 text-4xl">Your Subscription</h1>
 
 <div class="space-y-6 py-8">
-	{#if stripeSubscription && stripeSubscription.status === "active"}
-		<div class="grid gap-4 lg:grid-cols-[repeat(2,_auto)_1fr] lg:gap-10">
+	{#if stripeSubscription && stripeSubscription.status === 'active'}
+		<div class="grid gap-4 lg:grid-cols-[auto_1fr] lg:gap-10">
 			<div class="grid justify-items-center">
-				<h2 class="text-3xl font-bold text-accent">
+				<h2 class="text-3xl text-accent">
 					{currentTier?.name} / {stripeSubscription.plan.interval}ly
 				</h2>
 				<img src={currentTier?.image} alt="" class="max-w-sm" />
 			</div>
-
-			<Separator class="lg:hidden" />
-
-			<Separator orientation="vertical" class="hidden lg:block" />
 
 			<div class="space-y-6">
 				{#if paymentMethod}
@@ -45,9 +40,9 @@
 					Renewal Date: {new Date(stripeSubscription.current_period_end * 1000).toLocaleDateString(
 						undefined,
 						{
-							year: "numeric",
-							month: "long",
-							day: "2-digit"
+							year: 'numeric',
+							month: 'long',
+							day: '2-digit'
 						}
 					)}
 				</p>
