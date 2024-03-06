@@ -3,7 +3,8 @@ import type { Writable } from 'svelte/store';
 
 import type { Variant } from '$lib/components/ui/button';
 import type { Tables } from '$lib/types/supabase';
-import type Stripe from 'stripe';
+import type Stripe from '@stripe/stripe-js';
+import type { PaymentMethod } from '@stripe/stripe-js';
 
 export type Crew = Tables<'crews'>;
 
@@ -24,7 +25,7 @@ export interface ContextMap {
 	subscriptionStore: Writable<{
 		sub: Stripe.Subscription | null;
 		tier: any | null;
-		paymentMethod: Stripe.PaymentMethod | null;
+		paymentMethod: PaymentMethod | null;
 	}>;
 }
 

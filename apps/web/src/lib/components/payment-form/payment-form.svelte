@@ -13,10 +13,13 @@
 	} from '@stripe/stripe-js';
 	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';
+	import { getContext } from '$lib/utils';
 
 	export let clientSecret: string;
 	export let returnUrl: string;
-	export let paymentMethod: { card: PaymentMethod.Card; id: string } | null = null;
+	export let paymentMethod: PaymentMethod | null = null;
+
+	const subStore = getContext('subscriptionStore');
 
 	let stripe: Stripe;
 
@@ -68,9 +71,14 @@
 				card: cardNumber
 			});
 
+			if (!paymentMethod) {
+				console.error('no payment method');
+				return;
+			}
+
 			const response = await fetch('/api/save-payment-method', {
 				method: 'POST',
-				body: JSON.stringify({ paymentMethod: paymentMethod?.id }),
+				body: JSON.stringify({ paymentMethod: paymentMethod.id }),
 				headers: {
 					'Content-Type': 'application/json'
 				}
@@ -84,6 +92,7 @@
 				processing = false;
 				return;
 			}
+			$subStore.paymentMethod = paymentMethod;
 		}
 
 		const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
@@ -109,7 +118,7 @@
 	{#if paymentMethod}
 		<p class="text-lg">
 			Use your saved payment method: <span class="font-bold text-accent">
-				{paymentMethod.card.brand} ...{paymentMethod.card.last4}
+				{paymentMethod.card?.brand} ...{paymentMethod.card?.last4}
 			</span>
 		</p>
 
