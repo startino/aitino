@@ -1,12 +1,9 @@
 import re
 import asyncio
 import logging
-import os
 import autogen
 
-from asyncio import Queue
-from pathlib import Path
-from typing import Any, AsyncGenerator, cast
+from typing import Any
 from uuid import UUID
 
 from autogen import Agent, ConversableAgent
@@ -195,30 +192,22 @@ async def run_crew(
 
     return {"status": "success", "data": {"session": session.model_dump()}}
 
-@app.get("/auto-build")
-def auto_build_maeve(
-    general_task: str, profile_id: UUID
-    ): #return maeve so maeve_run can run it
-        agents = build_agents.BuildAgents()
-        auto_build_agent = agents.create_all_in_one_agent()
-        #task_simplifier = agents.create_task_simplifier(general_task)
-        #agent_employer = agents.create_employer()
-        user_proxy = autogen.UserProxyAgent(
-            name="user_proxy",
-            system_message="test admin",
-            code_execution_config=False,
-            human_input_mode="NEVER",
-            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
-            max_consecutive_auto_reply=1
-        )
-        chat_result = user_proxy.initiate_chat(
-            auto_build_agent,
-            message=general_task,
-            silent=True
-        )
-        crew_frame = chat_result.chat_history[1]["content"]
-        print(crew_frame)
-        return (crew_frame)
-        #some_comp = some_json_parser_and_comp_creator(crew_frame) 
 
-        #client = OpenAI()
+@app.get("/auto-build")
+def auto_build_crew(general_task: str):
+    agents = build_agents.BuildAgents()
+    auto_build_agent = agents.create_all_in_one_agent()
+    user_proxy = autogen.UserProxyAgent(
+        name="user_proxy",
+        system_message="test admin",
+        code_execution_config=False,
+        human_input_mode="NEVER",
+        default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+        max_consecutive_auto_reply=1,
+    )
+    chat_result = user_proxy.initiate_chat(
+        auto_build_agent, message=general_task, silent=True
+    )
+    crew_frame = chat_result.chat_history[1]["content"]
+    print(crew_frame)
+    return crew_frame
