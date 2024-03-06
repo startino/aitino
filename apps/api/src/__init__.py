@@ -37,8 +37,6 @@ app.add_middleware(
         "http://127.0.0.1:8081",
         "https://aiti.no",
         "https://api.aiti.no",
-        "http://aiti.no",
-        "http://api.aiti.no",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -131,13 +129,13 @@ async def run_crew(
         raw_msg = messages[-1]
 
         if not raw_msg.get("name"):
-            logger.error("on_reply: No name")
+            logger.error(f"on_reply: No name\n{raw_msg}")
             return
         if not raw_msg.get("content"):
-            logger.error("on_reply: No content")
+            logger.error(f"on_reply: No content\n{raw_msg}")
             return
         if not raw_msg.get("role"):
-            logger.error("on_reply: No role")
+            logger.error(f"on_reply: No role\n{raw_msg}")
             return
 
         def get_name_and_job_title(input_string):
