@@ -15,6 +15,13 @@ export async function getAgent(agentId: string) {
 	return data as Agent;
 }
 
+export async function setSessionStatus(sessionId: string, status: string) {
+	const { data, error: err } = await supabase.from("sessions").update({ status: status }).eq("id", sessionId);
+	if (err) {
+		throw error(500, "Failed attempt at setting session status.");
+	}
+}
+
 export async function getMessages(session_id: string) {
 	const { data, error: err } = await supabase
 		.from('messages')

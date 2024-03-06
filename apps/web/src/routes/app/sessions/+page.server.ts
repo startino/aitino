@@ -35,7 +35,6 @@ export const actions: Actions = {
 		const messages = await db.getMessages(sessionId);
 
 		return json(messages);
-		
 	},
 	"get-session": async ({url}) => {
 		const sessionId = url.searchParams.get("sessionId");
@@ -65,5 +64,11 @@ export const actions: Actions = {
 		const { sessionId } = await request.json();
 		if (!sessionId) throw error(400, "No session ID provided.");
 		await db.deleteSession(sessionId);
-	}
+	},
+	"set-status": async ({request}) => {
+		const { sessionId, status } = await request.json();
+		if (!sessionId) throw error(400, "No session ID provided.");
+		if (!status) throw error(400, "No status provided.");
+		await db.setSessionStatus(sessionId, status);
+	},
 };

@@ -118,7 +118,6 @@
 	}
 
 	onMount(async () => {
-		console.log('Loaded, messages: ', messages);
 		if (newSession.crewId && newSession.title) {
 			startNewSession(newSession.crewId, newSession.title);
 		}
@@ -132,34 +131,23 @@
 		loadingSession = true;
 
 		// Instantiate and get the new session
-		// const response = await fetch(
-		// 	`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`
-		// ).json();
-		const reponse = {
-			status: 'success',
-			data: {
-				session: {
-					id: '1',
-					crew_id: '1',
-					profile_id: '1',
-					title: title,
-					created_at: '2021-10-10T00:00:00Z'
-				}
-			}
-		};
+		const res = await fetch(
+			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session?.user.id}&title=${title}`
+		);
+		const result = await res.json();
+		if (result.succ)
+		console.log('result: ', result);
+		const sessionId = result.sessionId;
 
 		// Set it up locally
-		activeSession = {
-			id: reponse.data.session.id,
-			crew_id: reponse.data.session.crew_id,
-			profile_id: reponse.data.session.profile_id,
-			title: reponse.data.session.title,
-			created_at: reponse.data.session.created_at
-		};
+		const sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
+		const session = await sessionResponse.json();
+		activeSession = session;
+
 		loadingSession = false;
 	}
 
-	async function loadSession(sessionId: string, crewId: string) {
+	async function loadSession(sessionId: string) {
 		loadingSession = true;
 		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
 		activeSession = await sessionResponse.json();
@@ -168,26 +156,12 @@
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
 		messages = await messageResponse.json();
 		loadingMessages = false;
-
-		replySession('CONTINUE');
-	}
-
-	function replySession(message: string) {
-		console.log('replying', message);
-		if (!activeSession) {
-			throw error(500, 'Cannot reply without session');
-		}
-		waitingforUser = false;
-		const url = `${PUBLIC_API_URL}/crew?id=${activeSession.crew_id}&profile_id=${activeSession.profile_id}&session_id=${activeSession.id}&reply=${message}`;
-
-		//main(url);
 	}
 
 	async function loadMessage(sessionId: string) {
 		const res = await fetch(`?/get-session?sessionId=${sessionId}`);
 		const data = await res.json();
 		const session = data.session;
-		console.log('session from +page: ', session);
 	}
 
 	function redirectToCrewEditor() {
@@ -203,7 +177,7 @@
 			>
 				<h1>Loading the session...</h1>
 			</div>
-			{#if !recentCrew}
+			{#if recentCrew}
 				<div
 					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 				>
@@ -221,12 +195,10 @@
 			{/if}
 		{:else}
 			<Chat
-				sessionId={activeSession?.id}
+				session={activeSession}
 				name={activeSession?.title}
 				{messages}
 				waitingForUser={waitingforUser}
-				replyCallback={replySession}
-				loadNewMessageCallback={loadMessage}
 			/>
 		{/if}
 	</div>
@@ -252,7 +224,8 @@
 							<Button
 								class="mb-2 w-full"
 								builders={[builder]}
-								on:click={() => startNewSession(recentCrew.id)}>Start New Session</Button
+								on:click={() => startNewSession(recentCrew.id, 'New Session from Button')}
+								>Start New Session</Button
 							>
 						{/if}
 						<ul class="flex w-full flex-col gap-2">
@@ -295,7 +268,7 @@
 												class="flex w-full flex-row justify-between {activeSession?.id == session.id
 													? 'bg-accent text-accent-foreground'
 													: 'hover:bg-accent/20 hover:text-foreground'}"
-												on:click={() => loadSession(session.id, session.crew_id)}
+												on:click={() => loadSession(session.id)}
 											>
 												{session.title}
 												<div class="text-foreground/75 text-right text-xs">

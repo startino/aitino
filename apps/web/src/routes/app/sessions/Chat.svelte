@@ -3,26 +3,25 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
-	import type { Message } from '$lib/types/models';
+	import type { Message, Session } from '$lib/types/models';
 	import { afterUpdate, onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { browser } from '$app/environment';
+	import { toast } from 'svelte-sonner';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
-	export let sessionId: string;
+	export let session: Session;
 	export let name: string;
 	export let messages: Message[];
 
 	// Reactivity
 	export let waitingForUser = true;
 
-	export let replyCallback: (message: string) => void;
-	export let loadNewMessageCallback: (sessionId: string) => void;
-
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
 
-	const channel = supabase
+	const messageChannel = supabase
 		.channel('message-insert-channel')
 		.on(
 			'postgres_changes',
@@ -30,42 +29,54 @@
 				event: 'INSERT',
 				schema: 'public',
 				table: 'messages',
-				filter: `session_id=eq.${sessionId}`
+				filter: `session_id=eq.${session.id}`
 			},
 			async (payload) => loadNewMessage(payload.new as Message)
+		)
+		.subscribe((status) => messagesSubscribed(status));
+
+	const sessionChannel = supabase
+		.channel('session-update-channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'UPDATE',
+				schema: 'public',
+				table: 'sessions',
+				filter: `id=eq.${session.id}`
+			},
+			async (payload) => {
+				setLocalStatus(payload.new.status);
+			}
 		)
 		.subscribe((status) => sessionSubscribed(status));
 
 	function sessionSubscribed(status: string) {
 		if (status === 'SUBSCRIBED') {
-			console.log('connected');
+			//console.log('connected to session channel');
 		} else {
-			console.log(status);
+			//console.log(status);
+		}
+	}
+
+	function setLocalStatus(status: string) {
+		if (status === 'awaiting_user') {
+			waitingForUser = true;
+		} else {
+			waitingForUser = false;
+		}
+	}
+
+	function messagesSubscribed(status: string) {
+		if (status === 'SUBSCRIBED') {
+			//console.log('connected to message channel');
+		} else {
+			//console.log(status);
 		}
 	}
 
 	async function loadNewMessage(message: Message) {
 		messages = [...messages, message];
-		console.log('new message: ', messages);
-		console.log(sessionId);
-
-		loadNewMessageCallback(sessionId);
-
-		try {
-			if (browser) {
-				//chatContainerElement.scrollTop = chatContainerElement.scrollHeight + 500;
-				// Check if its the user's turn to speak
-				const response = await fetch(`/api/get-session?sessionId=${sessionId}`);
-				const session = await response.json();
-				if (session.status === 'awaiting_user') {
-					waitingForUser = true;
-				} else {
-					waitingForUser = false;
-				}
-			}
-		} catch (error) {
-			console.error('Error when loading new message:', error);
-		}
 	}
 
 	function handleInputChange(event: { target: { value: string } }) {
@@ -74,28 +85,31 @@
 	}
 
 	let newMessageContent = '';
-	function sendMessage() {
+	async function sendMessage() {
 		if (newMessageContent.trim().length <= 5) {
 			console.warn('Message too short');
-			// TODO: show sonner warning to user
+			toast.error('Message too short');
 		}
 
-		replyCallback(newMessageContent);
+		// 'Resume' the conversation to Crew API
+		const url = `${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`;
+		const apiRes = await fetch(url);
+		const apiData = await apiRes.json();
+		console.log(apiData);
 
-		const newMessage = {
-			id: crypto.randomUUID(),
-			session_id: sessionId,
-			recipient: '',
-			content: newMessageContent,
-			role: 'user',
-			name: 'Admin',
-			created_at: new Date().toISOString().replace('T', ' ')
-		};
-		messages = [...messages, newMessage];
+		// Update the session status on the DB
+		const res = await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
+		const data = await res.json();
+
+		// Update local status
+		setLocalStatus('awaiting_agent');
+
+		//messages = [...messages, newMessageContent];
 		newMessageContent = '';
 	}
 
 	let chatContainerElement: HTMLDivElement;
+
 	afterUpdate(() => {
 		if (chatContainerElement) {
 			chatContainerElement.scrollTop = chatContainerElement.scrollHeight;

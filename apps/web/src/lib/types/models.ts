@@ -7,6 +7,7 @@ export type Message = {
 	sender_id: string;
 	recipient_id: string;
 	created_at: string;
+	profile_id: string;
 };
 
 export type Crew = {
