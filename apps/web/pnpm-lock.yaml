@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@cartamd/plugin-code':
     specifier: ^3.0.1
-    version: 3.0.1(carta-md@3.5.0)(marked@12.0.0)
+    version: 3.0.1(carta-md@3.5.0)(marked@12.0.1)
   '@dagrejs/dagre':
     specifier: ^1.0.4
     version: 1.0.4
@@ -201,13 +201,13 @@ packages:
       regenerator-runtime: 0.14.1
     dev: false
 
-  /@cartamd/plugin-code@3.0.1(carta-md@3.5.0)(marked@12.0.0):
+  /@cartamd/plugin-code@3.0.1(carta-md@3.5.0)(marked@12.0.1):
     resolution: {integrity: sha512-xV9qxNtfYwg/ge84An64GwTKriKo1bL/CuYu31aX+dsOYXRvUOdCn9Sv9doTJYFOimGVTOmalvcFR+6jruEoHA==}
     peerDependencies:
       carta-md: ^3.0.0
     dependencies:
       carta-md: 3.5.0(svelte@4.2.12)
-      marked-highlight: 2.1.1(marked@12.0.0)
+      marked-highlight: 2.1.1(marked@12.0.1)
     transitivePeerDependencies:
       - marked
     dev: false
@@ -700,7 +700,7 @@ packages:
       '@supabase/supabase-js': ^2.19.0
     dependencies:
       '@supabase/supabase-js': 2.39.7
-      jose: 4.15.4
+      jose: 4.15.5
     dev: false
 
   /@supabase/auth-helpers-sveltekit@0.10.7(@supabase/supabase-js@2.39.7)(@sveltejs/kit@2.5.2):
@@ -2508,8 +2508,8 @@ packages:
     resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
     hasBin: true
 
-  /jose@4.15.4:
-    resolution: {integrity: sha512-W+oqK4H+r5sITxfxpSU+MMdr/YSWGvgZMQDIsNoBDGGy4i7GBPTtvFKibQzW06n3U3TqHjhvBJsirShsEJ6eeQ==}
+  /jose@4.15.5:
+    resolution: {integrity: sha512-jc7BFxgKPKi94uOvEmzlSWFFe2+vASyXaKUpdQKatWAESU2MWjDfFf0fdfc83CDKcA5QecabZeNLyfhe3yKNkg==}
     dev: false
 
   /js-yaml@4.1.0:
@@ -2642,16 +2642,16 @@ packages:
       semver: 6.3.1
     dev: false
 
-  /marked-highlight@2.1.1(marked@12.0.0):
+  /marked-highlight@2.1.1(marked@12.0.1):
     resolution: {integrity: sha512-ktdqwtBne8rim5mb+vvZ9FzElGFb+CHCgkx/g6DSzTjaSrVnxsJdSzB5YgCkknFrcOW+viocM1lGyIjC0oa3fg==}
     peerDependencies:
       marked: '>=4 <13'
     dependencies:
-      marked: 12.0.0
+      marked: 12.0.1
     dev: false
 
-  /marked@12.0.0:
-    resolution: {integrity: sha512-Vkwtq9rLqXryZnWaQc86+FHLC6tr/fycMfYAhiOIXkrNmeGAyhSxjqu0Rs1i0bBqw5u0S7+lV9fdH2ZSVaoa0w==}
+  /marked@12.0.1:
+    resolution: {integrity: sha512-Y1/V2yafOcOdWQCX0XpAKXzDakPOpn6U0YLxTJs3cww6VxOzZV1BTOOYWLvH3gX38cq+iLwljHHTnMtlDfg01Q==}
     engines: {node: '>= 18'}
     hasBin: true
     dev: false
