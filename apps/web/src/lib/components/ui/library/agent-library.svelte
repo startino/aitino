@@ -67,23 +67,30 @@
 		console.log(displayedAgent, 'new Agent');
 	};
 
-	function timeSince(dateIsoString: Date | string) {
+	function timeSince(dateIsoString: string | number | Date) {
 		const date = new Date(dateIsoString);
 		const now = new Date();
 		const diffInSeconds = Math.round((now - date) / 1000);
 
-		console.log(diffInSeconds, 'diffInSeconds \n', now, 'now \n', date, 'date');
-
 		if (diffInSeconds < 60) {
 			return 'just now';
 		} else if (diffInSeconds < 3600) {
-			return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+			return `${Math.floor(diffInSeconds / 60)} minute${Math.floor(diffInSeconds / 60) === 1 ? '' : 's'} ago`;
 		} else if (diffInSeconds < 86400) {
-			return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+			return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) === 1 ? '' : 's'} ago`;
 		} else if (diffInSeconds < 172800) {
 			return 'yesterday';
+		} else if (diffInSeconds < 2592000) {
+			return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) === 1 ? '' : 's'} ago`;
+		} else if (diffInSeconds < 31104000) {
+			const months = Math.floor(diffInSeconds / 2592000);
+			if ([1, 2, 3, 6].includes(months)) {
+				return `${months} month${months === 1 ? '' : 's'} ago`;
+			}
+			return `${months} months ago`; 
 		} else {
-			return `${Math.floor(diffInSeconds / 86400)} days ago`;
+			const years = Math.floor(diffInSeconds / 31104000);
+			return `${years} year${years === 1 ? '' : 's'} ago`;
 		}
 	}
 </script>
@@ -165,8 +172,7 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={() =>
-										console.log('not showing the details')}
+									on:click|stopPropagation={() => console.log('not showing the details')}
 								>
 									Load
 								</button>

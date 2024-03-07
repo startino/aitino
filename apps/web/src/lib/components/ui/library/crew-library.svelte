@@ -25,8 +25,6 @@
 	let showDetails = false;
 	let displayedAgent: Crew;
 
-
-	
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
 		searchQuery = input.value.toLowerCase();
@@ -73,29 +71,35 @@
 
 	$: showNoResultsForPublished = filteredPublishedCrews.length === 0 && searchQuery !== '';
 
-	
 	let showDetailInTheModal = async (id: string) => {
 		displayedAgent = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
 		console.log(displayedAgent);
 	};
 
-	function timeSince(dateIsoString: Date | string) {
+	function timeSince(dateIsoString: string | number | Date) {
 		const date = new Date(dateIsoString);
 		const now = new Date();
 		const diffInSeconds = Math.round((now - date) / 1000);
 
-		console.log(diffInSeconds, 'diffInSeconds \n', now, 'now \n', date, 'date');
-
 		if (diffInSeconds < 60) {
 			return 'just now';
 		} else if (diffInSeconds < 3600) {
-			return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+			return `${Math.floor(diffInSeconds / 60)} minute${Math.floor(diffInSeconds / 60) === 1 ? '' : 's'} ago`;
 		} else if (diffInSeconds < 86400) {
-			return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+			return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) === 1 ? '' : 's'} ago`;
 		} else if (diffInSeconds < 172800) {
 			return 'yesterday';
+		} else if (diffInSeconds < 2592000) {
+			return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) === 1 ? '' : 's'} ago`;
+		} else if (diffInSeconds < 31104000) {
+			const months = Math.floor(diffInSeconds / 2592000);
+			if ([1, 2, 3, 6].includes(months)) {
+				return `${months} month${months === 1 ? '' : 's'} ago`;
+			}
+			return `${months} months ago`; 
 		} else {
-			return `${Math.floor(diffInSeconds / 86400)} days ago`;
+			const years = Math.floor(diffInSeconds / 31104000);
+			return `${years} year${years === 1 ? '' : 's'} ago`;
 		}
 	}
 </script>
