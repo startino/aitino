@@ -6,7 +6,7 @@ from uuid import UUID
 
 import autogen
 from autogen import Agent, ConversableAgent
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
