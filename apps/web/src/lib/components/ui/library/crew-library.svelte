@@ -11,6 +11,8 @@
 	import { fade } from 'svelte/transition';
 	import { User, User2 } from 'lucide-svelte';
 	import CrewLibraryDetails from '../community-details/crewLibraryDetails.svelte';
+	import LibraryDetails from '../community-details/libraryDetails.svelte';
+
 
 	const dispatch = createEventDispatcher();
 
@@ -303,4 +305,6 @@
 	</Tabs.Root>
 </div>
 
-<CrewLibraryDetails {displayedAgent} {showDetails} on:close={handleClose} />
+<!-- <CrewLibraryDetails {displayedAgent} {showDetails} on:close={handleClose} /> -->
+<LibraryDetails type="crew" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
+

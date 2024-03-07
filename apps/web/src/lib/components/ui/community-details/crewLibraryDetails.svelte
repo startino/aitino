@@ -3,42 +3,22 @@
 	import { User } from 'lucide-svelte';
 	import type { Crew } from '$lib/types/models';
 	import { createEventDispatcher } from 'svelte';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 
 	export let displayedAgent: Crew;
 	export let showDetails: boolean;
 	const dispatch = createEventDispatcher();
+	dayjs.extend(relativeTime);
 
 	function closeDialog() {
 		dispatch('close');
-		showDetails = false
+		showDetails = false;
 		console.log(showDetails);
 	}
 
-	function timeSince(dateIsoString: string | number | Date) {
-		const date = new Date(dateIsoString);
-		const now = new Date();
-		const diffInSeconds = Math.round((now - date) / 1000);
-
-		if (diffInSeconds < 60) {
-			return 'just now';
-		} else if (diffInSeconds < 3600) {
-			return `${Math.floor(diffInSeconds / 60)} minute${Math.floor(diffInSeconds / 60) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 86400) {
-			return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 172800) {
-			return 'yesterday';
-		} else if (diffInSeconds < 2592000) {
-			return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 31104000) {
-			const months = Math.floor(diffInSeconds / 2592000);
-			if ([1, 2, 3, 6].includes(months)) {
-				return `${months} month${months === 1 ? '' : 's'} ago`;
-			}
-			return `${months} months ago`;
-		} else {
-			const years = Math.floor(diffInSeconds / 31104000);
-			return `${years} year${years === 1 ? '' : 's'} ago`;
-		}
+	function timeSince(dateIsoString: Date) {
+		return dayjs(dateIsoString).fromNow(true);
 	}
 </script>
 

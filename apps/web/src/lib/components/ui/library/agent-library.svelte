@@ -11,15 +11,22 @@
 	import { createEventDispatcher } from 'svelte';
 	import { AgentLibraryDetail } from '../community-details';
 	import { toast } from 'svelte-sonner';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import LibraryDetails from '../community-details/libraryDetails.svelte';
 
 	export let myAgents: Agent[];
 	export let publishedAgents: Agent[];
 
 	const dispatch = createEventDispatcher();
 
+	dayjs.extend(relativeTime);
 	let searchQuery = '';
 	let filterPublished = false;
 	let filterModel = '';
+
+
+
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
 		searchQuery = input.value;
@@ -48,6 +55,8 @@
 	);
 
 	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
+
+
 	$: filteredPublishedAgents = publishedAgents.filter(
 		(a) =>
 			(searchQuery === '' ||
@@ -58,7 +67,7 @@
 			(filterModel === '' || a.model === filterModel)
 	);
 
-	$: showNoResultsForPublished = filteredMyAgents.length === 0 && searchQuery !== '';
+	$: showNoResultsForPublished = filteredPublishedAgents.length === 0 && searchQuery !== '';
 
 	let showDetails = false;
 	let displayedAgent: Agent;
@@ -67,31 +76,8 @@
 		console.log(displayedAgent, 'new Agent');
 	};
 
-	function timeSince(dateIsoString: string | number | Date) {
-		const date = new Date(dateIsoString);
-		const now = new Date();
-		const diffInSeconds = Math.round((now - date) / 1000);
-
-		if (diffInSeconds < 60) {
-			return 'just now';
-		} else if (diffInSeconds < 3600) {
-			return `${Math.floor(diffInSeconds / 60)} minute${Math.floor(diffInSeconds / 60) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 86400) {
-			return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 172800) {
-			return 'yesterday';
-		} else if (diffInSeconds < 2592000) {
-			return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) === 1 ? '' : 's'} ago`;
-		} else if (diffInSeconds < 31104000) {
-			const months = Math.floor(diffInSeconds / 2592000);
-			if ([1, 2, 3, 6].includes(months)) {
-				return `${months} month${months === 1 ? '' : 's'} ago`;
-			}
-			return `${months} months ago`;
-		} else {
-			const years = Math.floor(diffInSeconds / 31104000);
-			return `${years} year${years === 1 ? '' : 's'} ago`;
-		}
+	function timeSince(dateIsoString: Date) {
+		return dayjs(dateIsoString).fromNow(true);
 	}
 
 	function handleClose() {
@@ -276,4 +262,5 @@
 	</Tabs.Root>
 </div>
 
-<AgentLibraryDetail {displayedAgent} {showDetails} on:close={handleClose} />
+<!-- <AgentLibraryDetail {displayedAgent} {showDetails} on:close={handleClose} /> -->
+<LibraryDetails type="agent" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
