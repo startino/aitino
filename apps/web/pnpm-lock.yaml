@@ -44,6 +44,9 @@ dependencies:
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
+  dayjs:
+    specifier: ^1.11.10
+    version: 1.11.10
   esm-env:
     specifier: ^1.0.0
     version: 1.0.0
@@ -1754,6 +1757,10 @@ packages:
     engines: {node: '>=0.10'}
     dependencies:
       assert-plus: 1.0.0
+    dev: false
+
+  /dayjs@1.11.10:
+    resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
     dev: false
 
   /debug@4.3.4:
