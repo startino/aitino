@@ -8,7 +8,8 @@ import autogen
 from autogen.cache import Cache
 from pydantic import BaseModel, Field
 
-from .models import CodeExecutionConfig, Composition, Message
+from .models import CodeExecutionConfig, Composition, Message, Session
+from .interfaces import db
 
 logger = logging.getLogger("root")
 
@@ -16,15 +17,20 @@ logger = logging.getLogger("root")
 class Crew:
     def __init__(
         self,
+        profile_id: UUID,
+        session: Session,
         composition: Composition,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
     ):
         self.seed = seed
+        self.profile_id = profile_id
+        self.session = session
         self.on_reply = on_message
         if not self.validate_composition(composition):
             raise ValueError("composition is invalid")
+        self.composition = composition
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
@@ -63,6 +69,8 @@ class Crew:
     ) -> tuple[bool, Any | None]:
         if self.on_reply:
             await self.on_reply(recipient, messages, sender, config)
+        else:
+            logger.warn("No on_reply function")
 
         return False, None
 
@@ -76,9 +84,9 @@ class Crew:
                 return False
             if agent.model == "":
                 return False
-            if agent.job_title == "":
+            if agent.role == "":
                 return False
-            if agent.name == "":
+            if agent.title == "":
                 return False
             if agent.system_message == "":
                 return False
@@ -104,8 +112,8 @@ class Crew:
                 "timeout": 120,
             }
             agent = autogen.AssistantAgent(
-                name=f"""{agent.job_title.replace(' ', '')}-{agent.name.replace(' ', '')}""",
-                system_message=f"""{agent.job_title} {agent.name}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+                name=f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}""",
+                system_message=f"""{agent.role} {agent.title}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
                 llm_config=config,
             )
 
@@ -119,9 +127,8 @@ class Crew:
         self,
         message: str,
         messages: list[Message] | None = None,
-        q: Queue | None = None,
-        job_done: object | None = None,
     ) -> None:
+        logger.debug("Running Crew")
 
         # convert Message list to dict list
         dict_messages = [m.model_dump() for m in (messages if messages else [])]
@@ -130,6 +137,7 @@ class Crew:
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
             max_round=20,
+            speaker_selection_method="round_robin" if len(self.agents) > 1 else "auto",
         )
 
         manager = autogen.GroupChatManager(
@@ -139,13 +147,32 @@ class Crew:
 
         logger.info("Starting Crew")
         with Cache.disk() as cache:
-            await self.user_proxy.a_initiate_chat(
-                manager, message=message, cache=cast(Cache, cache), silent=True
+            logger.info("Starting chat")
+            result = await self.user_proxy.a_initiate_chat(
+                manager, message=message, cache=cast(Cache, cache)
             )
 
-        await asyncio.sleep(1)
+        raw_msg = result.chat_history[-1]
 
-        if q and job_done:
-            await q.put(job_done)
-        else:
-            logger.warning("No queue or job_done object provided")
+        sender_id = None
+        for agent in self.composition.agents:
+            if (
+                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+                == raw_msg["name"]
+            ):
+                sender_id = agent.id
+
+        last_message = Message(
+            session_id=self.session.id,
+            profile_id=self.profile_id,
+            recipient_id=None,
+            sender_id=sender_id,
+            content=raw_msg["content"],
+            role=raw_msg["role"],
+        )
+        db.post_message(last_message)
+
+        logger.info("Chat finished")
+
+        logger.info("Crew finished")
+        await asyncio.sleep(1)

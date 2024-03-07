@@ -10,6 +10,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from .parser import parse_input_v0_2 as parse_input
+from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
 from .improver import PromptType, improve_prompt
@@ -51,7 +53,7 @@ def redirect_to_docs() -> RedirectResponse:
 
 @app.get("/compile")
 def compile(id: UUID) -> dict[str, str | Composition]:
-    message, composition = db.get_complied(id)
+    message, composition = db.get_compiled(id)
 
     return {
         "prompt": message if message else "Not Found",
@@ -68,7 +70,11 @@ def improve(
 
 @app.get("/crew")
 async def run_crew(
-    id: UUID, profile_id: UUID, session_id: UUID | None = None, reply: str | None = None
+    id: UUID,
+    profile_id: UUID,
+    session_id: UUID | None = None,
+    reply: str | None = None,
+    mock: bool = False,
 ) -> dict:
     if reply and not session_id:
         raise HTTPException(
@@ -81,13 +87,16 @@ async def run_crew(
             detail="If a session_id is provided, a reply must also be provided.",
         )
 
-    message, composition = db.get_complied(id)
+    if mock:
+        message, composition = parse_input(mocks.v0_2_0_composition)
+    else:
+        message, composition = db.get_compiled(id)
 
     if reply:
         message = reply
 
     if not message or not composition:
-        raise HTTPException(status_code=400, detail=f"Crew with id {id} not found")
+        raise HTTPException(status_code=400, detail=f"Failed to get crew with id {id}")
 
     session = db.get_session(session_id) if session_id else None
     cached_messages = db.get_messages(session_id) if session_id else None
@@ -129,8 +138,8 @@ async def run_crew(
         raw_msg = messages[-1]
 
         if not raw_msg.get("name"):
-            logger.error(f"on_reply: No name\n{raw_msg}")
-            return
+            logger.warn(f"on_reply: No name\n{raw_msg}")
+            raw_msg["name"] = None
         if not raw_msg.get("content"):
             logger.error(f"on_reply: No content\n{raw_msg}")
             return
@@ -138,56 +147,44 @@ async def run_crew(
             logger.error(f"on_reply: No role\n{raw_msg}")
             return
 
-        def get_name_and_job_title(input_string):
-            # Use regular expressions to insert spaces in camelCase and replace hyphens
-            formatted_string = re.sub(r"([a-z])([A-Z])", r"\1 \2", input_string)
-            formatted_string = re.sub(
-                r"([A-Z])([A-Z][a-z])", r"\1 \2", formatted_string
-            )
-            formatted_string = formatted_string.replace("-", " - ")
-
-            # Split the formatted string into name and job title
-            name, job_title = map(str.strip, formatted_string.split(" - "))
-
-            return name, job_title
-
-        if get_name_and_job_title(raw_msg["name"])[0] not in [
-            agent.name for agent in composition.agents
-        ]:
-            logger.error(f"on_reply: sender {raw_msg['name']} not in composition")
-            return
-
-        if get_name_and_job_title(recipient.name)[1] not in [
-            agent.name for agent in composition.agents
-        ]:
-            logger.error(f"on_reply: recipient {recipient.name} not in composition")
-            return
-
         logger.info(f"on_reply: {recipient.name} {raw_msg}")
 
+        recipient_id = None
+        sender_id = None
         for agent in composition.agents:
-            if agent.name == recipient.name:
+            if (
+                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+                == recipient.name
+            ):
                 recipient_id = agent.id
-            if agent.name == raw_msg["name"]:
+            if (
+                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+                == raw_msg["name"]
+            ):
                 sender_id = agent.id
 
+        if recipient_id is None and sender_id is None:
+            return
         message = Message(
             session_id=session.id,
+            profile_id=profile_id,
             recipient_id=recipient_id,
             sender_id=sender_id,
             content=raw_msg["content"],
             role=raw_msg["role"],
         )
+        logger.debug(f"on_reply: {message.model_dump()}")
 
         db.post_message(message)
 
-    crew = Crew(composition, on_reply)
+    crew = Crew(profile_id, session, composition, on_reply)
 
     # "crew.run(message)" is run in a seperate thread
-    asyncio.run_coroutine_threadsafe(
-        crew.run(message, messages=cached_messages),
-        asyncio.get_event_loop(),
-    )
+    # asyncio.run_coroutine_threadsafe(
+    result = await crew.run(message, messages=cached_messages)
+    logger.debug(f"crew.run: {result}")
+    #     asyncio.get_event_loop(),
+    # )
 
     return {"status": "success", "data": {"session": session.model_dump()}}
 
