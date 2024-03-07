@@ -22,7 +22,11 @@
 	let searchQuery = '';
 	let filterPublished = false;
 	let filterModel = '';
+	let showDetails = false;
+	let displayedAgent: Crew;
 
+
+	
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
 		searchQuery = input.value.toLowerCase();
@@ -33,12 +37,8 @@
 	}
 
 	function updateFilterModel(model: string) {
-		console.log(model, 'model');
 		filterModel = filterModel === model ? '' : model;
-		console.log(filterModel, 'filterModel');
 	}
-
-	
 
 	// Adjusted filtering logic for myCrews and publishedCrews
 	$: filteredMyCrews = myCrews.filter(
@@ -53,9 +53,6 @@
 			) &&
 				(!filterPublished || crew.published) &&
 				(filterModel === '' || crew.nodes.some((node) => node.data.model?.label === filterModel)))
-
-
-				
 	);
 
 	$: filteredPublishedCrews = publishedCrews.filter(
@@ -76,8 +73,7 @@
 
 	$: showNoResultsForPublished = filteredPublishedCrews.length === 0 && searchQuery !== '';
 
-	let showDetails = false;
-	let displayedAgent: Crew;
+	
 	let showDetailInTheModal = async (id: string) => {
 		displayedAgent = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
 		console.log(displayedAgent);
@@ -130,7 +126,7 @@
 						<DropdownMenu.CheckboxItem checked={filterPublished} on:click={togglePublished}>
 							Published
 						</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem
+						<!-- <DropdownMenu.CheckboxItem
 							checked={filterModel === 'gpt-3'}
 							on:click={() => updateFilterModel('gpt-3')}
 						>
@@ -147,7 +143,7 @@
 							on:click={() => updateFilterModel('gpt-4')}
 						>
 							GPT-4
-						</DropdownMenu.CheckboxItem>
+						</DropdownMenu.CheckboxItem> -->
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</div>
