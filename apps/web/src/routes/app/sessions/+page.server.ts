@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 	return {
 		recentSession: recentSession,
 		allSessions: db.getSessions(profileId),
-		newSession, // Used to start a maeve
+		newSession, 
 		sessionMessages:  recentSession ? await db.getMessages(recentSession.id) : [] as Message[],
 		recentCrew: await db.getRecentCrew(profileId), // TODO: this will be obsolete when library feature is done. Instead a crew will be selected manually.
 	}
@@ -31,15 +31,18 @@ export const load: PageServerLoad = async ({url, cookies, locals: { getSession }
 export const actions: Actions = {
 	"get-messages": async ({ url}) => {
 		const sessionId = url.searchParams.get("sessionId");
-		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
+		if (!sessionId) throw error(400, "No session ID provided.");
 		const messages = await db.getMessages(sessionId);
 
 		return json(messages);
 	},
 	"get-session": async ({url}) => {
+		console.log("GET SESSION");
 		const sessionId = url.searchParams.get("sessionId");
-		if (!sessionId) throw error(400, "This session does not exist. Please reload the page.");
+		if (!sessionId) throw error(400, "No session ID provided");
 		const session: Session | null = await db.getSession(sessionId);
+		if (!session) throw error(400, "This session does not exist. Please reload the page.");
+		console.log("session:",session);
 		return json({session});
 	},
 	"get-agent": async ({url}) => {

@@ -52,7 +52,7 @@
 		"@types/wicg-file-system-access": "^2023.10.4",
 		"@xyflow/svelte": "^0.0.35",
 		"axios": "^1.6.7",
-		"bits-ui": "^0.16.0",
+		"bits-ui": "^0.19.5",
 		"carta-md": "^3.5.0",
 		"clsx": "^2.1.0",
 		"esm-env": "^1.0.0",

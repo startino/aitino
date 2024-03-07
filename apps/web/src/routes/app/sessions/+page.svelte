@@ -18,12 +18,15 @@
 		CheckCircle,
 		Loader,
 		Loader2,
-		MoreHorizontal
+		MoreHorizontal,
+		PencilLine,
+		Trash2
 	} from 'lucide-svelte';
 	import { Description } from '$lib/components/ui/alert';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { supabase } from '$lib/supabase';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
 	export let data: PageData;
 
@@ -33,6 +36,7 @@
 	let messages: Message[] = sessionMessages;
 
 	// Reactivity for the Crew chat
+	let statusText = 'Loading everything...';
 	let loadingSession = true;
 	let loadingMessages = true;
 	let waitingforUser = false;
@@ -73,8 +77,8 @@
 			resetRenamingUI();
 			return;
 		}
-		// If no changes were made, reset the UI and ignore
-		if (activeSession?.title == renamingValue) {
+		// If no changes were made or if empty, reset the UI and ignore
+		if (activeSession?.title == renamingValue && renamingValue === '') {
 			resetRenamingUI();
 			return;
 		}
@@ -124,6 +128,7 @@
 	});
 
 	async function startNewSession(crewId: string, title: string) {
+		statusText = 'Starting new session...';
 		console.log('Starting new session...');
 		// Reset the UI and local variables
 		activeSession = null;
@@ -132,12 +137,30 @@
 
 		// Instantiate and get the new session
 		const res = await fetch(
-			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session?.user.id}&title=${title}`
-		);
-		const result = await res.json();
-		if (result.succ)
-		console.log('result: ', result);
-		const sessionId = result.sessionId;
+			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session?.user.id}`
+		)
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error('Failed to start new session');
+				}
+			})
+			.catch((error) => {
+				console.error('Failed to start new session', error);
+				statusText = 'Failed to start new session';
+			});
+
+		const sessionId = res.session_id;
+
+		if (sessionId) {
+			statusText = 'Loading your new session...';
+			await loadSession(sessionId);
+			statusText = 'Session loaded!';
+		} else {
+			console.error('Failed to start new session');
+			statusText = 'Failed to start new session';
+		}
 
 		// Set it up locally
 		const sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
@@ -151,6 +174,7 @@
 		loadingSession = true;
 		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
 		activeSession = await sessionResponse.json();
+		console.log('activeSession', activeSession);
 		loadingSession = false;
 		loadingMessages = true;
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
@@ -171,12 +195,13 @@
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
+		<div
+			class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg absolute left-64 mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
+		>
+			<h5>activeSession: {activeSession} , recentCrew: {recentCrew},</h5>
+			<h1>{statusText}</h1>
+		</div>
 		{#if !activeSession}
-			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
-			>
-				<h1>Loading the session...</h1>
-			</div>
 			{#if recentCrew}
 				<div
 					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
@@ -191,6 +216,12 @@
 					{:catch}
 						<p>Failed to load crew</p>
 					{/await}
+				</div>
+			{:else}
+				<div
+					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
+				>
+					<h1>Looks like you haven't created your own crew yet...</h1>
 				</div>
 			{/if}
 		{:else}
@@ -228,12 +259,12 @@
 								>Start New Session</Button
 							>
 						{/if}
-						<ul class="flex w-full flex-col gap-2">
+						<ScrollArea class="flex h-full max-h-[85vh] w-full flex-col rounded-md pr-4">
 							{#await allSessions}
 								<p>Loading...</p>
 							{:then allSessions}
 								{#each allSessions as session}
-									<li class="flex w-full flex-row gap-2">
+									<li class="my-3 flex w-full flex-row gap-4">
 										{#if renamePopoverOpen && renamingSession === session.id}
 											<Input
 												type="text"
@@ -263,6 +294,17 @@
 											</Button>
 										{:else}
 											<Button
+												variant="icon"
+												class="p-0"
+												on:click={() => {
+													renamePopoverOpen = true;
+
+													renamingSession = session.id;
+												}}
+											>
+												<PencilLine size="16" />
+											</Button>
+											<Button
 												builders={[builder]}
 												variant="outline"
 												class="flex w-full flex-row justify-between {activeSession?.id == session.id
@@ -275,48 +317,24 @@
 													Last opened {utils.daysRelativeToToday(session.created_at).toLowerCase()}
 												</div>
 											</Button>
+											<Button
+												variant="icon"
+												class="p-0"
+												on:click={() => {
+													deleteSession(session.id);
+												}}
+											>
+												{#if deletingInProgress && deletingSession === session.id}
+													<Loader size="18" class="mx-auto my-auto " />
+												{:else}
+													<Trash2 size="18" />
+												{/if}
+											</Button>
 										{/if}
-										<DropdownMenu.Root>
-											<DropdownMenu.Trigger asChild let:builder>
-												<Button
-													builders={[builder]}
-													disabled={deletingSession === session.id}
-													variant="icon"
-													class="aspect-square h-full"
-												>
-													{#if deletingInProgress && deletingSession === session.id}
-														<Loader size="18" class="mx-auto my-auto " />
-													{:else}
-														<MoreHorizontal size="18" />
-													{/if}
-												</Button>
-											</DropdownMenu.Trigger>
-
-											<DropdownMenu.Content class="w-56">
-												<DropdownMenu.Group>
-													<DropdownMenu.Item
-														on:click={() => {
-															renamePopoverOpen = true;
-															renamingSession = session.id;
-														}}
-													>
-														Rename
-														<DropdownMenu.Shortcut>r</DropdownMenu.Shortcut>
-													</DropdownMenu.Item>
-												</DropdownMenu.Group>
-												<DropdownMenu.Separator />
-												<DropdownMenu.Group>
-													<DropdownMenu.Item on:click={() => deleteSession(session.id)}>
-														Delete
-														<DropdownMenu.Shortcut>d</DropdownMenu.Shortcut>
-													</DropdownMenu.Item>
-												</DropdownMenu.Group>
-											</DropdownMenu.Content>
-										</DropdownMenu.Root>
 									</li>
 								{/each}
 							{/await}
-						</ul>
+						</ScrollArea>
 					</div>
 				</Sheet.Close>
 			</Sheet.Footer>
