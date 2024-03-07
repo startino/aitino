@@ -13,6 +13,8 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	export let form: ActionData;
 	export let data: PageData;
@@ -24,6 +26,34 @@
 	} = superForm(data.registerForm, {
 		validators: formSchema
 	});
+
+	$: {
+		async function checkError() {
+			if (form?.error) {
+				return toast.error(form?.error);
+			} else {
+				toast.success('Your account has been created', {
+					description: 'Check your email to activate your account'
+				});
+			}
+		}
+	}
+
+	let localErrorMessage = '';
+	$: localErrorMessage = form?.error;
+
+	function chekcAutoReloadError() {
+		console.log('top:', localErrorMessage);
+		if (localErrorMessage === undefined) {
+			 
+			 console.log('Error from checkAutoReloadError fro local:', localErrorMessage);
+		}else {
+			toast.success('Your account has been created', {
+				description: 'Check your email to activate your account'
+			})
+		}
+		console.log('Error from checkAutoReloadError:', localErrorMessage);
+	}
 </script>
 
 <Card.Root>
@@ -114,9 +144,13 @@
 						bind:value={$formRegister.password}
 						class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 					/>
-					{#if $errors.password}
+					{#if $errors.password && $errors.password.length > 0}
 						<Alert.Root variant="destructive" class="border-none p-0">
-							<Alert.Description class="p-0">{$errors.password}</Alert.Description>
+							<Alert.Description class="p-0">
+								{#each $errors.password as error}
+									<div>{error}</div>
+								{/each}
+							</Alert.Description>
 						</Alert.Root>
 					{/if}
 				</div>
@@ -128,27 +162,35 @@
 				<Button
 					class="w-full"
 					type="submit"
-					on:click={() => {
-						setTimeout(() => {
-							if (!($errors.display_name || $errors.email || $errors.password)) {
-								toast.success('Your account has been created', {
-									description: 'Check your email to activate your account'
-								});
-							}
-						}, 1000);
-					}}>Create account</Button
+					on:click={() => 
+						// $: if (!localErrorMessage) {
+						// 	if (!form?.error) {
+						// 		console.log('none', form?.error);
+						// 		toast.success('Your account has been created', {
+						// 			description: 'Check your email to activate your account'
+						// 		});
+						// 	} else {
+						// 		console.log('not none', form?.error);
+						// 		if (!($errors.display_name || $errors.email || $errors.password)) {
+						// 		}
+						// 	}
+						// 	// }, 1000);
+						// }
+						chekcAutoReloadError()
+						
+					}>Create account</Button
 				>
 			</form>
 		</div>
 	</Card.Content>
 	<div class="flex w-full justify-end p-0">
 		<Card.Footer>
-			<Button
-				href="/login"
-				variant="outline"
-				class="text-primary-foreground block border-none bg-transparent p-0 px-4 text-end hover:bg-transparent"
-				>Already have an account, login</Button
-			>
+			<p class="text-foreground block text-right text-sm">
+				Already have an account? <a
+					href="/login"
+					class="text-secondary hover:text-accent/75 underline">Sign in</a
+				>
+			</p>
 		</Card.Footer>
 	</div></Card.Root
 >

@@ -46,7 +46,7 @@ export const actions: Actions = {
 
 				if (profileError) {
 					console.error("Failed to create user profile:", profileError);
-					return fail(500, { error: "Failed to create user profile" });
+					return fail(500, { error: "Failed to create user profile", profileError });
 				}
 			}
 
@@ -93,8 +93,8 @@ export const actions: Actions = {
 			// .insert([{ display_name: body.display_name as string }]);
 
 			if (profileError) {
-				console.error("Failed to create user profile:", profileError);
-				return fail(500, { error: "Failed to create user profile" });
+				console.error("email already registered!", profileError);
+				return fail(500, { error: "email already registered!" });
 			}
 		}
 
