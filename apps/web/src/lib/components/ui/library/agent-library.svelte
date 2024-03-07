@@ -270,5 +270,4 @@
 	</Tabs.Root>
 </div>
 
-
 <AgentLibraryDetail {displayedAgent} {showDetails} on:close={handleClose} />
