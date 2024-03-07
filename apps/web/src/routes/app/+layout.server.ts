@@ -37,7 +37,6 @@ export const load = async ({ locals: { supabase, stripe, getSession } }) => {
 	try {
 		data.paymentMethod = await stripe.paymentMethods.retrieve(billing.stripe_payment_method);
 	} catch (error) {
-		console.log(error);
 		data.paymentMethod = null;
 	}
 
@@ -48,7 +47,6 @@ export const load = async ({ locals: { supabase, stripe, getSession } }) => {
 
 		data.stripeSub = stripeSubscription.status === 'canceled' ? null : stripeSubscription;
 	} catch (error) {
-		console.log(error);
 		data.stripeSub = null;
 	}
 

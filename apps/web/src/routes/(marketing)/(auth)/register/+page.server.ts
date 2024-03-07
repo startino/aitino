@@ -89,7 +89,7 @@ export const actions: Actions = {
 		if (user) {
 			const { error: profileError } = await locals.supabase
 				.from("profiles")
-				.upsert({ id: user.id, display_name: body.display_name as string });
+				.upsert({ id: user.id, display_name: body.display_name as string, stripe_customer_id: customer.id });
 			// .insert([{ display_name: body.display_name as string }]);
 
 			if (profileError) {
@@ -98,6 +98,6 @@ export const actions: Actions = {
 			}
 		}
 
-		throw redirect(200, "/app");
+		throw redirect(302, "/app");
 	}
 };
