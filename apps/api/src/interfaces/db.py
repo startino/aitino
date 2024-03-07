@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from typing import Literal
 from uuid import UUID
 
 from dotenv import load_dotenv
@@ -8,7 +9,7 @@ from pydantic import ValidationError
 from supabase import Client, create_client
 
 from src.models import Agent, Composition, Message, Session
-from src.parser import parse_autobuild, parse_input
+from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
 
@@ -23,15 +24,18 @@ supabase: Client = create_client(url, key)
 logger = logging.getLogger("root")
 
 
-def get_complied(crew_id: UUID) -> tuple[str, Composition] | tuple[None, None]:
+def get_compiled(
+    crew_id: UUID,
+) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
     """
-    Get the complied message and composition for a given Crew ID.
+    Get the compiled message and composition for a given Crew ID.
     """
-    logger.debug(f"Getting complied message and composition for {crew_id}")
+    logger.debug(f"Getting compiled message and composition for {crew_id}")
     response = supabase.table("crews").select("*").eq("id", crew_id).execute()
 
     if len(response.data) == 0:
-        return None, None
+        logger.error(f"No compiled message and composition for {crew_id}")
+        return False, False
 
     return parse_input(response.data[0])
 
