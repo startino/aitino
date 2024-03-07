@@ -172,9 +172,12 @@
 
 	async function loadSession(sessionId: string) {
 		loadingSession = true;
-		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
-		activeSession = await sessionResponse.json();
-		console.log('activeSession', activeSession);
+		let res = await fetch(`/api/get-session?sessionId=${sessionId}`)
+			.then((res) => res.json())
+			.then((data) => {
+				activeSession = data.session;
+				loadingSession = false;
+			});
 		loadingSession = false;
 		loadingMessages = true;
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
@@ -195,13 +198,16 @@
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
-		<div
+		<!-- <div
 			class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg absolute left-64 mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 		>
 			<h5>activeSession: {activeSession} , recentCrew: {recentCrew},</h5>
 			<h1>{statusText}</h1>
-		</div>
+		</div> -->
 		{#if !activeSession}
+			{#if loadingSession}
+				<Loader2 size="24" class="mx-auto my-auto animate-spin" />
+			{/if}
 			{#if recentCrew}
 				<div
 					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
