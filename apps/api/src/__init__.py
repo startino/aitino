@@ -6,7 +6,7 @@ from uuid import UUID
 
 import autogen
 from autogen import Agent, ConversableAgent
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -72,6 +72,7 @@ def improve(
 async def run_crew(
     id: UUID,
     profile_id: UUID,
+    background_tasks: BackgroundTasks,
     session_id: UUID | None = None,
     reply: str | None = None,
     mock: bool = False,
@@ -179,12 +180,7 @@ async def run_crew(
 
     crew = Crew(profile_id, session, composition, on_reply)
 
-    # "crew.run(message)" is run in a seperate thread
-    # asyncio.run_coroutine_threadsafe(
-    result = await crew.run(message, messages=cached_messages)
-    logger.debug(f"crew.run: {result}")
-    #     asyncio.get_event_loop(),
-    # )
+    background_tasks.add_task(crew.run, message, messages=cached_messages)
 
     return {"status": "success", "data": {"session": session.model_dump()}}
 
