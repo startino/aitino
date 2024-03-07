@@ -50,9 +50,9 @@
 	$: filteredPublishedAgents = publishedAgents.filter(
 		(a) =>
 			(searchQuery === '' ||
-				a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				a.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				a.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				a.description.some((desc) => desc.toLowerCase().includes(searchQuery.toLowerCase()))) &&
 			(!filterPublished || a.published) &&
 			(filterModel === '' || a.model === filterModel)
