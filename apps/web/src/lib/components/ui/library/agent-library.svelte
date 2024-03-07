@@ -172,7 +172,7 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={() => console.log('not showing the details')}
+									on:click|stopPropagation={() => dispatch('loadAgent', { id: agent.id , name: agent.title, model: agent.model, job: agent.role ,avatar: agent.avatar_url })}
 								>
 									Load
 								</button>
@@ -231,7 +231,7 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={(event) => console.log('not showing the details')}
+									on:click|stopPropagation={(event) => dispatch('loadAgent', { id: agent.id , name: agent.title, model: agent.model, job: agent.role ,avatar: agent.avatar_url })}
 									>Load</button
 								>
 							</div>
@@ -316,3 +316,5 @@
 		</Dialog.Content>
 	</Dialog.Root>
 </div>
+
+

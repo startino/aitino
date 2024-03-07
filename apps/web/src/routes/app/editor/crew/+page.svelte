@@ -381,9 +381,17 @@
 				<AgentLibrary
 					myAgents={data.myAgents}
 					publishedAgents={data.publishedAgents}
+					on:loadAgent={({ detail }) =>
+						addNewAgent(
+							detail.id,
+							detail.name,
+							detail.model,
+							detail.job,
+							detail.job,
+							detail.avatar
+						)}
 				/>
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>
 </div>
-
