@@ -33,7 +33,6 @@
 	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
-	console.log(data.myCrews, 'myCrews', data.pulishedCrews);
 
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
@@ -201,32 +200,72 @@
 		$edges = layoutedElements.edges;
 	}
 
-	function addNewAgent() {
+	// function addNewAgent() {
+	// 	if ($count.agents >= AGENT_LIMIT) return;
+
+	// 	const position = { ...getViewport() };
+
+	// 	let name = '';
+
+	// 	do {
+	// 		name = pickRandomName();
+	// 	} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
+
+	// 	// setCenter(position.x, position.y, { zoom: position.zoom });
+
+	// 	nodes.update((v) => [
+	// 		...v,
+	// 		{
+	// 			id: crypto.randomUUID(),
+	// 			type: 'agent',
+	// 			position,
+	// 			selectable: false,
+	// 			data: {
+	// 				name: writable(name),
+	// 				job_title: writable(''),
+	// 				prompt: writable(''),
+	// 				model: writable({ label: '', value: '' }),
+	// 				avatar: pickRandomAvatar()
+	// 			}
+	// 		}
+	// 	]);
+
+	// 	$count.agents++;
+	// }
+
+	function addNewAgent(
+		id: string,
+		agentName: string,
+		agentModel: string,
+		job: string,
+		summary: string,
+		agentAvatar: string
+	) {
 		if ($count.agents >= AGENT_LIMIT) return;
+		const nodeId = crypto.randomUUID();
 
+		// Check if a node with this ID already exists
+		const existingNode = $nodes.find((node) => node.id === nodeId);
+		if (existingNode) {
+			console.log(`Node with ID ${nodeId} already exists.`);
+			return;
+		}
+
+		console.log(agentName, agentModel, agentAvatar, id, 'from add new agent');
 		const position = { ...getViewport() };
-
-		let name = '';
-
-		do {
-			name = pickRandomName();
-		} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
-
-		// setCenter(position.x, position.y, { zoom: position.zoom });
-
 		nodes.update((v) => [
 			...v,
 			{
-				id: crypto.randomUUID(),
+				id: nodeId,
 				type: 'agent',
 				position,
 				selectable: false,
 				data: {
-					name: writable(name),
-					job_title: writable(''),
-					prompt: writable(''),
-					model: writable({ label: '', value: '' }),
-					avatar: pickRandomAvatar()
+					name: writable(agentName),
+					model: writable(agentModel),
+					prompt: writable(summary),
+					job_title: writable(job),
+					avatar: agentAvatar
 				}
 			}
 		]);
@@ -318,13 +357,24 @@
 								publishedCrews={data.pulishedCrews}
 								on:crew-load={(e) => {
 									const crew = e.detail.crew;
-									$count = getNodesCount(crew.nodes);
+									$count = crew.nodes;
 									nodes.set(getWritableNodes(crew.nodes));
 									edges.set(crew.edges);
 									libraryOpen = false;
 									title = crew.title;
 									description = crew.description;
 									setReceiver(crew.receiver_id);
+								}}
+								on:crewLoad={({ detail }) => {
+									const crew = detail.crew;
+									console.log(crew, 'crew');
+									$count = getNodesCount(detail.nodes);
+									nodes.set(getWritableNodes(detail.nodes));
+									edges.set(detail.edges);
+									libraryOpen = false;
+									title = detail.title;
+									description = detail.description;
+									setReceiver(detail.id);
 								}}
 							/>
 						</Dialog.Content>
@@ -337,7 +387,20 @@
 	<div class="w-full max-w-6xl">
 		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
 			<Dialog.Content class="max-w-6xl">
-				<AgentLibrary myAgents={data.myAgents} publishedAgents={data.publishedAgents} />
+				<AgentLibrary
+					myAgents={data.myAgents}
+					publishedAgents={data.publishedAgents}
+					on:loadAgent={({ detail }) => {
+						addNewAgent(
+							detail.id,
+							detail.name,
+							detail.model,
+							detail.job,
+							detail.job,
+							detail.avatar
+						);
+					}}
+				/>
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>

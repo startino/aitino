@@ -36,7 +36,7 @@ export type Agent = {
 	updated_at: string;
 	title: string;
 	description: string[];
-	summary: string;
+	role: string;
 	author: string;
 	model: string;
 	published: boolean;
