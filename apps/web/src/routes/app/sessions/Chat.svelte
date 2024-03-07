@@ -1,20 +1,83 @@
 <script lang="ts">
-	import { Send, SendHorizonal, Shell, Loader2 } from 'lucide-svelte';
+	import { Send, SendHorizonal, Shell, Loader2, Loader } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
-	import type { Message as MessageType } from '$lib/types/models';
-	import { afterUpdate } from 'svelte';
-	export let sessionId: string;
+	import type { Message, Session } from '$lib/types/models';
+	import { afterUpdate, onMount } from 'svelte';
+	import { supabase } from '$lib/supabase';
+	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { browser } from '$app/environment';
+	import { toast } from 'svelte-sonner';
+	import { PUBLIC_API_URL } from '$env/static/public';
+
+	export let session: Session;
 	export let name: string;
-	export let messages: MessageType[] | Promise<MessageType[]>;
+	export let messages: Message[];
 
-	export let waitingForUser = false;
-
-	export let replyCallback: (message: string) => void;
+	// Reactivity
+	export let waitingForUser = true;
 
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
+
+	const messageChannel = supabase
+		.channel('message-insert-channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'INSERT',
+				schema: 'public',
+				table: 'messages',
+				filter: `session_id=eq.${session.id}`
+			},
+			async (payload) => loadNewMessage(payload.new as Message)
+		)
+		.subscribe((status) => messagesSubscribed(status));
+
+	const sessionChannel = supabase
+		.channel('session-update-channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'UPDATE',
+				schema: 'public',
+				table: 'sessions',
+				filter: `id=eq.${session.id}`
+			},
+			async (payload) => {
+				setLocalStatus(payload.new.status);
+			}
+		)
+		.subscribe((status) => sessionSubscribed(status));
+
+	function sessionSubscribed(status: string) {
+		if (status === 'SUBSCRIBED') {
+			//console.log('connected to session channel');
+		} else {
+			//console.log(status);
+		}
+	}
+
+	function setLocalStatus(status: string) {
+		if (status === 'awaiting_user') {
+			waitingForUser = true;
+		} else {
+			waitingForUser = false;
+		}
+	}
+
+	function messagesSubscribed(status: string) {
+		if (status === 'SUBSCRIBED') {
+			//console.log('connected to message channel');
+		} else {
+			//console.log(status);
+		}
+	}
+
+	async function loadNewMessage(message: Message) {
+		messages = [...messages, message];
+	}
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;
@@ -22,28 +85,31 @@
 	}
 
 	let newMessageContent = '';
-	function sendMessage() {
+	async function sendMessage() {
 		if (newMessageContent.trim().length <= 5) {
 			console.warn('Message too short');
-			// TODO: show sonner warning to user
+			toast.error('Message too short');
 		}
 
-		replyCallback(newMessageContent);
+		// 'Resume' the conversation to Crew API
+		const url = `${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`;
+		const apiRes = await fetch(url);
+		const apiData = await apiRes.json();
+		console.log(apiData);
 
-		const newMessage = {
-			id: crypto.randomUUID(),
-			session_id: sessionId,
-			recipient: '',
-			content: newMessageContent,
-			role: 'user',
-			name: 'Admin',
-			created_at: new Date().toISOString().replace('T', ' ')
-		};
-		messages = [...messages, newMessage];
+		// Update the session status on the DB
+		const res = await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
+		const data = await res.json();
+
+		// Update local status
+		setLocalStatus('awaiting_agent');
+
+		//messages = [...messages, newMessageContent];
 		newMessageContent = '';
 	}
 
 	let chatContainerElement: HTMLDivElement;
+
 	afterUpdate(() => {
 		if (chatContainerElement) {
 			chatContainerElement.scrollTop = chatContainerElement.scrollHeight;
@@ -53,7 +119,7 @@
 
 <main class="container relative flex max-w-5xl flex-col justify-end overflow-y-hidden">
 	<div
-		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20"
+		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
 		<h1 class="text-center text-3xl font-bold">{name}</h1>
@@ -72,12 +138,6 @@
 					{/if}
 				{/if}
 			{/each}
-			{#if !waitingForUser}
-				<div class="flex w-full gap-4 text-lg">
-					<p>Waiting for the crew to reply...</p>
-					<Loader2 class="animate-spin" size="24" />
-				</div>
-			{/if}
 		{/await}
 
 		<div
@@ -89,17 +149,16 @@
 					: 'cursor-not-allowed'}"
 			>
 				<div class="flex place-items-center rounded-md">
-					<div
-						class="m-4 h-3 w-3 animate-ping rounded-full {waitingForUser
-							? 'bg-emerald-500'
-							: ' bg-amber-500'}"
-					></div>
+					<Loader2
+						size="24"
+						class="ml-2 animate-spin rounded-full {waitingForUser ? 'hidden' : ' text-amber-500'}"
+					/>
 				</div>
 				<Textarea
 					class="prose prose-main bg-card w-full max-w-none resize-none rounded-l border-none text-lg"
 					placeholder={waitingForUser
 						? 'Give Feedback to the agents'
-						: 'Shh... the crew is working!'}
+						: 'Waiting for the crew to finish...'}
 					bind:value={newMessageContent}
 					disabled={!waitingForUser}
 					{minRows}
