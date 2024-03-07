@@ -23,13 +23,14 @@
 	import { Description } from '$lib/components/ui/alert';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { supabase } from '$lib/supabase';
 
 	export let data: PageData;
 
-	let { recentSession, allSessions, recentCrew, recentSessionMessages, newSession } = data;
+	let { recentSession, allSessions, recentCrew, sessionMessages, newSession } = data;
 
 	let activeSession = recentSession;
-	let messages: Message[] | Promise<Message[]> = recentSessionMessages;
+	let messages: Message[] = sessionMessages;
 
 	// Reactivity for the Crew chat
 	let loadingSession = true;
@@ -122,108 +123,45 @@
 		}
 	});
 
-	async function* callCrew(url: string): AsyncGenerator<string, void, unknown> {
-		const response = await fetch(url);
-		const reader = response.body?.getReader();
-
-		if (!reader) {
-			throw new Error('Invalid response');
-		}
-
-		while (true) {
-			const { done, value } = await reader.read();
-
-			if (done) {
-				break;
-			}
-
-			const line = new TextDecoder().decode(value);
-
-			if (!line) {
-				break;
-			}
-
-			yield line;
-		}
-	}
-
-	async function main(url: string): Promise<void> {
-		console.log('main');
-		if (!url) {
-			console.log('Usage: Provide a valid URL as a parameter');
-			return;
-		}
-
-		for await (const event of callCrew(url)) {
-			console.log('For await, event: ', event);
-			let e = null;
-			try {
-				e = JSON.parse(event.trim());
-				console.log('got message', e);
-			} catch (error) {
-				console.error(`Error parsing JSON ${error}:`, event);
-				continue;
-			}
-			if (!e) {
-				continue;
-			}
-
-			if (e.id === 0) {
-				console.log('First event');
-				activeSession = {
-					name: e.data.name,
-					id: e.data.session_id,
-					crew_id: e.data.maeva_id,
-					profile_id: e.data.profile_id,
-					created_at: e.data.created_at
-				};
-				loadingSession = false;
-				console.log('got session id', e.data.session_id);
-				continue;
-			}
-			if (e.data === 'done') {
-				waitingforUser = true;
-				console.log('done');
-
-				return;
-			}
-
-			messages = [...(await messages), e.data];
-		}
-	}
-
-	function startNewSession(crewId: string, title: string) {
+	async function startNewSession(crewId: string, title: string) {
+		console.log('Starting new session...');
+		// Reset the UI and local variables
 		activeSession = null;
 		messages = [];
 		loadingSession = true;
 
-		const url = `${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session.user.id}&title=${title}`;
+		// Instantiate and get the new session
+		const res = await fetch(
+			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session?.user.id}&title=${title}`
+		);
+		const result = await res.json();
+		if (result.succ)
+		console.log('result: ', result);
+		const sessionId = result.sessionId;
 
-		main(url);
+		// Set it up locally
+		const sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
+		const session = await sessionResponse.json();
+		activeSession = session;
+
+		loadingSession = false;
 	}
 
-	async function loadSession(sessionId: string, crewId: string) {
+	async function loadSession(sessionId: string) {
 		loadingSession = true;
-		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}&crewId=${crewId}`);
+		let sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
 		activeSession = await sessionResponse.json();
 		loadingSession = false;
 		loadingMessages = true;
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
 		messages = await messageResponse.json();
 		loadingMessages = false;
-
-		replySession('CONTINUE');
 	}
 
-	function replySession(message: string) {
-		console.log('replying', message);
-		if (!activeSession) {
-			throw error(500, 'Cannot reply without session');
-		}
-		waitingforUser = false;
-		const url = `${PUBLIC_API_URL}/crew?id=${activeSession.crew_id}&profile_id=${activeSession.profile_id}&session_id=${activeSession.id}&reply=${message}`;
-
-		main(url);
+	async function loadMessage(sessionId: string) {
+		const res = await fetch(`?/get-session?sessionId=${sessionId}`);
+		const data = await res.json();
+		const session = data.session;
 	}
 
 	function redirectToCrewEditor() {
@@ -233,40 +171,35 @@
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
-		{#if loadingSession}
+		{#if !activeSession}
 			<div
 				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto mt-auto flex h-full max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 			>
 				<h1>Loading the session...</h1>
 			</div>
-		{:else if activeSession}
+			{#if recentCrew}
+				<div
+					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
+				>
+					<h1>It looks like you don't have session yet...</h1>
+					{#await recentCrew}
+						<p>Loading...</p>
+					{:then recentCrew}
+						<Button on:click={() => startNewSession(recentCrew.id, 'New Session')}
+							>Run Your Crew!</Button
+						>
+					{:catch}
+						<p>Failed to load crew</p>
+					{/await}
+				</div>
+			{/if}
+		{:else}
 			<Chat
-				sessionId={activeSession?.id}
-				name={activeSession?.name}
+				session={activeSession}
+				name={activeSession?.title}
 				{messages}
 				waitingForUser={waitingforUser}
-				replyCallback={replySession}
 			/>
-		{:else if recentCrew}
-			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
-			>
-				<h1>It looks like you don't have session yet...</h1>
-				{#await recentCrew}
-					<p>Loading...</p>
-				{:then recentCrew}
-					<Button on:click={() => startNewSession(recentCrew.id)}>Run Your Crew!</Button>
-				{:catch}
-					<p>Failed to load crew</p>
-				{/await}
-			</div>
-		{:else}
-			<div
-				class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
-			>
-				<h1>It looks like you haven't created a crew yet...</h1>
-				<Button on:click={redirectToCrewEditor}>Go Create One!</Button>
-			</div>
 		{/if}
 	</div>
 	<Sheet.Root onOutsideClick={() => renameSession(renamingSession)}>
@@ -291,7 +224,8 @@
 							<Button
 								class="mb-2 w-full"
 								builders={[builder]}
-								on:click={() => startNewSession(recentCrew.id)}>Start New Session</Button
+								on:click={() => startNewSession(recentCrew.id, 'New Session from Button')}
+								>Start New Session</Button
 							>
 						{/if}
 						<ul class="flex w-full flex-col gap-2">
@@ -334,7 +268,7 @@
 												class="flex w-full flex-row justify-between {activeSession?.id == session.id
 													? 'bg-accent text-accent-foreground'
 													: 'hover:bg-accent/20 hover:text-foreground'}"
-												on:click={() => loadSession(session.id, session.crew_id)}
+												on:click={() => loadSession(session.id)}
 											>
 												{session.title}
 												<div class="text-foreground/75 text-right text-xs">

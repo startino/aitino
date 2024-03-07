@@ -3,11 +3,11 @@ import type { Edge, Node } from '@xyflow/svelte';
 export type Message = {
 	id: string;
 	session_id: string;
-	recipient: string;
 	content: string;
-	role: string;
-	name: string;
+	sender_id: string;
+	recipient_id: string;
 	created_at: string;
+	profile_id: string;
 };
 
 export type Crew = {
@@ -34,7 +34,7 @@ export type Agent = {
 	id: string;
 	created_at: string;
 	updated_at: string;
-	name: string;
+	title: string;
 	description: string[];
 	summary: string;
 	author: string;

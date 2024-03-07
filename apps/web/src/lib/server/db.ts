@@ -4,6 +4,24 @@ import type { TablesInsert } from "$lib/types/supabase";
 import { error } from "@sveltejs/kit";
 import type { Crew, Message, Session, Agent  } from "$lib/types/models";
 
+export async function getAgent(agentId: string) {
+	const { data, error: err } = await supabase.from('agents').select('*').eq('id', agentId).single();
+	if (err) {
+		throw error(500, 'Failed attempt at retrieving agent. Please reload the page.');
+	}
+	if (!data) {
+		throw error(404, 'Agent not found.');
+	}
+	return data as Agent;
+}
+
+export async function setSessionStatus(sessionId: string, status: string) {
+	const { data, error: err } = await supabase.from("sessions").update({ status: status }).eq("id", sessionId);
+	if (err) {
+		throw error(500, "Failed attempt at setting session status.");
+	}
+}
+
 export async function getMessages(session_id: string) {
 	const { data, error: err } = await supabase
 		.from('messages')
