@@ -8,8 +8,8 @@ import autogen
 from autogen.cache import Cache
 from pydantic import BaseModel, Field
 
-from .models import CodeExecutionConfig, Composition, Message, Session
 from .interfaces import db
+from .models import CodeExecutionConfig, Composition, Message, Session
 
 logger = logging.getLogger("root")
 

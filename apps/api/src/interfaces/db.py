@@ -1,8 +1,8 @@
 import json
 import logging
 import os
-from uuid import UUID
 from typing import Literal
+from uuid import UUID
 
 from dotenv import load_dotenv
 from pydantic import ValidationError

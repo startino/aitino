@@ -10,13 +10,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from .parser import parse_input_v0_2 as parse_input
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import Composition, Message, Session
+from .parser import parse_input_v0_2 as parse_input
 
 logger = logging.getLogger("root")
 

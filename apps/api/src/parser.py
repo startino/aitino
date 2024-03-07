@@ -11,8 +11,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Below is the code from src/interfaces/db.py
 import os  # noqa: E402
+
 from dotenv import load_dotenv  # noqa: E402
-from supabase import Client, create_client  # noqa: E402
+from supabase import Client  # noqa: E402
+from supabase import create_client
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")
