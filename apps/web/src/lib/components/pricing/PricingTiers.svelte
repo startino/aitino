@@ -1,14 +1,26 @@
 <script lang="ts">
-	import PromotionToggle from "./PromotionToggle.svelte";
-	import { promotions, norpTiers, features } from "$lib/pricing-data";
-	import MobileTierListing from "./MobileTierListing.svelte";
-	import { Button } from "$lib/components/ui/button";
-	import * as Tooltip from "$lib/components/ui/tooltip";
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { Loader2 } from 'lucide-svelte';
 
-	import { formatCurrency } from "$lib/utils";
-	import { CheckCircle2, Info } from "lucide-svelte";
+	import { navigating } from '$app/stores';
+	import PromotionToggle from './PromotionToggle.svelte';
+	import { promotions, norpTiers, features } from '$lib/pricing-data';
+	import MobileTierListing from './MobileTierListing.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 
-	let cycle: string = "yearly";
+	import { formatCurrency } from '$lib/utils';
+	import { CheckCircle2, Info } from 'lucide-svelte';
+
+	let cycle: 'yearly' | 'monthly' = 'yearly';
+	let choice: string | null = null;
+
+	const dispatch = createEventDispatcher();
+
+	$: if (!$navigating && choice) {
+		dispatch('choose');
+		choice = null;
+	}
 </script>
 
 <section class="z-20">
@@ -28,7 +40,7 @@
 			{#each norpTiers as { name, subtitle, cost, thumbnail }}
 				<div
 					class=" grid-item flex max-w-md flex-col place-items-start gap-2 border-none text-left"
-					id={name.toLowerCase().replace(" ", "")}
+					id={name.toLowerCase().replace(' ', '')}
 				>
 					<img
 						src={thumbnail}
@@ -47,7 +59,7 @@
 						<div class="flex flex-row items-end gap-2">
 							<div class="flex flex-row place-items-center">
 								<h1 class="text-4xl font-semibold leading-none tracking-tight text-primary">
-									{cycle == "yearly" ? formatCurrency((cost * 10) / 12) : formatCurrency(cost)}
+									{cycle == 'yearly' ? formatCurrency((cost * 10) / 12) : formatCurrency(cost)}
 								</h1>
 							</div>
 						</div>
@@ -92,11 +104,23 @@
 			<div class="grid-item border-none" />
 			{#each norpTiers as tier, index}
 				<div class="-ml-2 mt-10 w-full self-start md:pr-4 lg:pr-10">
-					<Button class="w-full" on:click={() => {}} disabled={index == 0 ? false : true}>
-						<h1 class="lg:title-large text-lg font-semibold uppercase text-primary-foreground">
-							Get Started
-						</h1>
-					</Button>
+					{#if index != 0 && tier.link}
+						<Button
+							on:click={() => {
+								setTimeout(() => {
+									choice = tier.name;
+								}, 200);
+							}}
+							href={tier.link[cycle]}
+							class="lg:title-large w-full text-lg font-semibold uppercase text-primary-foreground"
+						>
+							{#if $navigating && choice === tier.name}
+								<Loader2 class="animate-spin" />
+							{:else}
+								Choose
+							{/if}
+						</Button>
+					{/if}
 				</div>
 			{/each}
 		</div>

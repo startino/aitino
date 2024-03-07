@@ -17,6 +17,11 @@ export const actions: Actions = {
 
 		const provider = url.searchParams.get("provider") as Provider;
 
+		const customer = await locals.stripe.customers.create({
+			email: body.email as string,
+			name: body.display_name as string
+		});
+
 		if (provider) {
 			const { data, error: err } = await locals.supabase.auth.signInWithOAuth({
 				provider: provider
@@ -36,7 +41,7 @@ export const actions: Actions = {
 			if (user) {
 				const { error: profileError } = await locals.supabase
 					.from("profiles")
-					.upsert({ id: user.id, display_name: body.display_name as string });
+					.upsert({ id: user.id, display_name: body.display_name as string, stripe_customer_id: customer.id });
 				// .insert([{ display_name: body.display_name as string }]);
 
 				if (profileError) {
