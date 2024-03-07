@@ -242,12 +242,21 @@
 		agentAvatar: string
 	) {
 		if ($count.agents >= AGENT_LIMIT) return;
+		const nodeId = crypto.randomUUID();
+
+		// Check if a node with this ID already exists
+		const existingNode = $nodes.find((node) => node.id === nodeId);
+		if (existingNode) {
+			console.log(`Node with ID ${nodeId} already exists.`);
+			return;
+		}
+
 		console.log(agentName, agentModel, agentAvatar, id, 'from add new agent');
 		const position = { ...getViewport() };
 		nodes.update((v) => [
 			...v,
 			{
-				id: id,
+				id: nodeId,
 				type: 'agent',
 				position,
 				selectable: false,
@@ -381,7 +390,7 @@
 				<AgentLibrary
 					myAgents={data.myAgents}
 					publishedAgents={data.publishedAgents}
-					on:loadAgent={({ detail }) =>
+					on:loadAgent={({ detail }) => {
 						addNewAgent(
 							detail.id,
 							detail.name,
@@ -389,7 +398,8 @@
 							detail.job,
 							detail.job,
 							detail.avatar
-						)}
+						);
+					}}
 				/>
 			</Dialog.Content>
 		</Dialog.Root>

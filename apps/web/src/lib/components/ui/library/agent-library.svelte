@@ -10,6 +10,7 @@
 	import type { Agent } from '$lib/types/models';
 	import { createEventDispatcher } from 'svelte';
 	import { AgentLibraryDetail } from '../community-details';
+	import { toast } from 'svelte-sonner';
 
 	export let myAgents: Agent[];
 	export let publishedAgents: Agent[];
@@ -142,7 +143,7 @@
 			value="personal"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredMyAgents as agent}
+			{#each filteredMyAgents as agent, index (`personal-${agent.id}`)}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -175,14 +176,16 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={() =>
+									on:click|stopPropagation={() => {
+										toast.success(`Added a new agent ${agent.title}`);
 										dispatch('loadAgent', {
 											id: agent.id,
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
 											avatar: agent.avatar_url
-										})}
+										});
+									}}
 								>
 									Load
 								</button>
@@ -208,7 +211,7 @@
 			value="community"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredPublishedAgents as agent}
+			{#each filteredPublishedAgents as agent, index (`community-${agent.id}`)}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -241,14 +244,17 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={(event) =>
+									on:click|stopPropagation={(event) => {
+										toast.success(`Added a new agent ${agent.title}`);
+
 										dispatch('loadAgent', {
 											id: agent.id,
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
 											avatar: agent.avatar_url
-										})}>Load</button
+										});
+									}}>Load</button
 								>
 							</div>
 						</div>
