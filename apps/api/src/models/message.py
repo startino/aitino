@@ -1,11 +1,10 @@
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
-from autogen import ConversableAgent
 
+from autogen import ConversableAgent
 from pydantic import BaseModel, Field
 
 from .composition import Composition
-
 from .session import Session
 
 

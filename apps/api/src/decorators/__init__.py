@@ -1,10 +1,13 @@
 import logging
 import uuid
+
 from fastapi import HTTPException
-from src.interfaces.redis_cache import get_redis
+
 from src.interfaces.db import supabase
+from src.interfaces.redis_cache import get_redis
 
 logger = logging.getLogger("root")
+
 
 def rate_limit(profile_id: str):
     try:
@@ -16,10 +19,7 @@ def rate_limit(profile_id: str):
     key = f"rate_limit:{profile_id}"
     current_requests = redis.incr(key)
     tier_id = (
-        supabase.table("profiles")
-        .select("tier_id")
-        .eq("id", profile_id)
-        .execute()
+        supabase.table("profiles").select("tier_id").eq("id", profile_id).execute()
     )
     if not tier_id.data:
         raise HTTPException(status_code=401, detail="Could not find profile")

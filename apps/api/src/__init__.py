@@ -1,11 +1,10 @@
-import re
 import asyncio
 import logging
-import autogen
-
+import re
 from typing import Any
 from uuid import UUID
 
+import autogen
 from autogen import Agent, ConversableAgent
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +14,7 @@ from .autobuilder import build_agents
 from .crew import Crew
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Message, Session, Composition
+from .models import Composition, Message, Session
 
 logger = logging.getLogger("root")
 
