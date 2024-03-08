@@ -8,12 +8,11 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
-	import { onMount } from 'svelte';
 
 	export let form: ActionData;
 
 	function clearForm() {
-		(form.error as any) = null;
+		form.error = null;
 	}
 </script>
 
@@ -53,7 +52,6 @@
 					Google
 				</Button>
 			</form>
-			<!-- </div> -->
 			<div class="relative space-y-8">
 				<div class="absolute inset-0 flex items-center">
 					<span class="w-full border-t" />
@@ -101,7 +99,7 @@
 	</Card.Content>
 	<div class="flex w-full justify-end p-0">
 		<Card.Footer>
-			<p class="text-foreground block text-right text-md">
+			<p class="text-foreground text-md block text-right">
 				Don't have an account? <a
 					href="/register"
 					class="text-secondary hover:text-accent/75 underline">Sign up</a

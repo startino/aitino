@@ -98,6 +98,6 @@ export const actions: Actions = {
 			}
 		}
 
-		throw redirect(302, "/app");
+		throw redirect(302, "");
 	}
 };
