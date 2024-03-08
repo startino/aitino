@@ -48,7 +48,7 @@ def improve_prompt(
         raise ValueError("Temperature must be in between -2 and 2")
 
     with open(
-        Path(os.getcwd(), "aitino", "prompts", "improve", prompt_type + ".md"),
+        Path(os.getcwd(), "src", "prompts", "improve", prompt_type + ".md"),
         "r",
         encoding="utf-8",
     ) as f:
