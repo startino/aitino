@@ -37,7 +37,6 @@
 
 	// Reactivity for the Crew chat
 	let statusText = 'Loading everything...';
-	let loadingSession = true;
 	let loadingMessages = true;
 	let waitingforUser = false;
 
@@ -88,8 +87,8 @@
 		const response = await fetch(`?/rename`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId, newTitle: renamingValue })
-		});
-		const data = await response.json();
+		}).then((res) => res.json());
+
 		// Update the session locally in order to not refetch
 		const localVariable = await allSessions;
 		allSessions = localVariable.map((session) => {
@@ -133,7 +132,6 @@
 		// Reset the UI and local variables
 		activeSession = null;
 		messages = [];
-		loadingSession = true;
 
 		// Instantiate and get the new session
 		const res = await fetch(
@@ -166,19 +164,14 @@
 		const sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
 		const session = await sessionResponse.json();
 		activeSession = session;
-
-		loadingSession = false;
 	}
 
 	async function loadSession(sessionId: string) {
-		loadingSession = true;
 		let res = await fetch(`/api/get-session?sessionId=${sessionId}`)
 			.then((res) => res.json())
 			.then((data) => {
 				activeSession = data.session;
-				loadingSession = false;
 			});
-		loadingSession = false;
 		loadingMessages = true;
 		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
 		messages = await messageResponse.json();
@@ -204,10 +197,8 @@
 			<h5>activeSession: {activeSession} , recentCrew: {recentCrew},</h5>
 			<h1>{statusText}</h1>
 		</div> -->
+		{statusText}
 		{#if !activeSession}
-			{#if loadingSession}
-				<Loader2 size="24" class="mx-auto my-auto animate-spin" />
-			{/if}
 			{#if recentCrew}
 				<div
 					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
