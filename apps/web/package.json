@@ -55,6 +55,7 @@
 		"bits-ui": "^0.19.5",
 		"carta-md": "^3.5.0",
 		"clsx": "^2.1.0",
+		"dayjs": "^1.11.10",
 		"esm-env": "^1.0.0",
 		"esm-seedrandom": "^3.0.5",
 		"force": "^0.0.3",

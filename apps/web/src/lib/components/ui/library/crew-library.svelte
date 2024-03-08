@@ -9,20 +9,26 @@
 	import type { Crew } from '$lib/types/models';
 	import * as Card from '$lib/components/ui/card';
 	import { fade } from 'svelte/transition';
+	import { User, User2 } from 'lucide-svelte';
+	import CrewLibraryDetails from '../community-details/crewLibraryDetails.svelte';
+	import LibraryDetails from '../community-details/libraryDetails.svelte';
+
 
 	const dispatch = createEventDispatcher();
 
 	export let myCrews: Crew[];
 	export let publishedCrews: Crew[];
 
-	console.log(myCrews, publishedCrews, 'from library of crew');
 
 	let searchQuery = '';
 	let filterPublished = false;
 	let filterModel = '';
+	let showDetails = false;
+	let displayedAgent: Crew;
+
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
-		searchQuery = input.value;
+		searchQuery = input.value.toLowerCase();
 	}
 
 	function togglePublished() {
@@ -30,183 +36,70 @@
 	}
 
 	function updateFilterModel(model: string) {
-		if (filterModel === model) {
-			filterModel = '';
-		} else {
-			filterModel = model;
-		}
+		filterModel = filterModel === model ? '' : model;
 	}
 
-	$: filteredMyAgents = myCrews.filter(
-		(a) =>
+	// Adjusted filtering logic for myCrews and publishedCrews
+	$: filteredMyCrews = myCrews.filter(
+		(crew) =>
 			searchQuery === '' ||
-			a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			!filterPublished ||
-			a.published
+			crew.description.toLowerCase().includes(searchQuery) ||
+			(crew.nodes.some(
+				(node) =>
+					(node.data.name?.toLowerCase() ?? '').includes(searchQuery) ||
+					(node.data.description?.toLowerCase() ?? '').includes(searchQuery) ||
+					(node.data.model?.label?.toLowerCase() ?? '').includes(searchQuery)
+			) &&
+				(!filterPublished || crew.published) &&
+				(filterModel === '' || crew.nodes.some((node) => node.data.model?.label === filterModel)))
 	);
-	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
 
 	$: filteredPublishedCrews = publishedCrews.filter(
-		(a) =>
+		(crew) =>
 			searchQuery === '' ||
-			a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			!filterPublished ||
-			a.published
+			crew.description.toLowerCase().includes(searchQuery) ||
+			(crew.nodes.some(
+				(node) =>
+					(node.data.name?.toLowerCase() ?? '').includes(searchQuery) ||
+					(node.data.description?.toLowerCase() ?? '').includes(searchQuery) ||
+					(node.data.model?.label?.toLowerCase() ?? '').includes(searchQuery)
+			) &&
+				(!filterPublished || crew.published) &&
+				(filterModel === '' || crew.nodes.some((node) => node.data.model?.label === filterModel)))
 	);
 
-	$: showNoResultsForPublished = filteredMyAgents.length === 0 && searchQuery !== '';
+	$: showNoResults = filteredMyCrews.length === 0 && searchQuery !== '';
 
-	let showDetails = false;
-	let displayedAgent: Crew;
+	$: showNoResultsForPublished = filteredPublishedCrews.length === 0 && searchQuery !== '';
+
 	let showDetailInTheModal = async (id: string) => {
 		displayedAgent = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
-		console.log(displayedAgent, 'new Agent');
+		console.log(displayedAgent);
 	};
 
-	function timeSince(dateIsoString: Date | string) {
-		const date = new Date(dateIsoString);
-		const now = new Date();
-		const diffInSeconds = Math.round((now - date) / 1000);
 
-		console.log(diffInSeconds, 'diffInSeconds \n', now, 'now \n', date, 'date');
-
-		if (diffInSeconds < 60) {
-			return 'just now';
-		} else if (diffInSeconds < 3600) {
-			return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-		} else if (diffInSeconds < 86400) {
-			return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-		} else if (diffInSeconds < 172800) {
-			return 'yesterday';
-		} else {
-			return `${Math.floor(diffInSeconds / 86400)} days ago`;
-		}
+	function handleClose() {
+		showDetails = false;
 	}
-
-	const showNodeDetails = myCrews.forEach((a) => {
-		a.nodes.forEach((n) => {
-			console.log(n, 'n');
-		})
-	})
-
-
 </script>
-
-<!-- <div class="w-full max-w-6xl py-4">
-	<Tabs.Root value="personal" class="h-screen max-h-[600px]">
-		<Tabs.List class="sticky grid w-full grid-cols-2">
-			<Tabs.Trigger value="personal">Personal</Tabs.Trigger>
-			<Tabs.Trigger value="community">Community</Tabs.Trigger>
-		</Tabs.List>
-		<div class="w-full">
-			<div class="flex items-center py-2">
-				<Input class="max-w-4xl" placeholder="Search agents..." type="text" />
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger asChild let:builder>
-						<Button variant="outline" class="ml-auto" builders={[builder]}>
-							Filter <ChevronDown class="ml-2 h-4 w-4" />
-						</Button>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="z-50">
-						<DropdownMenu.CheckboxItem checked={filterPublished} on:click={togglePublished}>
-							Published
-						</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-3'}
-							on:click={() => updateFilterModel('gpt-3')}
-						>
-							GPT-3
-						</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-4'}
-							on:click={() => updateFilterModel('gpt-4')}
-						>
-							GPT-4
-						</DropdownMenu.CheckboxItem>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-			</div>
-		</div>
-		<Tabs.Content value="personal">
-			<ul class="h-full space-y-4 py-6">
-				<form
-					method="POST"
-					class="border-border bg-card grid grid-cols-8 rounded-md border p-6"
-					on:submit|preventDefault={async (e) => {
-						const file = e.target[0].files[0];
-
-						if (!file) return;
-
-						try {
-							const text = await file.text();
-							dispatch('crew-load', {
-								crew: JSON.parse(text)
-							});
-						} catch (error) {
-							console.error('Error parsing JSON:', error);
-						}
-					}}
-				>
-					<div class="col-span-7 grid w-full max-w-sm items-center gap-1.5">
-						<Label for="file">Upload a Crew from a file with the button below</Label>
-
-						<Input
-							id="file"
-							accept=".json"
-							type="file"
-							class="border-border bg-foreground/10 border"
-						/>
-					</div>
-					<div class="col-span-1 ml-auto">
-						<Button variant="outline" type="submit">Load</Button>
-					</div>
-				</form>
-
-				{#each crewPresets as preset}
-					<li class="w-full gap-2">
-						<div class="border-border bg-card grid grid-cols-8 rounded-md border p-6">
-							<Avatar.Root class="mr-auto">
-								<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-								<Avatar.Fallback>CN</Avatar.Fallback>
-							</Avatar.Root>
-							<div class="col-span-3">
-								<h3 class="text-lg font-bold">{preset.instance_id}</h3>
-							</div>
-							<div class="col-span-3">
-								<p>{preset.instance_id}</p>
-							</div>
-							<div class="col-span-1 ml-auto">
-								<Button variant="outline">Load</Button>
-							</div>
-						</div>
-					</li>
-				{/each}
-			</ul>
-		</Tabs.Content>
-		<Tabs.Content value="community">COMING SOON!</Tabs.Content>
-	</Tabs.Root>
-</div> -->
 
 <div class="w-full max-w-6xl py-4">
 	<Tabs.Root value="personal" class="h-screen max-h-[650px]">
-		
 		<Tabs.List class="sticky grid w-full grid-cols-2">
 			<Tabs.Trigger value="personal">Personal</Tabs.Trigger>
 			<Tabs.Trigger value="community">Community</Tabs.Trigger>
 		</Tabs.List>
 		<div class="w-full">
-			
 			<div class="flex items-center py-2">
 				<Input
 					class="max-w-4xl"
 					placeholder="Search agents..."
 					type="text"
+					bind:value={searchQuery}
 					on:input={updateSearchQuery}
 				/>
 
-				
 				<DropdownMenu.Root>
-
 					<DropdownMenu.Trigger asChild let:builder>
 						<Button variant="outline" class="ml-auto" builders={[builder]}>
 							Filter <ChevronDown class="ml-2 h-4 w-4" />
@@ -216,59 +109,65 @@
 						<DropdownMenu.CheckboxItem checked={filterPublished} on:click={togglePublished}>
 							Published
 						</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem
+						<!-- <DropdownMenu.CheckboxItem
 							checked={filterModel === 'gpt-3'}
 							on:click={() => updateFilterModel('gpt-3')}
 						>
 							GPT-3
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
+							checked={filterModel === 'gpt-3.5 turbo'}
+							on:click={() => updateFilterModel('gpt-3.5 turbo')}
+						>
+							GPT-3.5 Turbo
+						</DropdownMenu.CheckboxItem>
+						<DropdownMenu.CheckboxItem
 							checked={filterModel === 'gpt-4'}
 							on:click={() => updateFilterModel('gpt-4')}
 						>
 							GPT-4
-						</DropdownMenu.CheckboxItem>
+						</DropdownMenu.CheckboxItem> -->
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</div>
 			<form
-					method="POST"
-					class="border-border bg-card grid grid-cols-8 rounded-md border p-6"
-					on:submit|preventDefault={async (e) => {
-						const file = e.target[0].files[0];
+				method="POST"
+				class="border-border bg-card grid grid-cols-8 rounded-md border p-6"
+				on:submit|preventDefault={async (e) => {
+					const file = e.target[0].files[0];
 
-						if (!file) return;
+					if (!file) return;
 
-						try {
-							const text = await file.text();
-							dispatch('crew-load', {
-								crew: JSON.parse(text)
-							});
-						} catch (error) {
-							console.error('Error parsing JSON:', error);
-						}
-					}}
-				>
-					<div class="col-span-7 grid w-full max-w-sm items-center gap-1.5">
-						<Label for="file">Upload a Crew from a file with the button below</Label>
+					try {
+						const text = await file.text();
+						dispatch('crew-load', {
+							crew: JSON.parse(text)
+						});
+					} catch (error) {
+						console.error('Error parsing JSON:', error);
+					}
+				}}
+			>
+				<div class="col-span-7 grid w-full max-w-sm items-center gap-1.5">
+					<Label for="file">Upload a Crew from a file with the button below</Label>
 
-						<Input
-							id="file"
-							accept=".json"
-							type="file"
-							class="border-border bg-foreground/10 border"
-						/>
-					</div>
-					<div class="col-span-1 ml-auto">
-						<Button variant="outline" type="submit">Load</Button>
-					</div>
-				</form>
+					<Input
+						id="file"
+						accept=".json"
+						type="file"
+						class="border-border bg-foreground/10 border"
+					/>
+				</div>
+				<div class="col-span-1 ml-auto">
+					<Button variant="outline" type="submit">Load</Button>
+				</div>
+			</form>
 		</div>
 		<Tabs.Content
 			value="personal"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredMyAgents as agent}
+			{#each filteredMyCrews as agent}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -279,12 +178,17 @@
 					<Card.Root>
 						<div class="flex items-center justify-between px-6">
 							<div class="flex gap-4 gap-y-4 p-4">
-								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
+								<div class="flex h-20 w-20 items-center justify-center rounded-full">
 									<!-- <img
 										src={agent.avatar_url}
 										alt={agent.name}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/> -->
+									<div class="bg-primary-200 rounded-full p-1">
+										<div class="bg-background rounded-full p-2">
+											<User class="text-primary-500 h-12 w-12" />
+										</div>
+									</div>
 								</div>
 								<div class="flex flex-col">
 									<div
@@ -301,8 +205,14 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={(event) => console.log('not showing the details')}
-									>Load</button
+									on:click|stopPropagation={() =>
+										dispatch('crewLoad', {
+											id: agent.receiver_id,
+											title: agent.title,
+											nodes: agent.nodes,
+											edges: agent.edges,
+											description: agent.description
+										})}>Load</button
 								>
 							</div>
 						</div>
@@ -338,12 +248,17 @@
 					<Card.Root>
 						<div class="flex items-center justify-between px-6">
 							<div class="z-50 flex gap-4 gap-y-4 p-4">
-								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
+								<div class="flex h-20 w-20 items-center justify-center rounded-full">
 									<!-- <img
 										src={agent.avatar_url}
 										alt={agent.name}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/> -->
+									<div class="bg-primary-200 rounded-full p-1">
+										<div class="bg-background rounded-full p-2">
+											<User class="text-primary-500 h-12 w-12" />
+										</div>
+									</div>
 								</div>
 								<div class="flex flex-col">
 									<div
@@ -360,8 +275,14 @@
 								>
 								<button
 									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-									on:click|stopPropagation={(event) => console.log('not showing the details')}
-									>Load</button
+									on:click|stopPropagation={() =>
+										dispatch('crewLoad', {
+											id: agent.receiver_id,
+											title: agent.title,
+											nodes: agent.nodes,
+											edges: agent.edges,
+											description: agent.description
+										})}>Load</button
 								>
 							</div>
 						</div>
@@ -383,3 +304,7 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
+
+<!-- <CrewLibraryDetails {displayedAgent} {showDetails} on:close={handleClose} /> -->
+<LibraryDetails type="crew" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
+

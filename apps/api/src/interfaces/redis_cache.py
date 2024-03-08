@@ -6,7 +6,7 @@ redis = None
 def get_redis():
     global redis
     if not redis:
-        redis = rd.Redis()
+        redis = rd.StrictRedis(decode_responses=True)
     return redis
 
 

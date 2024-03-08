@@ -10,19 +10,19 @@ Example with 4 agents:
 "composition": {
     "agents": [
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         },
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         },
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         },
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         }
     ]
@@ -31,11 +31,11 @@ Example with 2 agents:
 "composition": {
     "agents": [
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         },
         {
-            "job_title": "",
+            "role": "",
             "system_message": ""
         }
     ]
