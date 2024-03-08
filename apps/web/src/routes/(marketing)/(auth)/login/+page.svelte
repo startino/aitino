@@ -13,7 +13,7 @@
 	export let form: ActionData;
 
 	function clearForm() {
-		form.error = null;
+		(form.error as any) = null;
 	}
 </script>
 
@@ -101,7 +101,7 @@
 	</Card.Content>
 	<div class="flex w-full justify-end p-0">
 		<Card.Footer>
-			<p class="text-foreground block text-right text-sm">
+			<p class="text-foreground block text-right text-md">
 				Don't have an account? <a
 					href="/register"
 					class="text-secondary hover:text-accent/75 underline">Sign up</a

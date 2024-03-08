@@ -27,8 +27,22 @@
 		validators: formSchema
 	});
 
-	$: {
-		async function checkError() {
+	async function checkError() {
+		console.log(
+			$errors.display_name,
+			'form display name',
+			$errors.password,
+			'form password',
+			$errors.email,
+			'errors'
+		);
+		if (
+			$errors.display_name !== undefined ||
+			$errors.password !== undefined ||
+			$errors.email !== undefined
+		) {
+			toast.error('Please fill the form correctly');
+		} else {
 			if (form?.error) {
 				return toast.error(form?.error);
 			} else {
@@ -42,16 +56,21 @@
 	let localErrorMessage = '';
 	$: localErrorMessage = form?.error;
 
-	function chekcAutoReloadError() {
+	async function chekcAutoReloadError() {
 		console.log('top:', localErrorMessage);
-		if (localErrorMessage === undefined) {
-			 
-			 console.log('Error from checkAutoReloadError fro local:', localErrorMessage);
-		}else {
-			toast.success('Your account has been created', {
-				description: 'Check your email to activate your account'
-			})
-		}
+		setTimeout(() => {
+			checkError();
+			// if (form?.error) {
+			// 	console.log('Form error:', form.error);
+			// 	toast.error(form.error);
+			// } else {
+			// 	console.log('No form error, showing success toast');
+			// 	toast.success('Your account has been created', {
+			// 		description: 'Check your email to activate your account'
+			// 	});
+			// }
+		}, 3000);
+
 		console.log('Error from checkAutoReloadError:', localErrorMessage);
 	}
 </script>
@@ -162,30 +181,18 @@
 				<Button
 					class="w-full"
 					type="submit"
-					on:click={() => 
-						// $: if (!localErrorMessage) {
-						// 	if (!form?.error) {
-						// 		console.log('none', form?.error);
-						// 		toast.success('Your account has been created', {
-						// 			description: 'Check your email to activate your account'
-						// 		});
-						// 	} else {
-						// 		console.log('not none', form?.error);
-						// 		if (!($errors.display_name || $errors.email || $errors.password)) {
-						// 		}
-						// 	}
-						// 	// }, 1000);
-						// }
-						chekcAutoReloadError()
-						
-					}>Create account</Button
+					on:click={() => {
+						if (!($errors.email || $errors.password || $errors.display_name)) {
+							chekcAutoReloadError();
+						}
+					}}>Create account</Button
 				>
 			</form>
 		</div>
 	</Card.Content>
 	<div class="flex w-full justify-end p-0">
 		<Card.Footer>
-			<p class="text-foreground block text-right text-sm">
+			<p class="text-foreground block text-right text-md">
 				Already have an account? <a
 					href="/login"
 					class="text-secondary hover:text-accent/75 underline">Sign in</a
