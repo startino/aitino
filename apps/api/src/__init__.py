@@ -6,13 +6,15 @@ from uuid import UUID
 
 import autogen
 from autogen import Agent, ConversableAgent
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+
 
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
+from .dependencies import rate_limit, rate_limit_profile, rate_limit_tiered
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import Composition, Message, Session
@@ -51,7 +53,7 @@ def redirect_to_docs() -> RedirectResponse:
     return RedirectResponse(url="/docs")
 
 
-@app.get("/compile")
+@app.get("/compile", dependencies=[Depends(rate_limit(3, 30, "compile"))])
 def compile(id: UUID) -> dict[str, str | Composition]:
     message, composition = db.get_compiled(id)
 
@@ -61,14 +63,14 @@ def compile(id: UUID) -> dict[str, str | Composition]:
     }
 
 
-@app.get("/improve")
+@app.get("/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=30))])
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
     return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
-@app.get("/crew")
+@app.get("/crew", dependencies=[Depends(rate_limit_tiered)])
 async def run_crew(
     id: UUID,
     profile_id: UUID,
@@ -185,7 +187,7 @@ async def run_crew(
     return {"status": "success", "data": {"session": session.model_dump()}}
 
 
-@app.get("/auto-build")
+@app.get("/auto-build", dependencies=[Depends(rate_limit_profile(limit=3, period_seconds=60))])
 def auto_build_crew(general_task: str):
     agents = build_agents.BuildAgents()
     auto_build_agent = agents.create_all_in_one_agent()
@@ -201,5 +203,4 @@ def auto_build_crew(general_task: str):
         auto_build_agent, message=general_task, silent=True
     )
     crew_frame = chat_result.chat_history[1]["content"]
-    print(crew_frame)
     return crew_frame
