@@ -1,20 +1,13 @@
 <script lang="ts">
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { createEventDispatcher } from 'svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as utils from '$lib/utils';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import {
-		ArrowLeftFromLine,
-		CheckCircle,
-		PencilLine,
-		Trash2,
-		Loader2,
-		Loader
-	} from 'lucide-svelte';
+	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { Crew, Session } from '$lib/types/models';
 
 	const dispatch = createEventDispatcher();

@@ -3,31 +3,9 @@
 	import Chat from './Chat.svelte';
 	import { onMount } from 'svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import { error } from '@sveltejs/kit';
 	import type { Message, Session } from '$lib/types/models';
-	import { get, writable } from 'svelte/store';
 	import type { PageData } from './$types';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as utils from '$lib/utils';
-	import * as Popover from '$lib/components/ui/popover';
-	import {
-		ArrowLeftFromLine,
-		ArrowLeftToLine,
-		ArrowRightToLine,
-		CheckCircle,
-		Loader,
-		Loader2,
-		MoreHorizontal,
-		PencilLine,
-		Trash2
-	} from 'lucide-svelte';
-	import { Description } from '$lib/components/ui/alert';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { supabase } from '$lib/supabase';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Loader2 } from 'lucide-svelte';
 	import SessionNavigator from './SessionNavigator.svelte';
 
 	export let data: PageData;
