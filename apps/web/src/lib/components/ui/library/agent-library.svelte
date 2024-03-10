@@ -6,83 +6,89 @@
 	import * as Card from '$lib/components/ui/card';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import { fade } from 'svelte/transition';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import type { Agent } from '$lib/types/models';
 	import { createEventDispatcher } from 'svelte';
-	import { AgentLibraryDetail } from '../community-details';
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import LibraryDetails from '../community-details/libraryDetails.svelte';
+	import { LibraryDetails } from '$lib/components/ui/community-details';
+
+	const dispatch = createEventDispatcher();
 
 	export let myAgents: Agent[];
 	export let publishedAgents: Agent[];
 
-	const dispatch = createEventDispatcher();
-
-	dayjs.extend(relativeTime);
 	let searchQuery = '';
 	let filterPublished = false;
 	let filterModel = '';
+	let showDetails = false;
+	let displayedAgent: Agent;
 
+	dayjs.extend(relativeTime);
 
+	// filter the agents based on the search query
+	$: filterAgents = (agents: Agent[]) => {
+		return agents.filter(
+			(agent) =>
+				(searchQuery === '' ||
+					agent.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+					agent.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+					agent.description.some((desc) =>
+						desc.toLowerCase().includes(searchQuery.toLowerCase())
+					)) &&
+				(!filterPublished || agent.published) &&
+				(filterModel === '' || agent.model === filterModel)
+		);
+	};
 
+	$: filteredMyAgents = filterAgents(myAgents);
+
+	$: filteredPublishedAgents = filterAgents(publishedAgents);
+	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
+	$: showNoResultsForPublished = filteredPublishedAgents.length === 0 && searchQuery !== '';
+
+	// funtion to show details of the current agent
+	let showDetailInTheModal = async (id: string) => {
+		displayedAgent = myAgents.find((a) => a.id === id) || publishedAgents.find((a) => a.id === id);
+	};
+
+	// update the search query based on user input
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
 		searchQuery = input.value;
 	}
 
+	// toggle the filter for published
 	function togglePublished() {
 		filterPublished = !filterPublished;
 	}
 
+	// update the filter model based on user selection
 	function updateFilterModel(model: string) {
-		if (filterModel === model) {
-			filterModel = '';
-		} else {
-			filterModel = model;
-		}
+		filterModel = model !== filterModel ? model : '';
 	}
 
-	$: filteredMyAgents = myAgents.filter(
-		(a) =>
-			(searchQuery === '' ||
-				a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.description.some((desc) => desc.toLowerCase().includes(searchQuery.toLowerCase()))) &&
-			(!filterPublished || a.published) &&
-			(filterModel === '' || a.model === filterModel)
-	);
-
-	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
-
-
-	$: filteredPublishedAgents = publishedAgents.filter(
-		(a) =>
-			(searchQuery === '' ||
-				a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.description.some((desc) => desc.toLowerCase().includes(searchQuery.toLowerCase()))) &&
-			(!filterPublished || a.published) &&
-			(filterModel === '' || a.model === filterModel)
-	);
-
-	$: showNoResultsForPublished = filteredPublishedAgents.length === 0 && searchQuery !== '';
-
-	let showDetails = false;
-	let displayedAgent: Agent;
-	let showDetailInTheModal = async (id: string) => {
-		displayedAgent = myAgents.find((a) => a.id === id) || publishedAgents.find((a) => a.id === id);
-		console.log(displayedAgent, 'new Agent');
-	};
-
-	function timeSince(dateIsoString: Date) {
+	// function to filter the date
+	function timeSince(dateIsoString: Date | string | number | undefined) {
 		return dayjs(dateIsoString).fromNow(true);
 	}
 
 	function handleClose() {
 		showDetails = false;
 	}
+
+	const reusableClasses = {
+		tabContent_Class: 'h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden',
+		scale_on_hover: 'cursor-pointer hover:scale-[101%]',
+		image_class: 'border-primary rounded-full border-4 object-cover shadow-2xl',
+		image_parent_class: 'flex h-20 w-20 items-center justify-center rounded-full',
+		agent_title:
+			'bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent',
+		button_class:
+			'ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+		card_root: 'flex items-center justify-between px-6',
+		ghost_button: 'text-foreground max-w-xs px-12 hover:bg-transparent'
+	};
 </script>
 
 <div class="w-full max-w-6xl py-4">
@@ -110,14 +116,14 @@
 							Published
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-3'}
-							on:click={() => updateFilterModel('gpt-3')}
+							checked={filterModel === 'gpt-3-turbo'}
+							on:click={() => updateFilterModel('gpt-3-turbo')}
 						>
 							GPT-3
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-4'}
-							on:click={() => updateFilterModel('gpt-4')}
+							checked={filterModel === 'gpt-4-turbo-preview'}
+							on:click={() => updateFilterModel('gpt-4-turbo-preview')}
 						>
 							GPT-4
 						</DropdownMenu.CheckboxItem>
@@ -125,51 +131,38 @@
 				</DropdownMenu.Root>
 			</div>
 		</div>
-		<Tabs.Content
-			value="personal"
-			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
-		>
+		<Tabs.Content value="personal" class={reusableClasses.tabContent_Class}>
 			{#each filteredMyAgents as agent, index (`personal-${agent.id}`)}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					class="cursor-pointer"
+					class={reusableClasses.scale_on_hover}
 					transition:fade={{ delay: 500, duration: 400 }}
 					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
 				>
 					<Card.Root>
-						<div class="flex items-center justify-between px-6">
+						<div class={reusableClasses.card_root}>
 							<div class="flex gap-4 gap-y-4 p-4">
-								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
-									<img
-										src={agent.avatar_url}
-										alt={agent.title}
-										class="border-primary rounded-full border-4 object-cover shadow-2xl"
-									/>
+								<div class={reusableClasses.image_parent_class}>
+									<img src={agent.avatar} alt={agent.title} class={reusableClasses.image_class} />
 								</div>
 								<div class="flex flex-col">
-									<div
-										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
-									>
+									<div class={reusableClasses.agent_title}>
 										{agent.title}
 									</div>
-									<!-- <div class="text-lg italic text-gray-500">{agent.author}</div> -->
 								</div>
 							</div>
-							<div class="flex h-full items-center justify-between">
-								<Button variant="ghost" class="text-foreground max-w-xs  px-12 hover:bg-transparent"
-									>see more</Button
-								>
+							<div class="{reusableClasses.card_root} h-full px-0">
+								<Button variant="ghost" class={reusableClasses.ghost_button}>see more</Button>
 								<button
-									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+									class={reusableClasses.button_class}
 									on:click|stopPropagation={() => {
 										toast.success(`Added a new agent ${agent.title}`);
 										dispatch('loadAgent', {
-											id: agent.id,
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
-											avatar: agent.avatar_url
+											avatar: agent.avatar
 										});
 									}}
 								>
@@ -193,52 +186,39 @@
 			{/if}
 		</Tabs.Content>
 
-		<Tabs.Content
-			value="community"
-			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
-		>
+		<Tabs.Content value="community" class={reusableClasses.tabContent_Class}>
 			{#each filteredPublishedAgents as agent, index (`community-${agent.id}`)}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					class="cursor-pointer hover:scale-[101%]"
+					class={reusableClasses.scale_on_hover}
 					transition:fade={{ delay: 500, duration: 400 }}
 					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
 				>
 					<Card.Root>
-						<div class="flex items-center justify-between px-6">
+						<div class={reusableClasses.card_root}>
 							<div class="z-50 flex gap-4 gap-y-4 p-4">
-								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
-									<img
-										src={agent.avatar_url}
-										alt={agent.title}
-										class="border-primary rounded-full border-4 object-cover shadow-2xl"
-									/>
+								<div class={reusableClasses.image_parent_class}>
+									<img src={agent.avatar} alt={agent.title} class={reusableClasses.image_class} />
 								</div>
 								<div class="flex flex-col">
-									<div
-										class="bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent"
-									>
+									<div class={reusableClasses.agent_title}>
 										{agent.title}
 									</div>
-									<!-- <div class="text-lg italic text-gray-500">{agent.author}</div> -->
 								</div>
 							</div>
-							<div class="flex h-full items-center justify-between">
-								<Button variant="ghost" class="text-foreground max-w-xs px-12 hover:bg-transparent"
-									>see more</Button
-								>
+							<div class=" {reusableClasses.card_root} h-full px-0">
+								<Button variant="ghost" class={reusableClasses.ghost_button}>see more</Button>
 								<button
-									class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+									class={reusableClasses.button_class}
 									on:click|stopPropagation={(event) => {
-										toast.success(`Added a new agent ${agent.title}`);
-
+										toast.success(`Added a new agent from the community: ${agent.title}`);
 										dispatch('loadAgent', {
 											id: agent.id,
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
-											avatar: agent.avatar_url
+											avatar: agent.avatar
 										});
 									}}>Load</button
 								>
@@ -249,7 +229,7 @@
 								<p class="max-w-4xl px-6">
 									{agent.role}
 								</p>
-								<div class="justify-self-end">{timeSince(agent.created_at)}</div>
+								<div class="justify-self-end">{timeSince(agent?.created_at)}</div>
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -262,5 +242,5 @@
 	</Tabs.Root>
 </div>
 
-<!-- <AgentLibraryDetail {displayedAgent} {showDetails} on:close={handleClose} /> -->
-<LibraryDetails type="agent" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
+<!-- component to show details of the current agent  -->
+<LibraryDetails type="agent" {displayedAgent} {showDetails} on:close={handleClose} />
