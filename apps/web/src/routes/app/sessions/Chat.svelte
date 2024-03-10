@@ -123,22 +123,28 @@
 		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
-		<h1 class="text-center text-3xl font-bold">{name}</h1>
+		<h1 class="mb-6 text-center text-3xl font-bold">{name}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#await messages}
 			<div class="flex w-full items-center justify-center gap-4">
 				<p>Loading messages...</p>
 			</div>
 		{:then messages}
-			{#each messages as message, index}
-				{#if message.content != 'CONTINUE'}
-					<MessageItem {message} />
+			{#if messages.length > 0}
+				{#each messages as message, index}
+					{#if message.content != 'CONTINUE'}
+						<MessageItem {message} />
 
-					{#if index !== messages.length - 1}
-						<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+						{#if index !== messages.length - 1}
+							<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+						{/if}
 					{/if}
-				{/if}
-			{/each}
+				{/each}
+			{:else}
+				<div class="flex w-full items-center justify-center gap-4">
+					<p>No messages have been sent yet.</p>
+				</div>
+			{/if}
 		{/await}
 
 		<div

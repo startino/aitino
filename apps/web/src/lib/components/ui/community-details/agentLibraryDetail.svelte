@@ -29,7 +29,7 @@
 			<div class="mb-8 flex flex-col items-center justify-center">
 				<div class="relative">
 					<img
-						src={displayedAgent.avatar_url}
+						src={displayedAgent.avatar}
 						alt={displayedAgent.title}
 						class="border-primary h-48 w-48 rounded-full border-4 object-cover shadow-2xl"
 					/>
