@@ -63,7 +63,7 @@
 		activeSession = session;
 	}
 
-	async function loadSession(sessionId: string | null = null) {
+	async function loadSession(sessionId: string) {
 		console.log('sessionId', sessionId);
 		let res = await fetch(`/api/get-session?sessionId=${sessionId}`)
 			.then((res) => res.json())
