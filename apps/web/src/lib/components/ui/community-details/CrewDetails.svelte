@@ -7,7 +7,6 @@
 
 	export let CrewDisplayDetails: Crew;
 
-	dayjs.extend(relativeTime);
 
 	function timeSince(dateIsoString: Date | string | number ) {
 		return dayjs(dateIsoString).fromNow(true);

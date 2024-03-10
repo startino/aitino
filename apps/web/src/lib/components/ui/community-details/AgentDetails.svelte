@@ -1,13 +1,12 @@
 <script lang="ts">
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import type { Agent, Crew } from '$lib/types/models';
+	import type { Agent } from '$lib/types/models';
 
 	dayjs.extend(relativeTime);
 
 	export let AgentDisplayDetails: Agent;
 
-	dayjs.extend(relativeTime);
 
 	function timeSince(dateIsoString: Date | string | number) {
 		return dayjs(dateIsoString).fromNow(true);

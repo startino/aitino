@@ -2,8 +2,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { createEventDispatcher } from 'svelte';
 	import type { Agent, Crew } from '$lib/types/models';
-	import { AgentDetails } from '$lib/components/ui/community-details';
-	import { CrewDetails } from '$lib/components/ui/community-details';
+	import { AgentDetails, CrewDetails } from '$lib/components/ui/community-details';
 
 	export let type: 'agent' | 'crew';
 	export let displayedAgent: Agent | Crew | null;
