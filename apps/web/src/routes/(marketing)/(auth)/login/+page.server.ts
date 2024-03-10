@@ -1,7 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Provider } from "@supabase/supabase-js";
-import { z } from "zod";
 
 export const load = (async () => {
 	return {};
@@ -29,7 +28,7 @@ export const actions: Actions = {
 
 		if (!body.email || !body.password) {
 			return fail(400, {
-				error: "Email or password are missing "
+				error: "Please provide your credentials to enjoy the services of Aitino"
 			});
 		}
 		const { data, error } = await locals.supabase.auth.signInWithPassword({
