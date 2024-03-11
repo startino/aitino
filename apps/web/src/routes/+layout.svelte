@@ -22,6 +22,6 @@
 	});
 </script>
 
-<Toaster />
+<Toaster/>
 
 <slot />
