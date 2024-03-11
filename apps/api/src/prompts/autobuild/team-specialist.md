@@ -40,6 +40,8 @@ Example with 2 agents:
         }
     ]
 }
+
 ## Output:
+
 - Output the prompt exactly as the format example is formatted.
 - Don't write an introductory phrase or ending paragraph.

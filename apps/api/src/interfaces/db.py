@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from src.models import Agent, Composition, Message, Session
+from src.models import Agent, CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
@@ -26,7 +26,7 @@ logger = logging.getLogger("root")
 
 def get_compiled(
     crew_id: UUID,
-) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
     """
     Get the compiled message and composition for a given Crew ID.
     """
@@ -98,6 +98,6 @@ def post_agents(agents: list[Agent]) -> None:
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
-def post_crew(message: Message, composition: Composition) -> None:
-    post_agents(Composition.agents)
+def post_crew(message: Message, composition: CrewModel) -> None:
+    post_agents(CrewModel.agents)
     # TODO: (Leon) Implement posting the rest of the crew
