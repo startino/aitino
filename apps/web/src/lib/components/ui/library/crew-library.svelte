@@ -7,9 +7,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import type { Crew } from '$lib/types/models';
-	import * as Card from '$lib/components/ui/card';
-	import { fade } from 'svelte/transition';
-	import { LibraryDetails } from '$lib/components/ui/community-details';
+	import { Library } from '$lib/components/ui/community-details';
+	import CrewRow from '../community-details/crew-row.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -20,7 +19,7 @@
 	let filterPublished = false;
 	let filterModel = '';
 	let showDetails = false;
-	let displayedAgent: Crew;
+	let displayedCrew: Crew;
 
 	// filter the personal crews based on search query
 	$: filteredCrews = (crews: Crew[]) => {
@@ -61,24 +60,12 @@
 
 	//  shows the detail of the current crew
 	let showDetailInTheModal = async (id: string) => {
-		displayedAgent = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
+		displayedCrew = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
 	};
 
 	function handleClose() {
 		showDetails = false;
 	}
-
-	const reusableClasses = {
-		tabContent_content:
-			'h-4/6 max-h-[700px] space-y-7 overflow-y-scroll [&::-webkit-scrollbar]:hidden',
-		scale_on_hover: 'cursor-pointer hover:scale-[101%]',
-		image_parent_class: 'g-primary-200 flex h-20 w-20 items-center justify-center rounded-full p-1',
-		agent_title:
-			'bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent',
-		button_class:
-			'ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-		card_class: 'flex items-center justify-between px-6'
-	};
 </script>
 
 <div class="w-full max-w-6xl py-4">
@@ -143,114 +130,48 @@
 				</div>
 			</form>
 		</div>
-		<Tabs.Content value="personal" class={reusableClasses.tabContent_content}>
-			{#each filteredMyCrews as agent}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class={reusableClasses.scale_on_hover}
-					transition:fade={{ delay: 500, duration: 400 }}
-					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
-				>
-					<Card.Root>
-						<div class={reusableClasses.card_class}>
-							<div class="flex gap-4 gap-y-4 p-4">
-								<div class={reusableClasses.image_parent_class}>
-									<img
-										src={agent.avatar}
-										alt={agent.title}
-										class="rounded-full border-4 object-cover shadow-2xl"
-									/>
-								</div>
-								<div class="flex flex-col">
-									<div class={reusableClasses.agent_title}>
-										{agent.title}
-									</div>
-								</div>
-							</div>
-							<div class="flex h-full items-center justify-between">
-								<Button variant="ghost" class="text-foreground max-w-xs  px-12 hover:bg-transparent"
-									>see more</Button
-								>
-								<button
-									class={reusableClasses.button_class}
-									on:click|stopPropagation={() =>
-										dispatch('crewLoad', {
-											id: agent.receiver_id,
-											title: agent.title,
-											nodes: agent.nodes,
-											edges: agent.edges,
-											description: agent.description
-										})}>Load</button
-								>
-							</div>
-						</div>
-						<Card.Content>
-							<div class="{reusableClasses.card_class} px-0">
-								<p class="max-w-4xl px-6">
-									{agent.description}
-								</p>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				</div>
+		<Tabs.Content
+			value="personal"
+			class="h-4/6 max-h-[700px] space-y-7 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
+		>
+			{#each filteredMyCrews as crew}
+				<CrewRow
+					{crew}
+					on:click={({ detail }) => ((showDetails = true), showDetailInTheModal(detail.id))}
+					on:load={({ detail }) => {
+						dispatch('crewLoad', {
+							id: detail.receiver_id,
+							title: detail.title,
+							nodes: detail.nodes,
+							edges: detail.edges,
+							description: detail.description
+						});
+					}}
+				/>
 			{/each}
 			{#if showNoResults}
 				<div class="no-results">No search results found</div>
 			{/if}
 		</Tabs.Content>
 
-		<Tabs.Content value="community" class={reusableClasses.tabContent_content}>
-			{#each filteredPublishedCrews as agent}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class={reusableClasses.scale_on_hover}
-					transition:fade={{ delay: 500, duration: 400 }}
-					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
-				>
-					<Card.Root>
-						<div class={reusableClasses.card_class}>
-							<div class="z-50 flex gap-4 gap-y-4 p-4">
-								<div class={reusableClasses.image_parent_class}>
-									<img
-										src={agent.avatar}
-										alt={agent.title}
-										class="rounded-full object-cover shadow-2xl"
-									/>
-								</div>
-								<div class="flex flex-col">
-									<div class={reusableClasses.agent_title}>
-										{agent.title}
-									</div>
-								</div>
-							</div>
-							<div class="{reusableClasses.card_class} px-0">
-								<Button variant="ghost" class="text-foreground max-w-xs px-12 hover:bg-transparent"
-									>see more</Button
-								>
-								<button
-									class={reusableClasses.button_class}
-									on:click|stopPropagation={() =>
-										dispatch('crewLoad', {
-											id: agent.receiver_id,
-											title: agent.title,
-											nodes: agent.nodes,
-											edges: agent.edges,
-											description: agent.description
-										})}>Load</button
-								>
-							</div>
-						</div>
-						<Card.Content>
-							<div class="flex justify-between" on:click={() => (showDetails = true)}>
-								<p class="max-w-4xl px-6">
-									{agent.description}
-								</p>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				</div>
+		<Tabs.Content
+			value="community"
+			class="h-4/6 max-h-[700px] space-y-7 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
+		>
+			{#each filteredPublishedCrews as crew}
+				<CrewRow
+					{crew}
+					on:click={({ detail }) => ((showDetails = true), showDetailInTheModal(detail.id))}
+					on:load={({ detail }) => {
+						dispatch('crewLoad', {
+							id: detail.receiver_id,
+							title: detail.title,
+							nodes: detail.nodes,
+							edges: detail.edges,
+							description: detail.description
+						});
+					}}
+				/>
 			{/each}
 			{#if showNoResultsForPublished}
 				<div class="no-results">No search results found</div>
@@ -259,4 +180,4 @@
 	</Tabs.Root>
 </div>
 
-<LibraryDetails type="crew" {displayedAgent} {showDetails} on:close={handleClose} />
+<Library type="crew" displayedItem={displayedCrew} {showDetails} on:close={handleClose} />

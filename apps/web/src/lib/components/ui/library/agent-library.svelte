@@ -3,15 +3,12 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Card from '$lib/components/ui/card';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import { fade } from 'svelte/transition';
 	import type { Agent } from '$lib/types/models';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { LibraryDetails } from '$lib/components/ui/community-details';
+	import { Library } from '$lib/components/ui/community-details';
+	import AgentRow from '../community-details/agent-row.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -23,8 +20,6 @@
 	let filterModel = '';
 	let showDetails = false;
 	let displayedAgent: Agent;
-
-	dayjs.extend(relativeTime);
 
 	// filter the agents based on the search query
 	$: filterAgents = (agents: Agent[]) => {
@@ -68,27 +63,9 @@
 		filterModel = model !== filterModel ? model : '';
 	}
 
-	// function to filter the date
-	function timeSince(dateIsoString: Date | string | number | undefined) {
-		return dayjs(dateIsoString).fromNow(true);
-	}
-
 	function handleClose() {
 		showDetails = false;
 	}
-
-	const reusableClasses = {
-		tabContent_Class: 'h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden',
-		scale_on_hover: 'cursor-pointer hover:scale-[101%]',
-		image_class: 'border-primary rounded-full border-4 object-cover shadow-2xl',
-		image_parent_class: 'flex h-20 w-20 items-center justify-center rounded-full',
-		agent_title:
-			'bg-gradient-to-r from-green-200 to-teal-300 bg-clip-text text-2xl font-extrabold text-transparent',
-		button_class:
-			'ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-		card_root: 'flex items-center justify-between px-6',
-		ghost_button: 'text-foreground max-w-xs px-12 hover:bg-transparent'
-	};
 </script>
 
 <div class="w-full max-w-6xl py-4">
@@ -131,109 +108,49 @@
 				</DropdownMenu.Root>
 			</div>
 		</div>
-		<Tabs.Content value="personal" class={reusableClasses.tabContent_Class}>
+		<Tabs.Content
+			value="personal"
+			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
+		>
 			{#each filteredMyAgents as agent, index (`personal-${agent.id}`)}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class={reusableClasses.scale_on_hover}
-					transition:fade={{ delay: 500, duration: 400 }}
-					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
-				>
-					<Card.Root>
-						<div class={reusableClasses.card_root}>
-							<div class="flex gap-4 gap-y-4 p-4">
-								<div class={reusableClasses.image_parent_class}>
-									<img src={agent.avatar} alt={agent.title} class={reusableClasses.image_class} />
-								</div>
-								<div class="flex flex-col">
-									<div class={reusableClasses.agent_title}>
-										{agent.title}
-									</div>
-								</div>
-							</div>
-							<div class="{reusableClasses.card_root} h-full px-0">
-								<Button variant="ghost" class={reusableClasses.ghost_button}>see more</Button>
-								<button
-									class={reusableClasses.button_class}
-									on:click|stopPropagation={() => {
-										toast.success(`Added a new agent ${agent.title}`);
-										dispatch('loadAgent', {
-											name: agent.title,
-											model: agent.model,
-											job: agent.role,
-											avatar: agent.avatar
-										});
-									}}
-								>
-									Load
-								</button>
-							</div>
-						</div>
-						<Card.Content>
-							<div class="flex justify-between">
-								<p class="max-w-4xl px-6">
-									{agent.role}
-								</p>
-								<div class="justify-self-end">{timeSince(agent.created_at)}</div>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				</div>
+				<AgentRow
+					{agent}
+					on:click={({detail}) => ((showDetails = true), showDetailInTheModal(detail.id))}
+					on:load={({ detail }) => {
+						toast.success(`Added a new agent ${detail.title}`);
+						console.log(detail, 'detail');
+						dispatch('loadAgent', {
+							name: detail.title,
+							model: detail.model,
+							job: detail.role,
+							avatar: detail.avatar
+						});
+					}}
+				/>
 			{/each}
 			{#if showNoResults}
 				<div class="no-results">No search results found</div>
 			{/if}
 		</Tabs.Content>
 
-		<Tabs.Content value="community" class={reusableClasses.tabContent_Class}>
+		<Tabs.Content
+			value="community"
+			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
+		>
 			{#each filteredPublishedAgents as agent, index (`community-${agent.id}`)}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class={reusableClasses.scale_on_hover}
-					transition:fade={{ delay: 500, duration: 400 }}
+				<AgentRow
+					{agent}
 					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
-				>
-					<Card.Root>
-						<div class={reusableClasses.card_root}>
-							<div class="z-50 flex gap-4 gap-y-4 p-4">
-								<div class={reusableClasses.image_parent_class}>
-									<img src={agent.avatar} alt={agent.title} class={reusableClasses.image_class} />
-								</div>
-								<div class="flex flex-col">
-									<div class={reusableClasses.agent_title}>
-										{agent.title}
-									</div>
-								</div>
-							</div>
-							<div class=" {reusableClasses.card_root} h-full px-0">
-								<Button variant="ghost" class={reusableClasses.ghost_button}>see more</Button>
-								<button
-									class={reusableClasses.button_class}
-									on:click|stopPropagation={(event) => {
-										toast.success(`Added a new agent from the community: ${agent.title}`);
-										dispatch('loadAgent', {
-											id: agent.id,
-											name: agent.title,
-											model: agent.model,
-											job: agent.role,
-											avatar: agent.avatar
-										});
-									}}>Load</button
-								>
-							</div>
-						</div>
-						<Card.Content>
-							<div class="flex justify-between" on:click={() => (showDetails = true)}>
-								<p class="max-w-4xl px-6">
-									{agent.role}
-								</p>
-								<div class="justify-self-end">{timeSince(agent?.created_at)}</div>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				</div>
+					on:load={({ detail }) => {
+						toast.success(`Added a new agent ${detail.title}`);
+						dispatch('loadAgent', {
+							name: detail.title,
+							model: detail.model,
+							job: detail.role,
+							avatar: detail.avatar
+						});
+					}}
+				/>
 			{/each}
 			{#if showNoResultsForPublished}
 				<div class="no-results">No search results found</div>
@@ -243,4 +160,4 @@
 </div>
 
 <!-- component to show details of the current agent  -->
-<LibraryDetails type="agent" {displayedAgent} {showDetails} on:close={handleClose} />
+<Library type="agent" displayedItem={displayedAgent} {showDetails} on:close={handleClose} />
