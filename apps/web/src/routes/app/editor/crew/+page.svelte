@@ -36,10 +36,12 @@
 
 	const { receiver, count } = getContext('crew');
 	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-	let title = data.crew.title;
+	let title = data.crew.title ?? 'Untitled Crew';
 	$: data.crew.title = title;
 	let description = data.crew.description;
 	$: data.crew.description = description;
+
+	console.log(data);
 
 	let openAgentLibrary = false;
 

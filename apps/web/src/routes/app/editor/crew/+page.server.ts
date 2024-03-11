@@ -7,16 +7,15 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) 
 	const session = await getSession();
 	const profileId = session?.user?.id;
 
-	const userAgents =  db.getAgents(profileId); 
+	const userAgents = db.getAgents(profileId);
 	const publishedAgents = db.getPublishedAgents();
 
-	const userCrews = db.getCrews(profileId);
+	const userCrews = await db.getCrews(profileId);
 	const publishedCrews = db.getPublishedCrews();
-
 
 	const data: CrewLoad = {
 		profileId: profileId,
-		crew: {
+		crew: userCrews[0] ?? {
 			id: '',
 			profile_id: profileId,
 			receiver_id: '',
@@ -27,7 +26,7 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) 
 			created_at: '',
 			published: false
 		},
-		myCrews: await userCrews,
+		myCrews: userCrews,
 		pulishedCrews: await publishedCrews,
 		myAgents: await userAgents,
 		publishedAgents: await publishedAgents
@@ -39,6 +38,7 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession } }) 
 export const actions: Actions = {
 	save: async ({ cookies, request }) => {
 		const data = await request.json();
+		const prompt = data.nodes.find((n: any) => n.type === 'prompt');
 
 		const { error: err } = await db.postCrew({
 			id: data.id,
@@ -46,7 +46,8 @@ export const actions: Actions = {
 			title: data.title,
 			description: data.description,
 			receiver_id: data.receiver_id,
-			nodes: data.nodes,
+			prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
+			nodes: data.nodes.filter((n: any) => n.type === 'agent').map((n: any) => n.id),
 			edges: data.edges
 		});
 
