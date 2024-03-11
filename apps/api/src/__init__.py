@@ -10,7 +10,6 @@ from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
