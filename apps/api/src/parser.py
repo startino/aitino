@@ -3,7 +3,7 @@ import logging
 from typing import Literal
 from uuid import UUID
 
-from src.models import Agent, Composition
+from src.models import Agent, CrewModel
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)
@@ -40,12 +40,12 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def parse_input_v0_2(
     input_data: dict,
-) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
     logger.debug("Parsing input v0.2")
 
-    def _parse_composition(nodes: dict) -> Composition | Literal[False]:
+    def _parse_composition(nodes: dict) -> CrewModel | Literal[False]:
         logger.debug("Parsing composition")
-        composition = Composition(
+        composition = CrewModel(
             reciever_id="auto",
             agents=list(),
         )
@@ -82,9 +82,9 @@ def parse_input_v0_2(
     return message, composition
 
 
-def parse_input_v0_1(input_data: dict) -> tuple[str, Composition]:
-    def _parse_composition(nodes: dict) -> Composition:
-        composition = Composition(
+def parse_input_v0_1(input_data: dict) -> tuple[str, CrewModel]:
+    def _parse_composition(nodes: dict) -> CrewModel:
+        composition = CrewModel(
             reciever_id="auto",
             agents=list(),
         )
@@ -116,7 +116,7 @@ def parse_input_v0_1(input_data: dict) -> tuple[str, Composition]:
 
 def parse_autobuild(
     input_data: str,
-) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
     input_data = input_data.replace("\n", "")
     try:
         dict_input = json.loads(input_data)
@@ -134,7 +134,7 @@ def parse_autobuild(
 
     message = dict_input["composition"]["message"]
     agents = [Agent(**agent) for agent in dict_input["composition"]["agents"]]
-    return message, Composition(reciever_id="auto", agents=agents)
+    return message, CrewModel(reciever_id="auto", agents=agents)
 
 
 if __name__ == "__main__":

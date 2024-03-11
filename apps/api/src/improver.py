@@ -38,11 +38,27 @@ def improve_prompt(
     prompt_type: PromptType,
     temperature: float = 0.0,
 ) -> str:
-    if word_limit <= 0:
-        raise ValueError("Word limit must be greater than 0")
+    """
+    Take a prompt and improve it with the use of GPT-4 Turbo preview.
 
+    params:
+        word_limit: int, The word limit for the improved prompt the function returns
+            (beware that small values will restrain the model from making a good prompt)
+        prompt: str, The prompt the function improves
+        prompt_type: PromptType, Literal PromptType with types "generic", "system" and "user", decides what type of prompt the function will produce
+        temperature: float = 0.0, the "creativity" of the AI model, higher values lead to more randomness in the output
+    returns:
+        improved_prompt: str
+    raises:
+        InvalidPromptTypeError: Invalid Prompt Type: prompt_type
+        ValueError: Word limit must be greater than 0
+        ValueError: Temperature must be in between -2 and 2
+    """
     if prompt_type not in ["generic", "system", "user"]:
         raise InvalidPromptTypeError(f"Invalid prompt type: {prompt_type}")
+
+    if word_limit <= 0:
+        raise ValueError("Word limit must be greater than 0")
 
     if temperature < -2.0 or temperature > 2.0:
         raise ValueError("Temperature must be in between -2 and 2")
