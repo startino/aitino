@@ -5,7 +5,7 @@
 	import { AgentDetails, CrewDetails } from '$lib/components/ui/community-details';
 
 	export let type: 'agent' | 'crew';
-	export let displayedAgent: Agent | Crew | null;
+	export let displayedAgent: Agent | Crew
 	export let showDetails: boolean;
 
 	const dispatch = createEventDispatcher();
