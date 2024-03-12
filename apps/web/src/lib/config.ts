@@ -1,10 +1,12 @@
 export const AGENT_LIMIT = 5;
 export const PROMPT_LIMIT = 1;
 
-export const SAMPLE_FULL_NAMES: {
+type Sample_type = {
 	male: string[];
 	female: string[];
-} = {
+}
+
+export const SAMPLE_FULL_NAMES: Sample_type = {
 	male: [
 		'Bob Johnson',
 		'Charlie Brown',
