@@ -24,10 +24,40 @@ export function pickRandomName() {
 }
 export function pickRandomAvatar() {
 	// Images in agent-avatars bucket are named between 0-49, inclusive
-	const index = Math.floor(Math.random() * 50);
-	const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`);
-	console.log(data.publicUrl);
-	return data.publicUrl;
+	// const index = Math.floor(Math.random() * 50);
+	// const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`);
+	// console.log(data.publicUrl);
+	// return data.publicUrl;
+
+	const gender = Math.random() < 0.5 ? 'male' : 'female';
+	console.log(gender, 'gender');
+	const namesArray = SAMPLE_FULL_NAMES[gender];
+	console.log(namesArray, 'nameArray');
+
+	const nameIndex = Math.floor(Math.random() * namesArray.length);
+	console.log(nameIndex, 'nameIndex');
+	const name = namesArray[nameIndex];
+	console.log(name, 'name from array');
+
+	// Adjust the index for fetching the avatar if necessary
+	// For example, if you have 10 male and 15 female avatars and want to cycle through them
+	
+	let avatarIndex = Math.floor(Math.random() * (gender === 'male' ? 10 : 15));
+
+	if(gender === 'female') avatarIndex = avatarIndex + 25
+	console.log(avatarIndex, 'avatar index');
+	const avatarPath = `agent-avatars/${gender}/`;
+
+	
+		const { data } = supabase.storage.from(`${avatarPath}`).getPublicUrl(`${avatarIndex}.png`);
+
+
+	
+			return {
+				name,
+				avatarUrl: data.publicUrl,
+		}
+	
 }
 
 function getRandomIndex(array: Array<unknown>) {

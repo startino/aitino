@@ -31,6 +31,7 @@
 	import type { CrewLoad } from '$lib/types/loads';
 	import { goto } from '$app/navigation';
 	import { Loader } from 'lucide-svelte';
+	import { supabase } from '$lib/supabase';
 
 	export let data: CrewLoad;
 
@@ -64,6 +65,27 @@
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
+		{
+			name: 'Add Agent',
+			buttonVariant: 'outline',
+			onclick: () => {
+				// const randomName = pickRandomName();
+				const randomAvatar = pickRandomAvatar();
+				const randomId = crypto.randomUUID();
+				const exampleModel = 'gpt-4-turbo-preview';
+				const exampleJob = 'Example Job';
+				const exampleSummary = 'Example Summary';
+console.log(randomAvatar, 'from add agent');
+				addNewAgent(
+					randomId,
+					randomAvatar.name,
+					exampleModel,
+					exampleJob,
+					exampleSummary,
+					randomAvatar.avatarUrl
+				);
+			}
+		},
 		{
 			name: 'Load Agent',
 			buttonVariant: 'outline',
