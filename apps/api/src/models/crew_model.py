@@ -6,7 +6,7 @@ from .agent import Agent
 
 
 class CrewModel(BaseModel):
-    reciever_id: UUID
+    receiver_id: UUID
     delegator_id: UUID | None = (
         None  # None means admin again, so its the original crew (has no parent crew)
     )

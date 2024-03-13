@@ -35,7 +35,7 @@ class Crew:
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
-            max_consecutive_auto_reply=1,
+            max_consecutive_auto_reply=10,
             human_input_mode="NEVER",
             default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
             code_execution_config=CodeExecutionConfig(
@@ -109,8 +109,14 @@ class Crew:
             if check_name == name:
                 sender_id = agent.id
 
-        if recipient_id is None and sender_id is None:
-            logger.warn("on_reply: Both recipient and sender is None (admin)")
+        if (
+            recipient_id is None
+            and sender_id is None
+            and recipient.name != "chat_manager"
+        ):
+            logger.warn(
+                "on_reply: Both recipient and sender are None (admin) or chat_manager"
+            )
             return False, None
 
         await self.on_reply(recipient_id, sender_id, content, role)
@@ -177,6 +183,7 @@ class Crew:
             messages=dict_messages,
             max_round=20,
             speaker_selection_method="auto" if len(self.agents) > 1 else "round_robin",
+            send_introductions=True,
         )
 
         manager = autogen.GroupChatManager(
