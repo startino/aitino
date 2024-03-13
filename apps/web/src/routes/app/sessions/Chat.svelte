@@ -10,6 +10,7 @@
 	import { browser } from '$app/environment';
 	import { toast } from 'svelte-sonner';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 
 	export let session: Session;
 	export let name: string;
@@ -118,30 +119,36 @@
 </script>
 
 <main class="container relative flex max-w-5xl flex-col justify-end overflow-y-hidden">
-	<div
-		class="flex max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20 transition-all duration-500"
+	<ScrollArea
+		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-20 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
-		<h1 class="text-center text-3xl font-bold">{name}</h1>
+		<h1 class="mb-6 text-center text-3xl font-bold">{name}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#await messages}
 			<div class="flex w-full items-center justify-center gap-4">
 				<p>Loading messages...</p>
 			</div>
 		{:then messages}
-			{#each messages as message, index}
-				{#if message.content != 'CONTINUE'}
-					<MessageItem {message} />
+			{#if messages.length > 0}
+				{#each messages as message, index}
+					{#if message.content != 'CONTINUE'}
+						<MessageItem {message} />
 
-					{#if index !== messages.length - 1}
-						<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+						{#if index !== messages.length - 1}
+							<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+						{/if}
 					{/if}
-				{/if}
-			{/each}
+				{/each}
+			{:else}
+				<div class="flex w-full items-center justify-center gap-4">
+					<p>No messages have been sent yet.</p>
+				</div>
+			{/if}
 		{/await}
 
 		<div
-			class="bg-surface absolute bottom-4 left-1/2 flex w-full max-w-5xl -translate-x-1/2 flex-row items-center justify-center gap-1"
+			class="bg-surface absolute bottom-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-row items-center justify-center gap-1"
 		>
 			<div
 				class="bg-card border-border mx-auto flex w-full max-w-4xl flex-row rounded-md border {waitingForUser
@@ -175,5 +182,5 @@
 				</Button>
 			</div>
 		</div>
-	</div>
+	</ScrollArea>
 </main>

@@ -42,6 +42,6 @@ export type Agent = {
 	published: boolean;
 	profile_id: string;
 	tools: string[];
-	avatar_url: string;
+	avatar: string;
 	version: string
 };

@@ -13,12 +13,10 @@
 	import CrewLibraryDetails from '../community-details/crewLibraryDetails.svelte';
 	import LibraryDetails from '../community-details/libraryDetails.svelte';
 
-
 	const dispatch = createEventDispatcher();
 
 	export let myCrews: Crew[];
 	export let publishedCrews: Crew[];
-
 
 	let searchQuery = '';
 	let filterPublished = false;
@@ -76,7 +74,6 @@
 		displayedAgent = myCrews.find((a) => a.id === id) || publishedCrews.find((a) => a.id === id);
 		console.log(displayedAgent);
 	};
-
 
 	function handleClose() {
 		showDetails = false;
@@ -180,7 +177,7 @@
 							<div class="flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full">
 									<!-- <img
-										src={agent.avatar_url}
+										src={agent.avatar}
 										alt={agent.name}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/> -->
@@ -250,7 +247,7 @@
 							<div class="z-50 flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full">
 									<!-- <img
-										src={agent.avatar_url}
+										src={agent.avatar}
 										alt={agent.name}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/> -->
@@ -306,5 +303,4 @@
 </div>
 
 <!-- <CrewLibraryDetails {displayedAgent} {showDetails} on:close={handleClose} /> -->
-<LibraryDetails type="crew" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
-
+<LibraryDetails type="crew" {displayedAgent} {showDetails} on:close={handleClose} />
