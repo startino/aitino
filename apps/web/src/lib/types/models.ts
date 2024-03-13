@@ -20,6 +20,7 @@ export type Crew = {
 	edges: Edge[];
 	created_at: string;
 	published: boolean;
+	avatar: string;
 };
 
 export type Session = {
