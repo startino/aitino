@@ -47,7 +47,7 @@
 		{:then agent}
 			<div class="flex w-full flex-row place-items-center gap-3">
 				<Avatar.Root class="not-prose">
-					<Avatar.Image src={agent.avatar_url} />
+					<Avatar.Image src={agent.avatar} />
 					<Avatar.Fallback>IMG</Avatar.Fallback>
 				</Avatar.Root>
 

@@ -11,6 +11,10 @@ import type { ContextMap, Crew } from '$lib/types';
 import { browser } from '$app/environment';
 import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
 import { supabase } from './supabase';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export function getNodesCount(nodes: Node[]) {
 	return {
@@ -280,4 +284,8 @@ const formatter = new Intl.NumberFormat('en-US', {
 export function formatCurrency(amount: number) {
 	if (amount === 0) return 'Free';
 	return formatter.format(amount);
+}
+
+export function timeSince(dateIsoString: Date | string | number) {
+	return dayjs(dateIsoString).fromNow(true);
 }

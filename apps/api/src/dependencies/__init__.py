@@ -1,6 +1,5 @@
 import logging
 import uuid
-
 from typing import Callable, cast
 
 from fastapi import HTTPException
@@ -110,7 +109,7 @@ def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], None]
         key = f"rate_limit:{profile_id}"
         current_requests = cast(int, redis.incr(key))
 
-        if current_requests > limit:  
+        if current_requests > limit:
             raise HTTPException(status_code=429, detail="Rate limit exceeded")
         if current_requests == 1:
             redis.expire(key, period_seconds)

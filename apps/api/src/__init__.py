@@ -10,7 +10,6 @@ from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
@@ -126,59 +125,20 @@ async def run_crew(
         db.post_session(session)
 
     async def on_reply(
-        recipient: ConversableAgent,
-        messages: list[dict] | None = None,
-        sender: Agent | None = None,
-        config: Any | None = None,
+        recipient_id: UUID,
+        sender_id: UUID,
+        content: str,
+        role: str,
     ) -> None:
-        logger.debug(f"on_reply: {recipient.name} {messages}")
-        # This function is called when an LLM model replies
-        if not messages:
-            logger.error("on_reply: No messages")
-            return
-        if len(messages) == 0:
-            logger.error("on_reply: No messages")
-            return
-
-        raw_msg = messages[-1]
-
-        if not raw_msg.get("name"):
-            logger.warn(f"on_reply: No name\n{raw_msg}")
-            raw_msg["name"] = None
-        if not raw_msg.get("content"):
-            logger.error(f"on_reply: No content\n{raw_msg}")
-            return
-        if not raw_msg.get("role"):
-            logger.error(f"on_reply: No role\n{raw_msg}")
-            return
-
-        logger.info(f"on_reply: {recipient.name} {raw_msg}")
-
-        recipient_id = None  # None means admin
-        sender_id = None  # None means admin
-        for agent in composition.agents:
-            if (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-                == recipient.name
-            ):
-                recipient_id = agent.id
-            if (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-                == raw_msg["name"]
-            ):
-                sender_id = agent.id
-
-        if recipient_id is None and sender_id is None:
-            logger.warn("on_reply: Both recipient and sender is None (admin)")
-            return
         message = Message(
-            session_id=session.id,
             profile_id=profile_id,
+            session_id=session.id,
             recipient_id=recipient_id,
             sender_id=sender_id,
-            content=raw_msg["content"],
-            role=raw_msg["role"],
+            content=content,
+            role=role,
         )
+
         logger.debug(f"on_reply: {message}")
 
         db.post_message(message)
