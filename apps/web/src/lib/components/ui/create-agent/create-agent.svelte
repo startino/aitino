@@ -1,92 +1,24 @@
 <script lang="ts">
-	import {ComingSoonPage} from '$lib/components/ui/coming-soon';
-	import CreateAgent from '$lib/components/ui/create-agent/create-agent.svelte';
-	import type {Agent} from '$lib/types/models';
+	import {enhance} from '$app/forms';
 	import {Button, buttonVariants} from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import {Input} from '$lib/components/ui/input';
 	import {Label} from '$lib/components/ui/label';
 	import {Textarea} from '$lib/components/ui/textarea';
 	import {Loader2} from 'lucide-svelte';
-	import {enhance} from '$app/forms';
-	import {message} from 'sveltekit-superforms/server';
 
 	let state: 'loading' | 'error' | 'idle' = 'idle';
-	export let data;
-	export let form;
 
-	let myAgents: {
-		avatar: string;
-		created_at: string;
-		description: string[];
-		id: string;
-		model: string;
-		profile_id: string;
-		published: boolean;
-		role: string;
-		title: string;
-		tools: string[];
-		version: string;
-	}[] = data.getCurrentUserAgents.data;
 	let open = false;
 	const handleTrigger = async () => {
 		open = true;
 	};
 </script>
 
-<div class="bg-background min-h-screen p-8">
-	<h1 class="text-primary dark:text-primary/80 mb-8 text-center text-4xl font-bold">
-		<span class="from-accent to-secondary bg-gradient-to-r bg-clip-text text-transparent"
-			>My Agent</span
-		>
-	</h1>
-	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-		{#each myAgents as agent, i}
-			<div
-				class="bg-surface group relative flex flex-col overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
-			>
-				<div class="flex-shrink-0">
-					<img
-						src={agent.avatar}
-						alt={`Avatar of ${agent.title}`}
-						class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110"
-					/>
-				</div>
-				<div class="flex flex-grow flex-col p-4">
-					<div class="flex justify-between">
-						<h3 class="text-on-surface text-lg font-semibold">{agent.title}</h3>
-						<span class="text-secondary text-sm">{agent.version}</span>
-					</div>
-					<p class="text-on-surface/80 mt-2 flex-grow text-sm">{agent.role}</p>
-					<div class="mt-4 space-y-2">
-						<h4 class="text-sm font-medium">Tools</h4>
-						<div class="flex flex-wrap">
-							{#each agent.tools as tool}
-								<span class="bg-primary/60 text-on-accent mb-2 mr-2 rounded-full px-3 py-1 text-xs"
-									>{tool}</span
-								>
-							{/each}
-						</div>
-					</div>
-				</div>
-				<button
-					class="bg-primary text-on-primary hover:bg-primary/90 mt-4 w-full rounded-none p-2 text-sm font-semibold transition-colors duration-300"
-					>Edit Agent</button
-				>
-			</div>
-		{/each}
-	</div>
-</div>
-
-<!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
-<!-- <CreateAgent /> -->
 <Dialog.Root {open} onOpenChange={(o) => (open = o)}>
 	<Dialog.Trigger class={buttonVariants({variant: 'outline'})} on:click={handleTrigger}
 		>Create Agent</Dialog.Trigger
 	>
-	{#if form?.message}
-		<p>{form.message}</p>
-	{/if}
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<Dialog.Header>
 			<Dialog.Title>Create Agent</Dialog.Title>
