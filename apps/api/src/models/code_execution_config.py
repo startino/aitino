@@ -6,4 +6,4 @@ class CodeExecutionConfig(BaseModel):
 
     last_n_messages: int = 4
     work_dir: str
-    use_docker: bool = False
+    use_docker: bool = True

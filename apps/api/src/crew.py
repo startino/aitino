@@ -19,7 +19,7 @@ class Crew:
         self,
         profile_id: UUID,
         session: Session,
-        composition: CrewModel,
+        crew_model: CrewModel,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
@@ -28,14 +28,14 @@ class Crew:
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self._validate_composition(composition):
+        if not self._validate_crew_model(crew_model):
             raise ValueError("composition is invalid")
-        self.composition = composition
+        self.crew_model = crew_model
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
-            max_consecutive_auto_reply=10,
+            max_consecutive_auto_reply=4,
             human_input_mode="NEVER",
             default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
             code_execution_config=CodeExecutionConfig(
@@ -44,7 +44,7 @@ class Crew:
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
-            self._create_agents(composition)
+            self._create_agents(crew_model)
         )
 
         self.base_config_list = autogen.config_list_from_json(
@@ -100,7 +100,7 @@ class Crew:
         recipient_id = None  # None means admin
         sender_id = None  # None means admin
 
-        for agent in self.composition.agents:
+        for agent in self.crew_model.agents:
             check_name = (
                 f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
             )
@@ -123,12 +123,12 @@ class Crew:
 
         return False, None
 
-    def _validate_composition(self, composition: CrewModel) -> bool:
-        if len(composition.agents) == 0:
+    def _validate_crew_model(self, crew_model: CrewModel) -> bool:
+        if len(crew_model.agents) == 0:
             return False
 
         # Validate agents
-        for agent in composition.agents:
+        for agent in crew_model.agents:
             if agent.role == "":
                 return False
             if agent.title == "":
@@ -138,11 +138,11 @@ class Crew:
         return True
 
     def _create_agents(
-        self, composition: CrewModel
+        self, crew_model: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
 
-        for agent in composition.agents:
+        for agent in crew_model.agents:
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -156,16 +156,19 @@ class Crew:
                 "config_list": config_list,
                 "timeout": 120,
             }
-            agent = autogen.AssistantAgent(
-                name=f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}""",
-                system_message=f"""{agent.role} {agent.title}. {agent.system_message}. Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
+            agent_instance = autogen.AssistantAgent(
+                name=f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",  # TODO: make failsafes to make sure this name doesn't exceed 64 chars - Leon
+                system_message=f"""{agent.role}\n\n{agent.system_message}""", # TODO: add what agent it should send to next
                 llm_config=config,
             )
-
+            if agent.id == crew_model.receiver_id:
+                agent_instance.update_system_message(
+                    f"""{agent.role} {agent.title}. {agent.system_message}. Write TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."""
+                )
             if self.on_reply:
-                agent.register_reply([autogen.Agent, None], self._on_reply)
+                agent_instance.register_reply([autogen.Agent, None], self._on_reply)
+            agents.append(agent_instance)
 
-            agents.append(agent)
         return agents
 
     async def run(

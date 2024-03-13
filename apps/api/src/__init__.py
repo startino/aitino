@@ -92,7 +92,7 @@ async def run_crew(
         )
 
     if mock:
-        message, composition = parse_input(mocks.v0_2_0_composition)
+        message, composition = parse_input(mocks.crew_model)
     else:
         message, composition = db.get_compiled(id)
 
