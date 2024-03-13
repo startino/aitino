@@ -26,7 +26,7 @@ export async function getMessages(session_id: string) {
 	const { data, error: err } = await supabase
 		.from('messages')
 		.select('*')
-		.eq('session_id', session_id);
+		.eq('session_id', session_id).order('created_at', { ascending: true });
 	if (err) {
 		throw error(500, 'Failed attempt at retrieving messages. Please reload the page.');
 	}

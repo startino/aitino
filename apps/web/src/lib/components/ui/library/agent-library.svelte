@@ -25,8 +25,6 @@
 	let filterPublished = false;
 	let filterModel = '';
 
-
-
 	function updateSearchQuery(event: Event) {
 		const input = event.target as HTMLInputElement;
 		searchQuery = input.value;
@@ -55,7 +53,6 @@
 	);
 
 	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
-
 
 	$: filteredPublishedAgents = publishedAgents.filter(
 		(a) =>
@@ -142,7 +139,7 @@
 							<div class="flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
 									<img
-										src={agent.avatar_url}
+										src={agent.avatar}
 										alt={agent.title}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/>
@@ -169,7 +166,7 @@
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
-											avatar: agent.avatar_url
+											avatar: agent.avatar
 										});
 									}}
 								>
@@ -210,7 +207,7 @@
 							<div class="z-50 flex gap-4 gap-y-4 p-4">
 								<div class="flex h-20 w-20 items-center justify-center rounded-full border">
 									<img
-										src={agent.avatar_url}
+										src={agent.avatar}
 										alt={agent.title}
 										class="border-primary rounded-full border-4 object-cover shadow-2xl"
 									/>
@@ -238,7 +235,7 @@
 											name: agent.title,
 											model: agent.model,
 											job: agent.role,
-											avatar: agent.avatar_url
+											avatar: agent.avatar
 										});
 									}}>Load</button
 								>
@@ -263,4 +260,4 @@
 </div>
 
 <!-- <AgentLibraryDetail {displayedAgent} {showDetails} on:close={handleClose} /> -->
-<LibraryDetails type="agent" displayedAgent={displayedAgent} showDetails={showDetails} on:close={handleClose} />
+<LibraryDetails type="agent" {displayedAgent} {showDetails} on:close={handleClose} />
