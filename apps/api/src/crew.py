@@ -9,7 +9,7 @@ from autogen.cache import Cache
 from pydantic import BaseModel, Field
 
 from .interfaces import db
-from .models import CodeExecutionConfig, Composition, Message, Session
+from .models import CodeExecutionConfig, CrewModel, Message, Session
 
 logger = logging.getLogger("root")
 
@@ -19,7 +19,7 @@ class Crew:
         self,
         profile_id: UUID,
         session: Session,
-        composition: Composition,
+        composition: CrewModel,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
@@ -28,7 +28,7 @@ class Crew:
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self.validate_composition(composition):
+        if not self._validate_composition(composition):
             raise ValueError("composition is invalid")
         self.composition = composition
 
@@ -44,7 +44,7 @@ class Crew:
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
-            self.create_agents(composition)
+            self._create_agents(composition)
         )
 
         self.base_config_list = autogen.config_list_from_json(
@@ -74,16 +74,12 @@ class Crew:
 
         return False, None
 
-    def validate_composition(self, composition: Composition) -> bool:
+    def _validate_composition(self, composition: CrewModel) -> bool:
         if len(composition.agents) == 0:
             return False
 
         # Validate agents
         for agent in composition.agents:
-            if agent.id == "":
-                return False
-            if agent.model == "":
-                return False
             if agent.role == "":
                 return False
             if agent.title == "":
@@ -92,8 +88,8 @@ class Crew:
                 return False
         return True
 
-    def create_agents(
-        self, composition: Composition
+    def _create_agents(
+        self, composition: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
 
@@ -137,7 +133,7 @@ class Crew:
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
             max_round=20,
-            speaker_selection_method="round_robin" if len(self.agents) > 1 else "auto",
+            speaker_selection_method="auto" if len(self.agents) > 1 else "round_robin",
         )
 
         manager = autogen.GroupChatManager(
