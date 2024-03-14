@@ -95,7 +95,8 @@ export const actions: Actions = {
 					title: formData.title,
 					role: formData.role,
 					description: [formData.description],
-					model: formData.model
+					model: formData.model,
+					published: formData.published === 'true' ? true : false
 				})
 				.eq('id', id?.split('$')[1]);
 
@@ -105,10 +106,11 @@ export const actions: Actions = {
 			}
 
 			console.log('Agent edited successfully:', data);
-
+			if (data === null) {
+				return {};
+			}
 			return fail(200, {
-				message: 'Agent edited successfully',
-				data
+				message: 'Agent edited successfully'
 			});
 		} catch (error) {
 			console.error(error);

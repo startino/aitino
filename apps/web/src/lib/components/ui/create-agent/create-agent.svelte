@@ -78,11 +78,11 @@
 						</Toggle>
 
 						<!-- Hidden input to capture the toggle state -->
-						<input type="hidden" name="published" value={published} />
+						<Input type="hidden" name="published" value={published} />
 					</div>
 				</div>
 				{#if $errors.title}
-					<p class="text-red-500">{$errors.title}</p>
+					<p class="text-red-500 mb-2">{$errors.title}</p>
 				{/if}
 				<div class="mb-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
@@ -95,7 +95,7 @@
 					/>
 				</div>
 				{#if $errors.role}
-					<p class="text-red-500">{$errors.role}</p>
+					<p class="text-red-500 mb-2">{$errors.role}</p>
 				{/if}
 				<div class="mb-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
@@ -109,7 +109,7 @@
 					></Textarea>
 				</div>
 				{#if $errors.description}
-					<p class="text-red-500">{$errors.description}</p>
+					<p class="text-red-500 mb-2">{$errors.description}</p>
 				{/if}
 				<div class="flex w-full gap-4">
 					<div class="mb-4 flex w-full flex-col">
