@@ -18,11 +18,7 @@
 
 	export let data: SuperValidated<AgentFormSchema>;
 
-	const {
-		form: formAgent,
-		errors,
-		enhance: enhanceRegister
-	} = superForm(data, {
+	const { form: formAgent, errors } = superForm(data, {
 		validators: agentFormSchema
 	});
 
@@ -51,7 +47,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Create Agent</Dialog.Title>
 		</Dialog.Header>
-		<form action="?/creatAgents" method="POST" use:enhanceRegister>
+		<form action="?/creatAgents" method="POST" use:enhance>
 			<div class="p-6">
 				<div class="flex w-full items-center gap-4">
 					<div class="mb-4 w-full">
@@ -82,7 +78,7 @@
 					</div>
 				</div>
 				{#if $errors.title}
-					<p class="text-red-500 mb-2">{$errors.title}</p>
+					<p class="mb-2 text-red-500">{$errors.title}</p>
 				{/if}
 				<div class="mb-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
@@ -95,7 +91,7 @@
 					/>
 				</div>
 				{#if $errors.role}
-					<p class="text-red-500 mb-2">{$errors.role}</p>
+					<p class="mb-2 text-red-500">{$errors.role}</p>
 				{/if}
 				<div class="mb-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
@@ -109,7 +105,7 @@
 					></Textarea>
 				</div>
 				{#if $errors.description}
-					<p class="text-red-500 mb-2">{$errors.description}</p>
+					<p class="mb-2 text-red-500">{$errors.description}</p>
 				{/if}
 				<div class="flex w-full gap-4">
 					<div class="mb-4 flex w-full flex-col">

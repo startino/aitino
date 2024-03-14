@@ -174,4 +174,4 @@
 	</Dialog.Content>
 </Dialog.Root> -->
 
-<EditAgent {selectedAgent} {open} on:close={() => (open = false)} />
+<EditAgent {selectedAgent} {open} on:close={() => (open = false)} data={data.agentForm} {form}/>

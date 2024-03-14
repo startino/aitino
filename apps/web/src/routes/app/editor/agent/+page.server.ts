@@ -22,10 +22,7 @@ export const actions: Actions = {
 
 		const profile_id = session?.user.id;
 
-		// const formData = Object.fromEntries(await request.formData());
-
 		const form = await superValidate(request, agentFormSchema);
-		console.log('form supervalidate', form);
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not create agent' });
@@ -43,8 +40,6 @@ export const actions: Actions = {
 			'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/1.png';
 		const version = '1.0';
 		const system_message = '';
-
-		console.log(title, description, model, published, role, 'form data');
 
 		try {
 			const { data, error } = await supabase
@@ -84,19 +79,22 @@ export const actions: Actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
-		console.log(url.searchParams, 'url search params');
-		const formData = Object.fromEntries(await request.formData());
-		console.log(formData, 'form data', id?.split('$')[1], 'id');
+		const form = await superValidate(request, agentFormSchema);
+
+		console.log(form, 'from from agent');
+		if (!form.valid) {
+			return fail(400, { form, message: 'Could not edit agent' });
+		}
 
 		try {
 			const { data, error } = await supabase
 				.from('agents')
 				.update({
-					title: formData.title,
-					role: formData.role,
-					description: [formData.description],
-					model: formData.model,
-					published: formData.published === 'true' ? true : false
+					title: form.data.title,
+					role: form.data.role,
+					description: [form.data.description],
+					model: form.data.model,
+					published: form.data.published === 'true' ? true : false
 				})
 				.eq('id', id?.split('$')[1]);
 

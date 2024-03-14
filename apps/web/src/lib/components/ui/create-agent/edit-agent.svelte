@@ -11,9 +11,18 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Toggle } from '$lib/components/ui/toggle/index.js';
 	import { createEventDispatcher } from 'svelte';
+	import { superForm } from 'sveltekit-superforms/client';
+	import { agentFormSchema, type AgentFormSchema } from '$lib/schema';
+	import { type SuperValidated } from 'sveltekit-superforms';
+	import { toast } from 'svelte-sonner';
 
+	export let data: SuperValidated<AgentFormSchema>;
+	export let form;
+
+	const { form: formAgent, errors } = superForm(data, {
+		validators: agentFormSchema
+	});
 	let state: 'loading' | 'error' | 'idle' = 'idle';
-	// export let data;
 
 	const dispatch = createEventDispatcher();
 
@@ -21,24 +30,18 @@
 
 	let published = false;
 
-	export let open: boolean;
+	export let open: Boolean;
+
+	console.log($errors, 'errors from edit agent');
+	console.log($errors, 'errors from edit agent');
 </script>
 
-<Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>
+<Dialog.Root {open} onOpenChange={() => dispatch('close')}>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<Dialog.Header>
 			<Dialog.Title>Edit Agent</Dialog.Title>
 		</Dialog.Header>
-		<form
-			action="?/editAgent&id=${selectedAgent.id}"
-			method="POST"
-			use:enhance={() => {
-				return ({ result }) => {
-					invalidateAll();
-					applyAction(result);
-				};
-			}}
-		>
+		<form action="?/editAgent&id=${selectedAgent.id}" method="POST" use:enhance>
 			<div class="p-6">
 				<div class="flex w-full items-center gap-4">
 					<div class="mb-4 w-full">
@@ -76,6 +79,9 @@
 						<input type="hidden" name="published" value={published} />
 					</div>
 				</div>
+				{#if $errors.title}
+					<p class="mb-2 text-red-500">{$errors.title}</p>
+				{/if}
 				<div class="mb-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
 					<Input
@@ -86,6 +92,9 @@
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 					/>
 				</div>
+				{#if $errors.role}
+					<p class="mb-2 text-red-500">{$errors.role}</p>
+				{/if}
 				<div class="mb-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
 					<Textarea
@@ -97,7 +106,9 @@
 					col-span-3 mt-1  block h-24 w-full resize-none rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
-
+				{#if $errors.description}
+					<p class="mb-2 text-red-500">{$errors.description}</p>
+				{/if}
 				<div class="flex w-full flex-col">
 					<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
 					<select
@@ -117,11 +128,16 @@
 				on:click={() => (state = 'loading')}
 				class="flex"
 				on:click={() => {
-					setTimeout(() => {
-						state = 'idle';
-						open = false;
-						invalidateAll();
-					}, 2000);
+					// if ($errors.title || $errors.role || $errors.description) {
+					// 	state = 'idle';
+					// 	return;
+					// } else {
+						setTimeout(() => {
+							state = 'idle';
+							open = false;
+							invalidateAll();
+						}, 2000);
+					// }
 				}}
 			>
 				Edit
