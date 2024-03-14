@@ -31,9 +31,10 @@ markdown_table: dict = {
     "prompt": {
         "id": "",
         "title": "",
-        "content": "Create a markdown table of the top 10 large language models comparing their abilities by researching on the internet."
+        "content": "Create a markdown table of the top 10 large language models comparing their abilities by researching on the internet.",
     },
     "created_at": "2024-01-01T00:00:00.000Z",
 }
-#"6e541720-b4ac-4c47-abf3-f17147c9a32a", agent for code reviewing
+# "6e541720-b4ac-4c47-abf3-f17147c9a32a", agent for code reviewing
+# "2ce0b7db-84f7-4d59-8c38-3fcc3fd7da98", agent for writing tables in markdown
 crew_model = markdown_table

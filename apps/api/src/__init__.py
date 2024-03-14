@@ -68,7 +68,9 @@ def improve(
     return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
-@app.get("/crew", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]) # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
+@app.get(
+    "/crew", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]
+)  # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     id: UUID,
     profile_id: UUID,
@@ -135,7 +137,7 @@ async def run_crew(
             content=content,
             role=role,
         )
-        logger.warn(f"on_reply: {message}")
+        # logger.warn(f"on_reply: {message}")
         db.post_message(message)
 
     crew = Crew(profile_id, session, crew_model, on_reply)
