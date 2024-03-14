@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from asyncio import Queue
 from typing import Any, cast
@@ -6,7 +5,6 @@ from uuid import UUID, uuid4
 
 import autogen
 from autogen.cache import Cache
-from pydantic import BaseModel, Field
 
 from .interfaces import db
 from .models import CodeExecutionConfig, CrewModel, Message, Session
@@ -86,7 +84,9 @@ class Crew:
         # Validate last message
         if not last_msg.get("name"):
             logger.warn(f"on_reply: No name\n{last_msg}")
-            last_msg["name"] = "None" # changed from None to "None" which helped fix the error 'message': "None is not of type 'string' but felt like it made the chat manager worse
+            last_msg["name"] = (
+                "None"  # changed from None to "None" which helped fix the error 'message': "None is not of type 'string' but felt like it made the chat manager worse
+            )
         if not last_msg.get("content"):
             logger.error(f"on_reply: No content\n{last_msg}")
             return False, None
@@ -143,6 +143,9 @@ class Crew:
         self, crew_model: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
+        descriptions = db.get_descriptions([agent.id for agent in crew_model.agents])
+        if not descriptions:
+            raise ValueError("at least one agent id is invalid")
 
         for agent in crew_model.agents:
             config_list = autogen.config_list_from_json(
@@ -158,11 +161,13 @@ class Crew:
                 "config_list": config_list,
                 "timeout": 120,
             }
+
             agent_instance = autogen.AssistantAgent(
                 name=f"""{agent.title.replace(' ', '')}-{agent.title.replace(' ', '')}""",  # TODO: make failsafes to make sure this name doesn't exceed 64 chars - Leon
                 system_message=f"""{agent.title}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
                 internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
-                Give this program to the admin. """,  # TODO: add what agent it should send to next
+                Give this program to the admin. """,  # TODO: add what agent it should send to next - Leon
+                description=descriptions[agent.id][0],  # could add something to concatenate all strings in description list for a given agent - Leon
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:

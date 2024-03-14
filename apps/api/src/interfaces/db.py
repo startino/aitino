@@ -90,6 +90,23 @@ def post_message(message: Message) -> None:
     ).execute()
 
 
+def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
+    """
+    Get the description list for the given agent
+    """
+    logger.debug(f"Getting description from agent_ids: {agent_ids}")
+    response = (
+        supabase.table("agents")
+        .select("id", "description")
+        .in_("id", agent_ids)
+        .execute()
+    )
+    if len(response.data) < len(agent_ids):
+        return None
+
+    return {d["id"]: d["description"] for d in response.data}
+
+
 def post_agents(agents: list[Agent]) -> None:
     """
     Post a list of agents to the database.
