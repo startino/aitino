@@ -41,6 +41,7 @@ export type Agent = {
 	author: string;
 	model: string;
 	published: boolean;
+	system_message: string;
 	profile_id: string;
 	tools: string[];
 	avatar: string;
