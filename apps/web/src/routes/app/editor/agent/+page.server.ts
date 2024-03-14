@@ -1,6 +1,8 @@
 import { supabase } from '$lib/supabase';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { agentFormSchema } from '$lib/schema';
+import { superValidate } from 'sveltekit-superforms/server';
 
 export const load = (async ({ locals }) => {
 	const session = await locals.getSession();
@@ -9,7 +11,8 @@ export const load = (async ({ locals }) => {
 		.select('*')
 		.eq('profile_id', session?.user.id);
 	return {
-		getCurrentUserAgents
+		getCurrentUserAgents,
+		agentForm: await superValidate(agentFormSchema)
 	};
 }) satisfies PageServerLoad;
 
@@ -19,37 +22,29 @@ export const actions: Actions = {
 
 		const profile_id = session?.user.id;
 
-		const formData = Object.fromEntries(await request.formData());
+		// const formData = Object.fromEntries(await request.formData());
 
-		console.log(formData, 'form data', formData.published);
-		const title = formData.title;
-		const description = formData.description.split(',').map((item: string) => item.trim());
-		const model = formData.model;
-		const published = formData.published
-		const role = formData.role;
+		const form = await superValidate(request, agentFormSchema);
+		console.log('form supervalidate', form);
+
+		if (!form.valid) {
+			return fail(400, { form, message: 'Could not create agent' });
+		}
+
+		const title = form.data.title;
+		const description = form.data.description.split(',').map((item: string) => item.trim());
+
+		const model = form.data.model;
+		let published = form.data.published;
+
+		const role = form.data.role;
 		const tools = '';
 		const avatar =
 			'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/1.png';
 		const version = '1.0';
 		const system_message = '';
 
-		if (!title || title === '') {
-			return fail(400, {
-				message: 'Title is required'
-			});
-		}
-
-		if (!description || description[0] === '') {
-			return fail(400, {
-				message: 'Description is required'
-			});
-		}
-
-		if (!role || role === '') {
-			return fail(400, {
-				message: 'Role is required'
-			});
-		}
+		console.log(title, description, model, published, role, 'form data');
 
 		try {
 			const { data, error } = await supabase
@@ -62,7 +57,7 @@ export const actions: Actions = {
 						model,
 						role,
 						published,
-						tools,
+						tools: [tools],
 						avatar,
 						version,
 						system_message
@@ -74,8 +69,6 @@ export const actions: Actions = {
 				console.error('Error creating agent:', error);
 				return { error };
 			}
-
-			console.log('Agent created successfully:', data);
 
 			return fail(200, {
 				message: 'Agent created successfully',

@@ -10,6 +10,7 @@
 	import { Loader2 } from 'lucide-svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { Toggle } from '$lib/components/ui/toggle/index.js';
 
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 	export let data;
@@ -24,10 +25,12 @@
 	let selectedAgent: Agent;
 
 	const editAgent = async (agent: Agent) => {
-		console.log(agent);
+		console.log(agent, 'agent');
 		selectedAgent = agent;
 		open = true;
 	};
+
+	let published = false;
 </script>
 
 <div class="bg-background min-h-screen p-8">
@@ -55,7 +58,7 @@
 					<p class="text-on-surface/80 mt-2 flex-grow text-sm">{agent.role}</p>
 				</div>
 				<button
-					class="bg-primary text-on-primary hover:bg-primary/90 mt-4 w-full rounded-none p-2 text-sm font-semibold transition-colors duration-300"
+					class="bg-primary text-background hover:bg-primary/90 text-md mt-4 w-full rounded-none p-2 font-semibold transition-colors duration-300"
 					on:click={() => editAgent(agent)}>Edit Agent</button
 				>
 			</div>
@@ -64,7 +67,7 @@
 </div>
 
 <!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
-<CreateAgent on:close={() => (open = false)} {form} />
+<CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />
 
 <Dialog.Root {open} onOpenChange={(o) => (open = o)}>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
@@ -82,15 +85,34 @@
 			}}
 		>
 			<div class="p-6">
-				<div class="mb-4">
-					<Label for="title" class="block text-sm font-medium ">Title</Label>
-					<Input
-						id="title"
-						name="title"
-						value={selectedAgent.title}
-						placeholder="Agent's title"
-						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
-					/>
+				<div class="flex w-full items-center gap-4">
+					<div class="mb-4 w-full">
+						<Label for="title" class="block text-sm font-medium ">Title</Label>
+						<Input
+							id="title"
+							name="title"
+							value={selectedAgent.title}
+							placeholder="Agent's title"
+							class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+						/>
+					</div>
+					<div class=" mb-4 mt-4 flex cursor-pointer items-center gap-4 p-2">
+						<Toggle
+							id="publishedToggle"
+							name="published"
+							bind:pressed={selectedAgent.published}
+							on:click={() => (published = !published)}
+							class="border-primary h-7 scale-125 transform cursor-pointer"
+						>
+							<Label
+								for="publishedToggle"
+								class="text-on-background cursor-pointer  font-semibold italic">published</Label
+							>
+						</Toggle>
+
+						<!-- Hidden input to capture the toggle state -->
+						<input type="hidden" name="published" value={published} />
+					</div>
 				</div>
 				<div class="mb-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
@@ -113,7 +135,8 @@
 					col-span-3 mt-1  block h-24 w-full resize-none rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
-				<div class="flex flex-col">
+
+				<div class="flex w-full flex-col">
 					<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
 					<select
 						id="models"
@@ -126,9 +149,6 @@
 					</select>
 				</div>
 			</div>
-			{#if form?.message}
-				<p>{form.message}</p>
-			{/if}
 			<Button
 				type="submit"
 				variant="outline"
@@ -139,7 +159,7 @@
 						if (form?.message) {
 							state = 'idle';
 							open = false;
-							invalidateAll()
+							invalidateAll();
 						}
 					}, 2000);
 				}}
