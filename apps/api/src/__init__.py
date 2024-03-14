@@ -1,11 +1,8 @@
-import asyncio
 import logging
-import re
 from typing import Any
 from uuid import UUID
 
 import autogen
-from autogen import Agent, ConversableAgent
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -63,7 +60,7 @@ def compile(id: UUID) -> dict[str, str | CrewModel]:
 
 
 @app.get(
-    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=30))]
+    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]
 )
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
@@ -71,7 +68,7 @@ def improve(
     return improve_prompt(word_limit, prompt, prompt_type, temperature)
 
 
-@app.get("/crew", dependencies=[Depends(rate_limit_tiered)])
+@app.get("/crew", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]) # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     id: UUID,
     profile_id: UUID,
@@ -92,14 +89,14 @@ async def run_crew(
         )
 
     if mock:
-        message, composition = parse_input(mocks.crew_model)
+        message, crew_model = parse_input(mocks.crew_model)
     else:
-        message, composition = db.get_compiled(id)
+        message, crew_model = db.get_compiled(id)
 
     if reply:
         message = reply
 
-    if not message or not composition:
+    if not message or not crew_model:
         raise HTTPException(status_code=400, detail=f"Failed to get crew with id {id}")
 
     session = db.get_session(session_id) if session_id else None
@@ -138,11 +135,10 @@ async def run_crew(
             content=content,
             role=role,
         )
-        logger.debug(f"on_reply: {message}")
-
+        logger.warn(f"on_reply: {message}")
         db.post_message(message)
 
-    crew = Crew(profile_id, session, composition, on_reply)
+    crew = Crew(profile_id, session, crew_model, on_reply)
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 

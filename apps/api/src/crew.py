@@ -102,7 +102,7 @@ class Crew:
 
         for agent in self.crew_model.agents:
             check_name = (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+                f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}"""
             )
             if check_name == recipient.name:
                 recipient_id = agent.id
@@ -118,7 +118,7 @@ class Crew:
                 "on_reply: Both recipient and sender are None (admin) or chat_manager"
             )
             return False, None
-
+        logger.warn(f"_on_reply: name: {name}\ncontent: {content}\n role:{role}\nrecipient_id: {recipient_id}\nsender_id: {sender_id}")
         await self.on_reply(recipient_id, sender_id, content, role)
 
         return False, None
@@ -158,12 +158,13 @@ class Crew:
             }
             agent_instance = autogen.AssistantAgent(
                 name=f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",  # TODO: make failsafes to make sure this name doesn't exceed 64 chars - Leon
-                system_message=f"""{agent.role}\n\n{agent.system_message}""", # TODO: add what agent it should send to next
+                system_message=f"""{agent.role}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
+                internet for what you need and only output this program. Give this program to the admin. """, # TODO: add what agent it should send to next
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:
                 agent_instance.update_system_message(
-                    f"""{agent.role} {agent.title}. {agent.system_message}. Write TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."""
+                    f"""{agent.role}\n\n{agent.system_message}. Write TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."""
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
@@ -186,7 +187,7 @@ class Crew:
             messages=dict_messages,
             max_round=20,
             speaker_selection_method="auto" if len(self.agents) > 1 else "round_robin",
-            send_introductions=True,
+            send_introductions=True
         )
 
         manager = autogen.GroupChatManager(
