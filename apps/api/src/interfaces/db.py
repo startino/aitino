@@ -28,9 +28,9 @@ def get_compiled(
     crew_id: UUID,
 ) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
     """
-    Get the compiled message and composition for a given Crew ID.
+    Get the compiled message and crew model for a given Crew ID.
     """
-    logger.debug(f"Getting compiled message and composition for {crew_id}")
+    logger.debug(f"Getting compiled message and crew model for {crew_id}")
     response = supabase.table("crews").select("*").eq("id", crew_id).execute()
 
     if len(response.data) == 0:

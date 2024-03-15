@@ -8,6 +8,7 @@ from autogen.cache import Cache
 
 from .interfaces import db
 from .models import CodeExecutionConfig, CrewModel, Message, Session
+from .tooling.langchain_tooling import generate_llm_config
 
 logger = logging.getLogger("root")
 
@@ -27,7 +28,7 @@ class Crew:
         self.session = session
         self.on_reply = on_message
         if not self._validate_crew_model(crew_model):
-            raise ValueError("composition is invalid")
+            raise ValueError("crew model is invalid")
         self.crew_model = crew_model
 
         self.user_proxy = autogen.UserProxyAgent(
@@ -173,8 +174,12 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-
+            if len(agent.tools):
+                
+                tool_schemas = generate_llm_config(agent.tools)
+            logger.warn(f"agent tools: {tool_schemas}")    
             config = {
+                # "functions": tool_schemas,
                 "seed": self.seed,
                 "temperature": 0,
                 "config_list": config_list,
