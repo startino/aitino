@@ -25,12 +25,16 @@
 
 	export let open = false;
 
+	
+
 	const handleChange = () => {
 		dispatch('close');
 		open = !open;
 
 		console.log(open, 'hanlde change');
 	};
+	$: isFormIncomplete = !selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
+
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
@@ -121,6 +125,7 @@
 			</div>
 			<Button
 				type="submit"
+				disabled={isFormIncomplete}
 				variant="outline"
 				class="flex"
 				on:click={() => {

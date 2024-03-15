@@ -54,7 +54,7 @@ export const actions: Actions = {
 			}
 
 			return fail(200, {
-				message: 'Agent created successfully'
+				message: 'Agent created successfully please reload the page to view your new agent'
 			});
 		} catch (error) {
 			console.error(error);
@@ -92,7 +92,7 @@ export const actions: Actions = {
 
 			console.log('Agent edited successfully:', data);
 			return fail(200, {
-				message: 'Agent edited successfully'
+				message: 'Agent edited successfully please reload to see the changes you made'
 			});
 		} catch (error) {
 			console.error(error);
