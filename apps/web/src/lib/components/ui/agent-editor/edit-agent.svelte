@@ -14,7 +14,7 @@
 	import { toast } from 'svelte-sonner';
 
 	export let form;
-	export let message;
+
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 
 	const dispatch = createEventDispatcher();
@@ -34,13 +34,6 @@
 
 	console.log(form, 'from from edit');
 </script>
-
-{#if message}
-	<p>{message}</p>
-{/if}
-{#if form?.message}
-	<p>{form?.message}</p>
-{/if}
 
 <Dialog.Root {open} onOpenChange={handleChange}>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
@@ -125,10 +118,10 @@
 				on:click={() => (state = 'loading')}
 				class="flex"
 				on:click={() => {
-					if(form.message) {
-						toast.success(form.message);
-					}
 					setTimeout(() => {
+						if (form?.message) {
+							toast.success(form.message + " " + " Please Reload the page to see the changes you made");
+						}
 						state = 'idle';
 						open = false;
 						invalidateAll();

@@ -20,42 +20,28 @@ export const actions: Actions = {
 	creatAgents: async ({ request, locals }) => {
 		const session = await locals.getSession();
 
-		const profile_id = session?.user.id;
-
 		const form = await superValidate(request, agentFormSchema);
 
 		if (!form.valid) {
-			return fail(400, { form, message: 'Could not create agent' });
+			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-
-		const title = form.data.title;
-		const description = form.data.description.split(',').map((item: string) => item.trim());
-
-		const model = form.data.model;
-		let published = form.data.published;
-
-		const role = form.data.role;
-		const tools = '';
-		const avatar =
-			'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/1.png';
-		const version = '1.0';
-		const system_message = '';
 
 		try {
 			const { data, error } = await supabase
 				.from('agents')
 				.insert([
 					{
-						profile_id,
-						title,
-						description,
-						model,
-						role,
-						published,
-						tools: [tools],
-						avatar,
-						version,
-						system_message
+						profile_id: session?.user.id,
+						title: form.data.title,
+						description: form.data.description.split(',').map((item: string) => item.trim()),
+						model: form.data.model,
+						role: form.data.role,
+						published: form.data.published,
+						tools: [''],
+						avatar:
+							'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/1.png',
+						version: '1.0',
+						system_message: ''
 					}
 				])
 				.select();
@@ -71,7 +57,7 @@ export const actions: Actions = {
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
-				message: 'Could not create agent'
+				message: 'Something went wrong , please try again'
 			});
 		}
 	},
@@ -109,7 +95,7 @@ export const actions: Actions = {
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
-				message: 'Could not edit agent'
+				message: 'Something went wrong , please try again'
 			});
 		}
 	}
