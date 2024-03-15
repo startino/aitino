@@ -7,7 +7,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Loader2 } from 'lucide-svelte';
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { Toggle } from '$lib/components/ui/toggle/index.js';
 	import { createEventDispatcher } from 'svelte';
@@ -25,16 +25,12 @@
 
 	export let open = false;
 
-	
-
 	const handleChange = () => {
 		dispatch('close');
 		open = !open;
-
-		console.log(open, 'hanlde change');
 	};
-	$: isFormIncomplete = !selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
-
+	$: isFormIncomplete =
+		!selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
@@ -42,7 +38,17 @@
 		<Dialog.Header>
 			<Dialog.Title>Edit Agent</Dialog.Title>
 		</Dialog.Header>
-		<form action="?/editAgent&id=${selectedAgent.id}" method="POST" use:enhance>
+		<form
+			action="?/editAgent&id=${selectedAgent.id}"
+			method="POST"
+			use:enhance={() => {
+				return async ({ result }) => {
+					invalidateAll();
+					state = 'idle';
+					applyAction(result);
+				};
+			}}
+		>
 			<div class="p-6">
 				<div class="flex w-full items-center gap-4">
 					<div class="mb-4 w-full">
@@ -132,8 +138,13 @@
 					state = 'loading';
 					setTimeout(() => {
 						if (form?.message) {
-							toast.success(form.message);
+							toast.promise(invalidateAll(), {
+								loading: 'Editing...',
+								success: `${form?.message}`,
+								error: 'Error'
+							});
 						}
+						location.reload();
 						state = 'idle';
 						open = false;
 						invalidateAll();

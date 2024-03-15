@@ -3,11 +3,13 @@
 	import { CreateAgent, EditAgent } from '$lib/components/ui/agent-editor/';
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
+	import { afterUpdate } from 'svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	export let data;
 	export let form;
 
-	$:  myAgents = data.getCurrentUserAgents.data;
+	$: myAgents = data.getCurrentUserAgents.data;
 
 	let open = false;
 
@@ -18,10 +20,11 @@
 		open = true;
 	};
 
+
+
 	const handleClose = () => {
 		open = false;
 	};
-	
 </script>
 
 <CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />

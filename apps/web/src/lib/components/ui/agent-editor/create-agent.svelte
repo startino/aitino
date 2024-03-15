@@ -36,9 +36,13 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>
+	<div class="absolute bottom-5 right-5">
 	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })} on:click={handleTrigger}
-		>Create Agent</Dialog.Trigger
-	>
+		>
+			Create Agent
+			</Dialog.Trigger
+			>
+		</div>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<Dialog.Header>
 			<Dialog.Title>Create Agent</Dialog.Title>
@@ -56,12 +60,12 @@
 							class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 						/>
 					</div>
-					<div class="border-primary mb-4 mt-4 flex cursor-pointer items-center gap-4 p-2">
+					<div class=" mb-4 mt-4 flex cursor-pointer items-center gap-4 p-2">
 						<Toggle
 							id="publishedToggle"
 							name="published"
 							on:click={() => (published = !published)}
-							class="border-primary h-7 scale-125 transform cursor-pointer border"
+							class=" h-7 scale-125 transform cursor-pointer border"
 						>
 							<Label
 								for="publishedToggle"
