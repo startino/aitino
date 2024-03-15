@@ -3,6 +3,7 @@ import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { agentFormSchema } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
+import { pickRandomAvatar } from '$lib/utils';
 
 export const load = (async ({ locals }) => {
 	const session = await locals.getSession();
@@ -26,6 +27,8 @@ export const actions: Actions = {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
 
+		const randomAvatar = pickRandomAvatar();
+
 		try {
 			const { data, error } = await supabase
 				.from('agents')
@@ -38,8 +41,7 @@ export const actions: Actions = {
 						role: form.data.role,
 						published: form.data.published,
 						tools: [''],
-						avatar:
-							'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/1.png',
+						avatar: randomAvatar.avatarUrl,
 						version: '1.0',
 						system_message: ''
 					}

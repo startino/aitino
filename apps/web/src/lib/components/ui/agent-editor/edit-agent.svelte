@@ -7,7 +7,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Loader2 } from 'lucide-svelte';
-	import { applyAction, enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { Toggle } from '$lib/components/ui/toggle/index.js';
 	import { createEventDispatcher } from 'svelte';
@@ -31,8 +31,6 @@
 
 		console.log(open, 'hanlde change');
 	};
-
-	console.log(form, 'from from edit');
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
@@ -48,7 +46,7 @@
 						<Input
 							id="title"
 							name="title"
-							value={selectedAgent.title}
+							bind:value={selectedAgent.title}
 							placeholder="Agent's title"
 							class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 						/>
@@ -78,27 +76,36 @@
 						<input type="hidden" name="published" value={published} />
 					</div>
 				</div>
+				{#if selectedAgent.title === ''}
+					<p class="text-red-500">Title is required</p>
+				{/if}
 				<div class="mb-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
 					<Input
 						id="role"
 						name="role"
 						placeholder="Agent's role"
-						value={selectedAgent.role}
+						bind:value={selectedAgent.role}
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 					/>
 				</div>
+				{#if selectedAgent.role === ''}
+					<p class="text-red-500">Role is required</p>
+				{/if}
 				<div class="mb-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
 					<Textarea
 						id="description"
 						name="description"
-						value={selectedAgent.description.join(', ')}
+						bind:value={selectedAgent.description}
 						placeholder="Describe the agent's purpose"
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring
 					col-span-3 mt-1  block h-24 w-full resize-none rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
+				{#if selectedAgent.description === ''}
+					<p class="text-red-500">Description is required</p>
+				{/if}
 				<div class="flex w-full flex-col">
 					<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
 					<select
@@ -115,12 +122,12 @@
 			<Button
 				type="submit"
 				variant="outline"
-				on:click={() => (state = 'loading')}
 				class="flex"
 				on:click={() => {
+					state = 'loading';
 					setTimeout(() => {
 						if (form?.message) {
-							toast.success(form.message + " " + " Please Reload the page to see the changes you made");
+							toast.success(form.message);
 						}
 						state = 'idle';
 						open = false;

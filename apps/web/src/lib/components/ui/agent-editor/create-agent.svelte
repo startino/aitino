@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { applyAction, enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
@@ -11,7 +11,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import * as Form from '$lib/components/ui/form';
 	import { agentFormSchema, type AgentFormSchema } from '$lib/schema';
 	import { type SuperValidated } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
@@ -34,9 +33,6 @@
 	};
 
 	let published = false;
-
-	console.log($formAgent, 'agent form');
-	console.log($errors, 'agent data');
 </script>
 
 <Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>

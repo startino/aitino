@@ -2,13 +2,12 @@
 	import { ComingSoonPage } from '$lib/components/ui/coming-soon';
 	import { CreateAgent, EditAgent } from '$lib/components/ui/agent-editor/';
 	import type { Agent } from '$lib/types/models';
-	import { writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button';
 
 	export let data;
 	export let form;
 
-	// let myAgents: Agent[] = data.getCurrentUserAgents.data;
-	const myAgents = writable(data.getCurrentUserAgents.data);
+	let myAgents: Agent[] = data.getCurrentUserAgents.data;
 
 	let open = false;
 
@@ -24,6 +23,8 @@
 	};
 </script>
 
+<CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />
+
 <div class="bg-background min-h-screen p-8">
 	<h1 class="text-primary dark:text-primary/80 mb-8 text-center text-4xl font-bold">
 		<span class="from-accent to-secondary bg-gradient-to-r bg-clip-text text-transparent"
@@ -31,7 +32,7 @@
 		>
 	</h1>
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-		{#each $myAgents as agent}
+		{#each myAgents as agent}
 			<div
 				class="bg-surface group relative flex flex-col overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
 			>
@@ -48,11 +49,11 @@
 					</div>
 					<p class="text-on-surface/80 mt-2 flex-grow text-sm">{agent.role}</p>
 				</div>
-				<button
+				<Button
 					class="bg-primary text-background hover:bg-primary/90 text-md mt-4 w-full rounded-none p-2 font-semibold transition-colors duration-300"
 					on:click={() => {
 						editAgent(agent);
-					}}>Edit Agent</button
+					}}>Edit Agent</Button
 				>
 			</div>
 		{/each}
@@ -60,6 +61,5 @@
 </div>
 
 <!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
-<CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />
 
 <EditAgent {selectedAgent} on:close={handleClose} {open} {form} />
