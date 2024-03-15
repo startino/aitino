@@ -139,6 +139,22 @@ class Crew:
                 return False
         return True
 
+    def _extract_uuid(self, dictionary: dict[UUID, list[str]]) -> dict[UUID, list[str]]:
+        new_dict = {}
+        for key, value in dictionary.items():
+            if isinstance(key, UUID):
+                logger.warn("went through isinstance if statement!")
+                new_dict[key] = value
+            
+            try:
+                split_uuid = str(key).split("(")
+                logger.warn(f"split_uuid: {split_uuid}")
+                new_dict[UUID(split_uuid[0])] = value
+            except ValueError:
+                new_dict[key] = value # if the key can't be converted to uuid, return the old 
+
+        return new_dict
+
     def _create_agents(
         self, crew_model: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
@@ -147,6 +163,9 @@ class Crew:
         if not descriptions:
             raise ValueError("at least one agent id is invalid")
 
+        formatted_descriptions = self._extract_uuid(descriptions) # idk why this is the only way i got it working, but will hopefully simplify later...
+        # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
+        #logger.warn(f"formatted descriptions: {formatted_descriptions}")
         for agent in crew_model.agents:
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
@@ -167,7 +186,7 @@ class Crew:
                 system_message=f"""{agent.title}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
                 internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
                 Give this program to the admin. """,  # TODO: add what agent it should send to next - Leon
-                description=descriptions[agent.id][0],  # could add something to concatenate all strings in description list for a given agent - Leon
+                description=formatted_descriptions[agent.id][0],  # could add something to concatenate all strings in description list for a given agent - Leon
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:
