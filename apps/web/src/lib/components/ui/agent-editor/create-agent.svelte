@@ -65,7 +65,7 @@
 							id="publishedToggle"
 							name="published"
 							on:click={() => (published = !published)}
-							class=" h-7 scale-125 transform cursor-pointer border"
+							class=" h-7 scale-125 transform cursor-pointer"
 						>
 							<Label
 								for="publishedToggle"

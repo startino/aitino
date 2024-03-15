@@ -74,7 +74,7 @@
 									published = false;
 								}
 							}}
-							class="border-primary h-7 scale-125 transform cursor-pointer"
+							class="border-primary h-7 scale-125 transform cursor-pointer bg-primary text-background"
 						>
 							<Label
 								for="publishedToggle"
