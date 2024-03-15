@@ -122,19 +122,21 @@
 					on:click={() => {
 						state = 'loading';
 
-						if (
-							$formAgent.title.length > 0 &&
-							$formAgent.role.length > 0 &&
-							$formAgent.description.length > 0
-						) {
-							state = 'idle';
-							toast.success('Agent created please reload the page to see it.');
+						setTimeout(() => {
+							if (
+								$formAgent.title.length > 0 &&
+								$formAgent.role.length > 0 &&
+								$formAgent.description.length > 0
+							) {
+								state = 'idle';
+								toast.success('Agent created please reload the page to see it.');
 
-							open = false;
-							invalidateAll();
-						} else {
-							state = 'idle';
-						}
+								open = false;
+								invalidateAll();
+							} else {
+								state = 'idle';
+							}
+						}, 1000);
 					}}
 					class="flex"
 				>
