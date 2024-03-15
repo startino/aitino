@@ -26,16 +26,20 @@ export function getNodesCount(nodes: Node[]) {
 export const pickRandomName = () => {
 	const genders = ['male', 'female'];
 	const genderKey = genders[getRandomIndex(genders)];
+
 	const namesArray = SAMPLE_FULL_NAMES[genderKey];
 	const name = namesArray[getRandomIndex(namesArray)];
+
 	return { name, gender: genderKey };
 };
 
 export const pickRandomAvatar = () => {
 	const { name, gender } = pickRandomName();
 	let avatarIndex = getRandomIndex(Array.from({ length: 23 }, (_, i) => i));
+
 	if (gender === 'female') avatarIndex += 25;
 	const avatarPath = `agent-avatars/${gender}/`;
+
 	const { data } = supabase.storage.from(avatarPath).getPublicUrl(`${avatarIndex}.png`);
 	return { name, avatarUrl: data.publicUrl };
 };
