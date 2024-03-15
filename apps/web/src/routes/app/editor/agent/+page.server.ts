@@ -66,8 +66,7 @@ export const actions: Actions = {
 			}
 
 			return fail(200, {
-				message: 'Agent created successfully',
-				data
+				message: 'Agent created successfully'
 			});
 		} catch (error) {
 			console.error(error);
@@ -104,9 +103,6 @@ export const actions: Actions = {
 			}
 
 			console.log('Agent edited successfully:', data);
-			if (data === null) {
-				return {};
-			}
 			return fail(200, {
 				message: 'Agent edited successfully'
 			});
