@@ -9,19 +9,19 @@
 	import { Loader2 } from 'lucide-svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { Toggle } from '$lib/components/ui/toggle/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import { Switch } from '$lib/components/ui/switch';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 
-	export let form;
+	export let form: ActionData;
 
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 
 	const dispatch = createEventDispatcher();
 
 	export let selectedAgent: Agent;
-
-	let published = false;
 
 	export let open = false;
 
@@ -31,6 +31,17 @@
 	};
 	$: isFormIncomplete =
 		!selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
+
+	const area = [
+		{
+			value: 'gpt-4-turbo-preview',
+			label: 'gpt-4-turbo-preview'
+		},
+		{
+			value: 'gpt-3.5-turbo',
+			label: 'gpt-3.5-turbo'
+		}
+	];
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
@@ -51,66 +62,46 @@
 		>
 			<div class="p-6">
 				<div class="flex w-full items-center gap-4">
-					<div class="mb-4 w-full">
+					<div class="mb-4 w-full space-y-4">
 						<Label for="title" class="block text-sm font-medium ">Title</Label>
 						<Input
 							id="title"
 							name="title"
 							bind:value={selectedAgent.title}
 							placeholder="Agent's title"
-							class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+							class="focus-visible:ring-1 focus-visible:ring-offset-0"
 						/>
 					</div>
-					<div class=" mb-4 mt-4 flex cursor-pointer items-center gap-4 p-2">
-						<Toggle
-							id="publishedToggle"
-							name="published"
-							value="true"
-							bind:pressed={selectedAgent.published}
-							on:click={() => {
-								if (selectedAgent.published !== true) {
-									published = true;
-								} else {
-									published = false;
-								}
-							}}
-							class="border-primary h-7 scale-125 transform cursor-pointer bg-primary text-background"
-						>
-							<Label
-								for="publishedToggle"
-								class="text-on-background cursor-pointer  font-semibold italic">published</Label
-							>
-						</Toggle>
 
-						<!-- Hidden input to capture the toggle state -->
-						<input type="hidden" name="published" value={published} />
+					<div class="mt-4 flex items-center space-x-2">
+						<Switch id="airplane-mode" bind:checked={selectedAgent.published} name="published" />
+						<Label for="airplane-mode">Published</Label>
 					</div>
 				</div>
 				{#if selectedAgent.title === ''}
 					<p class="text-red-500">Title is required</p>
 				{/if}
-				<div class="mb-4">
+				<div class="mb-4 space-y-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
 					<Input
 						id="role"
 						name="role"
 						placeholder="Agent's role"
 						bind:value={selectedAgent.role}
-						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+						class="focus-visible:ring-1 focus-visible:ring-offset-0"
 					/>
 				</div>
 				{#if selectedAgent.role === ''}
 					<p class="text-red-500">Role is required</p>
 				{/if}
-				<div class="mb-4">
+				<div class="mb-4 space-y-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
 					<Textarea
 						id="description"
 						name="description"
 						bind:value={selectedAgent.description}
 						placeholder="Describe the agent's purpose"
-						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring
-					col-span-3 mt-1  block h-24 w-full resize-none rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-scrollbar]:hidden"
+						class="block h-24 w-full resize-none focus-visible:ring-1 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
 				{#if selectedAgent.description === ''}
@@ -118,15 +109,25 @@
 				{/if}
 				<div class="flex w-full flex-col">
 					<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
-					<select
-						id="models"
+					<Select.Root
+						portal={null}
 						name="model"
-						value={selectedAgent.model}
-						class="bg-surface text-on-surface block w-full rounded-lg"
+						selected={area[1].value === selectedAgent.model ? area[1] : area[0]}
 					>
-						<option value="gpt-4-turbo-preview">GPT-4</option>
-						<option value="gpt-3.5-turbo">GPT-3.5</option>
-					</select>
+						<Select.Trigger class="w-full" value={selectedAgent.model}>
+							<Select.Value placeholder="Select a Model" />
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								<Select.Label>Models</Select.Label>
+								<Select.Item value="gpt-4-turbo-preview" label="gpt-4-turbo-preview"
+									>Gpt-4</Select.Item
+								>
+								<Select.Item value="gpt-3.5-turbo" label="gpt-3.5-turbo">Gpt-3.5-turbo</Select.Item>
+							</Select.Group>
+						</Select.Content>
+						<Select.Input name="model" bind:value={selectedAgent.model} />
+					</Select.Root>
 				</div>
 			</div>
 			<Button
@@ -143,13 +144,14 @@
 								success: `${form?.message}`,
 								error: 'Error'
 							});
+
+							setTimeout(() => {
+								state = 'idle';
+								open = false;
+								location.reload();
+							}, 1000);
 						}
-						location.reload();
-						state = 'idle';
-						open = false;
-						invalidateAll();
 					}, 2000);
-					// }
 				}}
 			>
 				Edit

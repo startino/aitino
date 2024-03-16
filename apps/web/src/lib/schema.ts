@@ -30,7 +30,7 @@ export const waitlistSchema = z.object({
 	email: z.string().email({ message: 'Invalid email address' })
 });
 
-export const agentFormSchema = z.object({
+export const createNewAgents = z.object({
 	title: z
 		.string()
 		.min(1, { message: 'Title must not be empty' })

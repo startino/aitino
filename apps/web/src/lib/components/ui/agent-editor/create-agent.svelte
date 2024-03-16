@@ -8,17 +8,17 @@
 	import { Loader2 } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { Toggle } from '$lib/components/ui/toggle';
-	import { invalidateAll } from '$app/navigation';
 	import { superForm } from 'sveltekit-superforms/client';
-
-	import { agentFormSchema, type AgentFormSchema } from '$lib/schema';
+	import { createNewAgents, type AgentFormSchema } from '$lib/schema';
 	import { type SuperValidated } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { Switch } from '$lib/components/ui/switch';
 
 	export let data: SuperValidated<AgentFormSchema>;
 
 	const { form: formAgent, errors } = superForm(data, {
-		validators: agentFormSchema
+		validators: createNewAgents
 	});
 
 	export let form;
@@ -37,12 +37,10 @@
 
 <Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>
 	<div class="absolute bottom-5 right-5">
-	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })} on:click={handleTrigger}
-		>
+		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })} on:click={handleTrigger}>
 			Create Agent
-			</Dialog.Trigger
-			>
-		</div>
+		</Dialog.Trigger>
+	</div>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<Dialog.Header>
 			<Dialog.Title>Create Agent</Dialog.Title>
@@ -50,58 +48,46 @@
 		<form action="?/creatAgents" method="POST" use:enhance>
 			<div class="p-6">
 				<div class="flex w-full items-center gap-4">
-					<div class="mb-4 w-full">
+					<div class="mb-4 w-full space-y-4">
 						<Label for="title" class="block text-sm font-medium ">Title</Label>
 						<Input
 							id="title"
 							name="title"
 							bind:value={$formAgent.title}
 							placeholder="Agent's title"
-							class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+							class="focus-visible:ring-1 focus-visible:ring-offset-0"
 						/>
 					</div>
-					<div class=" mb-4 mt-4 flex cursor-pointer items-center gap-4 p-2">
-						<Toggle
-							id="publishedToggle"
-							name="published"
-							on:click={() => (published = !published)}
-							class=" h-7 scale-125 transform cursor-pointer"
-						>
-							<Label
-								for="publishedToggle"
-								class="text-on-background cursor-pointer  font-semibold italic">published</Label
-							>
-						</Toggle>
 
-						<!-- Hidden input to capture the toggle state -->
-						<Input type="hidden" name="published" value={published} />
+					<div class="mt-4 flex items-center space-x-2">
+						<Switch id="airplane-mode" bind:checked={published} name="published" />
+						<Label for="airplane-mode">Published</Label>
 					</div>
 				</div>
 				{#if $errors.title}
 					<p class="mb-2 text-red-500">{$errors.title}</p>
 				{/if}
-				<div class="mb-4">
+				<div class="mb-4 space-y-4">
 					<Label for="role" class="block text-sm font-medium ">Role</Label>
 					<Input
 						id="role"
 						name="role"
 						bind:value={$formAgent.role}
 						placeholder="Agent's role"
-						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 mt-1  block  h-9 w-full  rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+						class="focus-visible:ring-1 focus-visible:ring-offset-0"
 					/>
 				</div>
 				{#if $errors.role}
 					<p class="mb-2 text-red-500">{$errors.role}</p>
 				{/if}
-				<div class="mb-4">
+				<div class="mb-4 space-y-4">
 					<Label for="description" class="block text-sm font-medium ">Description</Label>
 					<Textarea
 						id="description"
 						name="description"
 						bind:value={$formAgent.description}
 						placeholder="Describe the agent's purpose"
-						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring
-					col-span-3 mt-1  block h-24 w-full resize-none rounded-md border bg-transparent px-3 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-scrollbar]:hidden"
+						class="block h-24 w-full resize-none focus-visible:ring-1 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
 				{#if $errors.description}
@@ -110,14 +96,23 @@
 				<div class="flex w-full gap-4">
 					<div class="mb-4 flex w-full flex-col">
 						<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
-						<select
-							id="models"
-							name="model"
-							class="bg-surface text-on-surface block w-full rounded-lg"
-						>
-							<option value="gpt-4-turbo-preview">GPT-4</option>
-							<option value="gpt-3.5-turbo">GPT-3.5</option>
-						</select>
+						<Select.Root portal={null} name="model">
+							<Select.Trigger class="w-full">
+								<Select.Value placeholder="Select a Model" />
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group>
+									<Select.Label>Models</Select.Label>
+									<Select.Item value="gpt-4-turbo-preview" label="gpt-4-turbo-preview"
+										>Gpt-4</Select.Item
+									>
+									<Select.Item value="gpt-3.5-turbo" label="gpt-3.5-turbo"
+										>Gpt-3.5-turbo</Select.Item
+									>
+								</Select.Group>
+							</Select.Content>
+							<Select.Input name="model" />
+						</Select.Root>
 					</div>
 				</div>
 				<Button
@@ -133,14 +128,20 @@
 								$formAgent.description.length > 0
 							) {
 								state = 'idle';
-								toast.success('Agent created please reload the page to see it.');
 
+								setTimeout(() => {
+									if (form?.message || form.errors) {
+										toast.error('Agent could not be created');
+									}
+								}, 1000);
 								open = false;
-								invalidateAll();
+								toast.success('Agent created successfully');
 							} else {
-								state = 'idle';
+								if ($errors.title || $errors.role || $errors.description) {
+									state = 'idle';
+								}
 							}
-						}, 1000);
+						}, 2000);
 					}}
 					class="flex"
 				>

@@ -1,19 +1,19 @@
 import { supabase } from '$lib/supabase';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { agentFormSchema } from '$lib/schema';
+import { createNewAgents } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 
 export const load = (async ({ locals }) => {
 	const session = await locals.getSession();
-	const getCurrentUserAgents = await supabase
+	const currentUserAgents = await supabase
 		.from('agents')
 		.select('*')
 		.eq('profile_id', session?.user.id);
 	return {
-		getCurrentUserAgents,
-		agentForm: await superValidate(agentFormSchema)
+		currentUserAgents,
+		agentForm: await superValidate(createNewAgents)
 	};
 }) satisfies PageServerLoad;
 
@@ -21,12 +21,12 @@ export const actions: Actions = {
 	creatAgents: async ({ request, locals }) => {
 		const session = await locals.getSession();
 
-		const form = await superValidate(request, agentFormSchema);
+		const form = await superValidate(request, createNewAgents);
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-
+		console.log(form, 'form');
 		const randomAvatar = pickRandomAvatar();
 
 		try {
@@ -39,7 +39,7 @@ export const actions: Actions = {
 						description: form.data.description.split(',').map((item: string) => item.trim()),
 						model: form.data.model,
 						role: form.data.role,
-						published: form.data.published,
+						published: form.data.published === 'on' ? true : false,
 						tools: [''],
 						avatar: randomAvatar.avatarUrl,
 						version: '1.0',
@@ -50,12 +50,12 @@ export const actions: Actions = {
 
 			if (error) {
 				console.error('Error creating agent:', error);
-				return { error };
+				return { error, message: error.message };
 			}
 
-			return fail(200, {
+			return {
 				message: 'Agent created successfully please reload the page to view your new agent'
-			});
+			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
@@ -66,39 +66,39 @@ export const actions: Actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
-		const form = await superValidate(request, agentFormSchema);
+		const form = await superValidate(request, createNewAgents);
 
 		console.log(form, 'from from agent');
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not edit agent' });
 		}
 
+		let data, error;
+
 		try {
-			const { data, error } = await supabase
+			({ data, error } = await supabase
 				.from('agents')
 				.update({
 					title: form.data.title,
 					role: form.data.role,
 					description: [form.data.description],
 					model: form.data.model,
-					published: form.data.published === 'true' ? true : false
+					published: form.data.published === 'on' ? true : false
 				})
-				.eq('id', id?.split('$')[1]);
-
-			if (error) {
-				console.error('Error editing agent:', error);
-				return { error };
-			}
-
-			console.log('Agent edited successfully:', data);
-			return fail(200, {
-				message: 'Agent edited successfully please reload to see the changes you made'
-			});
+				.eq('id', id?.split('$')[1]));
 		} catch (error) {
-			console.error(error);
-			return fail(500, {
-				message: 'Something went wrong , please try again'
-			});
+			console.error('Database operation failed:', error);
+			return fail(500, { message: 'Something went wrong, please try again' });
 		}
+
+		if (error) {
+			console.error('Error editing agent:', error);
+			return { error };
+		}
+
+		console.log('Agent edited successfully:', data);
+		return {
+			message: 'Agent edited successfully please reload to see the changes you made'
+		};
 	}
 };
