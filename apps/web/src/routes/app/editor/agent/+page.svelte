@@ -3,10 +3,10 @@
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
 
-	export let data;
+	export let data
 	export let form;
 
-	$: myAgents = data.currentUserAgents.data;
+	$: myAgents = (data.currentUserAgents.data as Agent[]) || [];
 
 	let open = false;
 

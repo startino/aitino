@@ -26,17 +26,20 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
+
 		const randomAvatar = pickRandomAvatar();
 
+		let data, error;
+		
 		try {
-			const { data, error } = await supabase
+			({ data, error } = await supabase
 				.from('agents')
 				.insert([
 					{
 						profile_id: session?.user.id,
 						title: form.data.title,
 						description: form.data.description.split(',').map((item: string) => item.trim()),
-						model: form.data.model,
+						model: form.data.model === 'undefined' ? 'gpt-3.5-turbo' : form.data.model,
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
 						tools: [''],
@@ -45,22 +48,22 @@ export const actions: Actions = {
 						system_message: ''
 					}
 				])
-				.select();
-
-			if (error) {
-				console.error('Error creating agent:', error);
-				return { error, message: error.message };
-			}
-
-			return {
-				message: 'Agent created successfully please reload the page to view your new agent'
-			};
+				.select());
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
 				message: 'Something went wrong , please try again'
 			});
 		}
+
+		if (error) {
+			console.error('Error creating agent:', error);
+			return { error, message: error.message };
+		}
+
+		return {
+			message: 'Agent created successfully please reload the page to view your new agent'
+		};
 	},
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
