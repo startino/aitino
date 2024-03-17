@@ -56,11 +56,8 @@
 					console.log($errors, $formAgent);
 					setTimeout(() => {
 						state = 'idle';
-						setTimeout(() => {
-							if (form?.error) return toast.error(form?.message);
-						}, 1000);
 						open = false;
-						toast.success('Agent created successfully');
+						toast.success(form?.message);
 					}, 2000);
 				}}
 				class="flex"

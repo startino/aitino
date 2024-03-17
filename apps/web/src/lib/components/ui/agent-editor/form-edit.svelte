@@ -27,16 +27,6 @@
 	$: isFormIncomplete =
 		!selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
 
-	const area = [
-		{
-			value: 'gpt-4-turbo-preview',
-			label: 'gpt-4-turbo-preview'
-		},
-		{
-			value: 'gpt-3.5-turbo',
-			label: 'gpt-3.5-turbo'
-		}
-	];
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
