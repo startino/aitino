@@ -1,2 +1,2 @@
-export { default as CreateAgent } from './create-agent.svelte';
-export { default as EditAgent } from './edit-agent.svelte';
+export { default as CreateAgent } from './from-create.svelte';
+export { default as EditAgent } from './form-edit.svelte';

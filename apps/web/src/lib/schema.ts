@@ -48,4 +48,4 @@ export const createNewAgents = z.object({
 });
 
 export type FormSchema = typeof formSchema;
-export type AgentFormSchema = typeof agentFormSchema;
+export type AgentFormSchema = typeof createNewAgents;
