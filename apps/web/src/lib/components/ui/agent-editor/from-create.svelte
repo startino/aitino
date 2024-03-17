@@ -2,18 +2,12 @@
 	import { enhance } from '$app/forms';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Loader2 } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { Toggle } from '$lib/components/ui/toggle';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { createNewAgents, type AgentFormSchema } from '$lib/schema';
 	import { type SuperValidated } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import { Switch } from '$lib/components/ui/switch';
 	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
 	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 
@@ -33,7 +27,6 @@
 	const handleTrigger = async () => {
 		open = true;
 	};
-
 </script>
 
 <Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>

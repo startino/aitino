@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ComingSoonPage } from '$lib/components/ui/coming-soon';
 	import { CreateAgent, EditAgent } from '$lib/components/ui/agent-editor/';
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
@@ -26,11 +25,6 @@
 <CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />
 
 <div class="bg-background min-h-screen p-8">
-	<!-- <h1 class="text-primary dark:text-primary/80 mb-8 text-center text-4xl font-bold">
-		<span class="from-accent to-secondary bg-gradient-to-r bg-clip-text text-transparent"
-			>My Agent</span
-		>
-	</h1> -->
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 		{#each myAgents as agent}
 			<div

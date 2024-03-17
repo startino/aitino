@@ -26,7 +26,6 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-		console.log(form, 'form');
 		const randomAvatar = pickRandomAvatar();
 
 		try {
@@ -68,7 +67,6 @@ export const actions: Actions = {
 
 		const form = await superValidate(request, createNewAgents);
 
-		console.log(form, 'from from agent');
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not edit agent' });
 		}
@@ -87,7 +85,7 @@ export const actions: Actions = {
 				})
 				.eq('id', id?.split('$')[1]));
 		} catch (error) {
-			console.error('Database operation failed:', error);
+			console.error('something when wron when editing agent:', error);
 			return fail(500, { message: 'Something went wrong, please try again' });
 		}
 
