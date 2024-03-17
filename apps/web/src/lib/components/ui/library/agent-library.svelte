@@ -93,10 +93,10 @@
 							Published
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-3-turbo'}
-							on:click={() => updateFilterModel('gpt-3-turbo')}
+							checked={filterModel === 'gpt-3.5-turbo'}
+							on:click={() => updateFilterModel('gpt-3.5-turbo')}
 						>
-							GPT-3
+							GPT-3.5-turbo
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
 							checked={filterModel === 'gpt-4-turbo-preview'}
@@ -115,7 +115,7 @@
 			{#each filteredMyAgents as agent, index (`personal-${agent.id}`)}
 				<AgentRow
 					{agent}
-					on:click={({detail}) => ((showDetails = true), showDetailInTheModal(detail.id))}
+					on:click={({ detail }) => ((showDetails = true), showDetailInTheModal(detail.id))}
 					on:load={({ detail }) => {
 						toast.success(`Added a new agent ${detail.title}`);
 						console.log(detail, 'detail');
