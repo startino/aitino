@@ -5,7 +5,9 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import type { Agent } from '$lib/types/models';
+	import { Button } from '$lib/components/ui/button';
 	import { ZodObject, ZodString } from 'zod';
+	import { PlusCircle } from 'lucide-svelte';
 
 	export let selectedAgent: Agent | null = null;
 	export let formAgent: SuperFormData<
@@ -23,6 +25,25 @@
 	const models = [
 		{ value: 'gpt-4-turbo-preview', label: 'gpt-4-turbo-preview' },
 		{ value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
+	];
+
+	const tools = [
+		{
+			name: 'python tools',
+			description: 'this tool will help you to write python code'
+		},
+		{
+			name: 'environmentalist',
+			description: ' this tools is used to generate environmental data from google maps api'
+		},
+		{
+			name: 'healthyfy',
+			description: 'healthfy is used to generate health data from public health data sources'
+		},
+		{
+			name: 'notebook',
+			description: "this tool will help you to save money on your car loan, flight ticket, and more"
+		}
 	];
 
 	$: published = isCreate ? $formAgent?.published === 'true' : selectedAgent?.published || false;
@@ -65,6 +86,30 @@
 	{:else if !isCreate && title === ''}
 		<p class="text-red-500">Title is required</p>
 	{/if}
+
+	<div class="mb-4 h-56 space-y-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+		<Label for="tools">Tools</Label>
+		<div class="grid grid-cols-3 gap-4">
+			{#each tools as tool}
+				<div class="relative rounded-lg p-4 shadow-lg">
+					<PlusCircle
+						class="text-secondary hover:text-secondary-50 h-6 w-6 cursor-pointer transition-colors"
+					/>
+					<div id="tool">
+						<h3 class="font-extrabold">{tool.name}</h3>
+						<p class="text-muted-foreground text-xs">{tool.description}</p>
+						<div class="mt-3">
+							<Input
+								type="text"
+								placeholder="API Key"
+								class="focus-visible:ring-1 focus-visible:ring-offset-0"
+							/>
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 
 	<div class="mb-4 space-y-4">
 		<Label for="role">Role</Label>
