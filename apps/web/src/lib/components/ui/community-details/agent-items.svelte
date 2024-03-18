@@ -41,9 +41,9 @@
 <div class="text-white">
 	<h3 class="border-b-2 border-gray-700 pb-2 text-2xl font-semibold">Description</h3>
 	<ul class="mt-4 list-inside list-disc space-y-2 text-gray-400">
-		{#each agentDisplayDetails.description as description}
-			<li>{description}</li>
-		{/each}
+		<!-- {#each agentDisplayDetails.description as description} -->
+			<li>{agentDisplayDetails.description}</li>
+		<!-- {/each} -->
 	</ul>
 </div>
 

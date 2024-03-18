@@ -38,7 +38,7 @@ export const actions: Actions = {
 					{
 						profile_id: session?.user.id,
 						title: form.data.title,
-						description: form.data.description.split(',').map((item: string) => item.trim()),
+						description: form.data.description,
 						model: form.data.model === 'undefined' ? 'gpt-3.5-turbo' : form.data.model,
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
@@ -82,7 +82,7 @@ export const actions: Actions = {
 				.update({
 					title: form.data.title,
 					role: form.data.role,
-					description: [form.data.description],
+					description: form.data.description,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
 				})
