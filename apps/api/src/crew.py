@@ -9,7 +9,7 @@ from autogen.cache import Cache
 from pydantic import BaseModel, Field
 
 from .interfaces import db
-from .models import CodeExecutionConfig, Composition, Message, Session
+from .models import CodeExecutionConfig, CrewModel, Message, Session
 
 logger = logging.getLogger("root")
 
@@ -19,7 +19,7 @@ class Crew:
         self,
         profile_id: UUID,
         session: Session,
-        composition: Composition,
+        composition: CrewModel,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
@@ -28,7 +28,7 @@ class Crew:
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self.validate_composition(composition):
+        if not self._validate_composition(composition):
             raise ValueError("composition is invalid")
         self.composition = composition
 
@@ -44,7 +44,7 @@ class Crew:
         )
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
-            self.create_agents(composition)
+            self._create_agents(composition)
         )
 
         self.base_config_list = autogen.config_list_from_json(
@@ -67,23 +67,62 @@ class Crew:
         sender: autogen.Agent | None = None,
         config: Any | None = None,
     ) -> tuple[bool, Any | None]:
-        if self.on_reply:
-            await self.on_reply(recipient, messages, sender, config)
-        else:
+        # This function is called when an LLM model replies
+        if not self.on_reply:
             logger.warn("No on_reply function")
+            return False, None
+
+        logger.debug(f"on_reply: {recipient.name} {messages}")
+
+        if not messages:
+            logger.error("on_reply: No messages")
+            return False, None
+        if len(messages) == 0:
+            logger.error("on_reply: No messages")
+            return False, None
+
+        last_msg = messages[-1]
+
+        # Validate last message
+        if not last_msg.get("name"):
+            logger.warn(f"on_reply: No name\n{last_msg}")
+            last_msg["name"] = None
+        if not last_msg.get("content"):
+            logger.error(f"on_reply: No content\n{last_msg}")
+            return False, None
+        if not last_msg.get("role"):
+            logger.error(f"on_reply: No role\n{last_msg}")
+            return False, None
+
+        name = last_msg["name"]
+        content = last_msg["content"]
+        role = last_msg["role"]
+        recipient_id = None  # None means admin
+        sender_id = None  # None means admin
+
+        for agent in self.composition.agents:
+            check_name = (
+                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+            )
+            if check_name == recipient.name:
+                recipient_id = agent.id
+            if check_name == name:
+                sender_id = agent.id
+
+        if recipient_id is None and sender_id is None:
+            logger.warn("on_reply: Both recipient and sender is None (admin)")
+            return False, None
+
+        await self.on_reply(recipient_id, sender_id, content, role)
 
         return False, None
 
-    def validate_composition(self, composition: Composition) -> bool:
+    def _validate_composition(self, composition: CrewModel) -> bool:
         if len(composition.agents) == 0:
             return False
 
         # Validate agents
         for agent in composition.agents:
-            if agent.id == "":
-                return False
-            if agent.model == "":
-                return False
             if agent.role == "":
                 return False
             if agent.title == "":
@@ -92,8 +131,8 @@ class Crew:
                 return False
         return True
 
-    def create_agents(
-        self, composition: Composition
+    def _create_agents(
+        self, composition: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
 
@@ -137,7 +176,7 @@ class Crew:
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
             max_round=20,
-            speaker_selection_method="round_robin" if len(self.agents) > 1 else "auto",
+            speaker_selection_method="auto" if len(self.agents) > 1 else "round_robin",
         )
 
         manager = autogen.GroupChatManager(
@@ -148,31 +187,6 @@ class Crew:
         logger.info("Starting Crew")
         with Cache.disk() as cache:
             logger.info("Starting chat")
-            result = await self.user_proxy.a_initiate_chat(
+            await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
-
-        raw_msg = result.chat_history[-1]
-
-        sender_id = None
-        for agent in self.composition.agents:
-            if (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-                == raw_msg["name"]
-            ):
-                sender_id = agent.id
-
-        last_message = Message(
-            session_id=self.session.id,
-            profile_id=self.profile_id,
-            recipient_id=None,
-            sender_id=sender_id,
-            content=raw_msg["content"],
-            role=raw_msg["role"],
-        )
-        db.post_message(last_message)
-
-        logger.info("Chat finished")
-
-        logger.info("Crew finished")
-        await asyncio.sleep(1)

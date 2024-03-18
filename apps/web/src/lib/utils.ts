@@ -11,6 +11,10 @@ import type { ContextMap, Crew } from '$lib/types';
 import { browser } from '$app/environment';
 import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
 import { supabase } from './supabase';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export function getNodesCount(nodes: Node[]) {
 	return {
@@ -19,16 +23,26 @@ export function getNodesCount(nodes: Node[]) {
 	};
 }
 
-export function pickRandomName() {
-	return SAMPLE_FULL_NAMES[getRandomIndex(SAMPLE_FULL_NAMES)];
-}
-export function pickRandomAvatar() {
-	// Images in agent-avatars bucket are named between 0-49, inclusive
-	const index = Math.floor(Math.random() * 50);
-	const { data } = supabase.storage.from('agent-avatars').getPublicUrl(`${index}.png`);
-	console.log(data.publicUrl);
-	return data.publicUrl;
-}
+export const pickRandomName = () => {
+	const genders = ['male', 'female'];
+	const genderKey = genders[getRandomIndex(genders)];
+
+	const namesArray = SAMPLE_FULL_NAMES[genderKey];
+	const name = namesArray[getRandomIndex(namesArray)];
+
+	return { name, gender: genderKey };
+};
+
+export const pickRandomAvatar = () => {
+	const { name, gender } = pickRandomName();
+	let avatarIndex = getRandomIndex(Array.from({ length: 23 }, (_, i) => i));
+
+	if (gender === 'female') avatarIndex += 25;
+	const avatarPath = `agent-avatars/${gender}/`;
+
+	const { data } = supabase.storage.from(avatarPath).getPublicUrl(`${avatarIndex}.png`);
+	return { name, avatarUrl: data.publicUrl };
+};
 
 function getRandomIndex(array: Array<unknown>) {
 	const randomArray = new Uint32Array(1);
@@ -250,4 +264,8 @@ const formatter = new Intl.NumberFormat('en-US', {
 export function formatCurrency(amount: number) {
 	if (amount === 0) return 'Free';
 	return formatter.format(amount);
+}
+
+export function timeSince(dateIsoString: Date | string | number) {
+	return dayjs(dateIsoString).fromNow(true);
 }

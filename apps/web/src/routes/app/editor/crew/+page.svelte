@@ -30,7 +30,6 @@
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
 	import type { CrewLoad } from '$lib/types/loads';
 	import { goto } from '$app/navigation';
-	import { Loader } from 'lucide-svelte';
 
 	export let data: CrewLoad;
 
@@ -66,6 +65,21 @@
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
+		{
+			name: 'Add Agent',
+			buttonVariant: 'outline',
+			onclick: () => {
+				const randomAvatar = pickRandomAvatar();
+
+				addNewAgent(
+					randomAvatar.name,
+					'gpt-4-turbo-preview',
+					'Example Job',
+					'Example Summary',
+					randomAvatar.avatarUrl
+				);
+			}
+		},
 		{
 			name: 'Load Agent',
 			buttonVariant: 'outline',
@@ -236,7 +250,6 @@
 	// }
 
 	function addNewAgent(
-		id: string,
 		agentName: string,
 		agentModel: string,
 		job: string,
@@ -253,7 +266,6 @@
 			return;
 		}
 
-		console.log(agentName, agentModel, agentAvatar, id, 'from add new agent');
 		const position = { ...getViewport() };
 		nodes.update((v) => [
 			...v,
@@ -393,14 +405,7 @@
 					myAgents={data.myAgents}
 					publishedAgents={data.publishedAgents}
 					on:loadAgent={({ detail }) => {
-						addNewAgent(
-							detail.id,
-							detail.name,
-							detail.model,
-							detail.job,
-							detail.job,
-							detail.avatar
-						);
+						addNewAgent(detail.name, detail.model, detail.job, detail.job, detail.avatar);
 					}}
 				/>
 			</Dialog.Content>

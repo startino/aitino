@@ -10,14 +10,13 @@ from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
 from .dependencies import rate_limit, rate_limit_profile, rate_limit_tiered
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Composition, Message, Session
+from .models import CrewModel, Message, Session
 from .parser import parse_input_v0_2 as parse_input
 
 logger = logging.getLogger("root")
@@ -54,7 +53,7 @@ def redirect_to_docs() -> RedirectResponse:
 
 
 @app.get("/compile", dependencies=[Depends(rate_limit(3, 30, "compile"))])
-def compile(id: UUID) -> dict[str, str | Composition]:
+def compile(id: UUID) -> dict[str, str | CrewModel]:
     message, composition = db.get_compiled(id)
 
     return {
@@ -63,7 +62,9 @@ def compile(id: UUID) -> dict[str, str | Composition]:
     }
 
 
-@app.get("/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=30))])
+@app.get(
+    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=30))]
+)
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
@@ -124,59 +125,20 @@ async def run_crew(
         db.post_session(session)
 
     async def on_reply(
-        recipient: ConversableAgent,
-        messages: list[dict] | None = None,
-        sender: Agent | None = None,
-        config: Any | None = None,
+        recipient_id: UUID,
+        sender_id: UUID,
+        content: str,
+        role: str,
     ) -> None:
-        logger.debug(f"on_reply: {recipient.name} {messages}")
-        # This function is called when an LLM model replies
-        if not messages:
-            logger.error("on_reply: No messages")
-            return
-        if len(messages) == 0:
-            logger.error("on_reply: No messages")
-            return
-
-        raw_msg = messages[-1]
-
-        if not raw_msg.get("name"):
-            logger.warn(f"on_reply: No name\n{raw_msg}")
-            raw_msg["name"] = None
-        if not raw_msg.get("content"):
-            logger.error(f"on_reply: No content\n{raw_msg}")
-            return
-        if not raw_msg.get("role"):
-            logger.error(f"on_reply: No role\n{raw_msg}")
-            return
-
-        logger.info(f"on_reply: {recipient.name} {raw_msg}")
-
-        recipient_id = None
-        sender_id = None
-        for agent in composition.agents:
-            if (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-                == recipient.name
-            ):
-                recipient_id = agent.id
-            if (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-                == raw_msg["name"]
-            ):
-                sender_id = agent.id
-
-        if recipient_id is None and sender_id is None:
-            return
         message = Message(
             session_id=session.id,
             profile_id=profile_id,
             recipient_id=recipient_id,
             sender_id=sender_id,
-            content=raw_msg["content"],
-            role=raw_msg["role"],
+            content=content,
+            role=role,
         )
-        logger.debug(f"on_reply: {message.model_dump()}")
+        logger.debug(f"on_reply: {message}")
 
         db.post_message(message)
 
@@ -187,8 +149,11 @@ async def run_crew(
     return {"status": "success", "data": {"session": session.model_dump()}}
 
 
-@app.get("/auto-build", dependencies=[Depends(rate_limit_profile(limit=3, period_seconds=60))])
-def auto_build_crew(general_task: str):
+@app.get(
+    "/auto-build",
+    dependencies=[Depends(rate_limit_profile(limit=3, period_seconds=60))],
+)
+def auto_build_crew(general_task: str) -> str:
     agents = build_agents.BuildAgents()
     auto_build_agent = agents.create_all_in_one_agent()
     user_proxy = autogen.UserProxyAgent(
@@ -202,5 +167,5 @@ def auto_build_crew(general_task: str):
     chat_result = user_proxy.initiate_chat(
         auto_build_agent, message=general_task, silent=True
     )
-    crew_frame = chat_result.chat_history[1]["content"]
+    crew_frame = chat_result.chat_history[-1]["content"]
     return crew_frame

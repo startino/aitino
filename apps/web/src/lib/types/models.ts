@@ -20,6 +20,7 @@ export type Crew = {
 	edges: Edge[];
 	created_at: string;
 	published: boolean;
+	avatar: string;
 };
 
 export type Session = {
@@ -40,8 +41,9 @@ export type Agent = {
 	author: string;
 	model: string;
 	published: boolean;
+	system_message: string;
 	profile_id: string;
 	tools: string[];
-	avatar_url: string;
+	avatar: string;
 	version: string
 };

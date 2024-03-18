@@ -1,9 +1,9 @@
 import json
 import logging
 from typing import Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from src.models import Agent, Composition
+from src.models import Agent, CrewModel
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)
@@ -38,85 +38,31 @@ def get_agent(agent_id: UUID) -> Agent | None:
     return Agent(**response.data[0])
 
 
+def get_agents(agent_ids: list[UUID]) -> list[Agent]:
+    logger.debug(f"getting agents from agent_ids: {agent_ids}")
+    response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
+    return [Agent(**agent) for agent in response.data]
+
+
 def parse_input_v0_2(
     input_data: dict,
-) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewModel]:
     logger.debug("Parsing input v0.2")
 
-    def _parse_composition(nodes: dict) -> Composition | Literal[False]:
-        logger.debug("Parsing composition")
-        composition = Composition(
-            reciever_id="auto",
-            agents=list(),
-        )
-        for node in nodes:
-            if node["type"] == "agent":
-                agent_id = node["id"]
+    agent_ids: list[UUID] = input_data["nodes"]
+    reciever_id: UUID = input_data["reciever_id"]
 
-                # TODO: Optimize by creating a get_agents method which takes a
-                # list of agent_ids and get's them all with a single database
-                # call
-                agent = get_agent(agent_id)
-
-                if not agent:
-                    logger.error(f"Agent {agent_id} not found")
-                    return False
-
-                composition.agents.append(agent)
-        return composition
-
-    def _parse_prompts(nodes: dict) -> str:
-        logger.debug("Parsing prompts")
-        prompt = []
-        for node in nodes:
-            if node["type"] == "prompt":
-                prompt.append(node["data"]["content"])
-        return "\n\n".join(prompt)
-
-    nodes = input_data["nodes"]
-    composition = _parse_composition(nodes)
-    if not composition:
-        logger.error("Failed to parse composition")
-        return False, False
-    message = _parse_prompts(nodes)
-    return message, composition
-
-
-def parse_input_v0_1(input_data: dict) -> tuple[str, Composition]:
-    def _parse_composition(nodes: dict) -> Composition:
-        composition = Composition(
-            reciever_id="auto",
-            agents=list(),
-        )
-
-        for node in nodes:
-            if node["type"] == "agent":
-                agent = Agent(
-                    id=node["id"],
-                    name=node["data"]["name"],
-                    role=node["data"]["role"],
-                    system_message=node["data"]["prompt"],
-                    model=node["data"]["model"]["value"],
-                )
-                composition.agents.append(agent)
-        return composition
-
-    def _parse_prompts(nodes: dict) -> str:
-        prompt = []
-        for node in nodes:
-            if node["type"] == "prompt":
-                prompt.append(node["data"]["content"])
-        return "\n\n".join(prompt)
-
-    nodes = input_data["nodes"]
-    composition = _parse_composition(nodes)
-    message = _parse_prompts(nodes)
-    return message, composition
+    crew_model = CrewModel(
+        reciever_id=reciever_id,
+        agents=get_agents(agent_ids),
+    )
+    message: str = input_data["prompt"]["content"]
+    return message, crew_model
 
 
 def parse_autobuild(
     input_data: str,
-) -> tuple[str, Composition] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
     input_data = input_data.replace("\n", "")
     try:
         dict_input = json.loads(input_data)
@@ -134,7 +80,7 @@ def parse_autobuild(
 
     message = dict_input["composition"]["message"]
     agents = [Agent(**agent) for agent in dict_input["composition"]["agents"]]
-    return message, Composition(reciever_id="auto", agents=agents)
+    return message, CrewModel(reciever_id=uuid4(), agents=agents)
 
 
 if __name__ == "__main__":
