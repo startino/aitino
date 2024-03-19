@@ -1,9 +1,12 @@
-import os
 import math
+import os
+import random
+
 from typing import Type
 
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
+
 
 class CircumferenceToolInput(BaseModel):
     radius: float = Field()
@@ -26,9 +29,10 @@ def get_file_path_of_example():
     # parent_dir = os.path.dirname(current_dir)
 
     # Move to the target directory
-    target_folder = os.path.join(current_dir, "src/tooling")
+    target_folder = os.path.join(current_dir, "src/tooling/test_files")
 
     # Construct the path to your target file
-    file_path = os.path.join(target_folder, "test_files/radius.txt")
+    # file_path = os.path.join(target_folder, "test_files/radius.txt")
 
-    return file_path
+    return os.path.join(target_folder, random.choice(os.listdir(target_folder)))
+

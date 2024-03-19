@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from asyncio import Queue
 from typing import Any, cast
@@ -8,7 +9,11 @@ from autogen.cache import Cache
 
 from .interfaces import db
 from .models import CodeExecutionConfig, CrewModel, Message, Session
-from .tooling.langchain_tooling import generate_llm_config
+from .tooling.langchain_tooling import (
+    generate_llm_config,
+    generate_tool_from_string,
+)
+from .tooling.tools import get_file_path_of_example
 
 logger = logging.getLogger("root")
 
@@ -28,8 +33,13 @@ class Crew:
         self.session = session
         self.on_reply = on_message
         if not self._validate_crew_model(crew_model):
-            raise ValueError("crew model is invalid")
+            raise ValueError("composition is invalid")
         self.crew_model = crew_model
+        self.valid_tools = []
+
+        self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
+            self._create_agents(crew_model)
+        )
 
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
@@ -41,9 +51,13 @@ class Crew:
                 work_dir=f".cache/{self.seed}/scripts"
             ).model_dump(),
         )
-
-        self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
-            self._create_agents(crew_model)
+        (
+            self.user_proxy.register_function(
+                # ternary operator evaluates if there are any tools in valid_tools and calls register_function if there are valid tools.
+                function_map={tool.name: tool._run for tool in self.valid_tools}
+            )
+            if self.valid_tools
+            else None
         )
 
         self.base_config_list = autogen.config_list_from_json(
@@ -85,9 +99,7 @@ class Crew:
         # Validate last message
         if not last_msg.get("name"):
             logger.warn(f"on_reply: No name\n{last_msg}")
-            last_msg["name"] = (
-                "None"  # changed from None to "None" which helped fix the error 'message': "None is not of type 'string' but felt like it made the chat manager worse
-            )
+            last_msg["name"] = None
         if not last_msg.get("content"):
             logger.error(f"on_reply: No content\n{last_msg}")
             return False, None
@@ -103,7 +115,7 @@ class Crew:
 
         for agent in self.crew_model.agents:
             check_name = (
-                f"""{agent.title.replace(' ', '')}-{agent.title.replace(' ', '')}"""
+                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
             )
             if check_name == recipient.name:
                 recipient_id = agent.id
@@ -119,9 +131,7 @@ class Crew:
                 "on_reply: Both recipient and sender are None (admin) or chat_manager"
             )
             return False, None
-        logger.warn(
-            f"_on_reply: name: {name}\ncontent: {content}\n role:{role}\nrecipient_id: {recipient_id}\nsender_id: {sender_id}"
-        )
+
         await self.on_reply(recipient_id, sender_id, content, role)
 
         return False, None
@@ -132,7 +142,7 @@ class Crew:
 
         # Validate agents
         for agent in crew_model.agents:
-            if agent.title == "":
+            if agent.role == "":
                 return False
             if agent.title == "":
                 return False
@@ -146,14 +156,14 @@ class Crew:
             if isinstance(key, UUID):
                 logger.warn("went through isinstance if statement!")
                 new_dict[key] = value
-            
+
             try:
                 split_uuid = str(key).split("(")
                 logger.warn(f"split_uuid: {split_uuid}")
                 new_dict[UUID(split_uuid[0])] = value
             except ValueError:
-                new_dict[key] = value # if the key can't be converted to uuid, return the old 
-
+                # if the key can't be converted to uuid, return the old value
+                new_dict[key] = value  
         return new_dict
 
     def _create_agents(
@@ -164,10 +174,14 @@ class Crew:
         if not descriptions:
             raise ValueError("at least one agent id is invalid")
 
-        formatted_descriptions = self._extract_uuid(descriptions) # idk why this is the only way i got it working, but will hopefully simplify later...
+        formatted_descriptions = self._extract_uuid(
+            descriptions
+        )  # idk why this is the only way i got it working, but will hopefully simplify later...
         # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
-        #logger.warn(f"formatted descriptions: {formatted_descriptions}")
+        # logger.warn(f"formatted descriptions: {formatted_descriptions}")
         for agent in crew_model.agents:
+            valid_agent_tools = []
+            tool_schemas = {}
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -175,16 +189,24 @@ class Crew:
                 },
             )
             if len(agent.tools):
-                
-                tool_schemas = generate_llm_config(agent.tools)
-            logger.warn(f"agent tools: {tool_schemas}")    
+                for tool in agent.tools:
+                    generated_tool = generate_tool_from_string(tool)
+                    ((self.valid_tools.append(generated_tool), valid_agent_tools.append(generated_tool)) if generated_tool is not None else None)
+
+                logger.warn(f"{self.valid_tools=}")
+                tool_schemas = generate_llm_config(valid_agent_tools) if valid_agent_tools else None
+
+            logger.warn(
+                f"agent tools: {agent.tools}, valid agent tools: {valid_agent_tools=}, valid tools: {self.valid_tools}"
+            )
             config = {
-                # "functions": tool_schemas,
                 "seed": self.seed,
                 "temperature": 0,
                 "config_list": config_list,
                 "timeout": 120,
             }
+            if tool_schemas:
+                config["functions"] = tool_schemas
 
             agent_instance = autogen.AssistantAgent(
                 name=f"""{agent.title.replace(' ', '')}-{agent.title.replace(' ', '')}""",  # TODO: make failsafes to make sure this name doesn't exceed 64 chars - Leon
