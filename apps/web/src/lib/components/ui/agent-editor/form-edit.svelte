@@ -29,7 +29,7 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
-	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
+	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl border-none">
 		<!-- <Dialog.Header>
 			<Dialog.Title>Edit Agent</Dialog.Title>
 		</Dialog.Header> -->

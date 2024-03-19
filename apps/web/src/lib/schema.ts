@@ -44,6 +44,7 @@ export const createNewAgents = z.object({
 		.min(10, { message: 'Description must be at least 20 characters' })
 		.max(1000, { message: 'Description must be 1000 characters or less' }),
 	published: z.string(),
+	toolscoloumn: z.string(),
 	prompt: z.string(),
 	model: z.string()
 });

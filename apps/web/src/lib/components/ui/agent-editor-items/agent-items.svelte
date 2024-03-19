@@ -7,8 +7,8 @@
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
 	import { ZodObject, ZodString } from 'zod';
-	import { PlusCircle } from 'lucide-svelte';
-	import { toast } from 'svelte-sonner';
+	import { LucidePlusCircle, MinusCircle, PlusCircleIcon } from 'lucide-svelte';
+	import AgentTools from './agent-tools.svelte';
 
 	export let selectedAgent: Agent | null = null;
 	export let formAgent: SuperFormData<
@@ -20,6 +20,7 @@
 			model: ZodString;
 		}>
 	> | null = null;
+
 	export let errors: Record<string, any> | null = null;
 	export let isCreate: boolean = false;
 
@@ -28,36 +29,37 @@
 		{ value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
 	];
 
-	const tools = [
-		{
-			name: 'python tools',
-			description: 'this tool will help you to write python code faster and easier'
-		},
-		{
-			name: 'uber',
-			description: ' this tools is used to generate location data from google maps api'
-		},
-		{
-			name: 'healthyfy',
-			description: 'healthfy is used to generate health data from public health data sources'
-		},
-		{
-			name: 'notebook',
-			description: 'this tool will help you to save money on your car loan, flight ticket, and more'
-		}
-	];
-
-	$: selectedTools = [] as { name: string; apiKey: string; description: string }[];
-
 	let toolApiKeys = {} as Record<string, string>;
+	let displayTools: Agent | null = null;
+	let open = false;
+	let searchQuery = '';
 
-	$: console.log(selectedTools, 'selectedTools');
 	$: published = isCreate ? $formAgent?.published === 'true' : selectedAgent?.published || false;
 	$: title = isCreate ? $formAgent?.title : selectedAgent?.title || '';
 	$: role = isCreate ? $formAgent?.role : selectedAgent?.role || '';
 	$: description = isCreate ? $formAgent?.description : selectedAgent?.description || '';
 	$: model = isCreate ? $formAgent?.model : selectedAgent?.model || models[0].value;
 	$: prompt = isCreate ? $formAgent?.prompt : selectedAgent?.prompt || '';
+
+	const addTool = ({ currentTool }) => {
+		displayTools = currentTool;
+	};
+
+	$: filteredTools = displayTools?.toolscolumn?.filter(
+		(tool) =>
+			tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+	);
+
+	$: checkSelected = [] as { name: string; apikey: string; description: string }[];
+
+	const removeSelected = (name: string) => {
+		checkSelected = checkSelected.filter((tool) => tool.name !== name);
+	}
+	const handleClose = () => {
+		open = false;
+		console.log(open, 'open');
+	};
 </script>
 
 <div class="p-1">
@@ -96,64 +98,81 @@
 
 	<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
 		<Label for="tools">Tools</Label>
-		<div class="grid grid-cols-3 gap-4">
-			{#each tools as tool}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<form class="relative cursor-pointer rounded-lg p-4 shadow-lg hover:scale-[103%]">
-					<Button
-						class="bg-ghost"
-						on:click={() => {
-							console.log(tool, toolApiKeys, 'tool api keys');
-							if (toolApiKeys[tool.name] === undefined || null || '') {
-								toast.error('API key is required');
-								return;
-							}
-							selectedTools.push({
-								name: tool.name,
-								apiKey: toolApiKeys[tool.name],
-								description: tool.description
-							});
-							toast.success('Added tool ' + tool.name);
-							console.log(selectedTools, 'selected tools');
-						}}
-					>
-						<PlusCircle type="submit" class=" transition-colors" /></Button
-					>
-					<div id="tool">
-						<h3 class="font-extrabold">{tool.name}</h3>
-						<input type="hidden" name="tool" id="toolsJsonData" value={tool} />
-						<p class="text-muted-foreground text-xs">{tool.description}</p>
-						<input type="hidden" name="tool" value={tool.name} />
+		<div class="">
+			{#if checkSelected.length > 0}
+				<div class="grid grid-cols-3 gap-6 p-6">
+					{#each checkSelected as tool}
+						<form
+							class="shadow-primary relative cursor-pointer rounded-lg p-4 shadow-sm hover:scale-[103%]"
+						>
+							<Button
+								class="bg-card-background hover:bg-card-background"
+								on:click={removeSelected(tool.name)}
+							>
+								<MinusCircle class="text-destructive hover:scale-90" />
+							</Button>
 
-						<div class="mt-3">
-							<Input
-								type="text"
-								placeholder="API Key"
-								class="focus-visible:ring-1 focus-visible:ring-offset-0"
-								bind:value={toolApiKeys[tool.name]}
-							/>
-						</div>
-						{#if toolApiKeys === undefined || null || ''}
-							<p class="text-red-500">API key is required</p>
-						{/if}
-					</div>
+							<div
+								class="relative flex max-w-sm flex-col rounded-lg p-4 transition-shadow duration-300"
+							>
+								<div class="text-lg font-semibold">{tool.name}</div>
+								<p class="mt-2 text-sm text-gray-500">{tool.description}</p>
+							</div>
+						</form>
+					{/each}
+				</div>
+			{/if}
+
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+
+			<div
+				class="grid grid-cols-1 gap-4 p-4"
+				on:click={() => (
+					(open = true),
+					console.log(selectedAgent, $formAgent, addTool({ currentTool: selectedAgent }))
+				)}
+			>
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<form
+					class=" relative flex cursor-pointer
+				items-center justify-center rounded-lg p-4 shadow-sm hover:scale-[103%]"
+				>
+					<PlusCircleIcon
+						size="52"
+						class="hover:text-primary transition-hover duration-500 hover:scale-95"
+					/>
 				</form>
-			{/each}
+				<!-- <form
+					class=" relative cursor-pointer rounded-lg
+				p-4 shadow-sm hover:scale-[103%]"
+				>
+					<div class="bg-secondary-100 h-10 w-10 rounded text-center text-black"></div>
+					<div id="tool">
+						<div class="bg-secondary-100 mt-1 h-4 rounded"></div>
+						<div class="bg-secondary-100 mt-1 h-4 w-2/3 rounded"></div>
+						<div class="mt-3">
+							<div class="bg-secondary-100 h-10 rounded"></div>
+						</div>
+					</div>
+				</form> -->
+			</div>
 		</div>
 	</div>
 
 	<div class="mt-2 space-y-4">
-		<Label for="model">Prompt</Label>
-		<Input
-			id="prompt"
-			name="prompt"
-			value={prompt}
-			on:input={(e) =>
-				isCreate ? ($formAgent.prompt = e.target.value) : (selectedAgent.prompt = e.target.value)}
-			placeholder="Add prompt"
-			class="focus-visible:ring-1 focus-visible:ring-offset-0"
-		/>
+		<div class="flex items-center">
+			<span class="text-accent pr-3 font-bold">prompt: </span>
+			<Input
+				id="prompt"
+				name="prompt"
+				value={prompt}
+				on:input={(e) =>
+					isCreate ? ($formAgent.prompt = e.target.value) : (selectedAgent.prompt = e.target.value)}
+				placeholder="Add prompt"
+				class="border-none focus-visible:ring-1 focus-visible:ring-offset-0"
+			/>
+		</div>
 	</div>
 
 	<div class="mt-2 space-y-2">
@@ -217,3 +236,65 @@
 		</Select.Root>
 	</div>
 </div>
+
+<!-- <Dialog.Root {open} onOpenChange={(o) => (open = false)}>
+	<Dialog.Content class="mt-8 w-full sm:max-w-full lg:max-w-4xl">
+		<Dialog.Header>Search for tools</Dialog.Header>
+		<Input
+			placeholder="Search tools..."
+			type="text"
+			class="focus-visible:ring-1 focus-visible:ring-offset-0"
+		/>
+
+		<div class="grid grid-cols-3 gap-4">
+			{#each filteredTools as tool}
+				<form class="relative cursor-pointer rounded-lg p-4 shadow-lg hover:scale-[103%]">
+					<Button
+						class="bg-ghost"
+						on:click={() => {
+							console.log(tool, toolApiKeys, 'tool api keys');
+							if (toolApiKeys[tool.name] === undefined || null || '') {
+								toast.error('API key is required');
+								return;
+							}
+
+							selectedNewTool(tool, toolApiKeys[tool.name]);
+							toast.success('Added tool ' + tool.name);
+						}}
+					>
+						<PlusCircle type="submit" class=" transition-colors" />
+					</Button>
+					<div id="tool">
+						<h3 class="font-extrabold">{tool?.name}</h3>
+						<input type="hidden" name="tool" id="toolsJsonData" value={tool} />
+						<p class="text-muted-foreground text-xs">{tool.description}</p>
+						<input type="hidden" name="tool" value={tool.name} />
+
+						<div class="mt-3">
+							<Input
+								type="text"
+								placeholder="API Key"
+								class="focus-visible:ring-1 focus-visible:ring-offset-0"
+								bind:value={toolApiKeys[tool.name]}
+							/>
+						</div>
+						{#if toolApiKeys === undefined || null || ''}
+							<p class="text-red-500">API key is required</p>
+						{/if}
+					</div>
+				</form>
+			{/each}
+		</div>
+	</Dialog.Content>
+</Dialog.Root> -->
+
+<AgentTools
+	{open}
+	on:close={handleClose}
+	{toolApiKeys}
+	{filteredTools}
+	{checkSelected}
+	on:updateCheckSelected={(event) => {
+		checkSelected = [...checkSelected, event.detail];
+	}}
+/>

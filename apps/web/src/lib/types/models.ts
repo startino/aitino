@@ -45,6 +45,7 @@ export type Agent = {
 	system_message: string;
 	profile_id: string;
 	tools: string[];
+	toolscolumn: string[];
 	avatar: string;
 	version: string
 };
