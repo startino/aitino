@@ -41,7 +41,7 @@
 <Card.Root
 	class="{isTarget ? 'bg-card border-2 border-dashed ' : ''} {isReceiver
 		? 'bg-primary-950'
-		: ''} aspect-1transition"
+		: ''} aspect-1transition w-[300px]"
 >
 	<button
 		on:click={() => {
@@ -74,7 +74,7 @@
 		{/if}
 		<Badge variant="outline" class="self-center">{data.model}</Badge>
 	</Card.Header>
-	<Card.Content class="grid w-[300px] gap-2 text-center">
+	<Card.Content class="grid gap-2 text-center">
 		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
 		<Button href="/app/editor/agent">Edit Agent</Button>
 		<Handle type="target" id="top-{id}" position={Position.Top} />
