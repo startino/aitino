@@ -56,25 +56,26 @@
 		class="absolute right-2 top-2"><X /></button
 	>
 
-	<Card.Header class="flex gap-2">
+	<Card.Header class="flex gap-2 text-center">
 		<Card.Title class="mt-4">
-			<p class="text-center">
+			<p>
 				{data.title}
 				{#if isReceiver}
 					(Receiver)
 				{/if}
 			</p>
 		</Card.Title>
+		<Card.Description>{data.role}</Card.Description>
 		{#if data.avatar}
 			<Avatar class="mx-auto h-24 w-24">
 				<Skeleton class="h-24 w-24 rounded-full" />
 				<img src={data.avatar} alt="" />
 			</Avatar>
 		{/if}
-		<Badge variant="secondary" class="self-center">{data.model}</Badge>
+		<Badge variant="outline" class="self-center">{data.model}</Badge>
 	</Card.Header>
-	<Card.Content class="grid w-[300px] gap-2">
-		<p>{data.role}</p>
+	<Card.Content class="grid w-[300px] gap-2 text-center">
+		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
 		<Button href="/app/editor/agent">Edit Agent</Button>
 		<Handle type="target" id="top-{id}" position={Position.Top} />
 		<Handle type="source" id="bottom-{id}" position={Position.Bottom} />
