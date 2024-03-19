@@ -215,13 +215,7 @@
 				type: 'agent',
 				position,
 				selectable: false,
-				data: {
-					name: writable('Name'),
-					model: writable(data.model),
-					prompt: writable(''),
-					title: writable(data.title),
-					avatar: data.avatar
-				}
+				data
 			}
 		]);
 

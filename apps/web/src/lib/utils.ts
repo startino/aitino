@@ -111,21 +111,7 @@ export function getLocalCrew() {
 
 // creates an array of nodes without the stores
 export function getCleanNodes(nodes: Node[]): Node[] {
-	const agents = nodes
-		.filter((n) => n.type === 'agent')
-		.map((n) => {
-			const { prompt, name, title, model } = n.data;
-			return {
-				...n,
-				data: {
-					...n.data,
-					prompt: get(prompt),
-					name: get(name),
-					title: get(title),
-					model: get(model)
-				}
-			};
-		});
+	const agents = nodes.filter((n) => n.type === 'agent');
 
 	const prompts = nodes
 		.filter((n) => n.type === 'prompt')
@@ -152,18 +138,7 @@ export function getWritableNodes(nodes: Node[]): Node[] {
 				...n,
 				data: { title: writable(n.data.title), content: writable(n.data.content) }
 			})),
-		...nodes
-			.filter((n) => n.type === 'agent')
-			.map((n) => ({
-				...n,
-				data: {
-					...n.data,
-					prompt: writable(n.data.prompt),
-					name: writable(n.data.name),
-					title: writable(n.data.title),
-					model: writable(n.data.model)
-				}
-			}))
+		...nodes.filter((n) => n.type === 'agent')
 	];
 }
 
