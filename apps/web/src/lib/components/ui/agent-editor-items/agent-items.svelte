@@ -42,20 +42,23 @@
 		},
 		{
 			name: 'notebook',
-			description: "this tool will help you to save money on your car loan, flight ticket, and more"
+			description: 'this tool will help you to save money on your car loan, flight ticket, and more'
 		}
 	];
+
+	$: selectedTools = [];
 
 	$: published = isCreate ? $formAgent?.published === 'true' : selectedAgent?.published || false;
 	$: title = isCreate ? $formAgent?.title : selectedAgent?.title || '';
 	$: role = isCreate ? $formAgent?.role : selectedAgent?.role || '';
 	$: description = isCreate ? $formAgent?.description : selectedAgent?.description || '';
 	$: model = isCreate ? $formAgent?.model : selectedAgent?.model || models[0].value;
+	$: prompt = isCreate ? $formAgent?.prompt : selectedAgent?.prompt || '';
 </script>
 
-<div class="p-6">
-	<div class="flex w-full items-center gap-4">
-		<div class="mb-4 w-full space-y-4">
+<div class="p-1">
+	<div class="flex w-full items-center gap-2">
+		<div class="w-full space-y-4">
 			<Label for="title">Title</Label>
 			<Input
 				id="title"
@@ -68,7 +71,7 @@
 			/>
 		</div>
 
-		<div class="mt-4 flex items-center space-x-2">
+		<div class="flex items-center space-x-2 mt-8">
 			<Switch
 				id="airplane-mode"
 				checked={published}
@@ -87,17 +90,18 @@
 		<p class="text-red-500">Title is required</p>
 	{/if}
 
-	<div class="mb-4 h-56 space-y-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+	<div class="h-56 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
 		<Label for="tools">Tools</Label>
 		<div class="grid grid-cols-3 gap-4">
 			{#each tools as tool}
-				<div class="relative rounded-lg p-4 shadow-lg">
-					<PlusCircle
-						class="text-secondary hover:text-secondary-50 h-6 w-6 cursor-pointer transition-colors"
-					/>
+				<form class="relative rounded-lg p-4 shadow-lg">
+					<PlusCircle type="submit" class="cursor-pointer transition-colors hover:text-primary" />
 					<div id="tool">
 						<h3 class="font-extrabold">{tool.name}</h3>
+						<input type="hidden" name="tool" id="toolsJsonData" value={tool} />
 						<p class="text-muted-foreground text-xs">{tool.description}</p>
+						<input type="hidden" name="tool" value={tool.name} />
+
 						<div class="mt-3">
 							<Input
 								type="text"
@@ -106,12 +110,25 @@
 							/>
 						</div>
 					</div>
-				</div>
+				</form>
 			{/each}
 		</div>
 	</div>
 
-	<div class="mb-4 space-y-4">
+	<div class="space-y-4">
+		<Label for="model">Prompt</Label>
+		<Input
+			id="prompt"
+			name="prompt"
+			value={prompt}
+			on:input={(e) =>
+				isCreate ? ($formAgent.prompt = e.target.value) : (selectedAgent.prompt = e.target.value)}
+			placeholder="Add prompt"
+			class="focus-visible:ring-1 focus-visible:ring-offset-0"
+		/>
+	</div>
+
+	<div class="space-y-2">
 		<Label for="role">Role</Label>
 		<Input
 			id="role"
@@ -129,7 +146,7 @@
 		<p class="text-red-500">Role is required</p>
 	{/if}
 
-	<div class="mb-4 space-y-4">
+	<div class="space-y-2">
 		<Label for="description">Description</Label>
 		<Textarea
 			id="description"

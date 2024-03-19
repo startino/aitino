@@ -36,9 +36,9 @@
 		</Dialog.Trigger>
 	</div>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
-		<Dialog.Header>
+		<!-- <Dialog.Header>
 			<Dialog.Title>Create Agent</Dialog.Title>
-		</Dialog.Header>
+		</Dialog.Header> -->
 		<form action="?/creatAgents" method="POST" use:enhance>
 			<AgentEditorItems {errors} {formAgent} isCreate={true} />
 			<Button

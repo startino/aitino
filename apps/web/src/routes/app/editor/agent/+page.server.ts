@@ -42,6 +42,7 @@ export const actions: Actions = {
 						model: form.data.model === 'undefined' ? 'gpt-3.5-turbo' : form.data.model,
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
+						prompt: form.data.prompt,
 						tools: [''],
 						avatar: randomAvatar.avatarUrl,
 						version: '1.0',
@@ -83,6 +84,7 @@ export const actions: Actions = {
 					title: form.data.title,
 					role: form.data.role,
 					description: form.data.description,
+					prompt: form.data.prompt,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
 				})

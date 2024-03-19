@@ -26,14 +26,13 @@
 	};
 	$: isFormIncomplete =
 		!selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
-
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
-		<Dialog.Header>
+		<!-- <Dialog.Header>
 			<Dialog.Title>Edit Agent</Dialog.Title>
-		</Dialog.Header>
+		</Dialog.Header> -->
 		<form
 			action="?/editAgent&id=${selectedAgent.id}"
 			method="POST"
@@ -56,6 +55,7 @@
 					setTimeout(() => {
 						console.log(form);
 						if (form?.message) {
+							state = 'idle';
 							toast.promise(invalidateAll(), {
 								loading: 'Editing...',
 								success: `${form?.message}`,
