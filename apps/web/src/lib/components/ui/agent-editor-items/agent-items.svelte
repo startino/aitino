@@ -8,6 +8,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ZodObject, ZodString } from 'zod';
 	import { PlusCircle } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
 
 	export let selectedAgent: Agent | null = null;
 	export let formAgent: SuperFormData<
@@ -30,11 +31,11 @@
 	const tools = [
 		{
 			name: 'python tools',
-			description: 'this tool will help you to write python code'
+			description: 'this tool will help you to write python code faster and easier'
 		},
 		{
-			name: 'environmentalist',
-			description: ' this tools is used to generate environmental data from google maps api'
+			name: 'uber',
+			description: ' this tools is used to generate location data from google maps api'
 		},
 		{
 			name: 'healthyfy',
@@ -46,8 +47,11 @@
 		}
 	];
 
-	$: selectedTools = [];
+	$: selectedTools = [] as { name: string; apiKey: string; description: string }[];
 
+	let toolApiKeys = {} as Record<string, string>;
+
+	$: console.log(selectedTools, 'selectedTools');
 	$: published = isCreate ? $formAgent?.published === 'true' : selectedAgent?.published || false;
 	$: title = isCreate ? $formAgent?.title : selectedAgent?.title || '';
 	$: role = isCreate ? $formAgent?.role : selectedAgent?.role || '';
@@ -71,7 +75,7 @@
 			/>
 		</div>
 
-		<div class="flex items-center space-x-2 mt-8">
+		<div class="mt-8 flex items-center space-x-2">
 			<Switch
 				id="airplane-mode"
 				checked={published}
@@ -90,12 +94,32 @@
 		<p class="text-red-500">Title is required</p>
 	{/if}
 
-	<div class="h-56 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
+	<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
 		<Label for="tools">Tools</Label>
 		<div class="grid grid-cols-3 gap-4">
 			{#each tools as tool}
-				<form class="relative rounded-lg p-4 shadow-lg">
-					<PlusCircle type="submit" class="cursor-pointer transition-colors hover:text-primary" />
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<form class="relative cursor-pointer rounded-lg p-4 shadow-lg hover:scale-[103%]">
+					<Button
+						class="bg-ghost"
+						on:click={() => {
+							console.log(tool, toolApiKeys, 'tool api keys');
+							if (toolApiKeys[tool.name] === undefined || null || '') {
+								toast.error('API key is required');
+								return;
+							}
+							selectedTools.push({
+								name: tool.name,
+								apiKey: toolApiKeys[tool.name],
+								description: tool.description
+							});
+							toast.success('Added tool ' + tool.name);
+							console.log(selectedTools, 'selected tools');
+						}}
+					>
+						<PlusCircle type="submit" class=" transition-colors" /></Button
+					>
 					<div id="tool">
 						<h3 class="font-extrabold">{tool.name}</h3>
 						<input type="hidden" name="tool" id="toolsJsonData" value={tool} />
@@ -107,15 +131,19 @@
 								type="text"
 								placeholder="API Key"
 								class="focus-visible:ring-1 focus-visible:ring-offset-0"
+								bind:value={toolApiKeys[tool.name]}
 							/>
 						</div>
+						{#if toolApiKeys === undefined || null || ''}
+							<p class="text-red-500">API key is required</p>
+						{/if}
 					</div>
 				</form>
 			{/each}
 		</div>
 	</div>
 
-	<div class="space-y-4">
+	<div class="mt-2 space-y-4">
 		<Label for="model">Prompt</Label>
 		<Input
 			id="prompt"
@@ -128,7 +156,7 @@
 		/>
 	</div>
 
-	<div class="space-y-2">
+	<div class="mt-2 space-y-2">
 		<Label for="role">Role</Label>
 		<Input
 			id="role"
@@ -146,7 +174,7 @@
 		<p class="text-red-500">Role is required</p>
 	{/if}
 
-	<div class="space-y-2">
+	<div class="mt-2 space-y-2">
 		<Label for="description">Description</Label>
 		<Textarea
 			id="description"
@@ -166,7 +194,7 @@
 		<p class="text-red-500">Description is required</p>
 	{/if}
 
-	<div class="flex w-full flex-col">
+	<div class="mt-2 flex w-full flex-col">
 		<Label for="models" class="text-on-background mb-2 font-semibold">Models</Label>
 		<Select.Root portal={null} name="model" selected={models.find((m) => m.value === model)}>
 			<Select.Trigger class="w-full">

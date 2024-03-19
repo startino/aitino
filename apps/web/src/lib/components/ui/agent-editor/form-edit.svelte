@@ -49,7 +49,7 @@
 				type="submit"
 				disabled={isFormIncomplete}
 				variant="outline"
-				class="flex"
+				class="flex mt-2"
 				on:click={() => {
 					state = 'loading';
 					setTimeout(() => {
