@@ -294,6 +294,7 @@
 	{toolApiKeys}
 	{filteredTools}
 	{checkSelected}
+	{displayTools}
 	on:updateCheckSelected={(event) => {
 		checkSelected = [...checkSelected, event.detail];
 	}}

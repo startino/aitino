@@ -5,6 +5,7 @@
 	import { PlusCircle, MinusCircle } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher } from 'svelte';
+	import type { Agent } from '$lib/types/models';
 
 	const dispatch = createEventDispatcher();
 
@@ -12,19 +13,25 @@
 	export let filteredTools;
 	export let toolApiKeys;
 	export let checkSelected;
+	export let displayTools: Agent | null = null;
+
+	let searchQuery = '';
 
 	function handleChange() {
 		dispatch('close');
 		open = !open;
 		console.log(open, 'open 0');
-
 	}
 
 	console.log(open, 'open 1');
 
+	$: filteredTools = displayTools?.toolscolumn?.filter(
+		(tool) =>
+			tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+	);
 
-
-    $: selectedNewTool = (tool: { name: string; description: string }, apiKey: string) => {
+	$: selectedNewTool = (tool: { name: string; description: string }, apiKey: string) => {
 		let newTool = {
 			name: tool.name,
 			apikey: toolApiKeys[tool.name],
@@ -42,6 +49,7 @@
 		<Input
 			placeholder="Search tools..."
 			type="text"
+			bind:value={searchQuery}
 			class="focus-visible:ring-1 focus-visible:ring-offset-0"
 		/>
 
