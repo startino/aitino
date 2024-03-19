@@ -114,14 +114,14 @@ export function getCleanNodes(nodes: Node[]): Node[] {
 	const agents = nodes
 		.filter((n) => n.type === 'agent')
 		.map((n) => {
-			const { prompt, name, job_title, model } = n.data;
+			const { prompt, name, title, model } = n.data;
 			return {
 				...n,
 				data: {
 					...n.data,
 					prompt: get(prompt),
 					name: get(name),
-					job_title: get(job_title),
+					title: get(title),
 					model: get(model)
 				}
 			};
@@ -160,7 +160,7 @@ export function getWritableNodes(nodes: Node[]): Node[] {
 					...n.data,
 					prompt: writable(n.data.prompt),
 					name: writable(n.data.name),
-					job_title: writable(n.data.job_title),
+					title: writable(n.data.title),
 					model: writable(n.data.model)
 				}
 			}))

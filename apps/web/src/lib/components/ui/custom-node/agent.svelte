@@ -21,12 +21,14 @@
 	export let data: {
 		avatar: string;
 		prompt: Writable<string>;
-		job_title: Writable<string>;
+		title: Writable<string>;
 		name: Writable<string>;
 		model: Writable<{ label: string; value: string }>;
 	};
 
-	const { name, model, prompt, job_title, avatar } = data;
+	const { name, model, prompt, title, avatar } = data;
+
+	console.log($prompt);
 
 	const models = [
 		{
@@ -86,7 +88,7 @@
 		{:else}{/if}
 	</Card.Header>
 	<Card.Content class="grid w-[300px] gap-2">
-		<Input placeholder="Job title..." bind:value={$job_title} />
+		<Input placeholder="Job title..." bind:value={$title} />
 		<Select.Root bind:selected={$model}>
 			<Select.Trigger>
 				<Select.Value placeholder="Select a model" />
