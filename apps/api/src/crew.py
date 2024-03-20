@@ -12,7 +12,7 @@ from .interfaces import db
 from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
 from .tooling.langchain_tooling import (
     generate_llm_config,
-    generate_tool_from_string,
+    generate_tool_from_uuid,
     get_tool_id_from_agent,
 )
 
@@ -196,10 +196,10 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-            formatted_tools = get_tool_id_from_agent(agent.tools)
-            if len(formatted_tools):
-                for tool in formatted_tools:
-                    generated_tool = generate_tool_from_string(tool)
+            tool_ids = get_tool_id_from_agent(agent.tools)
+            if len(tool_ids):
+                for tool in tool_ids:
+                    generated_tool = generate_tool_from_uuid(tool)
                     (
                         (
                             self.valid_tools.append(generated_tool),
@@ -208,13 +208,6 @@ class Crew:
                         if generated_tool is not None
                         else None
                     )
-
-                logger.warn(f"{self.valid_tools=}")
-                tool_schemas = (
-                    generate_llm_config(valid_agent_tools)
-                    if valid_agent_tools
-                    else None
-                )
 
                 logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
