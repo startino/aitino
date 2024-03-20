@@ -11,8 +11,11 @@ export const load = (async ({ locals }) => {
 		.from('agents')
 		.select('*')
 		.eq('profile_id', session?.user.id);
+
+	const agentTools = await supabase.from('tools').select('*');
 	return {
 		currentUserAgents,
+		agentTools,
 		agentForm: await superValidate(createNewAgents)
 	};
 }) satisfies PageServerLoad;
@@ -30,7 +33,7 @@ export const actions: Actions = {
 		const randomAvatar = pickRandomAvatar();
 
 		let data, error;
-		
+
 		try {
 			({ data, error } = await supabase
 				.from('agents')
@@ -42,6 +45,7 @@ export const actions: Actions = {
 						model: form.data.model === 'undefined' ? 'gpt-3.5-turbo' : form.data.model,
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
+						prompt: form.data.prompt,
 						tools: [''],
 						avatar: randomAvatar.avatarUrl,
 						version: '1.0',
@@ -83,6 +87,7 @@ export const actions: Actions = {
 					title: form.data.title,
 					role: form.data.role,
 					description: form.data.description,
+					prompt: form.data.prompt,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
 				})
@@ -101,5 +106,38 @@ export const actions: Actions = {
 		return {
 			message: 'Agent edited successfully please reload to see the changes you made'
 		};
+	},
+	addTools: async ({ request, url }) => {
+		const id = url.searchParams.get('id');
+		const toolId = url.searchParams.get('toolId');
+
+		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
+
+		let currentTools = currentAgent.data.tools;
+
+		const { data, error } = await supabase
+			.from('agents')
+			.update({
+				tools:
+					currentTools !== null
+						? [...currentTools, { id: toolId, parameter: {} }]
+						: [{ id: toolId, parameter: {} }]
+			})
+			.eq('id', id);
+	},
+	removeTools: async ({ request, url }) => {
+		const id = url.searchParams.get('id');
+		const toolId = url.searchParams.get('toolId');
+		const form = await request.formData();
+
+		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
+
+		const deleteTool = currentAgent.data.tools.filter((tool) => tool.id !== toolId);
+		const { data, error } = await supabase
+			.from('agents')
+			.update({
+				tools: deleteTool
+			})
+			.eq('id', id);
 	}
 };

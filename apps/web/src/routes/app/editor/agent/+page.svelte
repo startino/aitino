@@ -3,11 +3,11 @@
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
 
-	export let data
+	export let data;
 	export let form;
 
 	$: myAgents = (data.currentUserAgents.data as Agent[]) || [];
-
+	$: myTools = (data.agentTools.data as string[]) || [];
 	let open = false;
 
 	let selectedAgent: Agent;
@@ -22,7 +22,12 @@
 	};
 </script>
 
-<CreateAgent on:close={() => (open = false)} {form} data={data.agentForm} />
+<CreateAgent
+	on:close={() => (open = false)}
+	{form}
+	data={data.agentForm}
+	agentTools={data.agentTools.data}
+/>
 
 <div class="bg-background min-h-screen p-8">
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -56,4 +61,4 @@
 
 <!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
 
-<EditAgent {selectedAgent} on:close={handleClose} {open} {form} />
+<EditAgent {selectedAgent} on:close={handleClose} {open} {form} agentTools={myTools} />

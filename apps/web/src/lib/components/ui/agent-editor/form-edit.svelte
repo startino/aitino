@@ -15,6 +15,7 @@
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 
 	const dispatch = createEventDispatcher();
+	export let agentTools: Agent[] | null;
 
 	export let selectedAgent: Agent;
 
@@ -26,14 +27,10 @@
 	};
 	$: isFormIncomplete =
 		!selectedAgent?.title || !selectedAgent?.role || !selectedAgent?.description;
-
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
-	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
-		<Dialog.Header>
-			<Dialog.Title>Edit Agent</Dialog.Title>
-		</Dialog.Header>
+	<Dialog.Content class="w-full border-none sm:max-w-full lg:max-w-4xl">
 		<form
 			action="?/editAgent&id=${selectedAgent.id}"
 			method="POST"
@@ -45,17 +42,18 @@
 				};
 			}}
 		>
-			<AgentEditorItems {selectedAgent} isCreate={false} />
+			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools}/>
 			<Button
 				type="submit"
 				disabled={isFormIncomplete}
 				variant="outline"
-				class="flex"
+				class="mt-2 flex"
 				on:click={() => {
 					state = 'loading';
 					setTimeout(() => {
 						console.log(form);
 						if (form?.message) {
+							state = 'idle';
 							toast.promise(invalidateAll(), {
 								loading: 'Editing...',
 								success: `${form?.message}`,
