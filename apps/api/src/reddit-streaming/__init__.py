@@ -1,10 +1,5 @@
-from pyexpat import model
-from tabnanny import verbose
-from click import prompt
-from fastapi import FastAPI
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import AgentExecutor
+from langchain_core.prompts import ChatPromptTemplate
 from boolean_parser import BooleanOutputParser
 from langchain_community.callbacks import get_openai_callback
 from save_utils import save_submission
@@ -12,8 +7,8 @@ from dotenv import load_dotenv
 import os
 import praw
 from datetime import datetime
-import time 
 import diskcache as dc
+import mail
 
 load_dotenv()
 
@@ -22,17 +17,19 @@ REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
 
 
 INSTRUCTIONS_PROMPT = """
-You are a VA that will go through emails that contain social media posts (from Reddit, Linkedin, or Twitter) and determine if they are relevant for me, your boss, to look into.
-You will be provided the url to the post, the posts contents, and the requirements of what I'm looking for in a post. You will then determine if the post is relevant or not.
+You are a VA that will go through social media posts (from Reddit, Linkedin, or Twitter) and determine if they are relevant to look into.
+You will be provided the post's title and body.
+You'll also be given the requirements of what I'm looking for in a post to consider it relevant.
+You will then determine if the post is relevant or not.
 
-If the post is relevant type "RELEVANT". If the post is irrelevant, type "IRRELEVANT". 
+If the post is relevant type "RELEVANT". If the post is irrelevant, type "IRRELEVANT".
 """
 
 RELEVANT_PROMPT = """
 Context:
 I am starting a software development agency targeted towards non-tech founders trying to build their software idea.
-We are calling what we do "co-founder as a service", as we are providing the tasks that a technical co-founder would do for a startup but as a consultancy.
-We would like our VA to filter posts for us to give us the most relevant ones to look at. 
+We are calling what we do "co-founder as a service", as we are providing the tasks that a technical co-founder would do for a startup but as a company.
+We would like our VA to filter posts for us to give us the most relevant ones to look at.
 We will be using the most relevant ones as a way to find potential clients.
 
 Guidance:
@@ -51,19 +48,28 @@ def reddit_stream():
     )
     subreddit = reddit.subreddit("SaaS+SaaSy+startups+sveltejs+webdev+YoungEntrepreneurs+NoCodeSaas+nocode+EntrepreneuerRideAlong+cofounder+Entrepreneur+smallbusiness+advancedentrepreneur+business")
     for submission in subreddit.stream.submissions():
+
         # TODO: filter by kewords
+
+        # Avoid repeating posts using caching
         is_cached = cache.get(submission.id)
         if (is_cached):
             continue
-        is_relevant = calculate_relevance(submission)
-        save_submission(submission, is_relevant)
+
+        ## Use LLMs to see if submission is relevant (expensive part)
+        is_relevant, cost = calculate_relevance(submission)
+
+        if (is_relevant):
+            mail.send_relevant_submission_via_email(submission)
+        
+        # Save to csv file and cache
+        save_submission(submission, is_relevant, cost)
+        cache.set(submission.id, submission.id)
 
 
 def calculate_relevance(submission):
 
-    # TODO: create cache and check if submission has already been processed (for cost savings)
-
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0, openai_api_key=OPENAI_API_KEY)
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -74,8 +80,6 @@ def calculate_relevance(submission):
                 "user",
                "{input}"
             ),
-           
-
         ]
     )
     output_parser = BooleanOutputParser(true_val="RELEVANT", false_val="IRRELEVANT")
@@ -88,8 +92,9 @@ def calculate_relevance(submission):
         print(f"URL: {submission.url}")
         print(f"Relevant: {result}")
         print(f"Cost: {cb.total_cost} \n")
+        # TODO: Do some cost analysis and saving (for long term insights)
     
-    return result
+    return result, cb.total_cost
 
 
 def main():

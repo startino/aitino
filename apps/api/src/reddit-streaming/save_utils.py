@@ -10,12 +10,12 @@ def save_submission_notpandas(submission, is_relevant):
         writer.writerow([timestamp, url, title, body, is_relevant])
 
 
-def save_submission(submission, is_relevant):
+def save_submission(submission, is_relevant, cost):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(posts_filepath, sep=",")
 
     # Append the new row to the DataFrame
-    new_row = {'id': submission.id, 'timestamp': submission.created_utc, 'url': submission.url, 'title': submission.title, 'body': submission.selftext, 'is_relevant': is_relevant}
+    new_row = {'id': submission.id, 'timestamp': submission.created_utc, 'url': submission.url, 'title': submission.title, 'body': submission.selftext, 'is_relevant': is_relevant, 'cost' : cost}
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
 

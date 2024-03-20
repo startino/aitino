@@ -1,47 +1,48 @@
-from protonmail import ProtonMail
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv
+from datetime import datetime 
+import diskcache as dc
 
 load_dotenv()
 
-PROTON_PASSPHRASE = os.getenv("PROTON_PASSPHRASE")
+PROTON_PASSPHRASE = os.getenv("PROTON_PASSPHRASE") or ""
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") or ""
 
-username = "jorge.lewis@futi.no"
-password = PROTON_PASSPHRASE # Same as password lol
+def send_relevant_submission_via_email(submission):
 
-proton = ProtonMail()
-proton.login(username, password)
+    sender = 'jorge.lewis@futi.no'
+    reciever = ['jorge.lewis@futi.no', 'jonas.lindberg@futi.no']
+    msg = MIMEMultipart("alternative")
+    msg['Subject'] = f'💸 Reddit Lead Found {submission.id}'
+    text = f"""\
+    A Reddit post has been found! 💸🎉 
+    Title: {submission.title}
+    URL: {submission.url}
+    Datetime: {datetime.fromtimestamp(submission.created_utc)}
+    """
+    html = f"""\
+    <html>
+        <body>
+            <h1>A Reddit post has been found! 💸🎉</h1> 
+            Title: {submission.title} </br>
+            URL: <a href="{submission.url}">{submission.url}</a> </br>
+            Datetime: {datetime.fromtimestamp(submission.created_utc)} </br>
+        </body>
+    </html>
+    """
 
-private_key = 'privatekey.jorge.lewis@futi.no-6b01640941695dac59282e5eaee347ecac5dcac8.asc'
-passphrase = PROTON_PASSPHRASE
-proton.pgp_import(private_key, passphrase=passphrase)
+    # Turn these into plain/html MIMEText objects
+    text_part = MIMEText(text, 'plain')
+    html_part = MIMEText(html, 'html')
 
-# Send message
-recipients = ["jorge.lewis@futi.no", "jonas.lindberg@futi.no", "joshua.heath@futi.no"]  # You can’t send to @proton.me/@protonmail.com yet
-subject = "Testing push-notifications for relevant SM posts!"
-body = "<html><body>Testing push-notifications for relevant social media posts!</body></html>"  # html or just text
+    # Add HTML/plain-text parts to MIMEMultipart message
+    msg.attach(text_part)
+    msg.attach(html_part)
 
-new_message = proton.create_message(
-    recipients=recipients,
-    subject=subject,
-    body=body
-)
-
-sent_message = proton.send_message(new_message)
-
-# Save session, you do not have to re-enter your login, password, pgp key, passphrase
-# WARNING: the file contains sensitive data, do not share it with anyone,
-# otherwise someone will gain access to your mail.
-proton.save_session('session.pickle')
-
-# Load session
-proton = ProtonMail()
-proton.load_session('session.pickle', auto_save=True)
-# Autosave is needed to save tokens if they are updated
-# (the access token is only valid for 24 hours and will be updated automatically)
-
-# Getting a list of all sessions in which you are authorized
-proton.get_all_sessions()
-
-# Revoke all sessions except the current one
-proton.revoke_all_sessions()
+    # Setup server and send email
+    with smtplib.SMTP('127.0.0.1', 1025) as server:
+        server.login(sender, SMTP_PASSWORD)
+        server.sendmail(sender,reciever,msg.as_string())
