@@ -118,3 +118,6 @@ def post_agents(agents: list[Agent]) -> None:
 def post_crew(message: Message, composition: CrewModel) -> None:
     post_agents(CrewModel.agents)
     # TODO: (Leon) Implement posting the rest of the crew
+
+
+# def get_tools()

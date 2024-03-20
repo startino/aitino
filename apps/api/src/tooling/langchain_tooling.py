@@ -1,12 +1,14 @@
 # import autogen
 import logging
 from enum import StrEnum
+from typing import Any
 
 from langchain.tools.file_management.read import ReadFileTool
 from langchain_community.tools.file_management import MoveFileTool
 from langchain_core.tools import BaseTool
 
 logger = logging.getLogger("root")
+
 
 
 class ToolOptions(StrEnum):
@@ -42,6 +44,12 @@ def generate_llm_config(tools: list[BaseTool]) -> list[dict]:
 
     return schemas
 
+def get_tool_id_from_agent(tools: list[dict[str, Any]]) -> list[str]:
+    str_tools = []
+    for tool in tools:
+        str_tools.append(tool["id"])
+    return str_tools
+
 
 def generate_tool_from_string(tool: str) -> BaseTool | None:
     tool = ToolOptions.from_string(tool)
@@ -56,6 +64,8 @@ def generate_tool_from_string(tool: str) -> BaseTool | None:
             return None
 
 
+
+
 if __name__ == "__main__":
 
     tool = generate_tool_from_string("move-file-tool")
@@ -63,3 +73,5 @@ if __name__ == "__main__":
         print("fail")
     else:
         print("cool", tool.name)
+
+#get_tool_id_from_agent({})

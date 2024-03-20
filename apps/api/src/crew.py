@@ -12,8 +12,8 @@ from .models import CodeExecutionConfig, CrewModel, Message, Session
 from .tooling.langchain_tooling import (
     generate_llm_config,
     generate_tool_from_string,
+    get_tool_id_from_agent,
 )
-from .tooling.tools import get_file_path_of_example
 
 logger = logging.getLogger("root")
 
@@ -188,8 +188,9 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-            if len(agent.tools):
-                for tool in agent.tools:
+            formatted_tools = get_tool_id_from_agent(agent.tools)
+            if len(formatted_tools):
+                for tool in formatted_tools:
                     generated_tool = generate_tool_from_string(tool)
                     (
                         (
@@ -199,6 +200,13 @@ class Crew:
                         if generated_tool is not None
                         else None
                     )
+
+                logger.warn(f"{self.valid_tools=}")
+                tool_schemas = (
+                    generate_llm_config(valid_agent_tools)
+                    if valid_agent_tools
+                    else None
+                )
 
                 logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
