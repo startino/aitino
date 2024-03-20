@@ -30,12 +30,19 @@ RELEVANT_PROMPT = """
 Context:
 I am starting a software development agency targeted towards non-tech founders trying to build their software idea.
 We are calling what we do "co-founder as a service", as we are providing the tasks that a technical co-founder would do for a startup but as a company.
+We provide services such as software development, SaaS development, AI development, web development, and other sorts of software development.
+We are interested as acting as partners but also as service providers.
 We would like our VA to filter posts for us to give us the most relevant ones to look at.
 We will be using the relevant ones as a way to find potential clients.
+Our ideal clients are people trying to start a software business.
+We're not interested in e-commerce businesses.
 
 Guidance:
 - Relevant posts might include people looking for a technical co-founder or a technical person to join their startup.
 - Relevant posts might include looking for a software development agency or a technical consultancy.
+- Irrelevant posts might include people already with a product built/coded out.
+- Most posts relating to physical/in-person businesses are irrelevant
+
 """
 
 # Relevant subreddits to Startino
@@ -57,14 +64,14 @@ def start_reddit_stream():
             continue
 
         # Use LLMs to see if submission is relevant (expensive part)
-        is_relevant, cost = evaluate_relevance(submission)
+        is_relevant, cost, reason = evaluate_relevance(submission)
 
         # Send email if its relevant
         if (is_relevant):
             mail.send_relevant_submission_via_email(submission)
         
         # Save to csv file and cache
-        save_submission(submission, is_relevant, cost)
+        save_submission(submission, is_relevant, cost, reason)
         cache.set(submission.id, submission.id)
 
 
@@ -81,7 +88,7 @@ def create_chain(model: str):
     - A processing chain configured to use the specified language model and to parse its output.
     """
     
-    llm = ChatOpenAI(model=model, temperature=0, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model=model, temperature=1, openai_api_key=OPENAI_API_KEY)
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RelevanceResult)
@@ -111,14 +118,6 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     with get_openai_callback() as cb:
         result = chain.invoke({"query": f"{RELEVANT_PROMPT} \n\n POST CONTENT:\n ```{submission.title}\n\n {submission.selftext}```"})
 
-        print(f"""\
-            Time: {datetime.fromtimestamp(submission.created_utc)}
-            URL: {submission.url}
-            print(f"Relevant: {result}
-            print(f"Cost: {cb.total_cost}
-            """
-        )
-
         # TODO: Do some cost analysis and saving (for long term insights)
 
     return result, cb.total_cost
@@ -141,8 +140,20 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
     """
 
     cost = 0
-    total_certainty = 0
     votes: List[bool] = []
+    
+    total_llm_certainty = 0
+    total_vote_certainty = 0
+
+    mean_llm_certainty = 0
+    mean_vote_certainty= 0
+
+    # Setup the weights
+    vote_weight = 0
+    llm_weight = 1 - vote_weight
+
+    # If more than one iteration, then uses last index
+    reasons: List[str] = []
     
 
     # Calculate mean relevance scores using 3.5-turbo
@@ -150,19 +161,26 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
         chain = create_chain(model)
         result, run_cost = invoke_chain(chain, submission)
 
-        votes.append(result.is_relevant)
+        votes.append(result['is_relevant'])
         cost += run_cost
-        total_certainty += result.certainty
+
+        total_llm_certainty += result['certainty']
+        print(f"Reason: {result['reason']}")
+        reasons.append(result['reason'])
+
+    mean_llm_certainty = total_llm_certainty / iterations
+    mean_vote_certainty = calculate_certainty(votes)
+
+    print(votes)
     
+    # Calculate final certainty
+    certainty = mean_llm_certainty * llm_weight + mean_vote_certainty * vote_weight
 
-    # Decide if GPT-4-turbo needs to help calculate
-    mean_certainty = total_certainty/iterations
-    majority_vote: bool = sum(votes) > len(votes) / 2
-
-    return majority_vote, mean_certainty, cost
+    # TODO: Make model of this
+    return majority_vote(votes), certainty, cost, reasons
 
 
-def evaluate_relevance(submission: Submission) -> tuple[bool, float]:
+def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
     """
     Determines the relevance of a submission using GPT-3.5-turbo, 
     optionally escalating to GPT-4-turbo for higher accuracy.
@@ -176,20 +194,53 @@ def evaluate_relevance(submission: Submission) -> tuple[bool, float]:
     """
 
     total_cost = 0
-    is_relevant, certainty, gpt3_cost = calculate_relevance('gpt-3.5-turbo', 3, submission)
+    is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
 
-    total_cost += gpt3_cost
+    # TODO: create helper function for logging properly
+    print(f"URL: {submission.url}")
+    print(f"GPT-4 Is Relevant: {is_relevant}")
+    print(f"GPT-4 Certainty: {certainty}")
 
-    if (certainty < 0.75 and is_relevant):
+    total_cost += gpt4_cost
+
+    # I've come to conclude that GPT-3.5 sucks.
+    # So I am temporarily removing the extra steps
+    # TODO: Give this another go but with better prompting
+    # and use "relevance_score" as a float instead "is_relevant" as a bool
+    # Since it seems like if it is picking between yes/no,
+    # its inputted certainty will always be high
+    if (False):
         is_relevant, certainty, gpt4_cost = calculate_relevance('gpt-4-turbo-preview', 3, submission)
+
+        print(f"GPT-4 Relevant: {is_relevant}")
+        print(f"GPT-4 Certainty: {certainty}")
+        print(f"GPT-4 Cost: {gpt4_cost} ")
         
         total_cost += gpt4_cost
+
+        print(f"Total Cost: {total_cost} \n")
 
         # Return the results from GPT-4-turbo
         return is_relevant, total_cost
     else:
+        print(f"Total Cost: {total_cost}")
+        print("\n")
         # Return the results from GPT-3.5-turbo since its accurate and valid
-        return is_relevant, total_cost
+        return is_relevant, total_cost, reasons[-1]
+
+
+def majority_vote(bool_list: List[bool]) -> bool:
+    return sum(bool_list) > len(bool_list) / 2
+
+
+def calculate_certainty(bool_list: List[bool]) -> float:
+    length = len(bool_list)
+    total = sum(bool_list)
+    
+    true_certainty = total / length
+    false_certainty = (length-total) / length
+
+    return max(true_certainty, false_certainty)
 
 
 if __name__ == "__main__":

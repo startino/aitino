@@ -1,698 +1,6 @@
-id, timestamp, url, title, body, is_relevant, cost,timestamp,url,title,body,is_relevant,cost
-0,111111.0, https://aiti.no, Aitino, Aitino is a company, True,0.0069,,,,,,
-1biy6oy,,,,,,,1710889219.0,https://www.reddit.com/r/startups/comments/1biy6oy/started_a_podcast_about_ventures_that_didnt_quite/,Started a Podcast about Ventures that didn't quite work out (anyone want to come on the show??),"A couple of buddies and I created a Podcast that covers business failure. Our ultimate guest is someone who is a good story teller and is open to telling the story of their business that didn't quite make it.
-
-We focus on keeping a light-hearted attitude and like to have fun on the show. But ultimately we focus on the lessons learned from the venture and (if appropriate) how they've applied those lessons into there more recent/successful startup. ",False,0.00376
-1biy7lf,,,,,,,1710889274.0,https://www.reddit.com/r/Entrepreneur/comments/1biy7lf/what_profitable_business_model_truly_surprised_you/,What profitable business model truly surprised you?,.,False,0.00272
-1biy9lk,,,,,,,1710889408.0,https://www.reddit.com/r/webdev/comments/1biy9lk/session_variables_login_data/,Session variables & login data,"I have a website that allows users to create an account. Of course, to do this, a password, email, and some username must be collected. The password is salted and hashed and everything, and the email is stored for verification (and in case I need to contact them in the event something they post on their profile is inappropriate or irrelevant to the site's theme... which is pizza lol). And lastly the username is just used for logging in and to find friends.
-
-When a user logs in, I use session variables (a more secure subset of regular cookies as far as I understand) to keep track of their logged_in-ness and their username. Is this type of necessary cookie something that I must inform the user of according to GDPR or any other web laws? I mention their purpose in the sites privacy policy, but I don't currently use any type of snackbar or similar to notify the user when initially visiting the site. And I don't have any other cookies present on the site. Am I okay as it is with the privacy policy page, or do I need to do more?",False,0.00492
-1biyaei,,,,,,,1710889467.0,https://www.reddit.com/r/SaaS/comments/1biyaei/recruitment_application_early_stage_market/,Recruitment application - early stage market engagement,"Hi everyone 👋
-
-I’ve been sitting on an idea for a while and I’ve decided to try and find out if people would be interested in an application that’s purpose is to streamline recruitment for businesses and job seekers.
-
-I’m posting this here for feedback on my landing page and survey, any feedback you can provide would be immensely appreciated. 
-
-Thank you!
-
-https://smart-hire-network.paperform.co",False,0.00354
-1biygsj,,,,,,,1710889914.0,https://www.reddit.com/r/smallbusiness/comments/1biygsj/best_free_pos_services/,Best free POS services?,"My church is having a festival for a fundraiser. This is the first year we’re looking to use a POS system for payments instead of cash only to help expand our sales. I was looking into Square but they have fees for each transaction we take, and we’ll be taking over 100 each night in different areas of the event. Does anyone have any suggestions on POS services WITHOUT any fees for transactions. Thanks. ",False,0.00351
-1biyj58,,,,,,,1710890089.0,https://www.reddit.com/r/Entrepreneur/comments/1biyj58/getting_started_with_a_journalism_site/,Getting started with a Journalism site,"I've got a site that would allow beginning or small-market journalists to charge for individual articles and accept donations.  There are still some kinks on the site to iron out, but I'd like to get five creators to start publishing and hopefully earning money.
-
-I don't want to throw out a big ad, as I don't want a lot of creators to start, but I need a few to test the processes and get feedback. How would you go about reaching a few content creators?
-
-The site is https://journalocity.com/articles, if you're interested.",False,0.00384
-1biyjlq,,,,,,,1710890120.0,https://www.reddit.com/r/SaaS/comments/1biyjlq/roast_my_saas/,Roast my saas,"Hey Guys, tell me you honest opinion about my first saas. Tell me everything you like/dislike and be honest😉
-
-Heres the site: https://verifii.me
-
-",False,0.00308
-1biymf8,,,,,,,1710890321.0,https://www.reddit.com/r/SaaS/comments/1biymf8/ill_help_build_your_saas/,I’ll Help Build Your Saas,"Hey guys, looking for some more work to keep me busy and the bills paid. 
-
-Ive been a software engineer for 3+ years and was the hired dev for [Sumazon](https://www.sumazon.com).
-
-If you have an idea for a SaaS but no technical background, let’s have a chat to see if it aligns with both of our goals. 
-
-Pricing wise, if you want the features Sumazon has, I can typically build that for 5k - 7k.
-
-Feel free to DM or comment.
-
-",True,0.0038
-1biyqw6,,,,,,,1710890627.0,https://www.reddit.com/r/Entrepreneur/comments/1biyqw6/is_recycling_glass_profitable_in_the_uk/,Is recycling glass profitable? In the UK 🇬🇧 ,"Recently local authorities have stopped collecting glass bins. People are now obviously complaining because they have to get rid of the glass on their own. Which got me thinking I wonder if I can make any money.  I’ve scanned Google for a few hours but I can’t seem to find any numbers on the price of scrap glass per kg/tonne. I know a few companies that were doing this during lockdown but they have all closed down so nobody is offering this in my area
-
-Has anyone ever started a business like this? What did you do with all the glass you collected? 
-
-",False,0.00395
-1biyr9s,,,,,,,1710890656.0,https://www.reddit.com/r/smallbusiness/comments/1biyr9s/need_feedback_for_small_business/,Need feedback for small business!!!,"Hey everyone! I'm a high school student in New Zealand looking to create and sell my first car wax. PLEASE NOTE: THIS IS NOT ADVERTISEMENT  
-I'd love some feedback before I develop it and you all seem like the perfect people to ask  
-If you could take a minute out of your day to help me, I'd be greatly appreciative.  
-[https://forms.gle/dXyqZ21rm7qrUMva6](https://forms.gle/dXyqZ21rm7qrUMva6)  
-",False,0.0038
-1biysgr,,,,,,,1710890743.0,https://www.reddit.com/r/smallbusiness/comments/1biysgr/my_dad_has_a_small_shop_and_he_doesnt_get_many/,My dad has a small shop and he doesn’t get many customers. Any idea how i can help him?,"i’ll go into more detail, my dad has a typical corner shop where he sells food/drinks, sweets and smoking products but he doesn’t get many customers and he’s always worrying about it. his shop is located on a busy main road next to a takeaway. 
-
-If you need anymore information or pictures please ask. All help/ ideas are greatly appreciated 
-
-thank you 🙏",False,0.0036299999999999
-1biyuiq,,,,,,,1710890891.0,https://www.reddit.com/r/smallbusiness/comments/1biyuiq/software_suggestions_for_tracking/,Software Suggestions for Tracking Projects/Personnel/Etc...,"Hi All,
-
-I am looking for software suggestions for updating my approach to calendaring. I have a new role which has put a lot more on my plate and I'm finding my ""old system"" of calendaring (Google calendar basically) to be insufficient. I am now responsible for:
-
-(1) Personnel - one thing is tracking their availability which is constantly shifting;
-
-(2) Grants with various deadlines and sub-components
-
-(3) Coverage at various locations with different needs and different roles, for example, I may have a location that needs 2 attorneys and 3 support staff people 3 days a week, while another location needs 1 attorney and 2 support staff people 5 days a week
-
-(4) Meetings (both my own and my staff, sometimes with me, sometimes not)
-
-(5) Track to do items for individuals on my team
-
-Ideally I'm looking for a workflow that doesn't cost or require my firm to take on some kind of subscription service but I'm open minded to possibilities.",False,0.00481
-1biyw2h,,,,,,,1710891000.0,https://www.reddit.com/r/smallbusiness/comments/1biyw2h/need_help_sourcing_clothing/,Need Help Sourcing Clothing. ,"Does anybody have experience sourcing clothing? I have an idea for a company I want to start but my background is in SEO and web design so I have no idea how to find suppliers. 
-
-If anyone’s willing to give me a 10-20 minute consultation I’d be happy to do something marketing related in exchange (SEO audit, keyword research, competitor analysis, data analysis) ",False,0.00346
-1biyw92,,,,,,,1710891011.0,https://www.reddit.com/r/startups/comments/1biyw92/strike_price_changes_joining_a_startup_amid_409a/,Strike Price Changes: Joining a Startup Amid 409A Valuation Updates,"I'm in a unique position with a Series C startup nearing Series D funding and a 409A valuation update. 
-
-They've offered me flexibility on my start date, but suddenly there’s a push for me to start within 1-2 weeks to secure the initial offer. It appears they are about to close Series D funding any day now.  
-Main Concern: **Is the strike price for stock options determined at the employment start date, or upon signing the employment contract?**
-
-Does this cause any challenges for the CEO? 
-
-  
-They withdraw the offer yesterday, but they recently came back to me with a proposal to start sooner and I know internally they are on the brink of closing funding. They seem on track to IPO in a year.  
-Any insight or advice would be appreciated!",False,0.00438
-1biywwd,,,,,,,1710891058.0,https://www.reddit.com/r/smallbusiness/comments/1biywwd/from_etsy_to_inperson/,From Etsy to In-Person,"Hello! I would like to start this post by making it known that I am aware of the fact that I’m probably overthinking this. 
-
-Okay so, I have a little sticker shop on Etsy, very small, I’ve been wanting to see about making sales in person with those in my community/friends/family and want to avoid the Etsy sales fee since I’m not shipping anything. With this being said, what do I have to do legally for this? I’ve already got my business license for my Etsy shop since that is required in Washington state. Would I just have to take sales tax into account or other things as well?
-
-Thank you very much for any and all replies!",False,0.00409
-1biyyiv,,,,,,,1710891171.0,https://www.reddit.com/r/smallbusiness/comments/1biyyiv/this_wholesale_buyer_i_am_fulfilling_my_firstever/,"This wholesale buyer I am fulfilling my first-ever PO for lives in the same city as I do, and I gave her a Wednesday ETA for delivery. Due to raw materials getting here today, I have to deliver the finished product same-day tomorrow. Would they be annoyed if I personally hand-delivered the order?","I'm basically not sure what the protocol is for shipping. Do buyers prefer a tracking number for their records? Is it better to use a delivery service to ensure the box gets into whatever mailroom it's supposed to end up in?
-
-RDS is mad expensive, and Uber doesn't seem that much cheaper. But I want to make a good first impression with this buyer, and am willing to eat the cost if need be. 
-
-The buyer I spoke with was super friendly, so I'm sure it wouldn't be a problem to ask them. That said, I also want to seem like a pro already. Would appreciate any perspective here. Thank you!",False,0.00457
-1biyykn,,,,,,,1710891174.0,https://www.reddit.com/r/startups/comments/1biyykn/update_6_tips_i_learned_after_6_days_of_building/,Update: 6 tips I learned after 6 days of building in public in 2024,"Wanted to share some non-generic advice with the community. Let me know if you disagree with any of them or if you have any tips of your own:
-
-1. **Don't drown your readers in text**: [People don't have time to waste](https://www.reddit.com/r/SideProject/comments/1bd3k1t/comment/kuku1x4/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button), get straight to the point. 
-2. **Don't get Banned! Warm your social media accounts**: Twitter banned my account after a few minutes and r/startups deleted my post because my karma was too low. I didn't spam or use any bots, but the fact is new accounts are ""suspicious"". It's worth warming your account.
-3. **Post where you're already liked:** I got a lot more signups than I expected however they didn't come from large communities but from small discord groups. The engagement was much higher there because they already knew me. 
-4. **Don't miss out on fresh eyes even if your idea isn't ready**: The feedback and suggestions I've gotten from early adopters has been invaluable. It doesn't matter where you are in development, START TALKING TO YOUR CUSTOMERS. 
-5. **Be ready to organize your early adopters:** I didn't have a waitlist page ready or a way to properly organize feedback, bug reports etc and tried to manage things through inboxes and DMs. Don't make my mistake. Whether you use a SaaS or something else, make sure you have a plan.
-6. **The true test comes from actual use:** My startup manages a lot of dry, complex, business calculations for founders. It isn't exactly glamorous or in line with what usually trends on ProductHunt, so I had some doubts. None of that mattered after I saw real people try it out. Until you get your product in the hands of strangers you won't really know if you have a market",False,0.00706
-1biz2i3,,,,,,,1710891449.0,https://www.reddit.com/r/Entrepreneur/comments/1biz2i3/fractional_household_equipmenttool_ownership/,"Fractional Household Equipment/Tool Ownership business idea? My lawn mower just broke and I thought, hey I'm only going to use a new mower 1/day per week max... I wonder if I could purchase a mower with 2-3 other people and share it. Am I crazy, or is there something here?","One potential implementation is an app that manages the ownership, maintenance, and usage agreements/schedules. ",False,0.00347
-1biz3uy,,,,,,,1710891546.0,https://www.reddit.com/r/startups/comments/1biz3uy/opening_a_bank_account_prebacking_ramp_brex/,"Opening a bank account pre-backing (Ramp, Brex…)","Hello,
-
-I am trying to understand the timing for opening a bank account for a newly created startup. 
-
-I decided to bootstrap the company and not look for funding immediately. I start to have expenses (physical product: paying suppliers etc) and I am planning to have sales starting later this year.
-
-I just incorporated as a solo founder, but co-founders might be added later this year. What’s the best way to proceed? Should I keep paying expenses with my personal credit card?
-
-I’ve read online that Brex caters only to VC-backed startups, so I have been looking into Ramp. Could that be a good fit? There seems to be a minimum balance needed of $75,000. Do I « just » wire this amount from my personal account and get the account creation going, or should I be more careful about the act of sending money to my new company (is it a loan or an investment?)  
-
-I’m a bit lost at this point and would appreciate your help, it feels a bit like a catch22",False,0.00486
-1biz4a6,,,,,,,1710891577.0,https://www.reddit.com/r/webdev/comments/1biz4a6/anyone_else_contacted_by_recruiters/,Anyone else contacted by recruiters? ,"I’m a web developer currently applying to jobs. I've been approached by a few recruiting firms with a similar proposal. They offer a 4-6 week technical training program to prepare candidates for interviews, followed by assistance in securing a project with a company. They charge an upfront fee of $600, refundable upon successful job placement. Essentially, I would become an employee of the recruiting firm, which would then assign me projects from various companies. My priority as a new developer is gaining experience with a good pay ofcourse, I'm curious if anyone here has had any experiences, positive or negative, working with such firms?",False,0.00396
-1bizafi,,,,,,,1710892012.0,https://www.reddit.com/r/Entrepreneur/comments/1bizafi/are_there_any_community_founders_here_id_like_to/,Are there any community founders here? I'd like to pick your brain.,"I'm working on a platform/community project and I'd really like to ask some questions to experienced community founders.
-
-Let me know! Would be hugely appreciated.",False,0.00309
-1bizapq,,,,,,,1710892032.0,https://www.reddit.com/r/Entrepreneur/comments/1bizapq/sold_my_biz_and_it_slowed_right_down_after_i_left/,Sold my biz and it slowed right down after I left. Feeling guilty.,"Just want to share my experience here...
-
-I ran a biz for a few years. I was planning on getting out when one day, someone walked in and offered me money for it.
-
-I took the deal.
-
-Now 5 months later, the business has slowed down.
-
-The people who bought the place presented themselves with utmost confidence. I figured they knew more than I did about running a retail store.
-
-But over time, I came to realize that they don't have any marketing skills. I feel like I'm barely past the amateur stage myself but these guys know *nothing*. They literally copy-paste my old social media posts.
-
-They're also from a different country and brought mannerisms that can be quite off-putting. We did some B2B sales and they lost all the accounts within 2 months of taking over, because of stupid shit like hounding the clients for payment well before the due date.
-
-I can tell the business is being mismanaged and bad decisions are being made. I've tried explaining it and making suggestions. But it just gets worse.
-
-And yea, I feel guilty af.
-
-That's the business I built and got paid for, and now this family is struggling.
-
-Obviously this is pretty much beyond my control but it hurts, man. I have no leads to give them, nor do I have any more advice.
-
-Anyone one else gone through this?
-
-  
-Edit: wow, bigger response than I expected. Much appreciated, because this was eating me alive.
-
-  
-I'll do some responding tomorrow. Work time is over for tonight, lol.",False,0.00595
-1bizdzo,,,,,,,1710892265.0,https://www.reddit.com/r/Entrepreneur/comments/1bizdzo/the_99makers_guide_to_how_yc_startups_like_linear/,The 99makers Guide to How YC Startups Like Linear Found Their Path to Success,"&#x200B;
-
-1. Elad Gil is the founder of Linear and he started the company in his 40s.  
-2. Elad Gil has a strong tech background and educational credentials. He holds a Ph.D. in Biology from MIT and a Bachelor's in Mathematical and Computational Science from Stanford University.  
-3. Linear's inception was driven by the need for a more efficient and collaborative project management tool. During his time as a startup investor and advisor, Elad Gil recognized the challenges of existing project management tools. He wanted to create a solution that could streamline and simplify the process for engineering and product teams, ultimately leading to the birth of Linear.  
-4. Linear was founded in 2019.  
-5. Linear initially received funding from notable investors, including Sequoia Capital and Index Ventures.  
-6. Linear built its initial product and MVP through rigorous testing and iteration, taking approximately six months to develop v1.  
-7. Linear addresses the problem of inefficient and outdated project management tools, which often lack the necessary features for seamless collaboration and workflow management.  
-8. Linear's solution stands out due to:  
-Streamlined Workflow: Linear offers a more efficient and simplified workflow, significantly reducing the time spent on project management tasks. Improved Collaboration: Its real-time collaborative features enable seamless task assignment and progress tracking. Intuitive Design: Linear's user interface and design provide a more user-friendly and intuitive experience compared to traditional alternatives. 9. Linear operates in the Devtools market, focusing on project management for engineering and product teams. While they started with a niche, they've quickly expanded their offerings to serve a broader audience.  
-Linear validated the startup through several strategies, including experimenting with different features, identifying market gaps, growing their community, and evolving their product based on user feedback. They also focused on accessibility and engaged directly with their target users to cultivate a loyal and devoted user base.  
-Strategies for growth:  
-Strategic Partnerships: Linear formed strategic partnerships with other tech companies to expand its user base and reach. Community Engagement: Actively engaging with the developer community to gather feedback and improve the product. Product Innovation: Continuously adding new features and improvements to stay ahead of the competition. Marketing Campaigns: Launching targeted marketing campaigns to increase brand awareness and attract new users. Customer Success: Prioritizing customer success and satisfaction to drive positive word-of-mouth and repeat usage. 10 Actionable Lessons:  
-Solving Real Problems: Identify real pain points in existing solutions and create a product that addresses them effectively. Strong User Experience: Prioritize user-friendly design and intuitive features. Constant Iteration: Continuously iterate the product based on user feedback and industry trends. Market Expansion: Begin with a niche but have a plan for broader market expansion. Customer-Centric Approach: Focus on creating a product that resonates with the target audience and provides a valuable solution. Leveraging Networks: Leverage existing networks and relationships to secure initial funding and support. Strategic Partnerships: Collaborate with other companies to expand reach and enhance offerings. Community Engagement: Foster a community around the product to build buzz, gather feedback, and validate the market need. Customer Success: Prioritize customer support and success to build brand loyalty and trust within the user base. Continuous Growth: Focus on ongoing product innovation and strategic growth initiatives to maintain momentum and success in the market.
-
-&#x200B;
-
-https://www.99makers.com/dl/0f5325  
-",False,0.00981
-1bizeua,,,,,,,1710892324.0,https://www.reddit.com/r/webdev/comments/1bizeua/does_web_hosting_technology_improve_over_time/,Does web hosting technology improve over time like other technologies?,"  Please excuse my rambling, but I'm just curious if the tech stack behind web hosting has actually improved over time? And if so, what has happened? I've read a lot of best web hosting reviews over the years and and the tech stack seems to be predominantly the same (unless there's stuff going on in the background that I'm not privy to).
-
-What I mean is... There seems to be consider improvements in other technologies (like consumer electronics for example) but web hosting tech appears to have stayed predominantly the same over the past decade with shared hosting, cloud hosting, and VPSs unchanged. Maybe you could make the argument that cloud hosting has been the evolution of hosting technology and we're still reaping the benefits of that until something else comes along.
-
-Am I wrong about this? Is this one of those, ""If it ain't broke don't fix it"" type of things?",False,0.00457
-1bizi3y,,,,,,,1710892565.0,https://www.reddit.com/r/smallbusiness/comments/1bizi3y/best_pos_system_for_retail_business_with_few/,Best POS system for retail business with few items for cash management and reports?,"Need a POS system for a small business (in Toronto, Canada) with only about 3 different items but high sales volume. The majority of sales will likely be with cash. The main goal is to get transaction-level data, generate reports (to identify trend in peak and cook to order), and effective cash management. Would also be nice if transactions can be segregated by employee numbers and for employees to clock in and out. 
-
-Any recommendations for this? ",False,0.0036899999999999
-1bizk1p,,,,,,,1710892711.0,https://www.reddit.com/r/SaaS/comments/1bizk1p/best_saas_recurring_billing_options/,Best Saas Recurring Billing Options,"Good afternoon,
-
-&#x200B;
-
-Looking to setup SaaS recuring billing in the app I am creating.  Volume will be low to start but with time hope to have many customers.  Main things I need are....  
-
-
-Multi-Currency - Want to billing both CDn and USD directly without conversions on the user cards  
-Prorated Subscription upgrades - If the user mid-month upgrades their plan I want it to bill the missing portion of the month and automatically setup the correct pricing for the following month  
-Work with Canadian Business in term of deposits and reporting and taxes  
-Must have coupong codes for the ability to customize trial periods  
-
-
-Your help is greatly appreciated",False,0.00405
-1bizn1c,,,,,,,1710892913.0,https://www.reddit.com/r/smallbusiness/comments/1bizn1c/tips_for_small_retail_store/,Tips for small retail store?,"Hi reddit!
-I was previously running a small gift shop within a coffee shop. It is consignment based mainly, a small amount of wholesale. The coffee shop closed about a month ago, and since the gift shop was my concept, I reopened the gift shop on my own in a new location. 
-Tomorrow is my first day open in the new location and despite running the shop before solely on my own, I’m suddenly very nervous. 
-I just passed all inspections, have all the required permits, a good social media following, good website and social media sites, brand new POS system, ect ect ect… still nervous!
-Any suggestions or tips or anything moving forward from any fellow small retail shop owners?!  :)",False,0.00413
-1bizs1b,,,,,,,1710893276.0,https://www.reddit.com/r/Entrepreneur/comments/1bizs1b/free_business_leads/,Free business leads?,Has anyone ever seen a free business lead service?  Totally free.  ,False,0.00282
-1bizssm,,,,,,,1710893335.0,https://www.reddit.com/r/webdev/comments/1bizssm/getting_an_intership/,Getting an intership,I'm trying to look for entry level Web developer internships to apply to. I just don't really know where to start I apply on indeed and glass door but I don't hear anything from them. If anyone knows anything other sites please reply. ,False,0.00318
-1bizzmg,,,,,,,1710893840.0,https://www.reddit.com/r/business/comments/1bizzmg/what_business_i_can_make_having_schizoaffective/,What business I can make having schizoaffective disorder and suferring a lot?,prefarably online business? I tried making a rap beat selling business with no success. I have an idea to make online sellable tutoring content,False,0.00309
-1bj00r3,,,,,,,1710893924.0,https://www.reddit.com/r/business/comments/1bj00r3/need_advice_on_buying_my_partners_out/,Need advice on buying my partners out,"Business is a bar and restaurant, there are 4 owners. I have 40% and am the founder and I have 3 partners with 20% each. They came in right before opening (took me around 2 years with build out and licensing etc) to do day to day operations. The business has been running for 2 years now, they expressed interest in selling shares to move and invest in other things. I will go back to operating the day to day as I have more time now, than I did 2 years ago. 
-
-Details:
-- Business did around $700k in sales year 1
-- year 2 we did just under $2m and we are tracking good for a $2.5m+ year 3
--the last 2 years we have not taken money from the company really (they pay themselves a small salary) and spent most of our money on growing the business
-- lease has 7 years left + 3 year option at a very very good rate for our area. The lease alone is worth a bunch of money
-- they want $250k each, so $750k total
-- we talked about a full sell but I would rather keep it long term 
-- I have talked to a few wealthy friends about them buying some of the shares and being silent. As it is already making money their distributions will basically be immediate
-- if the investors do work out or not I want to look at all my options, like loans, this is where I need advice
--  the business has around $477k in assets 
-- personal credit isn't great 650-700. I don't have much history (I'm 35), bought most of my stuff out right growing up. I have some credit cards a motorcycle loan and a car loan, all paid on time. 
-
-
-I have never taken a loan this big. This business has almost no debt except a small payment for the liquor license (financed $140k 2 years ago. it is privately financed though an attorney that buys and flips them with his own financing). This business was purely bootstraped. I have another small bar and have had several others over the last decade so I'm pretty competent when it comes to creating and running successful food establishments. I do all the physical build out work myself barring any very technical stuff or what the city requires me to us a GC for. The only other loan I have had to take out was for my other spot and was SBA EIDL loan during Covid. 
-
-My partner put me in touch with a loan broker or something and they mentioned having a few options (forgive me if anything is written wrong or dumb, I'm using their words). Something about a line of credit, which doesn't make sense to me. A large LOC that immediately gets fully spent, doesn't seem like a bank will like that. He asked me to use a site called IdentityIQ for a credit report so the bank does not do a hard pull, because I believe this broker works with mostly small firms. He was saying it is non secured, but I am fine with a secured loan against the assets. I'm not going anywhere. 
-
- If anyone can suggest other firms/companies or banks they have used that would be very helpful. Just in the interest of being cautious, I want to do my own due diligence before I go with a friend of a friend. If the investors are on board I would still want to get to majority % using a loan or some sort. 
-
-Let me know any other details you need. I have been trying to search online for options but I get a bunch of weird online loan firms. Im looking into SBA as well. It's a large amount so I'm just a little lost. My accountant is doing to looking for me as well. Thanks in advance!",False,0.01052
-1bj0c8b,,,,,,,1710894732.0,https://www.reddit.com/r/Entrepreneur/comments/1bj0c8b/advice_for_selling_a_business/,Advice for Selling a Business?,"It’s become routine and I have it on copy and paste. I’m 25 and ready to go and pursue other ventures.
-
-It’s a niche with huge demand and a profit margin, so I’m just curious where I would start the conversation to sell it.",False,0.0032199999999999
-1bj0ckt,,,,,,,1710894757.0,https://www.reddit.com/r/webdev/comments/1bj0ckt/google_business_profile_api/,Google Business Profile API,"I have a client that is trying to get reviews for all his business to display on a wordpress site, but using the google API is super painful. Does it have to be OATH2 , if so does that mean you have to go through a login screen to get a token? This would be a cron job caching the reviews. Also do you have to fill out a form to get permission to get reviews from business profile (I read that somewhere but it seems outdated info) I got as far as using the oath2 playground but got permission denied and I have access to his console/business profile and the api is enabled. Any help would be greatly appreciated.",False,0.004
-1bj0cw1,,,,,,,1710894778.0,https://www.reddit.com/r/smallbusiness/comments/1bj0cw1/help_i_need_legal_advice_please_im_so_confused/,Help I need legal advice please I’m so confused,"I am a student in college trying to start my own business. I see & make my own clothes, and I have started a website in which I am soon hoping to launch to sell said clothes. I go to school in Massachusetts and since I’m technically a “sole-proprietor” I didn’t need to register as a business with the state (I don’t believe). Although, I do live in Boston. I talked to the Boston city clerk office and when I told them I wanted to make a website to sell my clothing through e-commerce solely, they had me register for $65 with the city and get a business certificate. That’s to the extent of what I’ve done and now I kind of don’t know where else to go. I’m having trouble determining online whether I need to get an EIN from the IRS or if it would hurt to just do it anyway because I don’t know if I’m technically a sole proprietor or a “business” or company now that I have this certificate. I also saw something on the Massachusetts gov. Website for taxes talking about sales tax/use taxes that confused me more. The thing about “use taxes” was saying now that if I made purchases for my business out-of-state, for example maybe a sewing machine, that I would have to pay a 6.25% tax in order to use it for business purposes in Massachusetts. I read that and it kind of shocked me, does that even apply to me or is that for businesses that aren’t individualized or make over a certain amount? Also I s there some sales tax certificate thing I need to apply for when it comes to the sales tax consumers pay? Or is it just something I reflect on my taxes when I need to do them? I use a website called SquareSpace for my website and I’m still working on it, I think there is a section on there like an extension that can automate taxes for your customer but I’m unsure. I kind of just have a lot of uncertainty with this whole small business thing as a college student and I’d like to learn for the future and so that I feel more confident and less anxious about launching g my site, I feel the more I look into this the more I shy away from doing this. If anyone has any tips for me on what to do right now I would gladly take it, again, I only have my $65 business certificate for practices in Boston and that’s it. I just want to get this show on the road. Thank you very much ❤️",False,0.00785
-1bj0dvk,,,,,,,1710894855.0,https://www.reddit.com/r/Entrepreneur/comments/1bj0dvk/mechanics_of_401k_matching_for_sole_proprietor/,Mechanics of 401k matching for sole proprietor,"Hello everyone and thanks in advance for your help!
-
-My wife is a sole proprietor. She reports about $50k in income and pays payroll taxes on about $32k of that. We put $10k of it into her TDAmeritrade individual 401k last year. 
-
-This year we’d like to do an employee match for some of her contributions (since matches are tax deductible and no payroll tax on them). 
-
-What’s the mechanics of doing that? What do we need to do (if anything) to classify which contributions are employee vs employer contributions? Do we somehow classify deposits as employer contributions for the TDAmeritrade 401k account? Where do employer contributions go on the Schedule C?
-
-Thanks everyone!
-",False,0.00424
-1bj0ffe,,,,,,,1710894973.0,https://www.reddit.com/r/Entrepreneur/comments/1bj0ffe/best_way_to_come_up_with_2550k_financing/,Best way to come up with $25-50k financing?,"Looking to buy a business and need the above amount. No seller financing available. Would rather not go through SBA. Is the best option a business LOC or has anyone done anything differently? Time is not necessarily of the essence, but faster turnaround would be ideal!
-
-Thank you!",False,0.00332
-1bj0o1d,,,,,,,1710895629.0,https://www.reddit.com/r/Entrepreneur/comments/1bj0o1d/buying_out_a_business_partner/,Buying out a business partner?,"I run a tiny data business which makes $1700 / mo with expenses of $550/mo.
-
-I have a 50/50 partnership with a partner I want to buy out as the majority (read: all) of the work is done by me (technical) and he has a full time job which keeps him too busy to commit to actually growing this business (he would theoretically be doing sales). I have a more flexible lifestyle and I'd like to take a shot at growing the business beyond the one single client we have. I also think I can drive costs down significantly but haven't done so since I don't feel incentivized.
-
-He is the one who brought in the one client we have, but does not do any sales work at all presently. He also doesn't have the ability to do this work any more, beyond life commitments, he doesn't have relationships in the industry any more.
-
-What is a fair approach to a buyout?
-
-Thank you for any help you can provide!",False,0.00471
-1bj0oam,,,,,,,1710895649.0,https://www.reddit.com/r/Entrepreneur/comments/1bj0oam/ok_i_just_started_my_own_company_its_a_guild/,Ok I just started my own company. It's a guild anyone can join.,"It's called Glyndarion Industries and it's a guild and what do we do for a living? We fight evil. If you work for the company you can say you fight evil for a living. We can't pay you anything but if we get some good loot drops we will share. Want to work for us? Become an adventurer with Glyndarion Industries.
-
-How does it work?
- 
-Once you join you are officially an adventurer of Glyndarion Industries. Your job title is n00b and you are considered a level one n00b your first year. After that your job title becomes knight of Glyndarion and are expected to behave like one. what is knightly behavior? Google it yourself because whatever it says that's what we're using. Glyndarion Industries is currently engaged with answering the People's cries for help. 
-
-When people have a cry for help they post it to the Glyndarion App and Glyndarion sends a knight or at least a n00b to help you out. If any payment is agreed to the majority goes to whoever performed the adventure with a small 15 percent cut going to the guild.
-
-If you're reading this and you want to be a knight of Glyndarion congratulations, you are one. Go get on the app helphub.glide.page and start answering calls. As we spread the word of this new help app we will have jobs to do and ways to earn offered rewards. Or if unable to find jobs in the app just start fighting evil anyway you can",False,0.00595
-1bj0ph2,,,,,,,1710895743.0,https://www.reddit.com/r/startups/comments/1bj0ph2/how_to_structure_a_buyout_offer/,How to structure a buyout offer?,"I run a tiny data business which makes $1700 / mo with expenses of $550/mo.
-
-I have a 50/50 partnership with a partner I want to buy out as the majority (read: all) of the work is done by me (technical) and he has a full time job which keeps him too busy to commit to actually growing this business (he would theoretically be doing sales). I have a more flexible lifestyle and I'd like to take a shot at growing the business beyond the one single client we have. I also think I can drive costs down significantly but haven't done so since I don't feel incentivized.
-
-He is the one who brought in the one client we have, but does not do any sales work at all presently. He also doesn't have the ability to do this work any more, beyond life commitments, he doesn't have relationships in the industry any more.
-
-What is a fair approach to a buyout?
-
-Thank you for any help you can provide!",False,0.00473
-1bj0v34,,,,,,,1710896168.0,https://www.reddit.com/r/smallbusiness/comments/1bj0v34/question_about_incorporating_in_canada/,Question about incorporating in Canada ,"I'm planning on opening a homecare business in Ontario, Canada. I understand the differences between provincially and federally incorporating, but are there any recommendations on my specific case? My plan is to stay in Ontario, but maybe expand to different provinces in the future. 
-
-Does anyone have experience with transitioning from provincial to federal incorporation? I've looked into it, and it appears pretty complicated.  
-
-Finally, can someone in a different province use my business name legally if I'm incorporated only in Ontario?
-
-Any help would be appreciated!",False,0.00375
-1bj0x47,,,,,,,1710896324.0,https://www.reddit.com/r/webdev/comments/1bj0x47/getting_started_with_a_complex_project_to_clone/,Getting started with a complex project to clone,"Hi guys. In order to get out of tutorial hell, I thought I would just look around and might get inspiration from another project. I understand that the projects can be challenging but I want to do things like this so I can explore and learn things as I go about them. This mainly came after I came across a video from BigBoxSWE about getting out of tutorial hells.
-
-While doing so, I came across one called [Outerbridge](https://github.com/Outerbridgeio/Outerbridge) and I want to clone this and remake this. However, this project is way too advanced and complex. It has several components and nodes as well which are 3rd party API integrations. I thought I would start off small with some simple API integrations. But even then, it seems very daunting. However, I do not want to be deterred from that and want to push myself to tackle this.
-
-I was wondering, perhaps this can be practice for me in breaking things down. How would you guys go about this and break this project down so you can remake this as well? It doesn't need to be exactly 1-to-1 in the cloning but the idea behind the project looks cool to me which is what I want to replicate.
-
-I'd appreciate help and input on this.",False,0.00536
-1bj0z52,,,,,,,1710896469.0,https://www.reddit.com/r/smallbusiness/comments/1bj0z52/transferring_an_llc_to_another_member_in_ny/,Transferring an LLC to another member in NY,"Hi everyone,
-
-I have two questions; 
-
-1. Do I have to file a tax return for my company if I make zero income?
-2. How do I transfer my LLC to someone else in my family so I can be free of it? I've tried to research it online but I don't understand most of the mumbo jumbo. Can anyone simply it?",False,0.00349
-1bj158v,,,,,,,1710896930.0,https://www.reddit.com/r/webdev/comments/1bj158v/free_programming_courses_recommendations/,free programming courses recommendations?,"does anyone know a free course that teaches basic programming, javascript and/or web development?
-
-Preferably one that gives you a completion certificate",False,0.0029499999999999
-1bj1b8l,,,,,,,1710897399.0,https://www.reddit.com/r/Entrepreneur/comments/1bj1b8l/idea_validation/,Idea Validation ,"I'm a web developer with the spirit of an entrepreneurs. I can't stand working for somebody, else I haven't found a project to work on while also feeling compelled/inspired enough by my employer or collegues to stay working on. 
-
-For the past few months I've researched some ideas that I think I could bring to market however after each research session I am unsure if it is a goer or not. Are their any known methods or ways to see if a business idea is viable before starting to implement the actual idea itself to save the time and money investment that would have gone into it
-
-Thanks in advance for any advice / information. ",False,0.00398
-1bj1bpa,,,,,,,1710897434.0,https://www.reddit.com/r/NoCodeSaaS/comments/1bj1bpa/nocode_software_development/,No-Code Software Development,"Anyone have recommendations for the best no-code software development applications? I've heard good things about Airtable in particular, if anyone has any experiences using that platform. ",False,0.0030099999999999
-1bj1okx,,,,,,,1710898426.0,https://www.reddit.com/r/sveltejs/comments/1bj1okx/how_to_solve_darkmode_flickering/,How to solve darkmode flickering,"Instagram solves this with a loading screen *(I think it's not useful, I tried it but I didn't like it)*
-
-Reddit couldn't fix it. (select dark mode and refresh the page to see it/ If you choose a color different from the device theme color)
-
-Youtube looks pretty good as an example.
-
-I have tried with cookies and local storage but can't figure it out. Should i use hooks for this and how? Do you have any advice?
-
-
-
-",False,0.0036499999999999
-1bj1r65,,,,,,,1710898632.0,https://www.reddit.com/r/SaaS/comments/1bj1r65/roast_my_saas/,Roast my SaaS ,"Please share your valuable feedback/suggestions about my SaaS. 
-
-Here is the link: https://responderai.framer.website/
-
-P.S. currently having 2 customers. ",False,0.0030499999999999
-1bj1wsw,,,,,,,1710899089.0,https://www.reddit.com/r/Entrepreneur/comments/1bj1wsw/how_to_find_an_idea_for_reasonable_continuous/,How to find an idea for reasonable continuous revenue ,"Hello everyone.
-
-So I run my own web agency and I have a good enough income for me to think about building my own product on the side.
-
-My ambitions are not grand. I'm not looking for inventing something or have a world breaking change.
-
-My goal is to have 5k profit per month. It's not like I'll stop trying to grow but that would make me reach a content status.
-
-I know this is probably a lot humbler than what I usually see in here, but to each their ambitions and mine is stability not wealth.
-
-Anyway, sorry for the rambling. Basically what I'm looking for is to find that idea and I don't know how to go about it. Since I'm not aiming for invention, every idea I had was made to death. 
-
-My question is: how would I go about finding the right fit. 
-
-I have no experience what so ever at this so I don't know anything about finding ideas and validating them for profitablity.
-
-Any advice is greatly appreciated.",False,0.0048
-1bj1wxs,,,,,,,1710899100.0,https://www.reddit.com/r/business/comments/1bj1wxs/what_can_i_do_to_get_a_target_off_my_back/,What can I do to get a target off my back? ,"I have a good work ethic which I am proud of but I hate the recognition I get, it puts a target on my back and I don’t want to deal with people disliking me cause of it. I started my job about 2 months ago and a lot of people like me which is the complete opposite of what I wanted(Not the people liking me but I just don’t want to have any competition thing going on). I tried to keep to myself but it’s hard since I work with someone different everyday. Genuinely i love my job and the people I work with but I prefer to be left in the shadows. Is their anyway I can keep my name out of things without hindering my position or causing issues at work? I have tried to show up a few minutes late and the managers could care less, I have tried to be a little lazy but that never works out as I can’t slow down but I don’t talk to anyone outside of work and keep to myself until I get paired with someone but somehow I became popular and I hate it. I like being lowkey. Any advice helps ",False,0.00502
-1bj1yw9,,,,,,,1710899261.0,https://www.reddit.com/r/business/comments/1bj1yw9/need_videographer_and_editor_in_the_bay_area_ca/,"Need videographer and editor in the Bay Area, CA ","I need a videographer and editor. 
- ",False,0.00284
-1bj2072,,,,,,,1710899370.0,https://www.reddit.com/r/business/comments/1bj2072/has_anybody_used_wes_mcdowell_on_their_business/,Has anybody used Wes McDowell on their business website? (especially his paid-for course),I'm considering buying his launchpad course but I wanted to make sure it was worth it first,False,0.0029999999999999
-1bj20qe,,,,,,,1710899414.0,https://www.reddit.com/r/Entrepreneur/comments/1bj20qe/checklist_of_smaller_admin_things_when_selling_a/,Checklist of smaller admin things when selling a business? ,"About to sell a 10 year old business. What are some admin things, that are easily forgotten, that I might want to do or back up now before the sales process starts (eg download all of my key contacts). ",False,0.0031999999999999
-1bj26nd,,,,,,,1710899896.0,https://www.reddit.com/r/SaaS/comments/1bj26nd/new_here/,New here,"Hi everyone im new here , and would like to start a saas  company i have many great ideas , but how would i get started? Any guidance would be greatly appreciated. ",True,0.0029899999999999
-1bj2b20,,,,,,,1710900229.0,https://www.reddit.com/r/SaaS/comments/1bj2b20/has_the_lean_startup_technique_greatly_helped_you/,Has the Lean Startup technique greatly helped you find early product market fit?,"Has the Lean Startup technique greatly helped you find early product market fit?
-Meaning do you iterate by trying to answer a specific question and testing your assumption rather than just trying to see the line of active users go up?
-
-",False,0.0032099999999999
-1bj2g50,,,,,,,1710900630.0,https://www.reddit.com/r/Entrepreneur/comments/1bj2g50/has_anybody_used_wes_mcdowell_on_their_business/,Has anybody used Wes McDowell on their business website? (especially his paid-for course), I'm considering buying his launchpad course but I wanted to make sure it was worth it first,False,0.0030099999999999
-1bj2ij7,,,,,,,1710900814.0,https://www.reddit.com/r/webdev/comments/1bj2ij7/good_technical_interview_questions_for_web_devs/,Good Technical Interview Questions for Web Devs?,"Hey all, I’m going to be interviewing UI devs in the coming weeks. It’s my first time doing interviews. Our tech stack is almost exclusively Angular. My manager said I will need to come up with technical questions. I don’t feel like Leetcode translates well to web dev… what are your interviewing experiences for web dev like? Looking for suggestions. TIA :)
-",False,0.00347
-1bj2mhx,,,,,,,1710901132.0,https://www.reddit.com/r/smallbusiness/comments/1bj2mhx/selling_my_business_anything_to_look_out_for/,Selling my business ; anything to look out for?,"I'm in talks and negotiations with a potential buyer for a very small businesses I started.  I grew it to the point where it needs to expand (and meamwhile, I made some money on the side) and I realized I want to move onto something else.  Its not exactly a value-added company; you make exactly the amount of work you put into it, unless you become a full time manager.  I have a nice full time job with decent income, so if I'm gonna run a business like that, at least I want to do something I'm not tired of.  I also have a family bereavement recently and its taken a lot out of me.
-
-Anyways, a lot of the value of the biz is tied up in all the back-end stuff.  Brand name, website, business reviews, avenues of business I opened up which is difficult to obtain, licenses, etc.  The buyer doesn't want the big tangible asset (its a vehicle - he has his own, and I can easily sell that separately).  So the sale price is in the low 5 figures, which is fine with me.
-
-Anyways, I was wondering if there was anything to look out for.  Its a single member LLC.  For ease of the transfer, I was thinking of an entity sale.  I think this isn't so good for my taxes as the seller.  What about liabilities?  Anything in the process I need to be thinking about?
-
-thanks in advance.",False,0.00579
-1bj2tia,,,,,,,1710901693.0,https://www.reddit.com/r/SaaS/comments/1bj2tia/looking_for_convertri/,Looking for convertri,"If you have convertri for sale, contact me.",False,0.00279
-1bj2tt8,,,,,,,1710901718.0,https://www.reddit.com/r/Entrepreneur/comments/1bj2tt8/need_help_with_setting_up_a_fastspring_account/,Need help with setting up a FastSpring account,I have been googling alot and it doesn't have so much guidance on how you can create an account. I'm a sole proprietor working without a registered business yet and I want to know if I can use FastSpring to sell digital products without a company or do I need one and all of the business documents?,False,0.00336
-1bj2y8j,,,,,,,1710902063.0,https://www.reddit.com/r/smallbusiness/comments/1bj2y8j/best_place_to_begin_buyinggrowing_old_boring/,Best place to begin buying/growing old boring businesses?,"Hello readers,
-
-&#x200B;
-
-I recently began pursuing my dream of becoming an entrepreneur in the Seattle area after abruptly quitting a very successful 10-year career in commercial real estate. I now am running a successful real estate investment business and am looking to expand horizons- specifically, into buying/financing, and growing cash flowing, old boring businesses. I have a bachelor's degree, and am very comfortable/excel with business financials, marketing, strategic planning, and interpersonal skills. I'm a born problem-solver and love to create win/win situations whenever possible. It's a bonus when numbers are involved.
-
-&#x200B;
-
-What would be the best first step to do this? Are there any gurus out there that will offer a mentorship on such a venture? Looking for specific things like best practices, who to approach, what lists to pull for cold calling/marketing campaigns, scripts, etc. I'm very happy to partner up with anyone who is active in this space and split commissions/net earnings as appropriate.
-
-&#x200B;
-
-Appreciate your time.
-
-&#x200B;",False,0.00499
-1bj2ypj,,,,,,,1710902099.0,https://techcrunch.com/2024/03/19/agi-and-hallucinations/,"TechCrunch: Nvidia’s Jensen Huang says AI hallucinations are solvable, artificial general intelligence is 5 years away",,False,0.00288
-1bj2z8t,,,,,,,1710902138.0,https://www.reddit.com/r/SaaS/comments/1bj2z8t/struggling_to_get_the_first_100_users_on_my_first/,Struggling to get the first 100 users on my first SAAS startup,"Hey, I am Harsh Todi and I built an AI Saas called FastCut (fastcutai.co).  
-
-
-FastCut helps in creating viral reels in seconds by adding animated captions, b-rolls (video overlays), and sound effects.   
-
-
-We have 6 paid users now but struggling to get more users.   
-
-
-Any suggestions or feedback would be great :)",False,0.00355
-1bj321u,,,,,,,1710902366.0,https://www.reddit.com/r/Entrepreneur/comments/1bj321u/just_launched_our_last_homemade_product_let_see/,"Just launched our last homemade product, let see what happens","Hi everyone, 
-We launch few days ago [www.freebirdway.com](https://www.freebirdway.com) : it’s nfc visit card that redirect to your desired service. It’s handmade. 
-
-More reviews more instagram members, If you have commercials or local business, this is for you. 
-
-the way it transform prospects and customers in clients and Google reviews or follows is incredibly good and the needs to work properly are quite simple.
-
-We gonna edit this post through 3 first months to show how it goes. Stay tuned..",False,0.00384
-1bj3230,,,,,,,1710902368.0,https://www.reddit.com/r/webdev/comments/1bj3230/django_js_career_development/,Django - JS - Career Development,"Hi! I saw that vague career-help questions aren't allowed, but I've got such an odd scenario and specific case that I was hoping to ask for help on where I should go next.  
-
-
-So, I started web-programming about a year ago, having initially done some light code work for an open source video game (SS13). I got hired in a summer internship for a newspaper, but they kept me on once they figured out I'd learn any code stuff they threw at me. So that's weird case/background of how a non college trained (me) and not super experienced coder (me) got a web-development job.  
-
-
-I work with some way more experienced coders, but I try not to bother them too much since we're covering a lot of ground with a few hands. I was hoping to get recommendations on where to best learn Django and Javascript, with Django being the particular framework we use at the paper (one of our executives actually helped found it...)  
-
-
-I've gotten slightly comfortable with JS, having used Chart.js for some newspaper pages that need a special touch; but I'm still not really sure how to apply or use it. Django is also alien to me, since the coding I did back when I worked on open-source stuff was C based.  
-
-
-I'd love any recommendations for resources on JS, Django or MySQL - as well as general advice for where to go next, and what to do. I really love my job and what I do, but it's a little hard to not feel underequipped compared to college-trained coders with 20 years on me.  
-",False,0.00598
-1bj354d,,,,,,,1710902614.0,https://www.reddit.com/r/startups/comments/1bj354d/realtime_vc_pitch_assistant_to_give_me_data/,Real-time VC pitch assistant to give me data superpowers?,"**Imagine this:** I'm pitching to a VC while getting a stream of real time data insights based on their profile, the questions asked, and the direction the meeting is going. I'm able to answer any question they have backed by data (e.g. niche competitors, related market sizes, performance benchmarks etc..)  and I'm coming across like that dude in the move Limitless.
-
-**Does a tool like this exist today? If yes then would love to see it! If not why not? What are the blockers to building it?** ",False,0.00386
-1bj3812,,,,,,,1710902849.0,https://www.reddit.com/r/Entrepreneur/comments/1bj3812/real_time_pitch_assistant_to_give_me_data/,Real time pitch assistant to give me data superpowers!?,"**Imagine this:** I'm pitching to a VC while getting a stream of real time data insights based on their profile, the questions asked, and the direction the meeting is going. I'm able to answer any question they have backed by data (e.g. niche competitors, related market sizes, performance benchmarks etc..) and I'm coming across like that dude in the move Limitless.
-
-**Does a tool like this exist today? If yes then would love to see it! If not why not? What are the blockers to building it?**",False,0.00385
-1bj38l8,,,,,,,1710902898.0,https://www.reddit.com/r/smallbusiness/comments/1bj38l8/looking_for_feedback_on_purchasing_the_firm_i/,Looking for feedback on purchasing the firm I work at ,"Hello all
-
-I’ve recently been presented with the opportunity to buy the accounting office I manage. I could also purchase the small commercial building it’s in that also has a small coffee shop. I’ve been there since October 2022. It is just me, a bookkeeper and a data entry clerk who only works for one client. I also manage a bigger office an hour away that has 7 employees but that isn’t included in this deal. Revenue was $355k in 2023, up from $325k in 2021(books aren’t real usable for 2022). I have access to what the expenses are and created a budget. I can pull a $90k salary and still keep my head above water. Current salary is $125k. I have an Enrolled Agent credential and will have my CPA this fall. 
-
-The parent company consists of 45 people with one owner. It is not doing well financially(3 late payrolls) at the moment but may turn things around at the end of April according to the owner. 
-
-On one hand, I have wanted to run my own business full time for many years. I’ve had a couple different side gigs. On the other hand, I’ve been an employee for the last 18 years. Never had to worry about a paycheck till recently. I am curious if anyone has gone through something similar and what they did. Thanks!",False,0.00561
-1bj3bmn,,,,,,,1710903150.0,https://www.reddit.com/r/webdev/comments/1bj3bmn/is_there_a_consensus_on_the_best_current_way_to/,"Is there a consensus on the ""best"" current way to incorporate a pre-rendered animation that includes an alpha channel?","The last time I worked with something like this was 10+ years ago — it was very hacky back then, and I know there are multiple ways to handle it now. But is there a consensus on which one makes the most sense?
-
-The ways that I can think of are
-
-- an .APNG file
-- a .PNG sprite sheet, which the browser can animate through
-- a .WEBP file
-
-The animation is large (in terms of pixel dimensions, about 1920x1080), and only a few seconds long.
-
-It would also be beneficial for file-serving reasons to be able to activate different portions of the animation (ie on mouseover) all from within the same file — I assume sprite sheets provide a benefit here, unless WEBP or APNG have some sort of jump-to-frame ability? If not, multiple files would need to be loaded for the different animation parts.
-
-Is there a go-to method everyone is using these days?",False,0.00483
-1bj3kfj,,,,,,,1710903881.0,https://www.reddit.com/r/Entrepreneur/comments/1bj3kfj/seo_mastery_course_site_feedback/,SEO Mastery Course Site Feedback ,"Would love feedback on my site! 
-
-[seomasterygroup.com](https://seomasterygroup.com)",False,0.00292
-1bj3lgm,,,,,,,1710903964.0,https://www.reddit.com/r/webdev/comments/1bj3lgm/what_skills_do_i_need_to_host_apps_from_an/,What skills do I need to host apps from an unmanaged VPS?,"I want to rent some VPS hosting so I can make apps and have control. But I'm worried I'll spend the few hundred dollars and then be way over my head. I want to host multiple sites with multiple languages and frameworks.
-
-I've released python and php apps on shared hosting before, but the setup is all done in a panel.
-
-If I get VPS with a cPanel, how different will it be from shared hosting? What other knowledge will I need to make this work? Is there a course I should take or a book I should read?
-
-Thanks for reading.",False,0.00396
-1bj3qbr,,,,,,,1710904375.0,https://www.reddit.com/r/NoCodeSaaS/comments/1bj3qbr/how_do_you_find_a_trustworthy_reliable_no_code/,"How do you find a trustworthy, reliable No Code SaaS developer?","I am on the search for a No Code SaaS dev and it feels like I have two options, Fivver/Upwork or a firm. As an end-to-end Product Manager, I see no reason to foot the bill of a firm, and with these contract sites, I'm just hesitant. I have a full-stack dev, but finding a no code dev is killing me. lol.
-
-I would love any insight on personal experience, what I should be looking for, how much I should be expecting to pay, etc. ",True,0.00382
-1bj3tii,,,,,,,1710904635.0,https://www.reddit.com/r/Entrepreneur/comments/1bj3tii/names_taken_what_to_do/,Names taken. What to do?,"I recently filed an LLC for my business (beauty consulting and wellness). Unfortunately, both the domain name (.com) and the social media handles were taken. What should I do? I was thinking ""Business[nameHQ.com](https://nameHQ.com)"" or ""getBusiness[name.com](https://name.com)"" . It's a good name that is relevant to my brand. Any suggestions are appreciated!!! ",False,0.00352
-1bj3v3o,,,,,,,1710904780.0,https://www.reddit.com/r/smallbusiness/comments/1bj3v3o/am_i_allowed_to_do_this/,Am I allowed to do this?,Might be a silly question… but if I sign an NDA with a client based on sensitive data and want to outsource this work to an external contractor… does the external contractor also have to sign an NDA related to this new client work?,False,0.0031999999999999
-1bj3vxs,,,,,,,1710904851.0,https://www.reddit.com/r/smallbusiness/comments/1bj3vxs/how_do_you_sell_eclipse_glasses/,How do you sell Eclipse Glasses?,"Hello everyone, 
-
-Im a college student in the us and lets just say I have been planning(busy with classes lol) to sell solar eclipse glasses for the upcoming eclipse in a couple of weeks. Its literally just a whole box in my dorm room filled with them and Im curious how I should sell these. 
-
-Because my current issue is that im out from california and trying to figure out how to sell them online. That and also figuring out what groups I should directly reach out to and ask if they're interested in buying. Do youguys have any advice that could help me out? Thanks in advance!",False,0.00393
-1bj3y9t,,,,,,,1710905053.0,https://www.reddit.com/r/Entrepreneur/comments/1bj3y9t/what_are_some_good_business_opportunities_for_a/,What are some good business opportunities for a college student?,"Hey everyone,
-I have been looking for an opportunity to make some money while in college. I want to do something business/entrepreneur related but I feel lost. I’ve been trying to do stock trading online but that requires a lot of careful analysis and money which is hard for me at the moment. I did consider doing dropshipping, but I know a few people who did that and said that it’s not really worth it you’re barely make money out of it. I did try to get an “actual job” but it didn’t work with my schedule at school and made everything harder. I need a little bit of advice, is there anyone that can help me?",False,0.0041
-1bj40bi,,,,,,,1710905234.0,https://www.reddit.com/r/Entrepreneur/comments/1bj40bi/would_you_guys_ever_get_into_the_beveragefood/,Would you guys ever get into the beverage/food industry,As the title suggests would y'all ever get into the beverage/food/snack industry? Why or why not?,False,0.0029799999999999
-1bj41j7,,,,,,,1710905338.0,https://www.reddit.com/r/startups/comments/1bj41j7/can_you_be_a_part_time_cofounder_of_one_startup/,Can you be a part time cofounder of one startup and a full time cofounder of a different startup at the same time?,"My specialty is marketing and sales — I have a very large network, strong sales experience, and historically have gotten good results. Right now I’ve been offered two separate opportunities.
-
-The first is a full time cofounder (50%)  opportunity for a B2B software startup. I’ve been working on the product with the technical cofounder for a while — it’s going well but due to the complexity of the technology, the product needs an upgrade. This one is also fully bootstrapped and already has some limited revenue. I am currently waiting on the technical cofounder to update the product.
-
-The second is a social app in the green energy/ education sector that could benefit from some educational content and partnerships, which benefits greatly from my network in higher education. The founder offered me a full time cofounder opportunity (50%) but I didn’t make any sense to work on two projects simultaneously, even if their markets didn’t overlap. Should I take this as a part time opportunity for 15% equity?",False,0.00492
-1bj4ein,,,,,,,1710906522.0,https://www.reddit.com/r/webdev/comments/1bj4ein/anyone_looking_for_a_project/,Anyone looking for a project?,"Hi everyone, I hope it's alright to post this here
-
-&#x200B;
-
-My group and I (Designers, Researchers, and Developers) are doing an independent project for the purpose of gaining career experience in a group setting **(we are all unpaid)**.
-
-&#x200B;
-
-The project is a website that facilitates the creation and execution of *other* independent group projects for early-career product/tech professionals for the purpose of gaining real-world career experience.
-
-&#x200B;
-
-Our Dev team recently began, and **we're currently seeking a Dev Co-Lead** to work with our current Dev Lead and help them:
-
-\- determine the direction of the Dev team's efforts
-
-\- assign tasks to apprentices and review work
-
-\- facilitate communication amongst the team
-
-\- provide general support to the Dev team
-
-&#x200B;
-
-Our current tech stack is Python, Next.JS, SQL.
-
-&#x200B;
-
-**Everyone on the team commits 8 hours a week.**
-
-&#x200B;
-
-**If you're interested, shoot me a dm with your resume and a bit about yourself! Also, don't hesitate with questions!**
-
-&#x200B;
-
-Cheers",False,0.0051
-1bj4fxp,,,,,,,1710906649.0,https://www.reddit.com/r/Entrepreneur/comments/1bj4fxp/adam_chapman_home_service_university/,Adam Chapman - Home Service University ,"Has anyone tried the home service university  that he offers. What was your take on the program and does it work? What does it consist of? What services did you start?
-
-",False,0.00306
-1bj4iju,,,,,,,1710906888.0,https://www.reddit.com/r/Entrepreneur/comments/1bj4iju/looking_for_advice_to_sell_fintech_business/,Looking for advice to sell fintech business,"I have a fintech platform for crowdfunding. Currently it operates a licensed regulation crowdfunding portal business, and we have helped people raise over $1.4M through it. Have passed all FINRA audits without a hitch as compliance has been engrained in everything operational.
-
-My partners and I have joined another portal because we fill in expertise gaps, and our goals are closely aligned, so it’s bitter sweet but a positive move for all involved so far, and we have been happy with it.
-
-Looking to sell the old business including all the technology source code, branding, and any operating documentation.
-It could be picked up and operated as a compliant crowdfunding portal, and we could transfer the license to new ownership. Or liquidate the assets and wind down completely.
-
-Never done this before so open to any thoughts or feedback.
-
-Thanks!
-",False,0.00437
-1bj4iol,,,,,,,1710906901.0,https://www.reddit.com/r/smallbusiness/comments/1bj4iol/communicating_your_boundaries_regarding_personal/,Communicating your boundaries regarding personal time to clients. ,"How do I politely tell a client that I have a life after 5 pm that isn’t just to answer her texts for a quote?
-
-A client texted me at 5:45 pm today and sent me some info in regard to receiving a quote. At 8:15 pm today she texted again asking for a quote but in  a very annoyed manner.  How do I kindly tell her to fuck off?",False,0.0036
-1bj4j5c,,,,,,,1710906943.0,https://www.reddit.com/r/Entrepreneur/comments/1bj4j5c/mana_crypt_is_weak/,Mana Crypt is Weak,"It has no effective value. More colorless mana is great in some decks... But as a staple? I think you all are far from mislead. Otherwise, Posty would have bought them all by now lol",False,0.00311
-1bj4j80,,,,,,,1710906950.0,https://www.reddit.com/r/business/comments/1bj4j80/4_businesses_and_all_have_fail_as_a_christian/,4 businesses and all have fail as a Christian woman,"I am a hardworking ambitious christian 36yr F. I know for a fact that I am meant to be in business.God has confirmed this to me through 2 different Pastors I have been in business for the last 2 years now and feeling down about not making any profits. 
-
-I have 2 Ecommerce stores and one has gotten 710 orders in less than a year however I am not profitable. All my revenue has gone back into the business. That store has around 15k in debt mostly from marketing costs. Feeling so defeated and asking for any tips thank you all.",False,0.00395
-1bj4joj,,,,,,,1710906992.0,https://www.reddit.com/r/smallbusiness/comments/1bj4joj/selling_my_ai_meme_generator_app/,Selling my Ai meme generator app,"Hey guys, I recently made fun project for android where users can submit their selfie or photos after that it will generate memes based on pic. I'm willing to sell it if anyone would like to buy.  Here's the android app you can try!
-
-[https://play.google.com/store/apps/details?id=com.roastmypic.MemeGenerator](https://play.google.com/store/apps/details?id=com.roastmypic.MemeGenerator)",False,0.00359
-1bj4k51,,,,,,,1710907033.0,https://www.reddit.com/r/smallbusiness/comments/1bj4k51/looking_for_advice_to_sell_fintech_business/,Looking for advice to sell fintech business,"I have a fintech platform for crowdfunding. Currently it operates a licensed regulation crowdfunding portal business, and we have helped people raise over $1.4M through it. Have passed all FINRA audits without a hitch as compliance has been engrained in everything operational.
-
-My partners and I have joined another portal because we fill in expertise gaps, and our goals are closely aligned, so it’s bitter sweet but a positive move for all involved so far, and we have been happy with it.
-
-Looking to sell the old business including all the technology source code, branding, and any operating documentation.
-It could be picked up and operated as a compliant crowdfunding portal, and we could transfer the license to new ownership. Or liquidate the assets and wind down completely.
-
-Never done this before so open to any thoughts or feedback.
-
-Thanks!",False,0.00437
-1bj4kkr,,,,,,,1710907075.0,https://www.reddit.com/r/smallbusiness/comments/1bj4kkr/help_with_paperwork_for_opening_business/,Help with paperwork for opening business,"I'm looking to open an online shop in Pennsylvania but am caught up on some paperwork on the legal side. I'm not looking for legal advice, just advice on how to proceed. I registered my DBA and have an EIN. I'm trying to get a sales tax license but can't create an account on mypath to apply. I use my EIN and business name, but it says it's not correct. If I remember, after I got my EIN I read in the letter that it may take up to 2 weeks for the IRS to process it. Could this be the problem? Also, are there any other licenses that I might need? This is a home based craft shop I'm trying to open.",False,0.00418
-1bj4nra,,,,,,,1710907337.0,https://www.reddit.com/r/Entrepreneur/comments/1bj4nra/art_business_tips/,Art business tips ,"This is for general advice 
-
-I’m a digital artist who can paint traditionally and digitally. I am not a graphic designer, my experience and training has been through very thorough illustration work. 
-
- I genuinely want to peruse the entrepreneurship life in my passion, and I would like some hard truths in the industry I want to venture in. 
-
-My goal is to create a shop to sell my works— both in prints and in originals. I would like to expand and maybe tap into the fashion industry side of business, in hopes to increase my profitability. But for now, my goal is small and is staying in my current talents. 
-
-
-1. Is my industry in creating an art business profitable? (Profitable meaning you can make like 80k a year at least)  
-2. If you run your own art related business— how long did it take for it to take off?
-3. What did you do to advertise your business? Social media, word of mouth, sacrificing a goat..? 
-
-
-And any general advice for a start up in the creative field would be most appreciated. 
-
-Hope to post my progress on here as things continue! 😎",False,0.005
-1bj4ppw,,,,,,,1710907516.0,https://www.reddit.com/r/Entrepreneur/comments/1bj4ppw/any_business_task_done_in_excel_can_be_a_software/,Any business task done in excel can be a software company. ,"Thinking about all the businesses created off tasks that were once manual and tracked in excel (quickbooks, finances of any kind, etc). 
-
-What other businesses have been built off the back of once being done in excel?",False,0.0031999999999999
-1bj4tv6,,,,,,,1710907901.0,https://www.reddit.com/r/nocode/comments/1bj4tv6/how_can_i_finetune_an_ai_model_with_my_specific/,How can I fine-tune an ai model with my specific expertise? Without Langchain - a no-code solution.,"Hey I'm not really on Reddit too much, so if my post isn't formatted usually, my apologies. I'm looking to create an automation and train an AI to be able to output text-based content for me. I want to train it specifically on the way to write the content, the thinking process behind the content itself, and really fine-tune a model to create this content. The content that I'm looking to create is social media content. I want to fine-tune the model based on my expertise with creating content and also copywriting, and being able to use emotion and storytelling in the content that's created. As far as the data, I can compile some of the best tweets and articles that I've written, also with full breakdowns and explanations of why I wrote them the way that they are, in addition to that, some training material on copywriting and how to think about copywriting and also storytelling through content. My hiccup is, I practically have no coding skills. I know that I could probably use make.com to create some type of automation. But I'm looking to actually fine-tune a model specifically on this task, and I don't know how to accomplish this. Even if this model just leverages the data and pulls from OpenAI's API to give me the outputs, that's totally fine, or if I even use one of the open-source models and fine-tune it to create the content for me also. But I'm looking for a way to actually have the model myself and not resort to 3rd parties to create the model, for example, and be able to play around with the tuning. I would either keep it locally or cloud-based, totally fine, and I could write up a quick interface.  
-  
-  
-  
-The goal for me is to be able to input the idea or the concept around the topic and output the prewritten content around the idea, structured and following the frameworks that I would write content with. If possible, but my hopes are not up, I would also love to automate this. I know I could do it with make.com, but I'm still stuck on creating the model.  
-  
-  
-  
-Any help or guidance is greatly appreciated.",False,0.00743
-1bj51yf,,,,,,,1710908692.0,https://www.reddit.com/r/Entrepreneur/comments/1bj51yf/has_anyone_moved_from_01000_subscribers_in_a/,Has anyone moved from 0▶️1000 subscribers in a newsletter here in 30 days?,"I started writing on my Cryptofada Newsletter on substack last month. I met some substackers who were enthusiastic of growing their audience, I joined and told them my story how within the last 30 days, I gained over 250 new subscribers. Also mentioned that I want to challenge myself to gain 1000 News subscribers in April(30 days).
-
-In retrospect, I’m scared. Currently gaining 2-15 new subscribers daily depending on how much effort I put per day. I decided to form a group with a couple of them to share ideas weekly and be accountability partner, but now I’m so scared that I don’t even know why.
-
-On the other hand, I believe I can pull it through, but I feel the group members are going to look up to me to draw inspiration not to fail.
-
-Kindly suggest unconventional ways. I will need about 35 daily subscriptions to get to 1000 subscribers.
-
-
-My newsletter is about the non News cryptocurrency topics and my audience are just 3:
- ▶️Everyday 9-5 guy who is a Crypto Iliterate who wish to understand beyond the news even when not trying to invest a dime
-
-▶️Finance and entrepreneurs who wish to invest in highly profitable but much less risky cryptos in their early stage
-
-▶️Cryptofounders and Hedge fund investors who wants to research their competitors 
-
-If you belong here, kindly subscribe, a new newsletter heading your way this Thursday 
-
-You can check it out and subscribe here: [CRYPTOFADA NEWSLETTER](https://open.substack.com/pub/cryptofada?r=lnaj4&utm_medium=ios) ",False,0.00619
-1bj544b,,,,,,,1710908896.0,https://www.reddit.com/r/Entrepreneur/comments/1bj544b/can_my_pc_run_microsoft_windows_office_here_are/,"Can my PC run Microsoft Windows, Office? Here are the system requirements","The license is currently slightly cheaper all I did was search for ""Windows 10, 11 License"" on those sites. Another,  
-  
-Subscription only have office 365, if you want lifetime key, you can buy from Microsoft partner https://softwarekey4u.com/ office 2019/2021, activation from office.com/setup, cheap price and key lifetime.",False,0.00356
-1bj56ry,,,,,,,1710909143.0,https://www.reddit.com/r/smallbusiness/comments/1bj56ry/profitability_college_and_costs_of/,"Profitability, college and costs of logistics/courier business?","Hey everyone, so I'm 19 and want to maybe start a small logistics/courier (maybe medical focused) business in a few years.
-
-I am planning on doing a degree in supply chain management and then working for a few years beforehand.
-
-Im looking for advice and information on the profitably of such a business, startup costs, and more general information about the industry. 
-
-Any tips or advice is appreciated. 
-",False,0.00361
-1bj5808,,,,,,,1710909261.0,https://www.reddit.com/r/SaaS/comments/1bj5808/the_glass_ceiling_im_hitting_is_made_up_by_my/,The glass ceiling I’m hitting is made up by my brain.,"I quit all I had in France a year ago. Software engineer job, flat in Lyon (France), sold most of my belongings and went in Asia with a one-way ticket and my 50 backpack ~ 9kg inc. the MacBook.
-Freedom drove me: the freedom to go wherever I want, whenever I want, doing whatever I want. Leaving France was motivated by the willing to unleash my entrepreneurial spirit. 
-
-I wasn’t sure what I was gonna do: freelancing, remote work, indie hacking, etc
-The first few months of travel got me thinking a lot, and at a point I met this French entrepreneur (owning 3 digital agencies), during our discussion one point got me thinking for weeks, after I asked him what brought him to his current position: “I kept doing what I loved to do until people where willing to pay me for it”
-That triggered this question within me: wtf can I do that I actually love to do? 
-My life has so many different phases, from bartender in NYC, to carpenter in New-Zealand, to Engineer in the aluminum industry with international customers, to software eng in a French startup. I was like: fk, what’s the common element in this sh*t. What do I love to do. After weeks of background thinking it was cristal clear: I love to solve problems, and I love to build solutions for it. 
-
-That’s where I started my indie hacker journey, one year ago. Then, long story short: 
-- challenged myself for the first saas: created a WhatsApp bot integrating ai in couple of weeks (focusing on audio transcription as pain point)
-- Then seeing the potential of AI, created another WhatsApp bot that would integrste everything (text, audio, image, etc) - which didn’t solve any problem, except leveraging WhatsApp to make AI more accessible
-- Then created couple of free stuff, worldll•e (a bot posting daily pics representing the world based on the previous day’s news), and another stuff to interact with Karl Marx books
-All my projects were drivent by technological curiosity, each of them allowed me to go deeper into using and applying AI (for instance, the “Karl Marx” was my way to use and understand langchain, , embedding, vector databases  / pinecone). 
-
-First first project was making ~$150/ mo, from AI directories and couple of newsletters it’s been published in. 
-
-The second WhatsApp bot was killed, it got spammed in Facebook group in North Africa and India and got me into issues with Meta, ending up with my business account being banned. 
-
-Then I came a cross this AI influencer tweet lot of people have seen “we made $70k by selling 1$/min audio of an influencer on telegram”.
-I was like: “f*ck META and WhatsApp, I need to try Telegram. Let’s explore the text-to-speech and custom LLMs and build an AI girlfriend”. I focused on the erotic part of it to differentiate it a bit. First month it made $800. The lots of ups and downs. Most of my traffic is coming from AI directories, since i was one of the first ones to register it on it (did this saas over the week end at first, it was 6 month ago). 
-It went to $2k, up to $4k at a point, now in between $2.2k and $3k. But I never did marketing, thinking that I don’t like this industry. I always hide myself in technological / features / experience improvement. Always avoiding the marketing. Why? There’s actually a lot of potential in this business. Health, wealth and relationship are 3 axis that will always make money. I had LOADS of times of introspections, hips of downs, some ups of course, here’s what I realised: 
-- I’ve been through the poorest phase of my life while being in Bali, had no savings left, needed to live on a ~15-30$ / day revenue (still had to pay some services and APIs with it)-> I had to deconstruct my occidental vision or financial security. Learn to live with almost nothing, with max 3-4 days of financial vision (the time Stripe takes to forward incomes to bank account). It totally changed my way of thinking. 
-- I was missing a goal: I was seeking “financial freedom”. But what is it? How much do I need to generate? Not having a number on it was the best way to not achieve this goal. 
-- I became dependent of a project I didn’t like: the ai girlfriend. It was (and is) keeping me alive, and somehow blocked myself from pushing it for ethical reasons, and afraid of being labelled as the “ai girlfriend” guy. but really: who gives a sh*t? Relationships & sex is taboo even though part of our daily life. Still, I went into the tech rabbit hole with always avoiding any marketing and trying to fix/improve the product, that even brought me to another thought: 
-- Am I afraid of success? Am I afraid of making money? As weird as it sounds, I believe the last 6 months were actually a transition of the employee version of me, dreaming of entrepreneurship, to be an actual entrepreneur. Believing in myself. I’m always harsh on myself, which makes it hard to consider wins, even the smallest ones, but as well pushes me to keep going. In December I had 3 weeks of holiday in Vietnam with a friend, the first self-paid holiday. Not touching the laptop, and money was still flowing in. That’s a huge step. 
-
-So now, here I am, got two products with market fit: $150 MRR, and $2.2k MRR. Did the strict minimum for it marketing-wise. 
-Im in Bangkok since 3 weeks, heading back to Bali next week, and a clearer vision, after months of evolutions, learnings, ups and down. And my goal is simple: Break. This. Fkg. Glass. Ceiling. My. Mind. Created. 
-
-How? 
-1. Growing these two products
-- Reduce churn = improve experience
-- Increase conversion = rework LP and offers
-- Increase traffic = MARKETING
-
-2. Then going back to what I actually miss and love: Building new stuff. Fkg miss it. We should focus on what work yes, but as well focus on what drives us, and for me it’s the curiosity and the challenges a new product brings. But first, I need to hack and unlock marketing for me. 
-
-This AI girlfriend stuff made me ashamed of Building in Public, so stopped to do it. Now I’m gonna be back and share my insights and learnings for growing my current products and creating new stuff. 
-
-This post is a way for me to be accountable to ANNIHILATE this mind-made glass ceiling. 
-
-I’ll be sharing stuff again on twitter, [@maelus_](https://x.com/maelus_) - I’d love to connect with other indiehackers - could even Meetup if you’re in Bali / Bangkok / France, world is small when travelling & indiehacking. 
-
-Also, AMA
-
-maelus",False,0.01766
-1bj5x54,,,,,,,1710911854.0,https://www.reddit.com/r/business/comments/1bj5x54/thoughts_on_starting_a_audio_visual_rental/,Thoughts on starting a audio visual rental business?,"I’m planning on starting my own AV rental business. For those who don’t know, AV, also known as audiovisual, has anything to do with TVs, speakers, projectors, etc. But I would like to get a couple questions answered and would also prefer if anyone with experience or knowledge in the field would like to add anything.
-
-1. How hard is it?
-2. Is it scalable?
-3. How much capital is needed?
-4. Anyway, I can make it “remote”? For example, if I were to use another AV vendor to handle one of my clients event needs,?
-5. Work/life balance?
-6. How much can I make a year?
-7. What’s the hardest part of this business model?
-
-Any other information would be appreciated!",False,0.00431
-1bj5xg8,,,,,,,1710911890.0,https://www.reddit.com/r/smallbusiness/comments/1bj5xg8/how_do_you_deal_with_rude_customers/,How do you deal with rude customers?,"My mom owns a small business nail salon that opened less than a year ago. Today I visited and was shocked to see two extremely rude customers. They were saying ""you suck, you suck, you suck"" to my mom who doesn't speak english that well. They were saying how she sucks at what she does and how ugly her nails were. They were so incredibly rude while my mom was so nice and dense to what they were saying. They even said they were going to leave a bad review just because they can. 
-
-I have a video that shows SOME of their behavior and actions, but I do not know if it is allowed to be posted in this sub.
-
-I just don't want to worry about my mom and her workers being harassed by other customers such as her in the future. I know everyone gets bad customers, and I'm sure she knows that, but it's disheartening to see. 
-
-Her business is lacking customers lately, and I did buy an AD to support her, and I do not want to see her be discouraged even more with these experiences.
-
-So, how can I deal with bad customers that might come in the future? I really wanted to step up and say something, but I don't want to be unprofessional or maybe get hurt. ",False,0.00529
-1bj62um,,,,,,,1710912472.0,https://www.reddit.com/r/smallbusiness/comments/1bj62um/can_i_interview_business_ownersentrepreneurs/,Can I interview Business Owners/Entrepreneurs?!,"I am a Research Student at a Canadian University. I want to **interview some Business Owners/Entrepreneurs** within the Service Industry (Restaurant, Internet Service Providers, Window Cleaning, Car Detailing, etc). Essentially any Business Owner that has Employees/Contractors on the ground dealing with people. If you deal with people working for your business, I would love to talk to you.  
-  
-Before starting my journey in Engineering, I had previously my summers as a Window Cleaner, Server, Car Detailer, I noticed several ***problems*** faced by **Business Owners** in the Service Industry. One of the biggest being ***Hiring, Training and Managing Employees*** (in my opinion).  
-  
-The interview would be a Casual Conversation via Zoom and **wont exceed 15 mins** (unless you'll don't mind having a bit of a longer questions). The questions would be centered towards the c***hallenges faced by Business Owners, discussing Employees and Sales Generation***.  
-  
-We are passionate about the research we are doing and would love to speak to anyone who would be willing to spear some of their time.  
-  
-Thank you!",False,0.00513
-1bj66pf,,,,,,,1710912900.0,https://www.reddit.com/r/Entrepreneur/comments/1bj66pf/is_it_common_to_have_a_certain_percentage_of/,Is it common to have a certain percentage of goods damaged/defective upon delivery from Alibaba?,"I have a low budget for my startup. I ordered custom products off of Alibaba and my samples were great. However after placing an order, about 1/3 of one product has visible flaws and 1/4 of the other product has defects as well. Is this common when ordering things from Alibaba? They are only offering me 10% discount off of the damaged items only which is very frustrating.",False,0.0036399999999999
-1bj67gl,,,,,,,1710912984.0,https://www.reddit.com/r/advancedentrepreneur/comments/1bj67gl/i_want_to_interview_business_ownersentrepreneurs/,I want to Interview Business Owners/Entrepreneurs,"I am a Research Student at a Canadian University. I want to interview some Business Owners/Entrepreneurs within the Service Industry (Restaurant, Internet Service Providers, Window Cleaning, Car Detailing, etc). Essentially any Business Owner that has Employees/Contractors on the ground dealing with people. If your Business has **people** that work for you, I would like to speak to you.  
-  
-Before starting my journey in Engineering, I had previously my summers as a Window Cleaner, Server, Car Detailer, I noticed several **problems** faced by **Business Owners in the Service Industry**. One of the biggest being ***Hiring, Training and Managing Employees (in my opinion).***  
-  
-The interview would be a Casual Conversation via Zoom and **wont exceed 15 mins** (unless you'll don't mind having a bit of a longer questions). The questions would be centered towards the ***challenges faced by Business Owners, discussing Employees and Sales Generation.***  
-  
-We are passionate about the research we are doing and would love to speak to anyone who would be willing to spear some of their time.  
-  
-Thank you!",False,0.00512
-1bj6ut3,,,,,,,1710915634.0,https://www.reddit.com/r/business/comments/1bj6ut3/paid_traffic_manager_doesnt_work_miracles/,Paid traffic manager doesn’t work miracles!,"Many customers come to me with very high expectations. But there is often a problem. The profile, the store, the online business is not well structured. It doesn’t give an image of trust or anything like that. Then I send visitors to the online store, the business profile on social networks but due to poor structure these visits do not convert into leads. Today I try to guide my customers to structure their online business well before going to paid traffic to act a combination of strategies, I take the visitor to the profile or store and with a well-structured online business visually, that talks to the public, we can convert visitors into leads!",False,0.004
-1bj6zlw,,,,,,,1710916194.0,/user/Efficient_Builder923/comments/1bj6z1v/what_is_your_biggest_challenge_in_coordinating/,What is your biggest challenge in coordinating with hiring teams?,,False,0.00274
-1bj78cz,,,,,,,1710917217.0,https://www.reddit.com/r/startups/comments/1bj78cz/solution_to_build_a_media_posting_automation/,solution to build a media posting automation plugin,"hi guys,
-
-i have an idea to build an AI based plugin which automates articles posting on popular social media channels. I want to be able to take H1 or Title of the article and the meta description and create a prompt to generate an image. after it should automatically apply h1 and meta description on top of the graphic and release it on Instagram, Facebook or twitter. Is this realistic? what type of image generation solution should I use?",False,0.0036199999999999
-1bj7cc8,,,,,,,1710917702.0,https://www.reddit.com/r/SaaS/comments/1bj7cc8/any_saas_that_creates_landing_page_images_or_ad/,Any SAAS that creates landing page images or ad creatives?,"[https://salient.tailwindui.com/\_next/image?url=%2F\_next%2Fstatic%2Fmedia%2Fpayroll.517af4e7.png&w=1200&q=75](https://salient.tailwindui.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fpayroll.517af4e7.png&w=1200&q=75)
-
-<-- Image like this
-
-Whenever I create a landing page, whenever I do performance marketing, I want to put pretty images that showcase our services, but I'm not good at design at all, so it's a pain.  
-Is there any Saas that solves this problem?",False,0.00424
-1bj7cjj,,,,,,,1710917723.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7cjj/how_to_test_a_digital_product/,How to test a digital product?,"New to this
-
-I want to create a digital product but i want to test it first
-
-Tho it's like key of that product is the idea and pov, so if i share, anyone can just copy and paste
-
-I thought of creating a video course on it, and I'll have to figure out how to let other people see it in terms of promotion.
-
-Tho i really want to know what people think of this, and like if it's actually helpful to people, it's related to human connection and self growth so idk if the pov i have works for others
-
-
-I'm sure I'll put this out there sooner or later
-
-
-
-
-",False,0.004
-1bj7cy4,,,,,,,1710917776.0,https://i.redd.it/h31435nysfpc1.jpeg,"Lol, pro.sony official website. Someone forgot to remove debug",,False,0.00278
-1bj7ej0,,,,,,,1710917962.0,https://www.reddit.com/r/SaaS/comments/1bj7ej0/what_are_game_changing_innovations_in_tech_for/,What are game changing innovations in tech for your country?,"Hi all,
+id, timestamp, url, title, body, is_relevant, cost, reason,timestamp,url,title,body,is_relevant,cost,reason
+1bj7cy4,,,,,,,,1710917776.0,https://i.redd.it/h31435nysfpc1.jpeg,"Lol, pro.sony official website. Someone forgot to remove debug",,False,0.00697,"The post is about a Sony website issue, not about seeking technical co-founder or software development services."
+1bj7ej0,,,,,,,,1710917962.0,https://www.reddit.com/r/SaaS/comments/1bj7ej0/what_are_game_changing_innovations_in_tech_for/,What are game changing innovations in tech for your country?,"Hi all,
 
 I'm interested in finding game changing innovations to build.
 
@@ -702,9 +10,9 @@ What do you think is something that can solve a big problem in your country?
 
 Many thanks!
 
-",False,0.00323
-1bj7f7j,,,,,,,1710918033.0,https://youtube.com/watch?v=HzNJJlpumIg&si=BmPXjQ_0Q_CZjJOA,Meta Brand Building Summit: The Now and Next,,False,0.00273
-1bj7fgb,,,,,,,1710918056.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7fgb/what_are_game_changing_innovations_in_tech_for/,What are game changing innovations in tech for your country?,"Hi all,
+",False,0.00746,The post is focused on seeking innovative ideas rather than looking for a technical co-founder or software development services.
+1bj7f7j,,,,,,,,1710918033.0,https://youtube.com/watch?v=HzNJJlpumIg&si=BmPXjQ_0Q_CZjJOA,Meta Brand Building Summit: The Now and Next,,False,0.00707,The post does not mention any need for software development services or a technical co-founder.
+1bj7fgb,,,,,,,,1710918056.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7fgb/what_are_game_changing_innovations_in_tech_for/,What are game changing innovations in tech for your country?,"Hi all,
 
 I'm interested in finding game changing innovations to build.
 
@@ -714,9 +22,9 @@ What do you think is something that can solve a big problem in your country?
 
 Many thanks!
 
-",False,0.00323
-1bj7k22,,,,,,,1710918583.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7k22/who_here_can_be_helped_by_a_random_entrepreneur/,Who Here Can be Helped By a Random Entrepreneur?,"Hi guys, please try stating your needs so that I can think through if there is a way I can help you. I obviously won't be able to help out all, but others in the comments will be able to introduce themselves to you as well. \*thumbs up\*",False,0.00331
-1bj7lo7,,,,,,,1710918769.0,https://www.reddit.com/r/smallbusiness/comments/1bj7lo7/the_sales_playbook_part_1_of_100_the_art_of_high/,The Sales Playbook Part 1 of 100. The Art of High Level Sales,"So you've been looking at improving some sales skills or getting into sales as a career. Otherwise you wouldn't be reading this obviously. While sales comes naturally to some, there is a collection of small details you can take from each to improve your game. Some are naturally great a building rapport, some just speak with confidence, or some just have that natural aura that people feel comfortable around them. Those secrets will be exactly what this series covers. Starting with understanding how high level sales is an art form that can be replicated.   
+",False,0.0075499999999999,The post is focused on seeking ideas for game-changing innovations rather than looking for a technical co-founder or software development service.
+1bj7k22,,,,,,,,1710918583.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7k22/who_here_can_be_helped_by_a_random_entrepreneur/,Who Here Can be Helped By a Random Entrepreneur?,"Hi guys, please try stating your needs so that I can think through if there is a way I can help you. I obviously won't be able to help out all, but others in the comments will be able to introduce themselves to you as well. \*thumbs up\*",False,0.00751,The post is too generic and does not specify a need for software development or a technical co-founder.
+1bj7lo7,,,,,,,,1710918769.0,https://www.reddit.com/r/smallbusiness/comments/1bj7lo7/the_sales_playbook_part_1_of_100_the_art_of_high/,The Sales Playbook Part 1 of 100. The Art of High Level Sales,"So you've been looking at improving some sales skills or getting into sales as a career. Otherwise you wouldn't be reading this obviously. While sales comes naturally to some, there is a collection of small details you can take from each to improve your game. Some are naturally great a building rapport, some just speak with confidence, or some just have that natural aura that people feel comfortable around them. Those secrets will be exactly what this series covers. Starting with understanding how high level sales is an art form that can be replicated.   
   
   
   
@@ -750,8 +58,8 @@ Make sure to go ahead and subscribe to the newsletter at www.savantumsales.com i
   
   
   
-If you are in sales or interested in getting into sales, feel free to send me any questions you might have. I have no problem helping give some advice. I don't charge you for anything unless we're doing real coaching. If you have any request for information to be added to the playbook, just let me know. Any feedback is greatly appreciated.  I want this to be a tool you can use over and over for your entire career. Thank for you time. See you on the next one. ",False,0.00966
-1bj7m89,,,,,,,1710918831.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7m89/is_it_really_possible_to_get_rich_from_nothing_or/,Is it really possible to get rich from nothing or should I stay REALISTIC??,"So, I’m a 20M. I’m in my second year of medical school in my country. I‘m the oldest and only boy in a family of 7. My family falls in the category of lower middle class with lots of financial constraints.   
+If you are in sales or interested in getting into sales, feel free to send me any questions you might have. I have no problem helping give some advice. I don't charge you for anything unless we're doing real coaching. If you have any request for information to be added to the playbook, just let me know. Any feedback is greatly appreciated.  I want this to be a tool you can use over and over for your entire career. Thank for you time. See you on the next one. ",False,0.0137,"The post focuses on sales skills improvement, not on starting a software business."
+1bj7m89,,,,,,,,1710918831.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7m89/is_it_really_possible_to_get_rich_from_nothing_or/,Is it really possible to get rich from nothing or should I stay REALISTIC??,"So, I’m a 20M. I’m in my second year of medical school in my country. I‘m the oldest and only boy in a family of 7. My family falls in the category of lower middle class with lots of financial constraints.   
 
 
 My parents are getting old and tired from the low quality of food and life and the tons of efforts they exert to keep this family alive, and I’m really grateful for that.
@@ -783,49 +91,25 @@ Is this goal worth it?? Will business relieve my financial constraints and help 
 
 If it’s the right thing to do, I’ll be more than thankful for any tips or advice. 
 
-Thanks for reading.",False,0.00708
-1bj7od4,,,,,,,1710919084.0,https://www.reddit.com/r/SaaS/comments/1bj7od4/selling_saas/,Selling saas ,"Hi everyone im new at the topic but became very interested by the wide solutions that saas can bring. Im a marketing specialist and I would like to sell saas as I had identify market opportunities. 
+Thanks for reading.",False,0.0112199999999999,"The post is about an individual's personal financial aspirations, not about starting a software business."
+1bj7od4,,,,,,,,1710919084.0,https://www.reddit.com/r/SaaS/comments/1bj7od4/selling_saas/,Selling saas ,"Hi everyone im new at the topic but became very interested by the wide solutions that saas can bring. Im a marketing specialist and I would like to sell saas as I had identify market opportunities. 
 Were did you recommend me to start looking? 
 
-I would like to have a saas catalog, promote and get customers wich its my thing.",False,0.00338
-1bj7qbx,,,,,,,1710919311.0,https://www.reddit.com/r/smallbusiness/comments/1bj7qbx/square_referral/,Square Referral,"hey guys, I'm 16 and want to start a lawn care business. If anyone is looking at using square, and wants to sign up, i would be much appreciatex if anyone can use my referral link, we both get either $1000 of free processing or $20 off any square product, please comment and ill send you my link. Thanks all!",False,0.00342
-1bj7qgc,,,,,,,1710919324.0,https://www.reddit.com/r/webdev/comments/1bj7qgc/how_does_railwayapp_price_database_usage/,How does Railway.app price Database usage?,"There is no detail on [Railway.app](https://Railway.app) pricing page regarding the pricing for Database usage. Like for example, if I host a Mysql database on Railway how would the pricing look like? I haven't found the details yet. Can anyone point me in the right direction?",False,0.00333
-1bj7sog,,,,,,,1710919581.0,https://www.reddit.com/r/SaaS/comments/1bj7sog/any_gamification_tools_out_there/,Any gamification tools out there?,"Hey there fellow founders, I am doing some research into a potential product idea around quests, leaderboards etc. for boosting engagement around product. I have seen this being used in web 3 with companies like galxe or zealy. The gist is you can add activities for members of a community or customers to complete to earn points towards a reward and compete in a leaderboard. For me keeping my community/customers engaged was always a challenge and we did gamification albeit manually and with a lot of headache. So we thought to ourselves maybe why not build the tools to do this? Any perspective on this area? My high level concerns is that the market may not be that big cause gamification can be applied here for communities, but the same framework can be used in say sales or marketing tech, if so why haven't I seen more of this?   
+I would like to have a saas catalog, promote and get customers wich its my thing.",True,0.00761,"The post is from someone interested in starting a SaaS business, aligning with the ideal client profile."
+1bj7qbx,,,,,,,,1710919311.0,https://www.reddit.com/r/smallbusiness/comments/1bj7qbx/square_referral/,Square Referral,"hey guys, I'm 16 and want to start a lawn care business. If anyone is looking at using square, and wants to sign up, i would be much appreciatex if anyone can use my referral link, we both get either $1000 of free processing or $20 off any square product, please comment and ill send you my link. Thanks all!",False,0.0075899999999999,"The post is about starting a physical, in-person lawn care business, not software."
+1bj7qgc,,,,,,,,1710919324.0,https://www.reddit.com/r/webdev/comments/1bj7qgc/how_does_railwayapp_price_database_usage/,How does Railway.app price Database usage?,"There is no detail on [Railway.app](https://Railway.app) pricing page regarding the pricing for Database usage. Like for example, if I host a Mysql database on Railway how would the pricing look like? I haven't found the details yet. Can anyone point me in the right direction?",False,0.00753,"The post is seeking information on a specific tool's pricing, not looking for a software development partnership."
+1bj7sog,,,,,,,,1710919581.0,https://www.reddit.com/r/SaaS/comments/1bj7sog/any_gamification_tools_out_there/,Any gamification tools out there?,"Hey there fellow founders, I am doing some research into a potential product idea around quests, leaderboards etc. for boosting engagement around product. I have seen this being used in web 3 with companies like galxe or zealy. The gist is you can add activities for members of a community or customers to complete to earn points towards a reward and compete in a leaderboard. For me keeping my community/customers engaged was always a challenge and we did gamification albeit manually and with a lot of headache. So we thought to ourselves maybe why not build the tools to do this? Any perspective on this area? My high level concerns is that the market may not be that big cause gamification can be applied here for communities, but the same framework can be used in say sales or marketing tech, if so why haven't I seen more of this?   
 
 
 Appreciate any replies just doing some digging!
 
-&#x200B;",False,0.00457
-1bj7u61,,,,,,,1710919761.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7u61/opportunity_to_start_a_business/,Opportunity to start a business,"I work in civil construction and I've seen a gap that I could fill with trucks, I have friends and family who are drivers and keen to start.
+&#x200B;",True,0.0088,"The post shows interest in developing a gamification tool, aligning with services for startups in tech development."
+1bj7u61,,,,,,,,1710919761.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7u61/opportunity_to_start_a_business/,Opportunity to start a business,"I work in civil construction and I've seen a gap that I could fill with trucks, I have friends and family who are drivers and keen to start.
 I've talked to the managers involved and they will definitely get me the contracts once I have trucks... however.
 I've had a bad go of it when dealing with banks in the past, im wondering how I should approach the bank for loans for wages and pant to get started. Also looked into leasing to begin with.
 
-Any advice from experienced people? Pretty keen to dive in as.. well.. what's the worst that could happen? Just get a job again?",False,0.00394
-1bj7w96,,,,,,,1710920010.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7w96/for_hire_exbookingdotcom_data_analyst_and_genai/,[For Hire] Ex-Booking[dot]com Data Analyst and GenAI specialist at a startup [35 USD/hr],"Hey, I have been using this subreddit to get clients and have completed 3 jobs here, all with good reviews.
-
-Here are my skills and experience:
-
-1) Technical Skills: Python, SQL, R 
-
-2) Academics: Bs Econometrics, Mathematics and Computer Science
-
-3) Specialty: GenAI, Statistics, Data Visualization.
-
-4) Sectors: Databases, Hospitality, ecommerce and Telecom
-
-
-Here are some of my projects (I write extensively on Medium):
-
-Link: https://arslanshahid-1997.medium.com/using-langchain-to-teach-an-llm-to-write-like-you-aab394d54792
-
-Link: https://towardsdatascience.com/money-balling-cricket-probability-of-100-using-repeated-conditioning-2fc8dbceb42e
-
-
-I have over 4+ years experience in Data Science. 
-
-
-Please do reach out, fair rate of 35 USD/hr. ",False,0.00482
-1bj7yh2,,,,,,,1710920279.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7yh2/i_am_relaunching_the_app_which_got_half_acquired/,I am relaunching the app which got half acquired by Dubai based client and I lost $4000 with 4 months of development time.,"I prefer products rather than projects, But later last year, I got a customer who wanted to acquire my app from a renowned platform. We decided on $5000 on pre-revenue and he paid me $2500 without any long and deep due diligence but then he disappeared for 15 days, and there was no contact, I tried to reach him numerous times during these 15 days but no response. Then he replied and asked me to work for him even during the acquisition.   
+Any advice from experienced people? Pretty keen to dive in as.. well.. what's the worst that could happen? Just get a job again?",False,0.00799,"The post is about starting a business in civil construction, not software development."
+1bj7yh2,,,,,,,,1710920279.0,https://www.reddit.com/r/Entrepreneur/comments/1bj7yh2/i_am_relaunching_the_app_which_got_half_acquired/,I am relaunching the app which got half acquired by Dubai based client and I lost $4000 with 4 months of development time.,"I prefer products rather than projects, But later last year, I got a customer who wanted to acquire my app from a renowned platform. We decided on $5000 on pre-revenue and he paid me $2500 without any long and deep due diligence but then he disappeared for 15 days, and there was no contact, I tried to reach him numerous times during these 15 days but no response. Then he replied and asked me to work for him even during the acquisition.   
 
 
 we decided on the cost and started work for him with one of my colleagues. I paid my colleague a good advance amount and did ask my client to pay me but he said he would pay soon because he didn't do any due diligence and pay me without any delay in the start. I trusted him and we started working. 
@@ -855,12 +139,12 @@ The app is [chatwebby.com](https://chatwebby.com) and it is live on producthunt 
 
 
 https://www.producthunt.com/posts/localized-chatbots-for-your-websites  
-",False,0.01027
-1bj80a0,,,,,,,1710920505.0,https://www.reddit.com/r/startups/comments/1bj80a0/how_do_i_get_salary_as_startup_founder/,How do i get salary as startup founder,"Hey, i got some investment and will be opening a startup next month.. the noney covers the expenses but not my salary, normally how founders do to keep getting income ? Keep otherjob? Try new found raise or get a loan? 
+",False,0.01465,"The post is about a prior business dealing and relaunching an app, not seeking a co-founder or development help."
+1bj80a0,,,,,,,,1710920505.0,https://www.reddit.com/r/startups/comments/1bj80a0/how_do_i_get_salary_as_startup_founder/,How do i get salary as startup founder,"Hey, i got some investment and will be opening a startup next month.. the noney covers the expenses but not my salary, normally how founders do to keep getting income ? Keep otherjob? Try new found raise or get a loan? 
 
-Im new in this patch so trying to get some insight. ",False,0.00333
-1bj8175,,,,,,,1710920620.0,https://www.reddit.com/r/smallbusiness/comments/1bj8175/how_can_i_get_rid_of_zenbusiness/,How can I get rid of Zenbusiness?,"They don't respond when I email them. Also, do I need to find another registered agent first? How did you do it if you have experience?",False,0.0030299999999999
-1bj826w,,,,,,,1710920741.0,https://www.reddit.com/r/Entrepreneur/comments/1bj826w/zero_paying_users_after_being_1_on_product_hunt/,Zero Paying Users After Being #1 on Product Hunt,"**Every time I saw someone do well on Product Hunt, I thought it was a big win.**  
+Im new in this patch so trying to get some insight. ",False,0.00749,"The post is about a founder's personal income, not seeking a technical partner or development agency."
+1bj8175,,,,,,,,1710920620.0,https://www.reddit.com/r/smallbusiness/comments/1bj8175/how_can_i_get_rid_of_zenbusiness/,How can I get rid of Zenbusiness?,"They don't respond when I email them. Also, do I need to find another registered agent first? How did you do it if you have experience?",False,0.00735,"The post is about dissolving a relationship with a company, not about seeking a technical co-founder or software development services."
+1bj826w,,,,,,,,1710920741.0,https://www.reddit.com/r/Entrepreneur/comments/1bj826w/zero_paying_users_after_being_1_on_product_hunt/,Zero Paying Users After Being #1 on Product Hunt,"**Every time I saw someone do well on Product Hunt, I thought it was a big win.**  
 
 
 I believed these people got lots of visitors and definitely customers who pay. Stories I heard a long time ago made me think this was true.
@@ -901,8 +185,8 @@ We still are not happy with the progress.
 **We plan to launch on Product Hunt again**
 
 But this time  
-we have realistic expectations.",False,0.0066
-1bj8318,,,,,,,1710920851.0,https://www.reddit.com/r/Entrepreneur/comments/1bj8318/im_setting_up_a_brick_and_mortar_mattress_store/,I’m setting up a brick and mortar mattress store and I need your help," Hello internet. I’m looking for the best advice from anyone who has started, currently runs or has experience in operating a brick and mortar mattress and or bed shop (UK ideally). 
+we have realistic expectations.",False,0.01104,The post discusses a software product journey rather than seeking technical partnership or co-founding services.
+1bj8318,,,,,,,,1710920851.0,https://www.reddit.com/r/Entrepreneur/comments/1bj8318/im_setting_up_a_brick_and_mortar_mattress_store/,I’m setting up a brick and mortar mattress store and I need your help," Hello internet. I’m looking for the best advice from anyone who has started, currently runs or has experience in operating a brick and mortar mattress and or bed shop (UK ideally). 
 
 How much startup capital would you say is needed?
 
@@ -910,22 +194,653 @@ Do you have any advice on hitting the ground running as it were?
 
 Marketing practices that have worked well? 
 
-Is this in your opinion still a ‘good’ business idea or does everyone buy their mattresses online? (I know I don’t but maybe I’m old fashioned for a 26 year old…) ",False,0.00389
-1bj8a9k,,,,,,,1710921770.0,https://www.reddit.com/r/SaaS/comments/1bj8a9k/which_platforms_do_you_guys_use_when_you_want_to/,"Which platforms do you guys use when you want to get lead generation? (e.g. Wordpress, Ghost, etc)",,False,0.00287
-1bj8g8p,,,,,,,1710922548.0,https://www.reddit.com/r/sveltejs/comments/1bj8g8p/how_to_style_with_dynamic_tailwind_classes/,How to style with dynamic tailwind classes ?,"Why doesn't this code work ? dynamically creating tailwind classes ?
+Is this in your opinion still a ‘good’ business idea or does everyone buy their mattresses online? (I know I don’t but maybe I’m old fashioned for a 26 year old…) ",False,0.00805,"The post is about starting a physical, brick and mortar mattress store, not a software business."
+1bj8a9k,,,,,,,,1710921770.0,https://www.reddit.com/r/SaaS/comments/1bj8a9k/which_platforms_do_you_guys_use_when_you_want_to/,"Which platforms do you guys use when you want to get lead generation? (e.g. Wordpress, Ghost, etc)",,False,0.00703,"The post inquires about platforms for lead generation, not seeking a co-founder or technical partnership."
+1bj8g8p,,,,,,,,1710922548.0,https://www.reddit.com/r/sveltejs/comments/1bj8g8p/how_to_style_with_dynamic_tailwind_classes/,How to style with dynamic tailwind classes ?,"Why doesn't this code work ? dynamically creating tailwind classes ? Why doesn't below code work ?
 
     <script>
-      const color = ""red"";
+    const color = ""red"";
+    const note = ""hello"";
+    const author = ""sam"";
     </script>
     
     <div className={`bg-${color}-200 text-${color}-800`}>
       {note}
       <p className=""text-end px-4"">- <span>{author}</span></p>
-    </div>
-
-&#x200B;",False,0.00352
-1bj8jxl,,,,,,,1710923020.0,https://www.reddit.com/r/sveltejs/comments/1bj8jxl/phone_app/,Phone app?,"Hello, im buliding a project with Svelte, what are a good way to make a phone app for it?
+    </div>",False,0.00797,The post is focused on technical issues with using Tailwind CSS and does not pertain to seeking software development services.
+1bj8jxl,,,,,,,,1710923020.0,https://www.reddit.com/r/sveltejs/comments/1bj8jxl/phone_app/,Phone app?,"Hello, im buliding a project with Svelte, what are a good way to make a phone app for it?
 
 its an erp dashboard, so i dont need much in term of platform apis i think something like webview would be enough, what do you think and is there any of you that have built something like that. 
 
-&#x200B;",False,0.0033900000000000002
+&#x200B;",True,0.0075599999999999,"The post is about building a phone app for a project, which aligns with software development."
+1bj8m4v,,,,,,,,1710923312.0,https://www.reddit.com/r/Entrepreneur/comments/1bj8m4v/marketing_gurus_i_need_your_help/,Marketing gurus I need your help? ,"After honing my skills in Facebook advertising for a real estate business, I've decided to embark on my entrepreneurial journey by launching a marketing agency. While I excel at generating leads and conducting sales calls, I prefer to delegate tasks that don't align with my passions. Has anyone pursued a similar path? I'm eager to connect and exchange insights. Let's chat!",False,0.0074699999999999,"The post is about starting a marketing agency, not a software business."
+1bj8q3x,,,,,,,,1710923847.0,https://www.reddit.com/r/SaaS/comments/1bj8q3x/onetime_deal_in_saas/,One-time deal in SAAS,"I develop SAAS for error monitoring & log management. Our clients are startups and software companies. I'm thinking of offering a one-time payment deal for the ""Team"" plan. Instead of paying $1020 annually, you can make a one-time payment of $299-$399 (500K requests, 90 days retention + unlimited users, projects, and alerts). What do you think about a one-time deal? Have you tried it in your SAAS?
+
+[View Poll](https://www.reddit.com/poll/1bj8q3x)",False,0.00814,"The post is about offering a pricing model for an already developed product, not seeking development partnership."
+1bj8rgo,,,,,,,,1710924036.0,https://www.reddit.com/r/business/comments/1bj8rgo/need_advice_on_what_career_path_to_take/,Need advice on what career path to take ,"Some context: I work for a company with great benefits and love my work. I live fairly comfortably, pay off my debts, I have a free gym and some other perks. 
+
+However the company growth is stagnant and I've heard there's problems. Also there's a job posting on my company website that describes my work to a T but management has expressed I'm not being replaced. I don't know if I want to believe that.
+
+I can almost guarantee to get an offer at a different company. It's remote but three time zones away. I'd take a 10k pay hit (if I can talk them up 10k that is) and I would lose some strong benefits. 
+
+I also don't know how the tax situation would work, working in one state while the company is headquartered in another.
+
+Any advice on what direction to head in? I appreciate advice from anyone who has been in similar shoes. ",False,0.0087199999999999,The post is about career advice and does not seek a co-founder or software development services.
+1bj8t7b,,,,,,,,1710924273.0,https://www.reddit.com/r/webdev/comments/1bj8t7b/top_10_code_smells_every_engineer_should_know_to/,Top 10 code smells every engineer should know to improve their pull requests,"How to avoid difficult code reviews? Identify code smells!
+
+According to [Wikipedia](https://en.wikipedia.org/wiki/Code_smell):
+
+> In computer programming, a code smell is any characteristic in the source code of a program that possibly indicates a deeper problem.
+ 
+After a few years of helping developers review code, I came up with 10 code smells and how to fix them while building my project [Axolo](https://axolo.co).
+
+### 🧐 Refactoring Large or Complex Methods
+
+Navigating through methods that sprawl across numerous lines or twist into complexity can be daunting. Simplification is key!
+
+The fix? Employ a linter to enforce a maximum number of lines. Deconstruct these behemoths into smaller, more focused methods, each dedicated to a singular task.
+
+### 🤔 Addressing Long Parameter Lists
+
+A lot of parameters can muddle method signatures, making them prone to mistakes.
+
+The fix? Consolidate related parameters into a single object. Adopt the ""parameter object"" pattern to streamline your functions, enhancing their readability and maintainability.
+
+### 🙄 Minimizing Excessive Comments
+
+An overload of comments often signals that the code isn't speaking for itself as clearly as it should.
+
+The fix? Strive for code that explains itself through judicious naming and structure. Reduce reliance on comments, allowing the code's purpose and function to be immediately apparent.
+
+### 🤦 Eliminating Duplicate Code
+
+Repetitive code fragments are not just a nuisance; they complicate updates and can introduce inconsistencies.
+
+The fix? Seek out and consolidate repetitive code segments into common functions. Adhering to the DRY (Don't Repeat Yourself) principle simplifies future maintenance and modifications.
+
+### 😕 Harmonizing Inconsistent Naming Conventions
+
+Naming chaos confounds understanding and introduces potential errors.
+
+The fix? Commit to a unified naming convention. Names that are clear and consistent pave the way for code that's more approachable and decipherable.
+
+### 😬 Enhancing Error Handling
+
+Neglecting comprehensive error management can lead to erratic behavior and a codebase that's tough to sustain.
+
+The fix? Embrace thorough error management. Logically log and manage exceptions to bolster the code's stability and dependability.
+
+### 🤯 Simplifying Overused If/Else Constructs
+
+An abundance of if/else branches can tangle code, making it challenging to read and adjust.
+
+The fix? Lean on data structures or design patterns, such as polymorphism, to untangle complex logic, thereby enhancing the code's legibility and adaptability.
+
+### 👎 Refining Inheritance Usage
+
+Inappropriate reliance on inheritance can entangle code further, reducing its adaptability.
+
+The fix? Verify that inheritance is used judiciously. Opt for composition over inheritance to achieve a code structure that's more flexible and straightforward to maintain. 
+
+Be honest, which one do you usually see in your PR? If you think I'm missing something, let me know in the comments!",False,0.0128499999999999,The post is focused on software engineering best practices rather than seeking development services.
+1bj8u00,,,,,,,,1710924383.0,https://www.reddit.com/r/smallbusiness/comments/1bj8u00/stock_market_trends_live_updates_and_analysis/,Stock Market Trends: Live Updates and Analysis,"Stay updated with live updates and analysis of stock market trends, providing valuable insights into [market dynamics](https://www.youtube.com/live/7xcrljnKkAg?si=_omm75p9saonzqEi) and [investment opportunities.](https://www.youtube.com/live/7xcrljnKkAg?si=_omm75p9saonzqEi)
+
+स्टॉक मार्किट से जुड़े अपने सभी सवालों को हमारे Market Experts से LIVE SHOW में ���ूछने के लिए देखिये हमारा ख़ास Show #marketlive  सिर्फ India News Business पर।  
+  
+आप किस शेयर के बारे में पूछना चाहते हैं? अगला वीडियो किस सेक्टर या सब्जेक्ट पर होना चाहिए? अपना सुझाव दें:   
+  
+हमारे Channel का प्रयास है हर निवेशक को सही निवेश की राय देना। आज ही इस Channel को Like और Subscribe करें।  
+  
+Follow us on:  
+  
+YouTube: https://youtube.com/@indianewsbusiness  
+Twitter: https://twitter.com/indianewsbiz  
+Facebook: https://www.facebook.com/indianewsbus...  
+Official Website: https://indianewsbusiness.com/",False,0.01134,"The post is focused on stock market analysis, not on seeking software development services."
+1bj8ug6,,,,,,,,1710924439.0,https://www.reddit.com/r/SaaS/comments/1bj8ug6/anyone_creating_products_for_the_car_rental/,Anyone creating products for the car rental industry? starting from US but thinking globally,"Hey everyone, I am looking for people who are in the same industry and trying to build things out for the car rental industry. I specifically worked on things to help myself when we were renting on Turo, now we had a break up with car rental company and I decided to move on a create a SaaS company offering products/solutions to this industry.   
+One of the problems I see is that my products are based on limited knowledge given to me by Turo - i want to understand other marketplaces like Get around, Lyft, Hyre car. I have created few products around these and If anyone can help me with reservation data sets from these companies - I can enhance the capability of my product.",True,0.00868,"The post mentions the intention to create a SaaS company offering products to the car rental industry, which aligns with potential clients for software development."
+1bj8vre,,,,,,,,1710924616.0,https://www.reddit.com/r/SaaS/comments/1bj8vre/lessons_from_getting_my_first_100_users/,Lessons from getting my first 100 users,"Hey r/Saas,  
+
+
+I've just attracted my first 100 users for [getaprototype.com](https://getaprototype.com). 
+
+&#x200B;
+
+Let me share some lessons from that:
+
+\- Product quality is extremely important. I've not done any outreach, all organic & inbound sign ups.
+
+\- Focus on onboarding & delivering value as quickly as possible. Tried to optimize onboarding in such a way that people get towards designing prototypes super quickly. 
+
+\- Now talking to as many customers as possible to learn from their feedback
+
+\- I already spent way too much time on features that are rarely used. Extremely hard to find the balance between quality and overengineering.
+
+\- Marketing is overrated, if the product is good people will come. 
+
+\- Multiple currency support is super important, received a lot of feedback about this. 
+
+&#x200B;",False,0.0088099999999999,"The post discusses lessons from already having a product and users, not seeking software development assistance."
+1bj8yeh,,,,,,,,1710924965.0,https://www.reddit.com/r/SaaS/comments/1bj8yeh/feedback_on_website_from_saas_founders/,Feedback on website from SaaS founders,"Hi to the SaaS community!  
+Asking for some expertise from you guys. We are revamping our website ([Boopos.com](https://Boopos.com)) and I'd like some feedback from this community, as we usually work with SaaS founders (online business owners by extension).   
+
+
+I feel that our value prop is not very clear and by checking the website in a glance you don't get the gist of what we do (we help founders sell their online business and connect them with vetted buyers, but we do also provide acquisition financing for SaaS acquisitions). So I thought, what best than to ask SaaS founders and operators themselves?   
+
+
+Thanks in advance for the help, and happy to clarify any questions!!",False,0.00848,"The post is about seeking feedback for a website, not about looking for a technical co-founder or development services."
+1bj8zvh,,,,,,,,1710925165.0,https://www.reddit.com/r/smallbusiness/comments/1bj8zvh/anyone_filed_fincen_boi_after_incorporating_with/,Anyone filed FinCen BOI after incorporating with Doola?,"I incorporated my US LLC in 2024, so I need to report the formation agent (Doola.com) as a company applicant. Their CEO signed on my incorporation documents, so I need his passport/ID photo to file. 
+
+Has anyone been able to file it without going through their paid filing service?",False,0.0076799999999999,"The post is about filing financial documentation, unrelated to seeking technical co-founding or software development services."
+1bj91et,,,,,,,,1710925328.0,https://www.reddit.com/r/startups/comments/1bj91et/b2b_startup_client_acquisition_how/,B2B Startup Client Acquisition - How?,"  
+Hey guys, 
+
+I'm researching client acquisition strategies and roadblocks for B2B startups as I'm interested in building a product to help with this process. I'd really appreciate if you could share:  
+  
+1. What strategies were most effective for finding and onboarding new clients/users?  
+2. What key difficulties or challenges did you face during the client acquisition process?  
+  
+Hearing firsthand accounts of what worked well and what didn't from those with real B2B startup experience would provide invaluable insight. Please provide as much detail as possible about the specific tactics, approaches and obstacles you encountered.  
+
+
+Thank you!",False,0.00838,"The post focuses on researching B2B client acquisition strategies, not seeking software development services."
+1bj924w,,,,,,,,1710925424.0,https://www.reddit.com/r/Entrepreneur/comments/1bj924w/selling_an_idea_to_a_company_i_work_for/,Selling an idea to a company I work for,"Hi all, I have an idea for a novel sales channel that my company could exploit. I work in IT and sales is 100% outside the purview of my job description. I could go it alone on this idea, however I would much prefer to simply “sell” it to my company.
+
+Does this kind of thing ever happen? What kind of agreement may be standard?
+
+Thanks!",False,0.00767,"The post is about selling an idea internally within a company, not seeking software development services."
+1bj93sh,,,,,,,,1710925639.0,https://www.reddit.com/r/Entrepreneur/comments/1bj93sh/selling_a_magazine_advice/,Selling a magazine - Advice,"Hello and thanks for reading. Basically the title, my partner and I have a successful (within the confines of the sport) skateboarding magazine and we have been toying with the idea of selling it. How would we go about this? Is it basically outreach? And to whom, media companies? Specific groups, specific people? Any advice is welcome, thank you!",False,0.00752,"The post discusses selling a skateboarding magazine, which is unrelated to software development."
+1bj98gi,,,,,,,,1710926236.0,https://www.reddit.com/r/SaaS/comments/1bj98gi/facebook_group_slack_channel_or_linkedin_groups/,"Facebook group, Slack channel, or LinkedIn groups?","I'm launching an AI SaaS tool that helps e-commerce stores create videos using AI for social media engagement. I want to build a community. Which platform is best for building community today -Facebook group, Slack, or LinkedIn group considering my ICP?",False,0.0073199999999999,"The post focuses on e-commerce and community building, not seeking software development services."
+1bj9b6k,,,,,,,,1710926585.0,https://www.reddit.com/r/sveltejs/comments/1bj9b6k/404_creates_infinite_loop/,404 creates infinite loop,"Hi all,
+
+I am using Sveltekit with new SSR and Skeleton UI with Supabase as backend.  
+If I land on a 404 page, I experience an infinite loop, where the page continues to refresh. 
+
+I have the hooks.server.ts
+
+    import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+    import { createServerClient } from '@supabase/ssr';
+    import type { Handle } from ""@sveltejs/kit"";
+    
+    export const handle: Handle = async ({ event, resolve }) => {
+    	event.locals.supabaseServerClient = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+    		cookies: {
+    			get: (key) => event.cookies.get(key),
+    			set: (key, value, options) => {
+    				event.cookies.set(key, value, { ...options, path: '/' });
+    			},
+    			remove: (key, options) => {
+    				event.cookies.delete(key, { ...options, path: '/' });
+    			}
+    		}
+    	});
+    
+    	const getSessionAndUser = async () => {
+    		const { data: user, error: err }  = await event.locals.supabaseServerClient.auth.getUser()
+    	
+    	  let session
+    	   if (err) {
+    		   return { session, user: null }
+    	   }
+    	   else {
+    		 session = (await event.locals.supabaseServerClient.auth.getSession()).data?.session
+    	  }
+    
+    		return {session, user}
+    	  }
+    
+    	  const {session, user} = await getSessionAndUser()
+    	//   data.session
+    	  event.locals.session = session
+    	  event.locals.user = user
+    
+    	return resolve(event, {
+    		filterSerializedResponseHeaders(name) {
+    			return name === 'content-range';
+    		}
+    	});
+    };
+
+which I got from  
+[https://github.com/supabase/auth-helpers/issues/742](https://github.com/supabase/auth-helpers/issues/742)
+
+Anyone has experienced something similar?  
+I tried comparing to this article  
+[https://snippets.khromov.se/fixing-infinite-redirect-loops-in-sveltekit-applications/](https://snippets.khromov.se/fixing-infinite-redirect-loops-in-sveltekit-applications/)  
+but cannot see how that should fit in the code above.
+
+Thanks :)",False,0.0118599999999999,The post is about a technical issue with a specific software development stack.
+1bj9c45,,,,,,,,1710926706.0,https://www.reddit.com/r/Entrepreneur/comments/1bj9c45/would_love_feedback/, Would love feedback ,[seomasterygroup.com](https://seomasterygroup.com),False,0.00705,"The post is seeking feedback on a website, not looking for a tech co-founder or software development services."
+1bj9eoi,,,,,,,,1710927038.0,https://www.reddit.com/r/webdev/comments/1bj9eoi/looking_for_help_and_suggestions_on_my_website/,Looking for help and suggestions on my website,"https://selbz.github.io/portfolio/
+
+Please find the link above to find homepage prototype.
+
+I am a graphic designer and decided to try develop my own portfolio website and I am struggling to make it work for phone. I want a simple grid and once you click on a item a scrolling modal pops up with a body of my work.
+
+I’m looking for suggestions and advice? Will this work and I’m just inexperienced at coding. Any constructive input with be appreciated. ",False,0.0078999999999999,"The poster is a graphic designer in need of advice for their existing project, not seeking a software development service."
+1bj9fum,,,,,,,,1710927179.0,https://www.reddit.com/r/Entrepreneur/comments/1bj9fum/offering_free_help_with_facebook_ads_for_local/,Offering free help with Facebook ads for local businesses. ,"Just wanted to reach out and offer help to local business owners with Facebook ads. While I'm still learning, I do have some experience, which is why I'm not asking for money. I will help you with Facebook ads for free. If you need more leads, we can make a strategy and start in a few days. If you are interested, send me a message.",False,0.0076799999999999,"The post is about offering help with Facebook ads for local businesses, not related to software development."
+1bj9jxy,,,,,,,,1710927690.0,https://www.reddit.com/r/smallbusiness/comments/1bj9jxy/building_order_management_solution_for_ecommerce/,Building order management solution for ecommerce & retail,"Hey folks,  
+I am building an order management platform for retail & ecommerce teams based on my 10 years of experience in supply chain. Struggling to find customers to gain insights & to ask introductory questions related to processes & problems. Any advice or connections anybody can offer?",False,0.00732,The post is about an e-commerce solution which is specifically outlined as irrelevant.
+1bj9mtf,,,,,,,,1710928024.0,https://www.reddit.com/r/webdev/comments/1bj9mtf/sern_stack_with_render/,SERN Stack with Render,"I'm working on a portfolio project using the SERN stack, which will be hosted on the Render free tier. As I understand it, both front and back end have to be hosted separately, does this mean that there would be a spin up time for the front end, then an additional spin up time for the back end request? I could make the front end static, although this would be quite a big limitation for the project as I don't fully understand how to go about making a multi page site static with React. The real solution is probably using a different back end, but this project is specifically to learn the SERN stack. Is there perhaps a better hosting solution? If anyone can help fill the gaps in my knowledge it will be much appreciated!",False,0.00853,"The post is about technical details of hosting a project, not about looking for a software development partner."
+1bj9r8u,,,,,,,,1710928558.0,https://www.reddit.com/r/nocode/comments/1bj9r8u/building_such_a_website_with_nocode/,Building such a website with no-code?,"Hi! I have a business idea that requires me to make such a website, do you think it would be possible to do with no-code? Was-it maybe built with no-code? If so, can you please guide me to some tools that would make it possible?
+
+[https://app.companycraft.ai/](https://app.companycraft.ai/)
+
+Thanks!",True,0.0077,"The person is looking for guidance on making a website, which could evolve into seeking a technical partner."
+1bj9r99,,,,,,,,1710928559.0,https://www.reddit.com/r/business/comments/1bj9r99/grow_your_online_business_by_seo/,Grow Your Online Business by SEO,"Your competitors are optimizing their websites. Are you?
+
+Analyze competitor strategies
+
+Find profitable keywords
+
+Create winning content
+
+Get more organic traffic
+
+Fix technical errors
+
+Identify link building opportunities",False,0.00712,"The post focuses on SEO for online businesses, not seeking software development help."
+1bj9v8p,,,,,,,,1710929017.0,https://www.reddit.com/r/SaaS/comments/1bj9v8p/looking_for_easy_to_integrate_mors/,Looking for easy to integrate MORs,"I've got an AI product to sell internationally and was looking for MORs with transparent pricing, strng customer support and easy to navigate documentation with effcient APIs. As I read through reddit, all major players like Fastspring, Paddle and Lemonsqueezy have issues. What issues have you guys faced with them? Which MOR do you use and why? Is there any improvement required in the current MORs?",False,0.00797,"The post is focused on Merchant of Record services for an already developed AI product, not seeking a technical co-founder or software development service."
+1bj9xzn,,,,,,,,1710929331.0,https://www.reddit.com/r/business/comments/1bj9xzn/how_can_we_ensure_accuracy_in_monitoring_employee/,How can we ensure accuracy in monitoring employee activities and task completion?,,False,0.00677,The post is focused on employee monitoring rather than seeking software development services.
+1bj9yky,,,,,,,,1710929399.0,https://www.reddit.com/r/Entrepreneur/comments/1bj9yky/1_person_does_all_business_duties/,1 person does all business duties,"How can I create a schedule and manage my small business more all on my own?
+
+How can I promote it on social media, get funding, create, and all that in a schedule type of way
+
+I feel burned out plus I’m not gettting any sales",False,0.0075,"The post focuses on managing and promoting an existing business, not seeking a technical co-founder or software development services."
+1bja24x,,,,,,,,1710929783.0,https://www.reddit.com/r/SaaS/comments/1bja24x/are_you_frustrated_by_technology_roadblocks_lets/,Are you frustrated by technology roadblocks? .. Let's chat about your specific challenges or Schedule a free consultation.,,False,0.00704,The post is vague and seems to be offering services rather than seeking a co-founder or development agency.
+1bja4fh,,,,,,,,1710930043.0,https://www.reddit.com/r/smallbusiness/comments/1bja4fh/my_first_pvc_patch/,My first PVC Patch,"Soo I have been looking for a vendor for quite a while and decided to move forward with signature patches! Wanted to make this patch to support my fellow carpenters in my city, trying to make a small business out of it. Just not sure what to price it at? What does everyone think?
+
+(posted link of my design on comment below)",False,0.0076,"The post is about starting a small business related to physical goods, not software development."
+1bjabsb,,,,,,,,1710930851.0,https://www.reddit.com/r/SaaS/comments/1bjabsb/how_does_personlevel_website_visitor_identity_work/,How does Person-Level Website Visitor Identity work?,"There's a tool called rb2b that identifies your anonymous website visitors and pushes their LinkedIn profiles to Slack in realtime.  
+  
+I was very curious to understand how does it work under the hood? Can someone help me understand?",False,0.00728,"The post is about understanding a specific tool's functionality, not seeking software development services."
+1bjaeui,,,,,,,,1710931185.0,https://www.reddit.com/r/SaaS/comments/1bjaeui/ux_ui_designer_looking_for_a_side_project_to_get/,UX UI Designer - Looking for a side project to get stuck into,"Hi, im Joseph, a junior Product / UX UI Designer. Based in The Netherlands. 
+
+I am currently applying for junior positions in the Netherlands but I keep hearing back ""Sorry we arent looking to grow the team right now"" or ""Sorry we only want seniors""
+
+I really want to keep productive during my days so I looking to help someone with a side project, idealy a SaaS. It would be great to work with a team, developers, product owners etc because I also lack that experiance in my resume.
+
+If anyone is looking for someone like me to help on a project (free of charge!) please get in contact. 
+
+All the best
+
+Joseph",False,0.0086,The post is by an individual offering design skills rather than seeking a software development partnership.
+1bjaf3b,,,,,,,,1710931210.0,https://www.reddit.com/r/Entrepreneur/comments/1bjaf3b/i_have_been_a_solo_for_the_past_8_years_and_now_i/,I have been a solo for the past 8 years and now I need help.,"Hello,  
+I work as a Booking Manager for Resorts & Hotels. My role primarily involves marketing, through which I direct guests to resorts and hotels and receive a 15% commission. I have been engaged in this business for the past 8 years and have been profitable since day one.  
+Currently, I manage over 15 resorts and hotels. My responsibilities include marketing, communication with guests and hotels, billing, support, and follow-ups.  
+However, this workload has left me with no personal time and a significant amount of stress.  
+I would appreciate any advice on how to manage this situation as I feel quite overwhelmed.  
+Thank you.  
+",False,0.00834,"The post is about managing workload in the hospitality marketing sector, not about starting or developing a software project."
+1bjaga8,,,,,,,,1710931337.0,https://www.reddit.com/r/startups/comments/1bjaga8/whats_in_a_media_kit/,What’s in a media kit?,"Hi friends,
+
+So we’ve launched our product and registering users currently. Wanting to keep traction and build hype and we recently met a reporter at a pretty large local news station in our city. She gave us her number and said to call when we had our story prepped and she’ll consider interviewing us but she liked what we were doing and thought it’d be an interesting thing to cover. 
+
+I’ve looked online and the advice I’m getting is to build a social media kit to send to her / the station. What is in a media kit? Have you done this? What did you put in yours ?
+
+ ",False,0.00801,The post is about media kits and not directly related to seeking software development services.
+1bjaiu7,,,,,,,,1710931610.0,https://www.reddit.com/r/SaaS/comments/1bjaiu7/how_to_set_up_activation_emails_for_your_saas/,How to set up activation emails for your SaaS?,"Hello everyone,   
+We have a SaaS with autonomous onboarding of our users. A certain percentage of subscribers start to use our services, and then a small percentage start to use us in production and pay.   
+For the moment, we send a single welcome email with our backend, but we'd like to send several depending on several scenarios (use of this or that feature, credit running out soon, product not used for X amount of time, etc.). We've got lots in mind. Sending these emails would depend on the user data we have in our databases.   
+We have almost 10k subscribers a week. We're wondering which solution to choose for this: we know a bit about Hubspot (which we use as a CRM) and Brevo (ex-Sendinblue - which we use to send marketing newsletters).   
+If you have any tutorials that explain all this clearly, that would be great!   
+Thanks",False,0.0089,"The post focuses on improving user engagement for an existing SaaS product, not starting or needing a software business partner."
+1bjaljj,,,,,,,,1710931911.0,https://www.reddit.com/r/Entrepreneur/comments/1bjaljj/90second_pitch_to_sam_parr_ryan_holmes/,90second pitch to Sam Parr + Ryan Holmes,"I'd never pitched in my life. But I had 90secs to pitch Sam Parr (Hampton / The Hustle / My First Million) and Ryan Holmes (founder of Hootsuite). I realized that pitches are basically NEVER shared so thought it might be helpful to share with folks here?  
+Hope it helps! [https://www.linkedin.com/posts/milly-tamati\_id-never-pitched-in-my-entire-life-but-activity-7176157373923753984-\_xNZ?utm\_source=share&utm\_medium=member\_desktop](https://www.linkedin.com/posts/milly-tamati_id-never-pitched-in-my-entire-life-but-activity-7176157373923753984-_xNZ?utm_source=share&utm_medium=member_desktop) (link because I can't upload the video directly!)
+
+&#x200B;",False,0.00879,"The post is about sharing a pitch experience, not seeking software development services."
+1bjanvr,,,,,,,,1710932160.0,https://www.reddit.com/r/startups/comments/1bjanvr/networking_in_barcelona/,Networking in Barcelona,"Hello people!
+
+So my name is Alberto, a software developer that is trying to create a new system for plastic surgeon to find clients and reviews. 
+
+I live in Barcelona and would love to know if there is any networking place ( even online) where normally people talk about their experience and share knowledge. 
+
+If any of you know more about it we should share channels and ideas here! 
+
+Best and have a nice day! ",True,0.0075899999999999,The person is developing a software system and seeks networking for knowledge sharing.
+1bjanz1,,,,,,,,1710932170.0,https://www.reddit.com/r/startups/comments/1bjanz1/how_did_you_approach_cofounder_ref_calls/,How did you approach co-founder ref calls?,"Hi! So, I f'd up during my last co-founder search big time, mainly due to some red flag behavior that was actually very known to people close to the founder. This time I'm trying to do it better and have a proper protocol for reference calls in place. I have two named references and one off-list reference scheduled for next week.  
+",False,0.00767,"The post is about seeking advice on co-founder reference calls, not looking for technical co-founding services."
+1bjaorq,,,,,,,,1710932260.0,https://www.reddit.com/r/webdev/comments/1bjaorq/how_to_find_collaborators_for_personal_projects/,How to find collaborators for personal projects,"I usually create website projects because I love programming and am passionate about it. However, my main problem is always time, as I have a job that is not related at all to web development. Balancing my office work and family time means I only have a few hours on Friday and Saturday nights, and maybe one hour every day when everyone is in bed.
+
+I've often thought it would be great if I could build websites working in a team, so I could focus on web development while my ""colleagues"" could take care of SEO, promotion, post writing, or sales. But I don't know anyone with these skills...
+
+I joined this subreddit to ask for ideas because I don't think I am the only one treating web development as a side activity, and maybe others have already found a solution for this. Perhaps there are some platforms I don't know about where people can create these teams.
+
+I would have no problem sharing part of my ongoing projects if doing so can achieve new goals in terms of visibility, new users, new sales, etc...
+
+Thanks",False,0.0092,"The post focuses on seeking collaboration for personal projects, not starting a software business or seeking a technical co-founder for a startup."
+1bjast5,,,,,,,,1710932654.0,https://www.bloomberg.com/news/features/2024-03-20/retail-theft-rings-need-to-be-treated-like-the-mob-say-ebay-and-cvs?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb3VyY2UiOiJTdWJzY3JpYmVyR2lmdGVkQXJ0aWNsZSIsImlhdCI6MTcxMDkzMjMxNywiZXhwIjoxNzExNTM3MTE3LCJhcnRpY2xlSWQiOiJTQU4zUVJEV1gyUFMwMCIsImJjb25uZWN0SWQiOiJFRDBBQjVCODU4OEQ0NTdDQTdCMDczRkM3MUIzMkQ1NyJ9.UO02dKYSsSFfqBt1XnIaCNvmAFUtWUMyKucE91ccIzc&sref=14Z55afH,"To Catch Retail Thieves, This Unlikely Duo Treats Them Like the Mob",,False,0.00681,"The post is about tackling retail theft, not about seeking software development."
+1bjawt6,,,,,,,,1710933078.0,https://www.reddit.com/r/business/comments/1bjawt6/if_anybody_needs_a_professional_website_for_their/,If anybody needs a professional website for their business on super affordable price hmu,,False,0.00671,"The post offers web development services, not seeking them."
+1bjaytt,,,,,,,,1710933281.0,https://www.reddit.com/r/smallbusiness/comments/1bjaytt/help_me_help_my_gf_who_owns_a_small_tattoo_shop/,Help me help my gf who owns a small tattoo shop. ,"May be in over my head, although I'm trying. My gf we've split for 2 years due to me moving but remained in touch. I moved back, were together, she opened a tattoo shop. She asked for help with keeping track of booking, payments, tax info ect ect..she owes some money and without a nicer way to put it she struggles with organization and fully understanding business(we could have a whole separate argument about why this is bad). She has mostly worked by herself but now has one other employee that pays a booth fee.
+
+I am a software developer, not an accountant or book keeper this knowledge is all new to me. 
+
+Anyway looking for any advice, I'm currently taking some small business courses on udemy, books, google... Looking for any input that might not be immediately available in some of these sources, whether it be learning sources or more direct advice would be greatly appreciated.
+
+I'm great with excel and have some spreadsheets and came up with a way to log and track everything from her business account. 
+
+Some immediate questions I have are about her employee who pays a booth fee.. 
+
+1. Should I be tracking and keeping anything else from him outside of his consent forms and money paid to her for his booth fee. 
+
+2. Does the booth fee he pays fall under normal taxed income to her. 
+
+3. Should she have record of his certifications(air blood born illnesses, ect)
+
+I have alot more but for now I'll start with this or figure out eventually. Thanks in advanced for any advice y'all. ",False,0.00999,"The post is about managing a physical tattoo shop, not starting a software business."
+1bjayu8,,,,,,,,1710933283.0,https://www.reddit.com/r/smallbusiness/comments/1bjayu8/if_anybody_needs_a_professional_website_for_their/,If anybody needs a professional website for their business on super affordable price hmu,.,False,0.00673,"The post offers website development services, not seeking them."
+1bjaz20,,,,,,,,1710933307.0,https://www.reddit.com/r/Entrepreneur/comments/1bjaz20/if_anybody_needs_a_professional_website_for_their/,If anybody needs a professional website for their business on super affordable price hmu,.,False,0.00682,The post offers web development services rather than seeking them.
+1bjaz7d,,,,,,,,1710933318.0,https://www.reddit.com/r/Entrepreneur/comments/1bjaz7d/how_good_is_this_business_idea/,How good is this business idea?,I was approached by a client regarding this business idea but I was not convinced. It is a simple website which lets users transact crypto with zero fees but within the app. The monetization comes from ads. ,False,0.00737,"The post is about an existing client's business idea focused on cryptocurrency, not about seeking a software development partner."
+1bjb48j,,,,,,,,1710933838.0,https://www.reddit.com/r/smallbusiness/comments/1bjb48j/hard_launch_marketing_ideas/,Hard launch marketing ideas,"So my business partner and I are planning to open a açaí/smoothie/oat bowl small restaurant. We have narrowed down between three potential markets that all fit our desired “wants”. Our business plan is almost complete besides for our marketing section, which is about 75% done. We understand and intend on hard marketing through social platforms with direct marketing to our businesses new “home” location. Our issue is what quirky promotion will help get people through our doors for the first time. My thoughts are first 50 people would get a free bowl and the first 100 would get a punch card stating a free bowl after the purchase of 5(something you’d have to keep coming back to redeem). Would love to open this up to discussion to anyone with ideas or any prior success in this manor. 
+
+Side note: our realtor has discussed trying to obtain an sba loan which she has been successful obtaining for prior businesses. Or is a traditional investor a better avenue. 
+
+Thanks Reddit community for your time, greatly appreciated.",False,0.00887,"The post is centered on marketing strategies for a physical restaurant, not software development."
+1bjb5fv,,,,,,,,1710933962.0,https://www.reddit.com/r/Entrepreneur/comments/1bjb5fv/is_there_have_any_scope/,Is there have any scope ,"I'm going to start an email newsletter based on defence news,  is there have any scope for email news letter for today. ",False,0.00711,"The post is about starting an email newsletter on defense news, not about seeking software development services."
+1bjbcvt,,,,,,,,1710934733.0,https://www.reddit.com/r/Entrepreneur/comments/1bjbcvt/how_much_shares_to_give_a_new_director/,How much shares to give a new director?,"I’m planning on joining a business as a new director and currently run my own business in the same field. The idea being I will fully take over their business in the next year as the original owner retires. There is to be no cost/financial gain per se to the owner, as I will be taking over their liabilities and covering them (insurance wise) for the next 12 years. That is the deal. I will however have to cover costs during the handover such as purchase of equipment, legal costs and the transition month where they pull their money out of the business and I’ll be liable for the overheads during the month of transition where costs are coming in, but I won’t yet have had a full month of work to invoice yet (if that makes sense).
+
+Prior to takeover I’ll be joining the business as an equity director to get upto speed with their projects and get to know their clients for a period of ~6 months. I’ll be bringing in work during this time (currently equal to 25% of their current income). My question is how do we decide the share allocation during this period?
+
+They have proposed two solutions:
+
+1. When I join I get a % of shares based on the work I’m bringing in. My concern with this is there is then no flex for if I bring in more work.
+
+2. They charge my existing company as if I were a client for the work their staff do on my jobs. My concern with that is that takes all the profit out of my work. I’m effectively giving them that work for “free”.
+
+I’m sure there are other options. I just feel like neither are the right fit yet, but I can’t think of what would work best. They are good people and we are all working in good faith towards this goal. Would really appreciate suggestions, thank you all. ",False,0.01081,"The post is about equity distribution and business operations, not about seeking a software development partner."
+1bjbcxl,,,,,,,,1710934738.0,https://www.reddit.com/r/Entrepreneur/comments/1bjbcxl/dark_mode_works_for_my_app_better_than_any_other/,Dark Mode works for my app better than any other feature or marketing.,"I run a chat with a PDF app called [chatdox.com](https://chatdox.com) for the past 11 months. I have got tractions, paid users. But I was wondering what leads to more users, I kept on building, added many features, add more data sources, and languages, and did everything that I could to get more users, but you know what worked for me is the dark mode and why is that?  
+
+
+Because seeing constantly on the bright screen disturbs the eyes, people prefer dark themes while reading and doing any academic or research work, My customers take off after the introduction of dark mode in ChatDox AI. 
+
+&#x200B;
+
+Lesson Learned, always include dark mode in your apps. ",False,0.0086,"The post discusses features that improved user experience for an existing app, not seeking a technical co-founder or software development agency."
+1bjbd15,,,,,,,,1710934747.0,https://www.reddit.com/r/webdev/comments/1bjbd15/dreamweaver_and_fireworks/,Dreamweaver and Fireworks,"I stumbled across a role for a web content administrator. It involves the upkeep of multiple online stores/sites etc etc. More specifically, it states 'Preparing email campaigns by using HTML and a variety of Adobe programs (InDesign, Photoshop, Fireworks & Dreamweaver)'
+
+I'm familiar with the Adobe basics (Photoshop, InDesign), forgive me if I'm wrong but I'm pretty sure Fireworks is discontinued and Dreamweaver is dated and essentially frowned upon in this modern age. Is this a red flag for the company? Why on earth would they suggest knowledge in two programs which are out of favour and discontinued!?
+
+This is just me doing a 10-minute research, so maybe I'm wrong. Love to know people's thoughts!",False,0.00826,"The post is about web content administration, not about starting a software business."
+1bjbd2d,,,,,,,,1710934750.0,https://www.reddit.com/r/SaaS/comments/1bjbd2d/building_hipaa_compliant_messaging_apps_in/,Building HIPAA Compliant Messaging Apps in Healthcare - Guide,"The article provides a comprehensive guide to HIPAA-compliant messaging apps, focusing on their importance in healthcare communication and patient care. It introduces popular apps like OhMD, TigerConnect, Providertech, and Spok: [HIPAA Compliant Messaging App: A Guide to Secure Patient Communication](https://www.blaze.tech/post/hipaa-compliant-messaging-app-a-guide-to-secure-patient-communication)
+
+
+It highlights their features such as encrypted messaging and integration with electronic health records (EHR) as well as various options for customizing HIPAA-compliant messaging apps, ranging from hiring third-party app development companies to leveraging no-code app builders.",False,0.00836,"The post focuses on HIPAA-compliant messaging apps, not on seeking technical co-founding or software development services."
+1bjbf12,,,,,,,,1710934946.0,https://www.reddit.com/r/Entrepreneur/comments/1bjbf12/what_are_some_pros_and_cons_of_buying_an_existing/,What are some pros and cons of buying an existing business?,Looking forward to reading your comments. ,False,0.00689,"The post asks about buying an existing business, not about starting or developing software."
+1bjbfr3,,,,,,,,1710935017.0,https://www.vox.com/money/24105250/fast-food-restaurants-dynamic-pricing-algorithm-wendys,Uber-style pricing is coming for everything: More and more industries are adopting “dynamic pricing” — and consumers aren’t happy.,,False,0.00698,"The post discusses dynamic pricing in industries, unrelated to seeking software development services."
+1bjbgj1,,,,,,,,1710935095.0,https://www.reddit.com/r/Entrepreneur/comments/1bjbgj1/chrome_extension_for_templated_response_canned/,Chrome extension for templated response / canned response in Gmail?,"Looking to make email response more efficient, as I find myself oftentimes sending similar variations of the same 30 - 50 emails throughout the year. Currently using a combination of:
+
+* gmail's built-in Templates tool (three dots > Templates)
+* a Google Doc with a bunch of our most frequent responses
+
+Looking for a chrome extension for gmail that will allow me to do canned responses more efficiently. The [three dots > Templates] in gmail is mediocre, in particular UI, as I can only see the first ~30 characters of the title and none of the text (unless I hit the 3 dots). Google Doc is okay but it is external to gmail, UI is also not good as it is just a giant doc with a bunch of email templates pasted, and I have to copy/paste into gmail.
+
+In short, I am looking for a chrome extension gives me a better UI on the [three dots > Templates] functionality in gmail, that will (a) allow me to see the entire title of the saved template, and (b) allow me to see at least part of the body of the email without having to click to load the entire template into a new email. Bonus 3rd functionality would be categorizing the different templates into groups that I can create.
+
+Any recommendations here?",False,0.00958,"The post is about seeking a Chrome extension for email efficiency, not related to starting a software business."
+1bjbh7d,,,,,,,,1710935154.0,https://www.reddit.com/r/smallbusiness/comments/1bjbh7d/anyone_a_daycare_owner/,Anyone a daycare owner?,"I have been dreaming of opening a creative learning daycare and indoor play park for years now. I’ve done all the branding, the business plan, the layout concepts, the endless amounts of research and required education for state licensing but the hang up is our projected financial costs. Based on rates in our area, pay scales for staff and the cost of commercial leasing - none of it is going to make sense to move forward. I don’t know if I should keep reworking numbers, looking for new commercial spaces for less, let go of the play park concept or what. Anyone work in childcare that has suggestions?",False,0.00801,The post is focused on establishing a daycare and does not involve starting a software business.
+1bjbi1q,,,,,,,,1710935238.0,https://www.reddit.com/r/webdev/comments/1bjbi1q/api_service_for_reporting_device_online_status/,API service for reporting device online status?,"I want to get notified when a device is online/offline. Currently I'm simply using a script to post to ntfy.sh, I wonder if there is any established API for this and what's the keyword for this?",False,0.00719,"The post is about seeking technical advice, not starting a software business."
+1bjbmd8,,,,,,,,1710935650.0,https://www.reddit.com/r/SaaS/comments/1bjbmd8/automation_saas/,Automation SaaS,"After some time doing research and observation, I've come up with a SaaS/Webapp idea. It's a process and booking management automation platform for a broad niche. 
+
+The concept has already been proven to work as there are a few businesses doing well at this. I just think they could be done better, smoother and with cleaner UIs.
+
+I recently stopped working for a SaaS startup who was doing something similar but more complex and for a more specific industry. So I'm taking what I learned from there and using it to build my own platform.
+
+Using a no-code platform might not work based on my research (please prove me wrong). I've done some Javasctipt coding before and believe that using React to build this platform will be the best way to do it (The startup I left also used React to build theirs)
+
+With my very limited coding experience, I plan on building this platform focusing on the core features first before releasing it.
+
+Without giving too much away, the main feature is based around a kanban board style of management.
+
+I don't know all the available resources that could be used to build something like this and would appreciate any advice or information please.
+
+",True,0.00929,The poster is looking to develop a SaaS platform and might benefit from technical partnership or services.
+1bjbqzy,,,,,,,,1710936077.0,https://www.reddit.com/r/SaaS/comments/1bjbqzy/weekly_feedback_post_saas_products_ideas_companies/,"Weekly Feedback Post - SaaS Products, Ideas, Companies","This is a weekly post where you're free to post your SaaS ideas, products, companies etc. that need feedback. Here, people who are willing to share feedback are going to join conversations. Posts asking for feedback outside this weekly one will be removed!
+
+[🎙️ P.S: Check out The Usual SaaSpects, this subreddit's podcast!](https://anchor.fm/theusualsaaspects)",True,0.00816,"The post invites SaaS ideas, which potentially includes people looking for technical co-founders or software development partnerships."
+1bjbtn1,,,,,,,,1710936313.0,https://www.reddit.com/r/business/comments/1bjbtn1/i_work_for_family_and_need_a_raise/,I work for family and need a raise,"I work for my family business and need a raise - kind of urgently. Since I am a little more involved than the average employee I’m aware of cash flow and all that but I just don’t know how to bring up my sense of urgency without seeming greedy or anything. 
+
+I love what I do and I don’t want them to get the idea that money is all that drives me but it’s a point where I kinda need it. 
+
+How should I go about this?",False,0.00786,"The post is about seeking a raise in a family business, not about starting a software business."
+1bjbz05,,,,,,,,1710936806.0,https://www.reddit.com/r/SaaS/comments/1bjbz05/the_founders_rent_is_due_discount/,The Founders Rent is Due Discount!,"We've had alot of success making funny ads, specifically running on Social Media. We Like them because they lighten up the dark world of advertising.
+
+What do you think of our next Ad?
+
+&#x200B;
+
+# The Founders Rent is Due Discount!
+
+Our founder needs your money!  
+\- Instead we're giving away Free Access to 0.005% of our database   
+(100 Leads) (No credit card required)  
+Reasons you SHOULD NOT TAKE THIS OFFER   
+\- You don’t have an email   
+\- You business doesn’t want more customers  
+\- Your Churn SUCKS  
+\- You don’t want to do 100 outreaches  
+If you have anymore good reasons, we would love to hear them!
+
+\[Button\]  
+",False,0.00837,"The post is about marketing an existing product, not seeking technical co-founding services."
+1bjbzqc,,,,,,,,1710936872.0,https://www.reddit.com/r/NoCodeSaaS/comments/1bjbzqc/benefits_of_document_management_systems_its/,Benefits of Document Management Systems & Its Implementation with Nocode SaaS,"The guide explores key benefits of a document management system (DMS) as a software designed to store, manage, and track electronic documents to replace paper filing systems as well as how electronic document management has evolved to be more than just a storage unit and how its elements (listed below) could be implemented with nocode platforms: [Exploring the Benefits of DMS - Blaze.Tech](https://www.blaze.tech/post/exploring-the-benefits-of-document-management-systems)
+
+* Document storage
+* Document search and retrieval
+* Version control
+* Access control
+* Audit trails
+* Indexing and categorization
+* Security management and compliance
+* Workflow automation
+* Collaboration, integration
+* Disaster recovery
+* Business process automation
+* Optical character recognition",False,0.00864,"The post focuses on document management systems and nocode solutions, not on finding a technical co-founder or software development service."
+1bjc4ij,,,,,,,,1710937303.0,https://www.reddit.com/r/SaaS/comments/1bjc4ij/turn_web_app_into_a_saas_startup/,Turn web app into a Saas startup,"Hi all,
+I've built a website that elementary school teachers can share and/or discover teaching resources and look for teaching jobs. It comes with all the functionality that you would expect from a website in this niche.
+My girlfriend and I (both teachers) use it daily and we think it's really convenient for its purpose.
+Do you think a website like this could turn into a profitable startup? And how? (The website is https://elemedu.com)
+Thanks!!",True,0.00792,"The post discusses potential for turning a web app into a SaaS startup, aligning with seeking technical partnership."
+1bjc8fk,,,,,,,,1710937656.0,https://www.reddit.com/r/webdev/comments/1bjc8fk/how_do_i_get_the_photoswipe_demo_to_work/,How do I get the PhotoSwipe demo to work?,"I'm getting back into coding, and I can't seem to get PhotoSwipe to work. I've been working on it for 3 days.
+
+*Background:* I have an [older version of PhotoSwipe working on my site](https://photo.2re.net/) but I am learning Vue and the old version uses jQuery and jQuery conflicts with Vue.
+
+All I want to do at this point is to use the code on the [Getting Started](https://photoswipe.com/getting-started/) page to work so I can figure it out from there.
+
+It says you need the Core, Ligthbox, and the CSS.
+
+I linked the css in the head like it says so I don't think that's the issue. My guess is that I'm putting the JavaScript in the wrong place but I'm not sure.
+
+I've tried putting the JS code in a script tag before the HTML code, after it, making a separate JS file and linking to it in the head, linking to `photoswipe-lightbox.esm.js` and `photoswipe/photoswipe.esm.js` in the head, but nothing seems to work. I thought maybe the there was some kind of configuration on my computer not allowing me to execute JavaScript locally or something, so I uploaded my different versions to a web server and it still didn't work.
+
+Help! What's going on?
+
+Here's the code from the site:
+
+**JavaScript:**
+
+ `// Include Lightbox`   
+`import PhotoSwipeLightbox from '/photoswipe/photoswipe-lightbox.esm.js';`  
+`const lightbox = new PhotoSwipeLightbox({`  
+ `// may select multiple ""galleries""`  
+ `gallery: '#gallery--getting-started',`  
+ `// Elements within gallery (slides)`  
+ `children: 'a',`  
+ `// setup PhotoSwipe Core dynamic import`  
+ `pswpModule: () => import('/photoswipe/photoswipe.esm.js')`  
+`});`  
+`lightbox.init();` 
+
+**HTML:**
+
+ `<div class=""pswp-gallery pswp-gallery--single-column"" id=""gallery--getting-started"">`  
+ `<a href=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/2/img-2500.jpg""`   
+ `data-pswp-width=""1669""`   
+ `data-pswp-height=""2500""`   
+ `target=""_blank"">`  
+ `<img src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/2/img-200.jpg"" alt="""" />`  
+ `</a>`  
+ `<!-- cropped thumbnail: -->`  
+ `<a href=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/7/img-2500.jpg""`   
+ `data-pswp-width=""1875""`   
+ `data-pswp-height=""2500""`   
+ `data-cropped=""true""`   
+ `target=""_blank"">`  
+ `<img src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/7/img-200.jpg"" alt="""" />`  
+`Cropped`  
+ `</a>`  
+ `<!-- data-pswp-src with custom URL in href -->`  
+ `<a href=""https://unsplash.com""`   
+ `data-pswp-src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/3/img-2500.jpg""`  
+ `data-pswp-width=""2500""`   
+ `data-pswp-height=""1666""`   
+ `target=""_blank"">`  
+ `<img src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/3/img-200.jpg"" alt="""" />`  
+ `</a>`  
+ `<!-- Without thumbnail: -->`  
+ `<a href=""http://example.com""`   
+ `data-pswp-src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/5/img-2500.jpg""`  
+ `data-pswp-width=""2500""`   
+ `data-pswp-height=""1668""`   
+ `target=""_blank"">`  
+`No thumbnail`  
+ `</a>`  
+ `<!-- wrapped with any element: -->`  
+ `<div>`  
+ `<a href=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/6/img-2500.jpg""`  
+ `data-pswp-width=""2500""`   
+ `data-pswp-height=""1667""`   
+ `target=""_blank"">`  
+ `<img src=""https://cdn.photoswipe.com/photoswipe-demo-images/photos/6/img-200.jpg"" alt="""" />`  
+ `</a>`  
+ `</div>`  
+`</div>` ",False,0.01613,"The post is about technical assistance with PhotoSwipe, not starting or seeking services for a software business."
+1bjcgcw,,,,,,,,1710938366.0,https://www.reddit.com/r/smallbusiness/comments/1bjcgcw/cstore_office_training/,Cstore Office training,"Hey Guys so i was working for a gas station , and a new owner just moved in and wants me to use Cstore office which is a software that manages inventory,sales etc…
+I find it pretty useful but there are a lot of features that require training.Ive reached out to the company (Petrosoft) about their training programs but it pretty expensive for me atm (1800$). So please guys if you or you know someone who uses or went to the training for this Software and ask them if it transferable or if there are websites where I can find the trainings for free I will be forever grateful.",False,0.00814,"The post is about seeking training for specific software, not about starting a software business."
+1bjcid3,,,,,,,,1710938543.0,https://www.reddit.com/r/smallbusiness/comments/1bjcid3/want_to_build_a_website/,Want to build a website,"Hello,
+
+I want to build a website to supplement the health care system (not official medical advice) and wanted to know if I've covered all I need to think about;
+
+1. Website & domain
+2. Emails
+3. Server
+4. Terms of service
+5. business insurance?
+
+I'm also looking for how much you spent on your website before launching it live.
+
+Thank you!",True,0.00769,"The post is from someone looking to build a software solution, fitting the profile of a potential client."
+1bjcjpr,,,,,,,,1710938663.0,https://www.reddit.com/r/Entrepreneur/comments/1bjcjpr/what_should_i_do_to_turn_10_to_11/,What should i do to turn 10$ to 11$?,"Lets assume i have 10 dollars right now, what should i do in one day to turn it to 11?",False,0.00709,"The post is about making a quick financial gain, not starting a software business."
+1bjclq7,,,,,,,,1710938840.0,https://www.reddit.com/r/smallbusiness/comments/1bjclq7/health_insurance/,Health Insurance? ,"Hey Everyone 👋  I'm new to business owning and looking for health insurance. Who do you use?
+I am single, my daughter is eligible for CHIP. Looking for myself. Is Healthcare marketplace an option for small business owners? Thank you for any help and tips ",False,0.0073399999999999,"The post is about seeking health insurance advice, not about starting a software business."
+1bjcp0s,,,,,,,,1710939130.0,https://www.reddit.com/r/SaaS/comments/1bjcp0s/roast_my_new_saas/,Roast my new SaaS,"Hey everyone, I'd appreciate your genuine feedback on my initial SaaS project. Please share your thoughts on what you like and dislike. Here's the website: [https://immersa.app](https://immersa.app)
+
+&#x200B;",False,0.0075199999999999,"The post is about seeking feedback for an already developed software, not about looking for development services."
+1bjcqfi,,,,,,,,1710939264.0,https://www.reddit.com/r/Entrepreneur/comments/1bjcqfi/help_short_term_vacation_rental_demand_is_lowwww/,Help - short term vacation rental demand is lowwww,"As titled - Demand for short term rental in my area has gone down - I have too many units that are empty 
+
+Anyone else have the same problem ? 
+
+Is the only solution is to rent it long term ? Im not against it but there are a lot of empty houses / rentals in the market right now so I probably wouldn’t get a good price 
+
+Anyone else in the same predicament ? ",False,0.00761,"The post is about short term rental management, not related to software development."
+1bjcsar,,,,,,,,1710939433.0,https://www.reddit.com/r/nocode/comments/1bjcsar/best_nocode_platform_to_build_an_airbnb_clone/,Best nocode platform to build an Airbnb clone?,"I am considering starting an airbnb like a website for a specific niche and would like opinions about which no-code platform is the best to build such a platform.
+
+Stumbled upon sharetribe, bubble, webflow, and others, but i am still confused.
+
+I am considering starting an airbnb like business for a specific niche and would like opinions about which no-code platform is the best to build such a platform.",True,0.00783,"The post is about starting a software business without a technical co-founder, aligning with our target client profile."
+1bjctce,,,,,,,,1710939528.0,https://www.reddit.com/r/Entrepreneur/comments/1bjctce/beginner_advice/,Beginner advice?!,"25 year old here,seeking advice from you superior business owners who started from scratch.Things to do/avoid for beginners.
+
+My passion has always been around gyms,been employed for different companies over 7 years now ,so I kinda know the foundation and layout of how most run..I know there’s more to it than just that but at least I have some knowledge about gyms.When I tell people my idea they look at me as if it is impossible,but I want to open up a gym,even start a franchise later on down the road.For no just open one up and get the feel of it
+
+Right now I have no degree in anything,I know it’s not needed but helpful.I do plan to attend a college soon to obtain a degree in business or engineering,depending on what is best for business owners..
+
+I continuously get these ideas,day and night about starting a business.I catch myself day dreaming a lot about cool ways to create it and how I could design an insane gym layout.I actually got concerned and asked my doctor if this was normal and she said yes,just someone with positive plans.
+
+Anyways,sorry for the lengthy text..Hope you guys have some great advice and willing to help me out.:))",False,0.00937,"The post focuses on starting a physical gym business, not a software business."
+1bjcw1x,,,,,,,,1710939723.0,https://www.reddit.com/r/SaaS/comments/1bjcw1x/best_directories_to_list_a_saas/,Best directories to list a SaaS,"Hey everyone, I'm searching for a compilation of (free) directories where I can list all my SaaS products. 
+
+I'm aiming to boost visibility and gather backlinks. 
+
+Any recommendations?",False,0.0072499999999999,"The post is about seeking directories for listing SaaS products, not seeking software development services."
+1bjd03p,,,,,,,,1710940040.0,https://www.reddit.com/r/Entrepreneur/comments/1bjd03p/99_of_pitches_happen_behind_closed_doors_so_heres/,99% of pitches happen behind closed doors — so here’s mine! ,"Hey folks! Realized 99% of pitches happen behind closed doors, so it’s really hard to get a pulse on how they go / how you can improve your own. 
+
+[Thought I’d share mine](https://www.linkedin.com/posts/milly-tamati_id-never-pitched-in-my-entire-life-but-activity-7176157373923753984-_xNZ?utm_source=share&utm_medium=member_ios), hope it helps! ",False,0.0078,"The post is about pitching, not seeking a software development service or co-founder."
+1bjd18f,,,,,,,,1710940139.0,https://www.reddit.com/r/SaaS/comments/1bjd18f/product_hunt_launch_mistakes_to_avoid/,Product Hunt Launch Mistakes to Avoid,"Hey fellow entrepreneurs,
+
+After my last launch on Product Hunt didn't get featured, I spent quite a bit of time reflecting and asking myself why it didn't make the cut. It was a bit disheartening, to be honest. However, Product Hunt recently shed some light on this very topic, sharing key reasons why products might not get the spotlight we hope for.
+
+Here's a quick list they shared that I'm keeping for next time:
+
+* It's gotta be a SaaS product, not something like a PDF.
+* Don't forget to add a maker comment for engagement.
+* Check your links; broken ones are a big no.
+* Schedule your launch ahead of time.
+* No repeats; make sure your launch is fresh.
+* Big updates only, no minor tweaks.
+* Be clear in your tagline about what your product does.
+
+I’m sharing a better explanation [originally posted here](https://www.aidirectori.es/blog/product-hunt-launch-mistakes-to-avoid). Hoping this helps you as much as it did me for future launches! Make sure you save this info.",False,0.00915,"The post focuses on advice for launching on Product Hunt, not seeking a technical co-founder or agency."
+1bjda2l,,,,,,,,1710940841.0,https://www.reddit.com/r/webdev/comments/1bjda2l/i_want_to_make_a_wcag_compliant_portfolio_website/,I want to make a WCAG compliant portfolio website for myself. How to get started?,"Hey, little bit about myself. I used to retrofit already designed and developed WordPress sites that used divi theme builder for them to be ADA compliant. Even though I worked only on drag and drop technology I am confident in my ability to learn how to build a website from scratch because I have enough knowledge in HTML, CSS and JS/jQuery to make a site from looking at a image/png, I just don't know the industry standard.
+
+And finally, Even though I worked in making sites ADA compliant I don't grasp the whole concept of WCAG compliance, so if there are resources/tips on how to develop a website with keeping WCAG in mind from scratch, like following a checklist of sort. I'd be grateful for that, thanks.
+
+P.S.  I chose to build from scratch because the hosting in WordPress costs money which I can't afford right now. Is there any hosting services that provides hosting portfolio profile for free?
+
+&#x200B;",False,0.00882,"The post focuses on individual learning and compliance, not on starting a software business."
+1bjdan4,,,,,,,,1710940883.0,https://www.reddit.com/r/SaaS/comments/1bjdan4/made_500_in_sales_how_are_we_doing/,Made 500$ in sales! How are we doing,"After building our product for 8 months , an all in one [feedback management software](https://productlogz.com), we have made a total of 500$ in sales
+
+We are at point where we don’t know if these sales are enough to keep going forward.
+
+We have made all these sales via ltd and now are not sure how to monetize and market our product to get monthly subscriptions
+
+How did you get your first MRR customer? Share some insights? ",False,0.0079,"The post discusses a product that has already been built and is making sales, not seeking development help."
+1bjdb5r,,,,,,,,1710940924.0,https://i.redd.it/vjw3fyhhphpc1.png,"I'm new to NextJS and during the tutorial I can't set up my vscode to use workspace version of the TS plugin. I tried restarting, reinstalling the project etc. All project config is untouched and taken from the official Next tutorial. Any ideas?",,False,0.0073999999999999,"The post is about a technical issue with NextJS, not seeking a technical co-founder or software development agency."
+1bjdbtw,,,,,,,,1710940981.0,https://www.reddit.com/r/SaaS/comments/1bjdbtw/the_inbetween_whats_the_next_move/,The in-between. What’s the next move?,"I have a b2c product that has found a decent audience (1000+ users , ~40 paying). But, my primary source of growth is asking people to try it out.
+
+I feel like I’m in an in-between state with the project where it’s not doing poorly, but it’s not scaling like crazy either.
+
+People who use the product say it’s easy to use and does what it claims and almost all feedback is generally positive.
+
+** Some things I’ve tried **
+I’ve tried running ads on multiple platforms, but the customer acquisition cost is too high to sustain.
+
+Improving search ranking with SEO, but my ranking for every term is abysmal. Google hates this site for some reason.
+
+Affiliate marketing. I’ve been trying to land some affiliates while offering a 50/50 split and nothing up front. Was finally able to get an affiliate and I’m excited to see what this brings!
+
+
+I guess what I’m really asking is that if you were me what would you do to try to grow from 1k users to 10k users?",False,0.00908,"The post is about scaling an existing B2C product, not seeking technical co-founder services."
+1bjdcrx,,,,,,,,1710941054.0,https://www.reddit.com/r/business/comments/1bjdcrx/educating_myself_on_business/,Educating myself on business ,"Hi,
+
+so I go to a business school I’m freshman, but I really want to expand my knowledge about what is going on in the business world as well as become financially literate. I want to learn about investing and building capital and starting a business. How can I educate myself on these topics ? I want to do a deep dive and really educate myself. Any advice on how to do so 🧿🧿🧿? Would appreciate any advice.",False,0.00763,"The post is about general business education, not seeking software development."
+1bjdemh,,,,,,,,1710941200.0,https://www.reddit.com/r/webdev/comments/1bjdemh/web_hosting_provider/,Web hosting provider ,"I need recommendation for where to host my website. 8 have a developer helping me build the website and has requested I buy the domain and hosting. I bought from Namecheap and now looking for where to buy hosting.  I thought I would go with siteground but I see very bad reviews and now I'm stuck. 
+
+I want something reliable and non complicated.  I will be the one managing the website later on as I am a software engineering student but we have not been taught web hosting yet,maybe next semester.  But I need something urgently to give to my developer now. Thanks",False,0.00807,"The post is seeking advice for web hosting, not seeking a technical co-founder or software development services."
+1bjders,,,,,,,,1710941212.0,https://www.reddit.com/r/webdev/comments/1bjders/can_i_render_markdown_to_html_on_client_and/,Can I Render Markdown to HTML on Client and Uploading it to Server Safely?,"I have some markdown content that I want to be rendered on client-side and then uploaded to the server.
+
+But It's an recipe for disaster because that means that one would easily inject custom JavaScript stuff in that easily.
+
+So I wanted to know if there is anyway that I could ensure that the generated HTML is generated by my script or not?",False,0.00762,"The post is about technical implementation details, not seeking a co-founder or software development services."
+1bjdfax,,,,,,,,1710941257.0,https://www.reddit.com/r/startups/comments/1bjdfax/looking_for_advice_on_initial_partnership/,Looking for advice on initial partnership agreement(s),"I'm involved in a brand new startup as (essentially) cofounder.
+
+Looking to formalize the verbal agreements that have been made, I'm looking for some templates that I can use to generate the various agreements. Looks like, at the least, we should have a partnership agreement and a shareholder agreement.
+
+Searching for templates generates a bunch of links to sites that try to trick you into filling out a bunch of stuff, then withhold the actual document until you sign up/pay/whatever. I haven't found anything that's actually available without paying.
+
+Does anyone have links to document templates that can be used to generate these agreements? Or am I on a fools errand to try to do this without hiring a lawyer?",False,0.0083,"The post is about legal agreements for a startup, not seeking technical partnership or development services."
+1bjdhj1,,,,,,,,1710941431.0,https://www.reddit.com/r/nocode/comments/1bjdhj1/parsing_data_from_airtable_to_html/,Parsing data from Airtable to HTML?,"I'm using iframes to embed data from an airtable view which is working ok, but I'd prefer to convert the rows into HTML
+
+Does anyone know if this even exists?
+
+Is it even possible?
+
+For some context, the purpose of this is because I manage an events directory that would greatly benefit from using event Schema for SEO indexation and the iFrame falls short so the ideal would be for some sort of conversion to take place from Airtable to HTML
+
+The main ""kicker"" as I see it would be if data within airtable is linked to from other tables?
+
+All pointers greatly appreciated ",False,0.00812,"The post is seeking technical help with Airtable and HTML, not looking for a software development partnership."
+1bjdl06,,,,,,,,1710941702.0,https://www.reddit.com/r/smallbusiness/comments/1bjdl06/freight_shipping_question/,Freight shipping question ,I have to ship a load of fabric rolls across the US. Last time I did this the trucker told me I overpaid and he said I should use a freight shipping broker. Does anyone have a recommendation for a domestic broker or any advice on how to decrease freight shipping costs? Thanks!,False,0.00732,The post is about freight shipping and not related to starting a software business.
+1bjdlal,,,,,,,,1710941721.0,https://www.reddit.com/r/Entrepreneur/comments/1bjdlal/any_advice_to_reach_to_the_potential_customers/,Any advice to reach to the potential customers,"Hi I'm a 20 year old engineering student. I'm sharing car related content on one of my ig accounts which has 18k followers. But I didn't make a single dollar from this account. I'm thinking to reach to potential customers for paid sponsorship. Is there any idea about how can I reach out to them and find them? I'm completely new to this subject.   
+
+
+Thanks for all the answers and advices!",False,0.00769,"The post is about monetizing an Instagram account, not starting a software business."
