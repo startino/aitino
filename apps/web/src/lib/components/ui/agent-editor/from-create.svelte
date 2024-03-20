@@ -12,7 +12,7 @@
 	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 
 	export let data: SuperValidated<AgentFormSchema>;
-	export let agentTools;
+	export let agentTools: Agent[] | null;
 
 	const { form: formAgent, errors } = superForm(data, {
 		validators: createNewAgents
@@ -37,9 +37,6 @@
 		</Dialog.Trigger>
 	</div>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
-		<!-- <Dialog.Header>
-			<Dialog.Title>Create Agent</Dialog.Title>
-		</Dialog.Header> -->
 		<form action="?/creatAgents" method="POST" use:enhance>
 			<AgentEditorItems {errors} {formAgent} isCreate={true} {agentTools} />
 			<Button

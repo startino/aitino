@@ -15,7 +15,7 @@
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 
 	const dispatch = createEventDispatcher();
-	export let agentTools;
+	export let agentTools: Agent[] | null;
 
 	export let selectedAgent: Agent;
 
@@ -31,9 +31,6 @@
 
 <Dialog.Root {open} onOpenChange={handleChange}>
 	<Dialog.Content class="w-full border-none sm:max-w-full lg:max-w-4xl">
-		<!-- <Dialog.Header>
-			<Dialog.Title>Edit Agent</Dialog.Title>
-		</Dialog.Header> -->
 		<form
 			action="?/editAgent&id=${selectedAgent.id}"
 			method="POST"
