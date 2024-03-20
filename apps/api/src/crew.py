@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 from asyncio import Queue
 from typing import Any, cast
 from uuid import UUID, uuid4
@@ -8,7 +9,7 @@ import autogen
 from autogen.cache import Cache
 
 from .interfaces import db
-from .models import CodeExecutionConfig, CrewModel, Message, Session
+from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
 from .tooling.langchain_tooling import (
     generate_llm_config,
     generate_tool_from_string,
@@ -166,6 +167,13 @@ class Crew:
                 new_dict[key] = value
         return new_dict
 
+    def _format_agent_name(self, agent: AgentModel) -> str:
+        return re.sub(
+            r"[^a-zA-Z0-9-]",
+            "",
+            f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
+        )[:64]
+
     def _create_agents(
         self, crew_model: CrewModel
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
@@ -227,18 +235,22 @@ class Crew:
             if tool_schemas:
                 config["functions"] = tool_schemas
 
+            system_message = f"""{agent.role}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
+            internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
+            Give this program to the admin. """  # TODO: add what agent it should send to next - Leon
+
             agent_instance = autogen.AssistantAgent(
-                name=f"""{agent.title.replace(' ', '')}-{agent.title.replace(' ', '')}""",  # TODO: make failsafes to make sure this name doesn't exceed 64 chars - Leon
-                system_message=f"""{agent.title}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
-                internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
-                Give this program to the admin. """,  # TODO: add what agent it should send to next - Leon
+                name=self._format_agent_name(agent),
+                system_message=system_message,
                 description=formatted_descriptions[agent.id][0],
                 # could add something to concatenate all strings in description list for a given agent - Leon
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:
                 agent_instance.update_system_message(
-                    f"""{agent.title}\n\n{agent.system_message}. Write TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."""
+                    system_message
+                    + "\nWrite TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."
+                    ""
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
@@ -255,12 +267,14 @@ class Crew:
 
         # convert Message list to dict list
         dict_messages = [m.model_dump() for m in (messages if messages else [])]
-
+        speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
+        logger.info(speaker_selection_method)
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
             max_round=20,
-            speaker_selection_method="auto" if len(self.agents) > 1 else "round_robin",
+            speaker_selection_method="round_robin",
+            # TODO: Fix auto method to not spam route to admin
             send_introductions=True,
         )
 

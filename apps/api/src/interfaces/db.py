@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from src.models import Agent, CrewModel, Message, Session
+from src.models import AgentModel, CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
@@ -107,7 +107,7 @@ def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
     return {d["id"]: d["description"] for d in response.data}
 
 
-def post_agents(agents: list[Agent]) -> None:
+def post_agents(agents: list[AgentModel]) -> None:
     """
     Post a list of agents to the database.
     """

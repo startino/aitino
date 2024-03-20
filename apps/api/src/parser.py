@@ -3,7 +3,7 @@ import logging
 from typing import Literal
 from uuid import UUID, uuid4
 
-from src.models import Agent, CrewModel
+from src.models import AgentModel, CrewModel
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)
@@ -26,7 +26,7 @@ supabase: Client = create_client(url, key)
 
 # TODO: Move this to the db.py file, will make a circular import for now but I'll fix later
 # - Jonas
-def get_agent(agent_id: UUID) -> Agent | None:
+def get_agent(agent_id: UUID) -> AgentModel | None:
     """
     Get an agent from the database.
     """
@@ -35,13 +35,13 @@ def get_agent(agent_id: UUID) -> Agent | None:
     if len(response.data) == 0:
         logger.error(f"No agent found for {agent_id}")
         return None
-    return Agent(**response.data[0])
+    return AgentModel(**response.data[0])
 
 
-def get_agents(agent_ids: list[UUID]) -> list[Agent]:
+def get_agents(agent_ids: list[UUID]) -> list[AgentModel]:
     logger.debug(f"getting agents from agent_ids: {agent_ids}")
     response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
-    return [Agent(**agent) for agent in response.data]
+    return [AgentModel(**agent) for agent in response.data]
 
 
 def parse_input_v0_2(input_data: dict) -> tuple[str, CrewModel]:
@@ -77,7 +77,7 @@ def parse_autobuild(
         return False, False
 
     message = dict_input["composition"]["message"]
-    agents = [Agent(**agent) for agent in dict_input["composition"]["agents"]]
+    agents = [AgentModel(**agent) for agent in dict_input["composition"]["agents"]]
     return message, CrewModel(receiver_id=uuid4(), agents=agents)
 
 
