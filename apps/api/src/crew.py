@@ -163,7 +163,7 @@ class Crew:
                 new_dict[UUID(split_uuid[0])] = value
             except ValueError:
                 # if the key can't be converted to uuid, return the old value
-                new_dict[key] = value  
+                new_dict[key] = value
         return new_dict
 
     def _create_agents(
@@ -191,10 +191,21 @@ class Crew:
             if len(agent.tools):
                 for tool in agent.tools:
                     generated_tool = generate_tool_from_string(tool)
-                    ((self.valid_tools.append(generated_tool), valid_agent_tools.append(generated_tool)) if generated_tool is not None else None)
+                    (
+                        (
+                            self.valid_tools.append(generated_tool),
+                            valid_agent_tools.append(generated_tool),
+                        )
+                        if generated_tool is not None
+                        else None
+                    )
 
                 logger.warn(f"{self.valid_tools=}")
-                tool_schemas = generate_llm_config(valid_agent_tools) if valid_agent_tools else None
+                tool_schemas = (
+                    generate_llm_config(valid_agent_tools)
+                    if valid_agent_tools
+                    else None
+                )
 
             logger.warn(
                 f"agent tools: {agent.tools}, valid agent tools: {valid_agent_tools=}, valid tools: {self.valid_tools}"
@@ -213,7 +224,8 @@ class Crew:
                 system_message=f"""{agent.title}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
                 internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
                 Give this program to the admin. """,  # TODO: add what agent it should send to next - Leon
-                description=formatted_descriptions[agent.id][0],  # could add something to concatenate all strings in description list for a given agent - Leon
+                description=formatted_descriptions[agent.id][0],
+                # could add something to concatenate all strings in description list for a given agent - Leon
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:

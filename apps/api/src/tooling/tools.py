@@ -1,7 +1,6 @@
 import math
 import os
 import random
-
 from typing import Type
 
 from langchain.pydantic_v1 import BaseModel, Field
@@ -35,4 +34,3 @@ def get_file_path_of_example():
     # file_path = os.path.join(target_folder, "test_files/radius.txt")
 
     return os.path.join(target_folder, random.choice(os.listdir(target_folder)))
-
