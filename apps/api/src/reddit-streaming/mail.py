@@ -5,13 +5,14 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime 
 import diskcache as dc
+from models import Submission
 
 load_dotenv()
 
 PROTON_PASSPHRASE = os.getenv("PROTON_PASSPHRASE") or ""
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") or ""
 
-def send_relevant_submission_via_email(submission):
+def send_relevant_submission_via_email(submission: Submission):
 
     sender = 'jorge.lewis@futi.no'
     reciever = ['jorge.lewis@futi.no', 'jonas.lindberg@futi.no']

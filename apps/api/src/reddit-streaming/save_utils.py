@@ -1,5 +1,7 @@
+from models import Submission
 import csv
 import pandas as pd
+
 
 posts_filepath = "./reddit_posts.csv"
 
@@ -10,7 +12,7 @@ def save_submission_notpandas(submission, is_relevant):
         writer.writerow([timestamp, url, title, body, is_relevant])
 
 
-def save_submission(submission, is_relevant, cost):
+def save_submission(submission: Submission, is_relevant, cost):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(posts_filepath, sep=",")
 
