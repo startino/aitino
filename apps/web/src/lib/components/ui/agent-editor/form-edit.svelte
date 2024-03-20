@@ -15,6 +15,7 @@
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 
 	const dispatch = createEventDispatcher();
+	export let agentTools;
 
 	export let selectedAgent: Agent;
 
@@ -29,7 +30,7 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={handleChange}>
-	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl border-none">
+	<Dialog.Content class="w-full border-none sm:max-w-full lg:max-w-4xl">
 		<!-- <Dialog.Header>
 			<Dialog.Title>Edit Agent</Dialog.Title>
 		</Dialog.Header> -->
@@ -44,12 +45,12 @@
 				};
 			}}
 		>
-			<AgentEditorItems {selectedAgent} isCreate={false} />
+			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools}/>
 			<Button
 				type="submit"
 				disabled={isFormIncomplete}
 				variant="outline"
-				class="flex mt-2"
+				class="mt-2 flex"
 				on:click={() => {
 					state = 'loading';
 					setTimeout(() => {
