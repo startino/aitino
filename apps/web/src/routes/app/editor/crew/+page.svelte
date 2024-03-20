@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { writable, get } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import dagre from '@dagrejs/dagre';
 	import {
 		SvelteFlow,
@@ -18,23 +18,19 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { AgentLibrary, CrewLibrary } from '$lib/components/ui/library';
 	import * as CustomNode from '$lib/components/ui/custom-node';
-	import {
-		getContext,
-		getWritableNodes,
-		getCleanNodes,
-		pickRandomAvatar,
-		pickRandomName,
-		getNodesCount
-	} from '$lib/utils';
+	import { getContext, getWritableNodes, getCleanNodes, getNodesCount } from '$lib/utils';
 	import type { PanelAction, SaveResult } from '$lib/types';
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
-	import type { CrewLoad } from '$lib/types/loads';
 	import { goto } from '$app/navigation';
 
-	export let data: CrewLoad;
+	export let data;
 
 	const { receiver, count } = getContext('crew');
-	$: data.crew.receiver_id = $receiver ? $receiver.node.id : null;
+	let initialized = false;
+
+	$: if (initialized) {
+		data.crew.receiver_id = $receiver ? $receiver.node.id : null;
+	}
 	let title = data.crew.title;
 	$: data.crew.title = title;
 	let description = data.crew.description;
@@ -44,7 +40,7 @@
 
 	// Reactivity for loading states
 	$: tryingToRun = false;
-	let tryingToSave = false;
+	let saving = false;
 
 	const actions: PanelAction[] = [
 		{
@@ -62,24 +58,9 @@
 				goto('/app/sessions/?crewId=' + data.crew.id);
 			}
 		},
-		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addNewPrompt },
+		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addPrompt },
 		{
 			name: 'Add Agent',
-			buttonVariant: 'outline',
-			onclick: () => {
-				const randomAvatar = pickRandomAvatar();
-
-				addNewAgent(
-					randomAvatar.name,
-					'gpt-4-turbo-preview',
-					'Example Job',
-					'Example Summary',
-					randomAvatar.avatarUrl
-				);
-			}
-		},
-		{
-			name: 'Load Agent',
 			buttonVariant: 'outline',
 			onclick: () => {
 				openAgentLibrary = true;
@@ -115,11 +96,11 @@
 		{
 			name: 'Save',
 			buttonVariant: 'outline',
-			loading: tryingToSave,
+			loading: saving,
 			onclick: async () => {
-				tryingToSave = true;
+				saving = true;
 				await save();
-				tryingToSave = false;
+				saving = false;
 			}
 		},
 		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
@@ -177,6 +158,8 @@
 	const edges = writable<Edge[]>(data.crew.edges);
 	$: data.crew.edges = $edges;
 
+	layout();
+
 	async function save(): Promise<SaveResult> {
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 		if (!data.crew.id) {
@@ -205,6 +188,7 @@
 			return;
 		}
 		const revr = getNodes([id])[0];
+
 		$receiver = { node: revr, targetCount: 1 };
 	}
 
@@ -214,53 +198,12 @@
 		$edges = layoutedElements.edges;
 	}
 
-	// function addNewAgent() {
-	// 	if ($count.agents >= AGENT_LIMIT) return;
-
-	// 	const position = { ...getViewport() };
-
-	// 	let name = '';
-
-	// 	do {
-	// 		name = pickRandomName();
-	// 	} while ($nodes.find((n) => n.type === 'agent' && get(n.data.name) === name));
-
-	// 	// setCenter(position.x, position.y, { zoom: position.zoom });
-
-	// 	nodes.update((v) => [
-	// 		...v,
-	// 		{
-	// 			id: crypto.randomUUID(),
-	// 			type: 'agent',
-	// 			position,
-	// 			selectable: false,
-	// 			data: {
-	// 				name: writable(name),
-	// 				job_title: writable(''),
-	// 				prompt: writable(''),
-	// 				model: writable({ label: '', value: '' }),
-	// 				avatar: pickRandomAvatar()
-	// 			}
-	// 		}
-	// 	]);
-
-	// 	$count.agents++;
-	// }
-
-	function addNewAgent(
-		agentName: string,
-		agentModel: string,
-		job: string,
-		summary: string,
-		agentAvatar: string
-	) {
+	function addAgent(data: any) {
 		if ($count.agents >= AGENT_LIMIT) return;
-		const nodeId = crypto.randomUUID();
 
-		// Check if a node with this ID already exists
-		const existingNode = $nodes.find((node) => node.id === nodeId);
+		const existingNode = $nodes.find((node) => node.id === data.id);
 		if (existingNode) {
-			console.log(`Node with ID ${nodeId} already exists.`);
+			console.log(`Node with ID ${data.id} already exists.`);
 			return;
 		}
 
@@ -268,24 +211,18 @@
 		nodes.update((v) => [
 			...v,
 			{
-				id: nodeId,
+				id: data.id,
 				type: 'agent',
 				position,
 				selectable: false,
-				data: {
-					name: writable(agentName),
-					model: writable(agentModel),
-					prompt: writable(summary),
-					job_title: writable(job),
-					avatar: agentAvatar
-				}
+				data
 			}
 		]);
 
 		$count.agents++;
 	}
 
-	function addNewPrompt() {
+	function addPrompt() {
 		if ($count.prompts >= PROMPT_LIMIT) return;
 
 		const position = { ...getViewport() };
@@ -320,6 +257,14 @@
 		fitView
 		oninit={() => {
 			setReceiver(data.crew.receiver_id);
+			initialized = true;
+			data.crew.nodes.forEach((n) => {
+				if (n.type === 'agent') {
+					$count.agents++;
+				} else {
+					$count.prompts++;
+				}
+			});
 		}}
 		connectionLineType={ConnectionLineType.SmoothStep}
 		defaultEdgeOptions={{ type: 'smoothstep', animated: true }}
@@ -402,8 +347,8 @@
 				<AgentLibrary
 					myAgents={data.myAgents}
 					publishedAgents={data.publishedAgents}
-					on:loadAgent={({ detail }) => {
-						addNewAgent(detail.name, detail.model, detail.job, detail.job, detail.avatar);
+					on:load-agent={({ detail }) => {
+						addAgent(detail);
 					}}
 				/>
 			</Dialog.Content>

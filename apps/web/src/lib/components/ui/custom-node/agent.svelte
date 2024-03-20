@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { Position, type NodeProps, useSvelteFlow, useConnection } from '@xyflow/svelte';
-	import { type Writable } from 'svelte/store';
 	import { X } from 'lucide-svelte';
 
 	// 👇 always import the styles
 	import '@xyflow/svelte/dist/style.css';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import Handle from '$lib/components/Handle.svelte';
 	import { getContext } from '$lib/utils';
-	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 	import { Avatar } from '../avatar/';
 	import Skeleton from '../skeleton/skeleton.svelte';
 
@@ -20,24 +18,11 @@
 
 	export let data: {
 		avatar: string;
-		prompt: Writable<string>;
-		job_title: Writable<string>;
-		name: Writable<string>;
-		model: Writable<{ label: string; value: string }>;
+		title: string;
+		description: string;
+		model: string;
+		role: string;
 	};
-
-	const { name, model, prompt, job_title, avatar } = data;
-
-	const models = [
-		{
-			label: 'GPT-4 Turbo',
-			value: 'gpt-4-turbo-preview'
-		},
-		{
-			label: 'GPT-3.5 Turbo',
-			value: 'gpt-3.5-turbo'
-		}
-	];
 
 	export let id: NodeProps['id'];
 
@@ -56,7 +41,7 @@
 <Card.Root
 	class="{isTarget ? 'bg-card border-2 border-dashed ' : ''} {isReceiver
 		? 'bg-primary-950'
-		: ''} aspect-1transition"
+		: ''} aspect-1transition w-[300px]"
 >
 	<button
 		on:click={() => {
@@ -71,37 +56,27 @@
 		class="absolute right-2 top-2"><X /></button
 	>
 
-	<Card.Header class="flex gap-2">
+	<Card.Header class="flex gap-2 text-center">
 		<Card.Title class="mt-4">
-			{#if isReceiver}
-				(Receiver)
-			{/if}
-			<Input placeholder="Name..." class="text-center" bind:value={$name} />
+			<p>
+				{data.title}
+				{#if isReceiver}
+					(Receiver)
+				{/if}
+			</p>
 		</Card.Title>
-		{#if avatar}
+		<Card.Description>{data.role}</Card.Description>
+		{#if data.avatar}
 			<Avatar class="mx-auto h-24 w-24">
 				<Skeleton class="h-24 w-24 rounded-full" />
-				<img src={avatar} alt="" class="scale-125" />
+				<img src={data.avatar} alt="" />
 			</Avatar>
-		{:else}{/if}
+		{/if}
+		<Badge variant="outline" class="self-center">{data.model}</Badge>
 	</Card.Header>
-	<Card.Content class="grid w-[300px] gap-2">
-		<Input placeholder="Job title..." bind:value={$job_title} />
-		<Select.Root bind:selected={$model}>
-			<Select.Trigger>
-				<Select.Value placeholder="Select a model" />
-			</Select.Trigger>
-			<Select.Content>
-				<Select.Group>
-					{#each models as { value, label }}
-						<Select.Item {value} {label}>
-							{label}
-						</Select.Item>
-					{/each}
-				</Select.Group>
-			</Select.Content>
-		</Select.Root>
-		<PromptEditor bind:value={$prompt} />
+	<Card.Content class="grid gap-2 text-center">
+		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
+		<Button href="/app/editor/agent">Edit Agent</Button>
 		<Handle type="target" id="top-{id}" position={Position.Top} />
 		<Handle type="source" id="bottom-{id}" position={Position.Bottom} />
 	</Card.Content>
