@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class Agent(BaseModel):
+class AgentModel(BaseModel):
     id: UUID
     title: str
     role: str
