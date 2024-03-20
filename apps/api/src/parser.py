@@ -44,16 +44,14 @@ def get_agents(agent_ids: list[UUID]) -> list[Agent]:
     return [Agent(**agent) for agent in response.data]
 
 
-def parse_input_v0_2(
-    input_data: dict,
-) -> tuple[str, CrewModel]:
+def parse_input_v0_2(input_data: dict) -> tuple[str, CrewModel]:
     logger.debug("Parsing input v0.2")
 
     agent_ids: list[UUID] = input_data["nodes"]
-    reciever_id: UUID = input_data["reciever_id"]
+    receiver_id: UUID = input_data["receiver_id"]
 
     crew_model = CrewModel(
-        reciever_id=reciever_id,
+        receiver_id=receiver_id,
         agents=get_agents(agent_ids),
     )
     message: str = input_data["prompt"]["content"]
@@ -80,7 +78,7 @@ def parse_autobuild(
 
     message = dict_input["composition"]["message"]
     agents = [Agent(**agent) for agent in dict_input["composition"]["agents"]]
-    return message, CrewModel(reciever_id=uuid4(), agents=agents)
+    return message, CrewModel(receiver_id=uuid4(), agents=agents)
 
 
 if __name__ == "__main__":

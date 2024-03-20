@@ -9,4 +9,5 @@ class Agent(BaseModel):
     title: str
     role: str
     system_message: str
+    tools: list[str]
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
