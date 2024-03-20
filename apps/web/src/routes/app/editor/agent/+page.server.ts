@@ -110,17 +110,10 @@ export const actions: Actions = {
 	addTools: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 		const toolId = url.searchParams.get('toolId');
-		console.log('id:', toolId);
-		const form = await request.formData();
-
-		const name = form.get('toolName');
-		const description = form.get('toolDescription');
-		const apiKey = form.get('apiKey');
 
 		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
 
 		let currentTools = currentAgent.data.tools;
-		console.log('currentAgent:', currentTools);
 
 		const { data, error } = await supabase
 			.from('agents')
@@ -131,37 +124,20 @@ export const actions: Actions = {
 						: [{ id: toolId, parameter: {} }]
 			})
 			.eq('id', id);
-
-		console.log('form:', data, error);
 	},
 	removeTools: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 		const toolId = url.searchParams.get('toolId');
-		console.log('toolid:', toolId);
-		console.log('id:', id);
 		const form = await request.formData();
 
-		const name = form.get('toolName');
-
 		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
-		console.log('currentAgent:', currentAgent.data.tools);
 
 		const deleteTool = currentAgent.data.tools.filter((tool) => tool.id !== toolId);
-
-		console.log(deleteTool, 'dele');
-		console.log(currentAgent, 'cu dele');
-		console.log(name, 'name');
-
-		// // let currentTools = currentAgent.data.tools;
-		// // console.log('currentAgent:', currentTools);
-
 		const { data, error } = await supabase
 			.from('agents')
 			.update({
 				tools: deleteTool
 			})
 			.eq('id', id);
-
-		console.log('form:', data, error);
 	}
 };

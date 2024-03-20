@@ -11,12 +11,12 @@
 	const dispatch = createEventDispatcher();
 
 	export let open = false;
-	let filteredTools;
-	export let toolApiKeys;
-	export let checkSelected;
+	let filteredTools: string[];
+	export let toolApiKeys: Record<string, string>;
+	export let checkSelected: { name: string; apikey: string; description: string; id: string }[];
 	export let displayTools: Agent | null = null;
-	export let selectedAgent;
-	export let agentTools;
+	export let selectedAgent: Agent | null;
+	export let agentTools: Agent[] | null;
 
 	$: console.log('agentTools:', agentTools);
 	let searchQuery = '';

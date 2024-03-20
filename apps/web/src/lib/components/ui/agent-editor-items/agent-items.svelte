@@ -11,7 +11,7 @@
 	import { AgentTools } from '$lib/components/ui/agent-editor-items/';
 	import { enhance } from '$app/forms';
 
-	export let agentTools;
+	export let agentTools: Agent[] | null;
 	export let selectedAgent: Agent | null = null;
 	export let formAgent: SuperFormData<
 		ZodObject<{
@@ -122,7 +122,7 @@
 							class=" border-nprimary bg-surface hover:border-nprimary group overflow-hidden rounded-lg border transition duration-300 ease-in-out"
 						>
 							<div
-								class=" relative p-6 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
+								class=" relative p-4 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
 							>
 								<h3 class="text-primary-500 text-xl font-bold">{tool.name}</h3>
 								<p class="text-secondary-100">{tool.description}</p>
