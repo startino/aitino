@@ -4,7 +4,6 @@
 	import { fade } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();

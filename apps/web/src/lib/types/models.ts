@@ -21,6 +21,7 @@ export type Crew = {
 	created_at: string;
 	published: boolean;
 	avatar: string;
+	prompt: { id: string; content: string } | null;
 };
 
 export type Session = {
@@ -46,5 +47,5 @@ export type Agent = {
 	profile_id: string;
 	tools: string[];
 	avatar: string;
-	version: string
+	version: string;
 };

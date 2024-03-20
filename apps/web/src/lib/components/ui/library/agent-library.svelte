@@ -118,13 +118,7 @@
 					on:click={({ detail }) => ((showDetails = true), showDetailInTheModal(detail.id))}
 					on:load={({ detail }) => {
 						toast.success(`Added a new agent ${detail.title}`);
-						console.log(detail, 'detail');
-						dispatch('loadAgent', {
-							name: detail.title,
-							model: detail.model,
-							job: detail.role,
-							avatar: detail.avatar
-						});
+						dispatch('load-agent', detail);
 					}}
 				/>
 			{/each}
@@ -143,12 +137,7 @@
 					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
 					on:load={({ detail }) => {
 						toast.success(`Added a new agent ${detail.title}`);
-						dispatch('loadAgent', {
-							name: detail.title,
-							model: detail.model,
-							job: detail.role,
-							avatar: detail.avatar
-						});
+						dispatch('load-agent', detail);
 					}}
 				/>
 			{/each}
