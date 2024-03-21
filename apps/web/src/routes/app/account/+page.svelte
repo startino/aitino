@@ -107,14 +107,14 @@
 							<div class="flex w-full flex-wrap items-center gap-4">
 								<div class="max-w-lg flex-1">
 									<Input
-										placeholder="API Name"
+										placeholder=""
 										bind:value={input.value}
 										class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
 									/>
 								</div>
 								<div class="flex-grow">
 									<Input
-										placeholder="API Value"
+										placeholder=""
 										bind:value={input.value}
 										class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
 									/>
