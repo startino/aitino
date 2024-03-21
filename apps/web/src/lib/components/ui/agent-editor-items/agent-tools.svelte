@@ -14,7 +14,6 @@
 	let filteredTools: string[];
 	export let toolApiKeys: Record<string, string>;
 	export let checkSelected: { name: string; apikey: string; description: string; id: string }[];
-	export let displayTools: Agent | null = null;
 	export let selectedAgent: Agent | null;
 	export let agentTools: Agent[] | null;
 
@@ -81,6 +80,10 @@
 
 							selectedNewTool(tool, toolApiKeys[tool.name]);
 							toast.success('Added tool ' + tool.name);
+
+							setTimeout(() => {
+								location.reload();
+							}, 1500);
 						}}
 					>
 						<PlusCircle type="submit" class=" transition-colors" />
