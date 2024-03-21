@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from datetime import datetime 
 import diskcache as dc
 from models import Submission
+import markdown
 
 load_dotenv()
 
@@ -22,14 +23,19 @@ def send_submission_via_email(submission: Submission):
     Title: {submission.title}
     URL: {submission.url}
     Datetime: {datetime.fromtimestamp(submission.created_utc)}
+
+    Content:
+
+    {submission.selftext}
     """
     html = f"""\
     <html>
         <body>
-            <h1>A Reddit post has been found! 💸🎉</h1> 
-            Title: {submission.title} </br>
-            URL: <a href="{submission.url}">{submission.url}</a> </br>
-            Datetime: {datetime.fromtimestamp(submission.created_utc)} </br>
+            <h1><a href="{submission.url}">{submission.title}</a></h1>
+            <p><strong>Content:</strong></p>
+            <p>{markdown.markdown(submission.selftext)}</p>
+            <hr>
+            <p><strong>Datetime:</strong> {datetime.fromtimestamp(submission.created_utc)} </p>
         </body>
     </html>
     """
