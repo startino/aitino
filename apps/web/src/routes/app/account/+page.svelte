@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Files, Plus, XCircle } from 'lucide-svelte';
+	import { Plus, XCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	import { AppShell } from '$lib/components/layout/shell';
@@ -10,6 +10,8 @@
 	import { browser } from '$app/environment';
 	import { getPremadeInputsMap } from '$lib/utils';
 	import { slide } from 'svelte/transition';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 
 	let inputs: { name: string; value: string }[] = [];
 
@@ -28,6 +30,7 @@
 		inputs.push({ name: '', value: '' });
 		inputs = inputs;
 	}
+	let apiNames = ['Google Maps', 'OpenWeather', 'Twitter API', 'Facebook API'];
 
 	let myApi = [
 		{
@@ -69,12 +72,17 @@
 			newApiValue = '';
 		}
 	}
-	function toggleVisibility(index) {
+	function toggleVisibility(index: number) {
 		myApi[index].isVisible = !myApi[index].isVisible;
 		myApi = myApi;
 	}
 	function removeApi(index: number) {
 		myApi = myApi.filter((_, i) => i !== index);
+	}
+
+	// Function to handle selection
+	function handleSelect(name: string) {
+		newApiName = name;
 	}
 </script>
 
@@ -147,11 +155,23 @@
 					<form class="mb-6" on:submit|preventDefault={addApi}>
 						<div class="flex flex-wrap gap-4 md:items-end">
 							<div class="max-w-lg flex-1">
-								<Input
-									placeholder="API Name"
-									bind:value={newApiName}
-									class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
-								/>
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild let:builder>
+										<Button variant="outline" class="ml-auto" builders={[builder]}>
+											Api provider <ChevronDown class="ml-2 h-4 w-4" />
+										</Button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content class="z-50">
+										{#each apiNames as name}
+											<DropdownMenu.CheckboxItem
+												checked={newApiName === name}
+												on:click={() => handleSelect(name)}
+											>
+												{name}
+											</DropdownMenu.CheckboxItem>
+										{/each}
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
 							</div>
 							<div class="flex-grow">
 								<Input
@@ -173,7 +193,7 @@
 					<div class="space-y-4">
 						{#each myApi as api, index}
 							<div
-								class="bg-background flex items-center rounded-lg p-4 hover:scale-[99%] hover:shadow-xl transition-all duration-300"
+								class="bg-background flex items-center rounded-lg p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
 								transition:slide={{ duration: 200 }}
 							>
 								<div class="flex flex-col">
