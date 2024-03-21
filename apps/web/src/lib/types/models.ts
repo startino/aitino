@@ -39,6 +39,7 @@ export type Agent = {
 	title: string;
 	description: string[];
 	role: string;
+	prompt: string;
 	author: string;
 	model: string;
 	published: boolean;
