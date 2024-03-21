@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, XCircle } from 'lucide-svelte';
+	import { Files, Plus, XCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	import { AppShell } from '$lib/components/layout/shell';
@@ -71,7 +71,7 @@
 	}
 	function toggleVisibility(index) {
 		myApi[index].isVisible = !myApi[index].isVisible;
-		myApi = myApi; // Trigger reactivity
+		myApi = myApi;
 	}
 	function removeApi(index: number) {
 		myApi = myApi.filter((_, i) => i !== index);
@@ -103,10 +103,29 @@
 					</div>
 
 					{#each inputs as input, i}
-						<div class="mb-4 grid grid-cols-[2fr_3fr_auto] gap-4">
-							<Input bind:value={input.name} />
-							<Input bind:value={input.value} />
-							<button on:click={() => removeInput(i)} aria-label="remove input"><XCircle /></button>
+						<div class="mb-4 flex w-full gap-4">
+							<div class="flex w-full flex-wrap items-center gap-4">
+								<div class="max-w-lg flex-1">
+									<Input
+										placeholder="API Name"
+										bind:value={input.value}
+										class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+									/>
+								</div>
+								<div class="flex-grow">
+									<Input
+										placeholder="API Value"
+										bind:value={input.value}
+										class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+									/>
+								</div>
+								<Button
+									variant="ghost"
+									class="text-destructive hover:bg-transparent"
+									on:click={() => removeInput(i)}
+									aria-label="remove input"><XCircle /></Button
+								>
+							</div>
 						</div>
 					{/each}
 
@@ -123,41 +142,69 @@
 		</Tabs.Content>
 		<Tabs.Content value="api">
 			<Card.Root>
-				<Card.Header></Card.Header>
+				<Card.Header>API Keys</Card.Header>
 				<Card.Content>
-					<div class="mb-4 flex items-center justify-between">
-						<h2 class="text-lg font-semibold">API Keys</h2>
-					</div>
-
-					<form class="mb-6 space-y-4" on:submit|preventDefault={addApi}>
-						<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-							<Input placeholder="API Name" bind:value={newApiName} />
-							<Input placeholder="API Value" bind:value={newApiValue} />
-						</div>
-						<div class="flex justify-end">
-							<Button type="submit">
+					<form class="mb-6" on:submit|preventDefault={addApi}>
+						<div class="flex flex-wrap gap-4 md:items-end">
+							<div class="max-w-lg flex-1">
+								<Input
+									placeholder="API Name"
+									bind:value={newApiName}
+									class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+								/>
+							</div>
+							<div class="flex-grow">
+								<Input
+									placeholder="API Value"
+									bind:value={newApiValue}
+									class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+								/>
+							</div>
+							<Button type="submit" class="shrink-0">
 								<Plus class="mr-2" /> Add API
 							</Button>
 						</div>
 					</form>
+
 					{#if myApi.length === 0}
-						<p class="text-primary-600">No API keys added yet.</p>{/if}
+						<p class="text-primary-600">No API keys added yet.</p>
+					{/if}
 
 					<div class="space-y-4">
 						{#each myApi as api, index}
 							<div
-								class=" bg-background flex items-center rounded-lg p-4 hover:scale-[99%] hover:shadow-xl"
+								class="bg-background flex items-center rounded-lg p-4 hover:scale-[99%] hover:shadow-xl"
 								transition:slide={{ duration: 200 }}
 							>
-								<div class="flex-1">
-									<h3 class="text-lg font-semibold">{api.name}</h3>
+								<div class="flex flex-col">
+									<!-- svelte-ignore a11y-click-events-have-key-events -->
+									<div class="flex">
+										<h3 class="mr-1 text-lg font-semibold">{api.name}</h3>
+										<!-- svelte-ignore a11y-no-static-element-interactions -->
+										<span
+											class="text-primary cursor-pointer"
+											title={api.value}
+											on:click={() => toggleVisibility(index)}>?</span
+										>
+									</div>
 									<!-- svelte-ignore a11y-click-events-have-key-events -->
 									<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-									<p class="cursor-pointer" on:click={() => toggleVisibility(index)}>
-										{api.isVisible ? api.value : 'click to see'}
-									</p>
+
+									<div class="flex gap-6">
+										<p
+											class="cursor-pointer"
+											on:click={() => toggleVisibility(index)}
+											title={api.value}
+										>
+											{api.isVisible ? api.value : ' '}
+										</p>
+									</div>
 								</div>
-								<Button variant="destructive" on:click={() => removeApi(index)} class="ml-auto bg-transparent hover:bg-transparent">
+								<Button
+									variant="destructive"
+									on:click={() => removeApi(index)}
+									class="ml-auto bg-transparent hover:scale-105 hover:bg-transparent"
+								>
 									<XCircle class="text-destructive h-5 w-5" />
 								</Button>
 							</div>
@@ -168,4 +215,3 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </AppShell>
-
