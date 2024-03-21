@@ -15,9 +15,9 @@ logger = logging.getLogger("root")
 
 
 class ToolOptions(StrEnum):
-    MOVE_FILE_TOOL = "f57d47fd-5783-4aac-be34-17ba36bb6242"
-    READ_FILE_TOOL = "ca16f5dd-c17f-4231-a3e6-4b6ddf2f3d67"
-    SCRAPER_TOOL = "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f"
+    MOVE_FILE_TOOL  = "f57d47fd-5783-4aac-be34-17ba36bb6242"
+    READ_FILE_TOOL  = "ca16f5dd-c17f-4231-a3e6-4b6ddf2f3d67"
+    SCRAPER_TOOL    = "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f"
 
     #@classmethod
     #def from_string(cls, value):
@@ -33,6 +33,11 @@ class ToolOptions(StrEnum):
 
 
 def generate_llm_config(tools: list[BaseTool]) -> list[dict]:
+    """
+    Generate a valid function schema for the autogen llm config from the given tool.
+
+    
+    """
     schemas = []
     for tool in tools:
         function_schema = {

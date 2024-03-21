@@ -37,7 +37,7 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
     """
     Dependency generator for rate limiting on a fastapi endpoint
 
-    params:
+    args:
         limit: int, the amount of requests that can be made to endpoint
         period_seconds: int, the period before expiration of request limitation
         endpoint: str, the current endpoint that depends on this function
@@ -64,7 +64,7 @@ def rate_limit_tiered(profile_id: str) -> None:
     """
     Dependency for rate limiting using the subscription tier of a profile id
 
-    params:
+    args:
         profile_id: str, profile id for the querying user (rate limit and period will be given by tier of profile)
     raises:
         404: Invalid tier in given profile id, 429: Exceeded the rate limit
@@ -92,7 +92,7 @@ def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], None]
     """
     Dependency generator for rate limiting using profile id
 
-    params:
+    args:
         limit: int, the amount of requests that can be made to endpoint
         period_seconds: int, the period before expiration of request limitation
     returns:
