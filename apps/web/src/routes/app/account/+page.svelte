@@ -173,14 +173,14 @@
 					<div class="space-y-4">
 						{#each myApi as api, index}
 							<div
-								class="bg-background flex items-center rounded-lg p-4 hover:scale-[99%] hover:shadow-xl"
+								class="bg-background flex items-center rounded-lg p-4 hover:scale-[99%] hover:shadow-xl transition-all duration-300"
 								transition:slide={{ duration: 200 }}
 							>
 								<div class="flex flex-col">
 									<!-- svelte-ignore a11y-click-events-have-key-events -->
+									<!-- svelte-ignore a11y-no-static-element-interactions -->
 									<div class="flex">
 										<h3 class="mr-1 text-lg font-semibold">{api.name}</h3>
-										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<span
 											class="text-primary cursor-pointer"
 											title={api.value}
@@ -205,7 +205,7 @@
 									on:click={() => removeApi(index)}
 									class="ml-auto bg-transparent hover:scale-105 hover:bg-transparent"
 								>
-									<XCircle class="text-destructive h-5 w-5" />
+									<XCircle class="text-destructive hover:scale-105" size="18" />
 								</Button>
 							</div>
 						{/each}
