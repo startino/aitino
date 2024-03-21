@@ -12,8 +12,7 @@ load_dotenv()
 PROTON_PASSPHRASE = os.getenv("PROTON_PASSPHRASE") or ""
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") or ""
 
-def send_relevant_submission_via_email(submission: Submission):
-
+def send_submission_via_email(submission: Submission):
     sender = 'jorge.lewis@futi.no'
     reciever = ['jorge.lewis@futi.no', 'jonas.lindberg@futi.no']
     msg = MIMEMultipart("alternative")

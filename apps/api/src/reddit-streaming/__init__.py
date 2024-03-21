@@ -12,38 +12,15 @@ import mail
 from langchain_core.output_parsers import JsonOutputParser
 from models import Submission, RelevanceResult
 import reddit_utils 
+from prompting import prompt
+from gptrim import trim
 
 # Load Enviornment variables
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Prompts
 
-INSTRUCTIONS_PROMPT = """
-You are a VA that will go through social media posts (from Reddit, Linkedin, or Twitter) and determine if they are relevant to look into.
-You will be provided the post's title and body.
-You'll also be given the requirements of what I'm looking for in a post to consider it relevant.
-You will then determine if the post is relevant or not.
-"""
-RELEVANT_PROMPT = """
-Context:
-I am starting a software development agency targeted towards non-tech founders trying to build their software idea.
-We are calling what we do "co-founder as a service", as we are providing the tasks that a technical co-founder would do for a startup but as a company.
-We provide services such as software development, SaaS development, AI development, web development, and other sorts of software development.
-We are interested as acting as partners but also as service providers.
-We would like our VA to filter posts for us to give us the most relevant ones to look at.
-We will be using the relevant ones as a way to find potential clients.
-Our ideal clients are people trying to start a software business.
-We're not interested in e-commerce businesses.
-
-Guidance:
-- Relevant posts might include people looking for a technical co-founder or a technical person to join their startup.
-- Relevant posts might include looking for a software development agency or a technical consultancy.
-- Irrelevant posts might include people already with a product built/coded out.
-- Most posts relating to physical/in-person businesses are irrelevant
-
-"""
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES="SaaS+SaaSy+startups+sveltejs+webdev+YoungEntrepreneurs+NoCodeSaas+nocode+EntrepreneuerRideAlong+cofounder+Entrepreneur+smallbusiness+advancedentrepreneur+business"
@@ -68,7 +45,7 @@ def start_reddit_stream():
 
         # Send email if its relevant
         if (is_relevant):
-            mail.send_relevant_submission_via_email(submission)
+            mail.send_submission_via_email(submission)
         
         # Save to csv file and cache
         save_submission(submission, is_relevant, cost, reason)
@@ -116,7 +93,7 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     - A tuple containing the relevance result as a Pydantic object and the total cost of the operation.
     """
     with get_openai_callback() as cb:
-        result = chain.invoke({"query": f"{RELEVANT_PROMPT} \n\n POST CONTENT:\n ```{submission.title}\n\n {submission.selftext}```"})
+        result = chain.invoke({"query": f"{prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {trim(submission.selftext)}```"})
 
         # TODO: Do some cost analysis and saving (for long term insights)
 
@@ -154,7 +131,6 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
 
     # If more than one iteration, then uses last index
     reasons: List[str] = []
-    
 
     # Calculate mean relevance scores using 3.5-turbo
     for _ in range(0,iterations):
@@ -165,7 +141,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
         cost += run_cost
 
         total_llm_certainty += result['certainty']
-        print(f"Reason: {result['reason']}")
+        print(f"Result: {result}")
         reasons.append(result['reason'])
 
     mean_llm_certainty = total_llm_certainty / iterations
@@ -193,9 +169,12 @@ def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
     - total_cost (float): The total cost incurred from relevance calculations.
     """
 
+    ## TODO: switch from certainty method to funnel method
+    # I realized certainty method doesn't work with GPT-3. might work with multiple GOOD models. 
+    # but at that point its more expensive. so scratch that.
+    # totally_irrelevant = relevant_at_all(submission)z
     total_cost = 0
     is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
-
     # TODO: create helper function for logging properly
     print(f"URL: {submission.url}")
     print(f"GPT-4 Is Relevant: {is_relevant}")
@@ -241,6 +220,12 @@ def calculate_certainty(bool_list: List[bool]) -> float:
     false_certainty = (length-total) / length
 
     return max(true_certainty, false_certainty)
+
+
+def optimize_submission(submission: Submission) -> Submission:
+    # TODO: implement this function
+    # Should summarize it. Maybe other things idk. 
+    return submission
 
 
 if __name__ == "__main__":
