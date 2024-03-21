@@ -86,7 +86,7 @@ export const actions: Actions = {
 					title: form.data.title,
 					role: form.data.role,
 					description: form.data.description,
-					prompt: form.data.prompt,
+					system_message: form.data.system_message,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
 				})

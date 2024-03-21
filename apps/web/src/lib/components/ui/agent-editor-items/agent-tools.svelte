@@ -95,7 +95,7 @@
 						<input type="hidden" name="toolDescription" value={tool.description} />
 						<input type="hidden" name="toolDescription" value={tool.id} />
 
-						<div class="mt-3">
+						<div class="mt-3 border">
 							<Input
 								type="text"
 								name="apiKey"
