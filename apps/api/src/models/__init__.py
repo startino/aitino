@@ -4,7 +4,7 @@ from .code_execution_config import CodeExecutionConfig
 from .crew_model import CrewModel
 from .llm_config import LLMConfig
 from .message import Message
-from .session import Session
+from .session import Session, SessionStatus
 
 __all__ = [
     "AgentConfig",
@@ -14,4 +14,5 @@ __all__ = [
     "Session",
     "CrewModel",
     "AgentModel",
+    "SessionStatus",
 ]

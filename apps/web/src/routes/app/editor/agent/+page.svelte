@@ -7,7 +7,7 @@
 	export let form;
 
 	$: myAgents = (data.currentUserAgents.data as Agent[]) || [];
-	$: myTools = (data.agentTools.data as string[]) || [];
+	$: myTools = (data.agentTools.data as Agent[]) || [];
 	let open = false;
 
 	let selectedAgent: Agent;
@@ -26,7 +26,7 @@
 	on:close={() => (open = false)}
 	{form}
 	data={data.agentForm}
-	agentTools={data.agentTools.data}
+	agentTools={myTools}
 />
 
 <div class="bg-background min-h-screen p-8">
