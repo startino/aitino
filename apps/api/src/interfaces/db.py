@@ -1,7 +1,7 @@
-from enum import StrEnum, auto
 import json
 import logging
 import os
+from enum import StrEnum, auto
 from typing import Literal
 from uuid import UUID
 
@@ -24,7 +24,7 @@ supabase: Client = create_client(url, key)
 
 logger = logging.getLogger("root")
 
-    
+
 def get_compiled(
     crew_id: UUID,
 ) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
@@ -107,8 +107,7 @@ def post_crew(message: Message, composition: CrewModel) -> None:
     # TODO: (Leon) Implement posting the rest of the crew
 
 
-def get_api_keys(profile_id: UUID) -> list[str]:
-    ...
+def get_api_keys(profile_id: UUID) -> list[str]: ...
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
