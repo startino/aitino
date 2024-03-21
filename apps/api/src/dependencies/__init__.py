@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import logging
 import uuid
+from dataclasses import dataclass
 from typing import Callable, cast
 
 from fastapi import HTTPException
@@ -10,10 +10,11 @@ from src.interfaces.redis_cache import get_redis
 
 logger = logging.getLogger("root")
 
+
 @dataclass
-class RateLimitResponse():
+class RateLimitResponse:
     limit: int
-    current_requests: int 
+    current_requests: int
     time_to_refresh: int
 
     @property
@@ -21,7 +22,12 @@ class RateLimitResponse():
         return self.limit - self.current_requests
 
     def __dict__(self) -> dict:
-        return {"limit": self.limit, "current_requests": self.current_requests, "time_to_refresh": self.time_to_refresh, "remaining_requests": self.remaining_requests}
+        return {
+            "limit": self.limit,
+            "current_requests": self.current_requests,
+            "time_to_refresh": self.time_to_refresh,
+            "remaining_requests": self.remaining_requests,
+        }
 
 
 def _validate_profile_id(profile_id: str) -> str:
@@ -71,6 +77,7 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
         if current_requests == 1:
             redis.expire(key, period_seconds)
         return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
+
     return func
 
 
@@ -103,7 +110,9 @@ def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
     return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
 
-def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], RateLimitResponse]:
+def rate_limit_profile(
+    limit: int, period_seconds: int
+) -> Callable[[str], RateLimitResponse]:
     """
     Dependency generator for rate limiting using profile id
 
