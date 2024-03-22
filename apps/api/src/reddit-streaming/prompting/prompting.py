@@ -26,7 +26,7 @@ Relevant Posts might be...:
 - Seeking technical co-founders for startups.
 - Looking for technical personnel to join startup team.
 - In search of software development agencies or technical consultancy services.
-- An author has an idea for a software project
+- an idea for a software business/startup.
 
 Irrelevant Posts might be...:
 - Showing off existing products or projects.
