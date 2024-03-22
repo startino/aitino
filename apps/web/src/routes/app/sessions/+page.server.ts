@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ url, cookies, locals: { getSession 
 		session: recentSession,
 		sessions: await db.getSessions(session.user.id),
 		messages: recentSession ? await db.getMessages(recentSession.id) : ([] as models.Message[]),
-		crew: crew, // TODO: this will be obsolete when library feature is done. Instead a crew will be selected manually.
+		crew: crew,
 		reply: ''
 	};
 
@@ -28,49 +28,72 @@ export const load: PageServerLoad = async ({ url, cookies, locals: { getSession 
 };
 
 export const actions: Actions = {
-	'get-messages': async ({ url }) => {
-		const sessionId = url.searchParams.get('sessionId');
+	getmessages: async ({ request }) => {
+		// input and validation
+		console.log('getmessages');
+		const { sessionId } = (await request.json()) as { sessionId: string };
 		if (!sessionId) throw error(400, 'No session ID provided.');
+
+		// content
 		const messages = await db.getMessages(sessionId);
 
 		return json(messages);
 	},
-	'get-session': async ({ url }) => {
-		console.log('GET SESSION');
-		const sessionId = url.searchParams.get('sessionId');
+	getsession: async ({ request }) => {
+		// input and validation
+		console.log('getsession');
+		const { sessionId } = (await request.json()) as { sessionId: string };
 		if (!sessionId) throw error(400, 'No session ID provided');
 		const session: models.Session | null = await db.getSession(sessionId);
 		if (!session) throw error(400, 'This session does not exist. Please reload the page.');
+
+		// content
 		console.log('session:', session);
 		return json({ session });
 	},
-	'get-agent': async ({ url }) => {
-		// TODO: this is not being called. the route /api/get-agent is being used.
-		// I wasn't able to call this from Message.svelte in fetch.
-		// So it is temporarily being called from /api/get-agent. This should be used instead if possible.
-		console.log('getting agent');
-		const agentId = url.searchParams.get('agentId');
+	getagent: async ({ request }) => {
+		// input and validation
+		console.log('getagent');
+		const { agentId } = (await request.json()) as { agentId: string };
 		if (!agentId) throw error(400, 'No agent ID provided.');
+
+		// content
 		const agent = await db.getAgent(agentId);
-		console.log('agent: ', agent);
-		return json(agent);
+		return json({ agent });
 	},
 	rename: async ({ request }) => {
-		const { sessionId, newTitle } = await request.json();
+		// input and validation
+		console.log('rename');
+		const { sessionId, newTitle } = (await request.json()) as {
+			sessionId: string;
+			newTitle: string;
+		};
 		if (!sessionId) throw error(400, 'No session ID provided.');
 		if (newTitle == '') throw error(400, 'No new name provided.');
+
+		// content
 		await db.renameSession(sessionId, newTitle);
-		console.log('sessionId', sessionId, 'newName', newTitle);
 	},
 	delete: async ({ request }) => {
-		const { sessionId } = await request.json();
+		// input and validation
+		console.log('delete');
+		const { sessionId } = (await request.json()) as { sessionId: string };
 		if (!sessionId) throw error(400, 'No session ID provided.');
+
+		// content
 		await db.deleteSession(sessionId);
 	},
-	'set-status': async ({ request }) => {
-		const { sessionId, status } = await request.json();
+	setstatus: async ({ request }) => {
+		// input and validation
+		console.log('setstatus');
+		const { sessionId, status } = (await request.json()) as {
+			sessionId: string;
+			status: string;
+		};
 		if (!sessionId) throw error(400, 'No session ID provided.');
 		if (!status) throw error(400, 'No status provided.');
+
+		// content
 		await db.setSessionStatus(sessionId, status);
 	}
 };

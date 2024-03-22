@@ -28,7 +28,12 @@
 
 	async function getAgent(agentId: string) {
 		try {
-			const res = await fetch(`/api/get-agent?agentId=${agentId}`);
+            console.log(`trying to get agent with id ${agentId}`);
+			const res = await fetch(`?/getagent`, {
+                method: 'GET',
+                body: JSON.stringify({ agentId }),
+            });
+            console.log(`got response on ${agentId}: ${JSON.stringify(res.json())}`);
 			const { agent } = await res.json();
 			return agent as models.Agent;
 		} catch (error) {
