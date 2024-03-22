@@ -8,7 +8,7 @@ from langchain.tools.file_management.read import ReadFileTool
 from langchain_community.tools.file_management import MoveFileTool
 from langchain_core.tools import BaseTool
 
-from .tools import ScraperTool
+from .tools.tools import ScraperTool
 
 logger = logging.getLogger("root")
 
@@ -19,6 +19,7 @@ class ToolOptions(StrEnum):
     SCRAPER_TOOL = "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f"
 
     INVALID = ""
+
 
 
 def generate_llm_config(tools: list[BaseTool]) -> list[dict]:

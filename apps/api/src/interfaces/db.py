@@ -107,8 +107,10 @@ def post_crew(message: Message, composition: CrewModel) -> None:
     # TODO: (Leon) Implement posting the rest of the crew
 
 
-def get_api_keys(profile_id: UUID) -> list[str]: ...
 
+def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) ->  str:
+    response = supabase.table("tools").select("api_key_type_id").eq("profile_id", profile_id).execute()
+    return response.data[]
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     logger.debug(f"Updating session status: {status} for session: {session_id}")

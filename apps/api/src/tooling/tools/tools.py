@@ -7,14 +7,15 @@ from dotenv import load_dotenv
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
-from langchain_community.utilities import SerpAPIWrapper
+from langchain_community.utilities import SerpAPIWrapper, ArxivAPIWrapper
 
 load_dotenv()
 
 key = os.environ.get("SERPAPI_API_KEY")
 web_scrape = SerpAPIWrapper(
     serpapi_api_key=key
-)  # "10610c34e50e1784e6cef9f2741d65917c7bd2fb"
+) 
+arxiv = ArxivAPIWrapper()
 
 
 class ScraperToolInput(BaseModel):
@@ -61,3 +62,8 @@ def get_file_path_of_example():
     # file_path = os.path.join(target_folder, "test_files/radius.txt")
 
     return os.path.join(target_folder, random.choice(os.listdir(target_folder)))
+
+
+if __name__ == "__main__":
+    docs = arxiv.run("1605.08386")
+    print(docs)    
