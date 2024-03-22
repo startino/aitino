@@ -28,7 +28,7 @@ def get_file_path_of_example():
     # parent_dir = os.path.dirname(current_dir)
 
     # Move to the target directory
-    target_folder = os.path.join(current_dir, "src/tooling/test_files")
+    target_folder = os.path.join(current_dir, "src/tools/test_files")
 
     # Construct the path to your target file
     # file_path = os.path.join(target_folder, "test_files/radius.txt")

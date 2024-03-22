@@ -1,4 +1,4 @@
-from .tooling.tools.tools import get_file_path_of_example
+from .tools import get_file_path_of_example
 
 fizz_buzz: dict = {
     "id": "00000000-0000-0000-0000-000000000000",
