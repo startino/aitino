@@ -80,4 +80,24 @@ move_file: dict = {
     },
     "created_at": "2024-01-01T00:00:00.000Z",
 }
-crew_model = read_file
+
+tool, prompt = "arxiv tool", "give me content of article: 2403.00186"
+
+test_tool: dict = {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "profile_id": "070c1d2e-9d72-4854-a55e-52ade5a42071",
+    "title": "Test tools",
+    "description": "Test the function of the tool and see if it calls and runs properly",
+    "receiver_id": "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
+    "published": False,
+    "nodes": [
+        "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
+    ],
+    "prompt": {
+        "id": "",
+        "title": "",
+        "content": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
+    },
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+crew_model = test_tool

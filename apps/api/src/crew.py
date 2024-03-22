@@ -13,7 +13,7 @@ from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
 from .tools import (
     generate_llm_config,
     generate_tool_from_uuid,
-    get_tool_id_from_agent,
+    get_tool_ids_from_agent,
 )
 
 logger = logging.getLogger("root")
@@ -196,7 +196,7 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-            tool_ids = get_tool_id_from_agent(agent.tools)
+            tool_ids = get_tool_ids_from_agent(agent.tools)
             if len(tool_ids):
                 for tool in tool_ids:
                     generated_tool = generate_tool_from_uuid(tool)
