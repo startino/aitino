@@ -1,5 +1,5 @@
-from .prompting import prompt
+from .prompting import calculate_relevance_prompt
 
 __all__ = [
-    "prompt"
+    "calculate_relevance_prompt"
 ]

@@ -21,16 +21,22 @@ We will be using the relevant posts as a way to find leads.
 user_context = f"""
 {purpose}
 
-GUIDANCE:
-- Relevant posts will include people looking for a technical co-founder or a technical person to join their startup.
-- Relevant posts might people include looking for a software development agency or a technical consultancy.
-- Irrelevant posts might include people already with a product built or coded out.
-- Most posts relating to physical/in-person businesses are irrelevant.
-- If the author of the post is a technical person, tech founder, or knows how to code, it is likely irrelevant.
-- If they have started their business a while ago, it is likely irrelevant.
-- If they are looking for a job, it is likely irrelevant.
-- If they have already started building their project, it is likely irrelevant.
-- Irrelevant posts will include people offering their OWN services from their development agency or consultancy.
+GUIDELINES:
+Relevant Posts might be:
+- Seeking technical co-founders for startups.
+- Looking for technical personnel to join startup teams.
+- In search of software development agencies or technical consultancy services.
+
+Irrelevant Posts might be...:
+- Featuring developed or coded products.
+- Focused on physical/in-person business ventures.
+- Authored by technical individuals, such as tech founders or coders.
+- Authored by software developers or individuals in software-related jobs.
+- From businesses established for some time.
+- From individuals seeking employment.
+- Regarding projects that have already begun development.
+- Related to robotic startups.
+- Offering their own development and coding services.
 
 ABOUT THE COMPANY:
 {company_context}
@@ -45,7 +51,7 @@ BAD EXAMPLES:
 {bad_examples}
 """
 
-prompt = f"""
+calculate_relevance_prompt = trim(f"""
 Imagine you are a super talented virtual assistant.
 You have the duty of going through social media posts and determining if they are
 relevant to look into.
@@ -53,6 +59,4 @@ relevant to look into.
 {user_context}
 
 {examples}
-"""
-
-prompt = trim(prompt)
+""")

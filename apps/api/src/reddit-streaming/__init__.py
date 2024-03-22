@@ -12,15 +12,10 @@ import mail
 from langchain_core.output_parsers import JsonOutputParser
 from models import Submission, RelevanceResult
 import reddit_utils 
-from prompting import prompt
+from prompting import CALCULATE_RELEVANCE_PROMPT
 from gptrim import trim
 import time
-
-# Load Enviornment variables
-
-load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
+from llms import invoke_chain, create_chain, summarize_submission
 
 
 # Relevant subreddits to Startino
@@ -51,61 +46,6 @@ def start_reddit_stream():
         # Save to csv file and cache
         save_submission(submission, is_relevant, cost, reason)
         cache.set(submission.id, submission.id)
-
-
-def create_chain(model: str):
-    """
-    Creates a processing chain for evaluating the relevance of a submission using a specified language model.
-
-    The chain is composed of a prompt template, a language model, and a parser to interpret the model's output as a Pydantic object.
-
-    Parameters:
-    - model (str): The name of the language model to be used for generating responses.
-
-    Returns:
-    - A processing chain configured to use the specified language model and to parse its output.
-    """
-    
-    llm = ChatOpenAI(model=model, temperature=1, openai_api_key=OPENAI_API_KEY)
-
-    # Set up a parser + inject instructions into the prompt template.
-    parser = JsonOutputParser(pydantic_object=RelevanceResult)
-
-    prompt = PromptTemplate(
-        template="Answer the user query.\n{format_instructions}\n{query}\n",
-        input_variables=["query"],
-        partial_variables={"format_instructions": parser.get_format_instructions()},
-    )
-    chain = prompt | llm | parser
-    return chain
-
-
-def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]:
-    """
-    Invokes the processing chain on a submission to evaluate its relevance and calculates the associated cost.
-
-    This function executes the chain with a constructed query from the submission's content, capturing the relevance result and the cost of the operation.
-
-    Parameters:
-    - chain: The processing chain to be invoked for the relevance evaluation.
-    - submission (Submission): The submission object containing the title and content to be evaluated.
-
-    Returns:
-    - A tuple containing the relevance result as a Pydantic object and the total cost of the operation.
-    """
-    for _ in range(3):
-        try:
-            with get_openai_callback() as cb:
-                result = chain.invoke({"query": f"{prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {trim(submission.selftext)}```"})
-                # TODO: Do some cost analysis and saving (for long term insights)
-                return result, cb.total_cost
-        except Exception as e:
-            print(f"An error occurred while invoke_chain: {e}")
-            time.sleep(10)  # Wait for 10 seconds before trying again
-
-    raise Exception("Failed to invoke chain after 3 attempts")
-
-    return result, cb.total_cost
 
 
 def calculate_relevance(model: str,iterations: int, submission: Submission):
