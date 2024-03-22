@@ -9,11 +9,9 @@ export const load: PageServerLoad = async ({ url, cookies, locals: { getSession 
 	if (!session) throw error(401, 'You are not logged in. Please log in and try again.');
 
 	const recentSession = await db.getRecentSession(session.user.id);
-	console.log('recentSession:', recentSession);
 	const crew: models.Crew | null = recentSession
 		? await db.getCrew(recentSession.crew_id)
 		: await db.getRecentCrew(session.user.id);
-	console.log('crew:', crew);
 
 	const data: SessionsLoad = {
 		profileId: session.user.id,
