@@ -10,11 +10,10 @@ import os
 from langchain_community.callbacks import get_openai_callback
 from prompting import calculate_relevance_prompt
 
-# Load Enviornment variables
 
+# Load Enviornment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
 
 
 def create_chain(model: str):
@@ -60,7 +59,7 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     for _ in range(3):
         try:
             with get_openai_callback() as cb:
-                result = chain.invoke({"query": f"{calculate_relevance_prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {trim(submission.selftext)}```"})
+                result = chain.invoke({"query": f"{calculate_relevance_prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {submission.selftext}```"})
                 # TODO: Do some cost analysis and saving (for long term insights)
                 return result, cb.total_cost
         except Exception as e:
@@ -84,16 +83,16 @@ def summarize_submission(submission: Submission) -> Submission:
     """
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
 
-    # Trim the submission content or cost savings
+    # Trim the submission content for cost savings
     selftext = trim(submission.selftext)
 
     template = """
     Please write summary of the following text to reduce its length by following these guidelines:
-    - Reduce by 30 - 50 percent (roughly).
-    - Value the quality of the summary over the quantity of the words.
-    - DO NOT remove any important information.
-    - You may use improper sentences to reduce the length.
-    - You may re
+    - Extract information from each sentence and include it in the summary.
+    - You use bulleted lists for output, not numbered lists.
+    - DO NOT remove any crucial information.
+    - IF PRESENT, you must include information about the author such as his profession(or student) and if he knows how to code.
+    - DO NOT make up any information that was not present in the original text.
 
     Text:
     {selftext}
@@ -105,31 +104,45 @@ def summarize_submission(submission: Submission) -> Submission:
     )
 
     summary_prompt = prompt.format(selftext=selftext)
-    
-    num_tokens = llm.get_num_tokens(summary_prompt)
-    print (f"This prompt + essay has {num_tokens} tokens")
-    
+
     summary = llm.invoke(summary_prompt)
-    
-    print (f"Summary: {summary.content}")
-    print(f"Token count: {llm.get_num_tokens(summary.content)}")
-    print(f"Tokens after trimming: {llm.get_num_tokens(trim(summary.content))}")
-    print ("\n")
+    summarized_selftext = summary.content
+
+    # Calculate token reduction
+    pre_token_count = llm.get_num_tokens(selftext)
+    post_token_count = llm.get_num_tokens(summarized_selftext)
+    reduction = ( pre_token_count - post_token_count ) / pre_token_count * 100
+
+    # Print the token reduction
+    print(f"Token reduction : {reduction:.3f}%")
+
+    # Update the submission object with the summarized content
+    submission.selftext = summarized_selftext
 
     return submission
 
 
 if __name__ == "__main__":
     # Example of using the summarize_submission function
-    summarize_submission(Submission(id="010", url="https://aiti.no", created_utc=00000, title="Hype me up or dissuade me", 
+    summarize_submission(Submission(id="010", url="https://aiti.no", created_utc=00000, title="I need a simple front end to fetch my headless CMS data. Maybe nocode? ", 
                                     selftext="""
-                                    I'm a business analyst with a fully specced out app and have been approaching Devs for the build for a web app/hybrid app mvp.
+                                    Need to build LittleCode/NoCode supply chain NFC Tag website. Low cost. headless cms
 
-Initial estimates are around $25000. I'm having more sessions with other Devs to get comparable quotes.
+Hi. Via storyblok.com (or another headless cms or something? i was also thinking about using wordpress but idk) information about a product (text + images/videos) will be stored.
 
-I'm in a position where I could afford to do this but I was initially (potentially naievely) hoping for something around $10000...
+I need to put the content somehow into a very simple website. The link of the website will be stored into a NFC tag.
 
-Question is.. go forward with this as a 'why not' attempt to start this business or take a step back, more market/customer research/potentially find investment etc...
+there are thousands of ways to do that. What’s the best/easiest way? Actually a wordpress website would be the best way i guess. but i dont really like wordpress that much, it is really slow…
 
-So.. hype me up or dissuade me 🙃
+any other CMS you can recommend? or with a head
+
+do you know a cheaper alternative to storybloks? and a way to publish the content easy into a website?
+
+actually i’m a react dev but i didnt code for 2 years now and i need to get this done
+
+maybe i use a react boilerplate website where i fetch the headless CMS content?
+
+or maybe there is a SaaS for my “problem”?
+
+video i would host on bunnycdn (cheapest option) or for free on yt
                                     """))

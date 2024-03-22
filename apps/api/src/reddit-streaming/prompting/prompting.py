@@ -37,6 +37,9 @@ Irrelevant Posts might be...:
 - Regarding projects that have already begun development.
 - Related to robotic startups.
 - Offering their own development and coding services.
+- Seeking ONLY design services.
+- Seeking ONLY to make a simple website (and not an app/project). 
+- Related to how to do something using a website builder or no code platform (Airtable,Bubble,Webflow,etc)
 
 ABOUT THE COMPANY:
 {company_context}

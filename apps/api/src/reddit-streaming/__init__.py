@@ -84,8 +84,6 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
 
     mean_llm_certainty = total_llm_certainty / iterations
     mean_vote_certainty = calculate_certainty(votes)
-
-    print(votes)
     
     # Calculate final certainty
     certainty = mean_llm_certainty * llm_weight + mean_vote_certainty * vote_weight
