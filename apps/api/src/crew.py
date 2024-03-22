@@ -62,6 +62,7 @@ class Crew:
             if self.valid_tools
             else None
         )
+        self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -110,33 +111,26 @@ class Crew:
             logger.error(f"on_reply: No role\n{last_msg}")
             return False, None
 
-        name = last_msg["name"]
+        sender_name = last_msg["name"]
         content = last_msg["content"]
         role = last_msg["role"]
         recipient_id = None  # None means admin
         sender_id = None  # None means admin
 
+
+        
         for agent in self.crew_model.agents:
-            check_name = (
-                f"""{agent.role.replace(' ', '')}-{agent.title.replace(' ', '')}"""
-            )
+            check_name = self._format_agent_name(agent)
             if check_name == recipient.name:
                 recipient_id = agent.id
-            if check_name == name:
+            if check_name == sender_name:
                 sender_id = agent.id
 
-        if (
-            recipient_id is None
-            and sender_id is None
-            and recipient.name != "chat_manager"
-        ):
-            logger.warn(
-                "on_reply: Both recipient and sender are None (admin) or chat_manager"
-            )
-            return False, None
+        # checks if all of the fields are false
+        if not any([recipient_id, sender_id, sender_name == "Admin", recipient.name == "chat_manager"]): 
+            logger.warn(f"on_reply: both ids are none, sender is not admin and recipient is not chat manager")
 
         await self.on_reply(recipient_id, sender_id, content, role)
-
         return False, None
 
     def _validate_crew_model(self, crew_model: CrewModel) -> bool:
