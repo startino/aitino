@@ -29,9 +29,9 @@ Relevant Posts might be...:
 - an idea for a software business/startup.
 
 Irrelevant Posts might be...:
+- Authored by a technical individual, such as tech founder, software developer, or other job in the software field.
 - Showing off existing products or projects.
 - Focused on physical/in-person business ventures.
-- Authored by technical individuals, such as tech founders, software developers, or other job in the software field.
 - From businesses already established.
 - From individuals seeking employment.
 - Regarding projects or products that have already begun development.
