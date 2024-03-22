@@ -155,7 +155,7 @@
 				</Card.Header>
 				<Card.Content class="p-6">
 					<div class="space-y-8">
-						<div class="bg-background rounded-lg bg-gradient-to-r p-6 shadow-sm">
+						<div class="bg-background rounded-lg bg-gradient-to-r p-6 space-y-4 shadow-sm">
 							<div class="text-2xl font-semibold ">Current Plan</div>
 							<p class="font-medium">Starter</p>
 							<div class="mt-4 flex gap-4 transition-all duration-200 ease-in-out">
@@ -169,7 +169,7 @@
 								</Button>
 							</div>
 						</div>
-						<div class="bg-background rounded-lg p-6 shadow-sm  ">
+						<div class="bg-background rounded-lg p-6 shadow-sm  space-y-4">
 							<div class="text-2xl font-semibold">Current Billing Cycle</div>
 							<p class="text-sm">Mar 20, 2024 - Apr 19, 2024</p>
 						</div>
