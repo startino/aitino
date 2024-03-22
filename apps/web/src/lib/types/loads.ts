@@ -1,12 +1,13 @@
 // Contains types for +page.server.ts files data properties
 
-import * as models from "$lib/types/models";
+import * as models from '$lib/types/models';
 
-export type SessionLoad = {
+export type SessionsLoad = {
 	profileId: string;
-	crewId: string | null;
 	session: models.Session | null;
+	sessions: models.Session[];
 	messages: models.Message[];
+	crew: models.Crew | null;
 	reply: string;
 };
 
@@ -16,5 +17,5 @@ export type CrewLoad = {
 	myCrews: models.Crew[];
 	pulishedCrews: models.Crew[];
 	myAgents: models.Agent[];
-	publishedAgents: models.Agent[]; 
+	publishedAgents: models.Agent[];
 };

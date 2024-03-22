@@ -30,9 +30,20 @@
 				table: 'messages',
 				filter: `session_id=eq.${session.id}`
 			},
-			async (payload) => (messages = [...messages, payload.new as Message])
+			async (payload) => {
+                console.log(payload);
+                const message = payload.new as Message;
+                console.log(message);
+                messages = [...messages, message]
+            }
 		)
-		.subscribe((status) => messagesSubscribed(status));
+		.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('connected to message-insert-channel');
+            } else {
+                console.error("message-insert-channel status: " + status);
+            }
+        });
 
 	supabase
 		.channel('session-update-channel')
@@ -45,38 +56,19 @@
 				filter: `id=eq.${session.id}`
 			},
 			async (payload) => {
+                console.log(payload);
+                const session = payload.new as Session;
+                console.log(session);
 				// TODO: Set local status based on message status
 			}
 		)
-		.subscribe((status) => sessionSubscribed(status));
-
-	function sessionSubscribed(status: string) {
-		if (status === 'SUBSCRIBED') {
-			//console.log('connected to session channel');
-		} else {
-			//console.log(status);
-		}
-	}
-
-	function setLocalStatus(status: string) {
-		if (status === 'awaiting_user') {
-			waitingForUser = true;
-		} else {
-			waitingForUser = false;
-		}
-	}
-
-	function messagesSubscribed(status: string) {
-		if (status === 'SUBSCRIBED') {
-			//console.log('connected to message channel');
-		} else {
-			//console.log(status);
-		}
-	}
-
-	async function loadNewMessage(message: Message) {
-		messages = [...messages, message];
-	}
+		.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('connected to session-update-channel');
+            } else {
+                console.error("session-update-channel status: " + status);
+            }
+        });
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;

@@ -1,107 +1,65 @@
 <script lang="ts">
-	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button';
+    import type { SessionsLoad } from '$lib/types/loads';
 	import Chat from './Chat.svelte';
-	import { onMount } from 'svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import type { Message, Session } from '$lib/types/models';
-	import type { PageData } from './$types';
 	import { Loader2 } from 'lucide-svelte';
 	import SessionNavigator from './SessionNavigator.svelte';
+    import * as models from '$lib/types/models';
 
-	export let data: PageData;
+	export let data: SessionsLoad;
 
-	let { recentSession, allSessions, recentCrew, sessionMessages, newSession } = data;
-
-	let activeSession: Session | null = recentSession;
-	let messages: Message[] = sessionMessages;
+    let crew: models.Crew = data.crew;
+    let session: models.Session | null = data.session;
+    let sessions: models.Session[] = data.sessions;
+    let messages: models.Message[] = data.messages;
 
 	// Reactivity for the Crew chat
-	let statusText = 'Loading everything...';
 	let waitingforUser = false;
-
-	onMount(async () => {
-		if (newSession.crewId && newSession.title) {
-			startNewSession(newSession.crewId, newSession.title);
-		}
-	});
 
 	async function startNewSession(crewId: string, title: string) {
 		// Reset the local variables
-		activeSession = null;
 		messages = [];
 
 		// Instantiate and get the new session
 		const res = await fetch(
-			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.session?.user.id}`
+			`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.profileId}`
 		)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.json();
 				} else {
-					throw new Error('Failed to start new session');
+					throw new Error('Failed to start new session. bad respose: ' + response);
 				}
 			})
 			.catch((error) => {
-				console.error('Failed to start new session', error);
-				statusText = 'Failed to start new session';
+				console.error('Failed to start new session. error', error);
 			});
 
-		const sessionId = res.session_id;
+		const session: models.Session = res.data.session;
+        console.log('session: ', session);
 
-		if (sessionId) {
-			statusText = 'Loading your new session...';
-			await loadSession(sessionId);
-			statusText = 'Session loaded!';
-		} else {
-			console.error('Failed to start new session');
-			statusText = 'Failed to start new session';
+		if (!session) {
+			console.error('Failed to start new session: ' + JSON.stringify(res));
 		}
-
-		// Set it up locally
-		const sessionResponse = await fetch(`?/get-session?sessionId=${sessionId}`);
-		const session = await sessionResponse.json();
-		activeSession = session;
-	}
-
-	async function loadSession(sessionId: string) {
-		console.log('sessionId', sessionId);
-		let res = await fetch(`/api/get-session?sessionId=${sessionId}`)
-			.then((res) => res.json())
-			.then((data) => {
-				activeSession = data.session;
-			});
-		let messageResponse = await fetch(`?/get-messages?sessionId=${sessionId}`);
-		messages = await messageResponse.json();
-	}
-
-	async function loadMessage(sessionId: string) {
-		const res = await fetch(`?/get-session?sessionId=${sessionId}`);
-		const data = await res.json();
-		const session = data.session;
-	}
-
-	function redirectToCrewEditor() {
-		window.location.href = '/app/editor/crew';
 	}
 </script>
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
-		{#if !activeSession}
-			{#if recentCrew}
+		{#if !session}
+			{#if crew}
 				<div
 					class="xl:prose-md prose prose-sm prose-main md:prose-base 2xl:prose-lg mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center"
 				>
 					<h1>It looks like you haven't started a session yet...</h1>
-					{#await recentCrew}
-						<p>Loading...</p>
-					{:then recentCrew}
-						<Button on:click={() => startNewSession(recentCrew.id, 'New Session')}
+					{#if crew}
+						<Button on:click={() => startNewSession(crew.id, 'New Session')}
 							>Run Your Crew!</Button
 						>
-					{:catch}
-						<p>Failed to load crew</p>
-					{/await}
+					{:else}
+						<p>Loading...</p>
+					{/if}
 				</div>
 			{:else}
 				<div
@@ -112,24 +70,23 @@
 			{/if}
 		{:else}
 			<Chat
-				session={activeSession}
-				name={activeSession?.title}
-				{messages}
+				session={session}
+				name={session?.title}
+				messages={messages}
 				waitingForUser={waitingforUser}
 			/>
 		{/if}
 	</div>
-	{#await allSessions}
-		<Loader2 />
-	{:then allSessions}
+	{#if sessions}
 		<SessionNavigator
-			{allSessions}
-			{activeSession}
-			{recentCrew}
-			on:handleLoadSession={(e) => loadSession(e.detail.id)}
+			{sessions}
+			{crew}
+			activeSession={session}
+			on:handleLoadSession={(e) => e.detail.session}
 			on:handleStartNewSession={(e) => startNewSession(e.detail.crewId, e.detail.title)}
 		/>
-	{:catch}
+	{:else}
+		<Loader2 />
 		<p>Failed to load sessions</p>
-	{/await}
+	{/if}
 </div>

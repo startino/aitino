@@ -9,18 +9,19 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { Crew, Session } from '$lib/types/models';
+    import * as models from '$lib/types/models';
 
 	const dispatch = createEventDispatcher();
 
-	export let allSessions: Session[];
-	export let recentCrew: Crew | null;
+	export let sessions: Session[];
+	export let crew: Crew | null;
 	export let activeSession: Session | null;
 
 	let newSessionName: string = '';
 
-	const handleloadSession = (id: string) => {
-		console.log('Loading session', id);
-		dispatch('handleloadSession', { id });
+	const handleloadSession = (session: models.Session) => {
+		console.log('Loading session', JSON.stringify(session));
+		dispatch('handleloadSession', { session });
 	};
 
 	const handleStartNewSession = (title: string, crewId: string) => {
@@ -56,7 +57,7 @@
 			return;
 		}
 
-		const currentTitle = (await allSessions).find((session) => session.id === sessionId);
+		const currentTitle = sessions.find((session) => session.id === sessionId);
 
 		// If no session is being renamed, ignore
 		if (!activeSession) {
@@ -77,8 +78,7 @@
 		}).then((res) => res.json());
 
 		// Update the session locally in order to not refetch
-		const localVariable = await allSessions;
-		allSessions = localVariable.map((session) => {
+		sessions = sessions.map((session) => {
 			if (session.id === sessionId) {
 				session.title = renamingValue;
 			}
@@ -95,10 +95,8 @@
 			method: 'POST',
 			body: JSON.stringify({ sessionId })
 		});
-		const data = await response.json();
 		// Update the session locally in order to not refetch
-		const localSessions = await allSessions;
-		allSessions = localSessions.filter((session) => session.id !== sessionId);
+		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
 		if (activeSession?.id === sessionId) {
@@ -127,7 +125,7 @@
 		<Sheet.Footer class="mt-2">
 			<Sheet.Close asChild let:builder>
 				<div class="flex h-full w-full flex-col gap-2">
-					{#if recentCrew}
+					{#if crew}
 						<Dialog.Root>
 							<Dialog.Trigger let:builder>
 								<Button class="mb-2 w-full" builders={[builder]}>Start New Session</Button>
@@ -153,14 +151,14 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{recentCrew.title}
+											{crew.title}
 										</Button>
 									</div>
 								</div>
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => handleStartNewSession(newSessionName, recentCrew.id)}
+										on:click={() => handleStartNewSession(newSessionName, crew.id)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>
@@ -168,10 +166,10 @@
 						</Dialog.Root>
 					{/if}
 					<ScrollArea class="flex h-full max-h-[85vh] w-full flex-col rounded-md pr-4">
-						{#await allSessions}
+						{#await sessions}
 							<p>Loading...</p>
-						{:then allSessions}
-							{#each allSessions as session}
+						{:then sessions}
+							{#each sessions as session}
 								<li class="my-3 flex w-full flex-row gap-4">
 									{#if renamePopoverOpen && renamingSession === session.id}
 										<Input
@@ -218,7 +216,7 @@
 											class="flex w-full flex-row justify-between {activeSession?.id == session.id
 												? 'bg-accent text-accent-foreground'
 												: 'hover:bg-accent/20 hover:text-foreground'}"
-											on:click={() => handleloadSession(session.id)}
+											on:click={() => handleloadSession(session)}
 										>
 											{session.title}
 											<div class="	text-right text-xs">
