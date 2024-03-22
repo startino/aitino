@@ -12,7 +12,7 @@ from src.models.session import SessionStatus
 
 from .interfaces import db
 from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
-from .tooling.langchain_tooling import (
+from .tooling.tools import (
     generate_llm_config,
     generate_tool_from_uuid,
     get_tool_id_from_agent,
