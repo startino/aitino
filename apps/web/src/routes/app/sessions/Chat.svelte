@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { Send, SendHorizonal, Shell, Loader2, Loader } from 'lucide-svelte';
+	import { SendHorizonal, Loader2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
 	import type { Message, Session } from '$lib/types/models';
-	import { afterUpdate, onMount } from 'svelte';
+	import { afterUpdate } from 'svelte';
 	import { supabase } from '$lib/supabase';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-	import { browser } from '$app/environment';
 	import { toast } from 'svelte-sonner';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
@@ -22,7 +20,7 @@
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
 
-	const messageChannel = supabase
+	supabase
 		.channel('message-insert-channel')
 		.on(
 			'postgres_changes',
@@ -32,11 +30,11 @@
 				table: 'messages',
 				filter: `session_id=eq.${session.id}`
 			},
-			async (payload) => loadNewMessage(payload.new as Message)
+			async (payload) => (messages = [...messages, payload.new as Message])
 		)
 		.subscribe((status) => messagesSubscribed(status));
 
-	const sessionChannel = supabase
+	supabase
 		.channel('session-update-channel')
 		.on(
 			'postgres_changes',
@@ -47,7 +45,7 @@
 				filter: `id=eq.${session.id}`
 			},
 			async (payload) => {
-				setLocalStatus(payload.new.status);
+				// TODO: Set local status based on message status
 			}
 		)
 		.subscribe((status) => sessionSubscribed(status));
@@ -103,7 +101,7 @@
 		const data = await res.json();
 
 		// Update local status
-		setLocalStatus('awaiting_agent');
+		waitingForUser = true;
 
 		//messages = [...messages, newMessageContent];
 		newMessageContent = '';
@@ -136,7 +134,7 @@
 						<MessageItem {message} />
 
 						{#if index !== messages.length - 1}
-							<hr class="prose border-nsecondary my-20 w-full max-w-none border-t px-12" />
+							<hr class="prose my-20 w-full max-w-none border-t border-nsecondary px-12" />
 						{/if}
 					{/if}
 				{/each}
@@ -148,10 +146,10 @@
 		{/await}
 
 		<div
-			class="bg-surface absolute bottom-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-row items-center justify-center gap-1"
+			class="absolute bottom-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-row items-center justify-center gap-1 bg-surface"
 		>
 			<div
-				class="bg-card border-border mx-auto flex w-full max-w-4xl flex-row rounded-md border {waitingForUser
+				class="mx-auto flex w-full max-w-4xl flex-row rounded-md border border-border bg-card {waitingForUser
 					? ''
 					: 'cursor-not-allowed'}"
 			>
@@ -162,7 +160,7 @@
 					/>
 				</div>
 				<Textarea
-					class="prose prose-main bg-card w-full max-w-none resize-none rounded-l border-none text-lg"
+					class="prose prose-main w-full max-w-none resize-none rounded-l border-none bg-card text-lg"
 					placeholder={waitingForUser
 						? 'Give Feedback to the agents'
 						: 'Waiting for the crew to finish...'}
@@ -174,7 +172,7 @@
 				></Textarea>
 				<Button
 					variant="ghost"
-					class="hover:bg-default hover:text-primary flex place-items-center hover:scale-95"
+					class="hover:bg-default flex place-items-center hover:scale-95 hover:text-primary"
 					disabled={newMessageContent.length <= 5 || !waitingForUser}
 					on:click={sendMessage}
 				>
