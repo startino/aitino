@@ -39,10 +39,10 @@
 	$: role = isCreate ? $formAgent?.role : selectedAgent?.role || '';
 	$: description = isCreate ? $formAgent?.description : selectedAgent?.description || '';
 	$: model = isCreate ? $formAgent?.model : selectedAgent?.model || models[0].value;
-	$: prompt = isCreate ? $formAgent?.prompt : selectedAgent?.prompt || '';
+	$: system_message = isCreate ? $formAgent?.system_message : selectedAgent?.system_message || '';
 
 	const addTool = ({ currentTool }) => {
-		displayTools = currentTool;
+		checkSelected = [...checkSelected, currentTool];
 	};
 
 	$: checkSelected = [] as { name: string; apikey: string; description: string; id: string }[];
@@ -54,6 +54,19 @@
 		open = false;
 		console.log(open, 'open');
 	};
+
+	$: {
+		if (agentTools && selectedAgent?.tools) {
+			checkSelected = agentTools
+				.filter((tool) => selectedAgent?.tools.some((selectedTool) => selectedTool.id === tool.id))
+				.map((tool) => ({
+					id: tool.id,
+					name: tool.name,
+					apikey: tool.apikey,
+					description: tool.description
+				}));
+		}
+	}
 </script>
 
 <div class="p-1">
@@ -90,61 +103,61 @@
 		<p class="text-red-500">Title is required</p>
 	{/if}
 
-	<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
-		<Label for="tools">Tools</Label>
-		<div>
-			<div class="grid grid-cols-3 gap-6 px-6">
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class="border-nprimary relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border px-4 shadow-sm transition duration-300 ease-in-out"
-					on:click={() => (
-						(open = true),
-						console.log(selectedAgent, $formAgent, addTool({ currentTool: selectedAgent }))
-					)}
-				>
-					<form
-						class="relative flex cursor-pointer items-center justify-center rounded-lg p-4 shadow-sm"
+	{#if !isCreate}
+		<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
+			<Label for="tools">Tools</Label>
+			<div>
+				<div class="grid grid-cols-3 gap-6 px-6">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
+					<div
+						class="border-nprimary relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border px-4 shadow-sm transition duration-300 ease-in-out"
+						on:click={() => (
+							(open = true),
+							console.log(selectedAgent, $formAgent, addTool({ currentTool: selectedAgent }))
+						)}
 					>
-						<PlusIcon
-							size="52"
-							class="bg-nprimary text-nprimary-on hover:bg-nprimary-container hover:text-nprimary-container-on flex items-center justify-center gap-2 rounded-full p-2 transition-colors duration-300 ease-in-out"
-						/>
-					</form>
-				</div>
-
-				{#if checkSelected.length > 0}
-					{#each checkSelected as tool}
 						<form
-							action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
-							method="POST"
-							use:enhance
-							class=" border-nprimary bg-surface hover:border-nprimary group overflow-hidden rounded-lg border transition duration-300 ease-in-out"
+							class="relative flex cursor-pointer items-center justify-center rounded-lg p-4 shadow-sm"
 						>
-							<div
-								class=" relative p-4 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
-							>
-								<h3 class="text-primary-500 text-xl font-bold">{tool.name}</h3>
-								<p class="text-secondary-100">{tool.description}</p>
-								<Button
-									type="submit"
-									class="absolute right-2 top-2 transform rounded-full bg-transparent p-2 transition-transform duration-300 ease-in-out hover:rotate-90 hover:bg-transparent "
-									on:click={() => {
-										setTimeout(() => {
-											removeSelected(tool.name);
-										}, 3000);
-									}}
-								>
-									<MinusCircle class="text-destructive h-5 w-5" />
-								</Button>
-							</div>
+							<PlusIcon
+								size="52"
+								class="bg-nprimary text-nprimary-on hover:bg-nprimary-container hover:text-nprimary-container-on flex items-center justify-center gap-2 rounded-full p-2 transition-colors duration-300 ease-in-out"
+							/>
 						</form>
-					{/each}
-					
-				{/if}
+					</div>
+
+					{#if checkSelected.length > 0}
+						{#each checkSelected as tool}
+							<form
+								action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
+								method="POST"
+								use:enhance
+								class=" border-nprimary bg-surface hover:border-nprimary group overflow-hidden rounded-lg border transition duration-300 ease-in-out"
+							>
+								<div
+									class=" relative p-4 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
+								>
+									<h3 class="text-primary-500 pr-4 text-xl font-bold">{tool.name}</h3>
+									<p class="text-secondary-100">{tool.description}</p>
+									<Button
+										type="submit"
+										class="absolute right-2 top-2 transform rounded-full bg-transparent p-2 transition-transform duration-300 ease-in-out hover:rotate-90 hover:bg-transparent "
+										on:click={() => {
+											setTimeout(() => {
+												removeSelected(tool.name);
+											}, 3000);
+										}}
+									>
+										<MinusCircle class="text-destructive h-5 w-5" />
+									</Button>
+								</div>
+							</form>
+						{/each}
+					{/if}
+				</div>
 			</div>
-		</div>
-	</div>
+		</div>{/if}
 
 	<div class="mt-2 space-y-4">
 		<div class="flex items-center">
@@ -152,9 +165,11 @@
 			<Input
 				id="prompt"
 				name="prompt"
-				value={prompt}
+				value={system_message}
 				on:input={(e) =>
-					isCreate ? ($formAgent.prompt = e.target.value) : (selectedAgent.prompt = e.target.value)}
+					isCreate
+						? ($formAgent.system_message = e.target.value)
+						: (selectedAgent.system_message = e.target.value)}
 				placeholder="Add prompt"
 				class="border-none focus-visible:ring-1 focus-visible:ring-offset-0"
 			/>
@@ -228,7 +243,6 @@
 	on:close={handleClose}
 	{toolApiKeys}
 	{checkSelected}
-	{displayTools}
 	on:updateCheckSelected={(event) => {
 		checkSelected = [...checkSelected, event.detail];
 	}}

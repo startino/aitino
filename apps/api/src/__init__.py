@@ -10,7 +10,12 @@ from fastapi.responses import RedirectResponse
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
-from .dependencies import rate_limit, rate_limit_profile, rate_limit_tiered
+from .dependencies import (
+    RateLimitResponse,
+    rate_limit,
+    rate_limit_profile,
+    rate_limit_tiered,
+)
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewModel, Message, Session
@@ -69,7 +74,7 @@ def improve(
 
 
 @app.get(
-    "/crew", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]
+    "/crew"
 )  # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     id: UUID,
@@ -78,6 +83,9 @@ async def run_crew(
     session_id: UUID | None = None,
     reply: str | None = None,
     mock: bool = False,
+    current_rate_limit: RateLimitResponse = Depends(
+        rate_limit_profile(limit=4, period_seconds=60)
+    ),
 ) -> dict:
     if reply and not session_id:
         raise HTTPException(
@@ -144,7 +152,11 @@ async def run_crew(
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
-    return {"status": "success", "data": {"session": session.model_dump()}}
+    return {
+        "status": "success",
+        "data": {"session": session.model_dump()},
+        "rate_limit": current_rate_limit.__dict__(),
+    }
 
 
 @app.get(

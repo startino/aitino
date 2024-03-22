@@ -1,5 +1,6 @@
 import logging
 import uuid
+from dataclasses import dataclass
 from typing import Callable, cast
 
 from fastapi import HTTPException
@@ -8,6 +9,25 @@ from src.interfaces.db import supabase
 from src.interfaces.redis_cache import get_redis
 
 logger = logging.getLogger("root")
+
+
+@dataclass
+class RateLimitResponse:
+    limit: int
+    current_requests: int
+    time_to_refresh: int
+
+    @property
+    def remaining_requests(self) -> int:
+        return self.limit - self.current_requests
+
+    def __dict__(self) -> dict:
+        return {
+            "limit": self.limit,
+            "current_requests": self.current_requests,
+            "time_to_refresh": self.time_to_refresh,
+            "remaining_requests": self.remaining_requests,
+        }
 
 
 def _validate_profile_id(profile_id: str) -> str:
@@ -37,7 +57,7 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
     """
     Dependency generator for rate limiting on a fastapi endpoint
 
-    params:
+    args:
         limit: int, the amount of requests that can be made to endpoint
         period_seconds: int, the period before expiration of request limitation
         endpoint: str, the current endpoint that depends on this function
@@ -47,7 +67,7 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
         429: Exceeded the rate limit
     """
 
-    def func() -> None:
+    def func() -> RateLimitResponse:
         redis = get_redis()
         key = f"rate_limit:{endpoint}"
         current_requests = cast(int, redis.incr(key))
@@ -56,22 +76,23 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
             raise HTTPException(status_code=429, detail="Rate limit exceeded")
         if current_requests == 1:
             redis.expire(key, period_seconds)
+        return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
     return func
 
 
-def rate_limit_tiered(profile_id: str) -> None:
+def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
     """
     Dependency for rate limiting using the subscription tier of a profile id
 
-    params:
+    args:
         profile_id: str, profile id for the querying user (rate limit and period will be given by tier of profile)
     raises:
         404: Invalid tier in given profile id, 429: Exceeded the rate limit
     """
     redis = get_redis()
     key = f"rate_limit_tiered:{profile_id}"
-    current_requests = redis.incr(key)
+    current_requests = cast(int, redis.incr(key))
 
     tier_id = _validate_profile_id(profile_id)
     tier = supabase.table("tiers").select("period", "limit").eq("id", tier_id).execute()
@@ -86,13 +107,16 @@ def rate_limit_tiered(profile_id: str) -> None:
 
     if current_requests == 1:
         redis.expire(key, period * 3600)
+    return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
 
-def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], None]:
+def rate_limit_profile(
+    limit: int, period_seconds: int
+) -> Callable[[str], RateLimitResponse]:
     """
     Dependency generator for rate limiting using profile id
 
-    params:
+    args:
         limit: int, the amount of requests that can be made to endpoint
         period_seconds: int, the period before expiration of request limitation
     returns:
@@ -102,7 +126,7 @@ def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], None]
 
     """
 
-    def func(profile_id: str) -> None:
+    def func(profile_id: str) -> RateLimitResponse:
         _ = _validate_profile_id(profile_id)
 
         redis = get_redis()
@@ -113,5 +137,6 @@ def rate_limit_profile(limit: int, period_seconds: int) -> Callable[[str], None]
             raise HTTPException(status_code=429, detail="Rate limit exceeded")
         if current_requests == 1:
             redis.expire(key, period_seconds)
+        return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
     return func

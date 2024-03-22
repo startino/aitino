@@ -8,11 +8,13 @@ from uuid import UUID, uuid4
 import autogen
 from autogen.cache import Cache
 
+from src.models.session import SessionStatus
+
 from .interfaces import db
 from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
 from .tooling.langchain_tooling import (
     generate_llm_config,
-    generate_tool_from_string,
+    generate_tool_from_uuid,
     get_tool_id_from_agent,
 )
 
@@ -196,10 +198,10 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-            formatted_tools = get_tool_id_from_agent(agent.tools)
-            if len(formatted_tools):
-                for tool in formatted_tools:
-                    generated_tool = generate_tool_from_string(tool)
+            tool_ids = get_tool_id_from_agent(agent.tools)
+            if len(tool_ids):
+                for tool in tool_ids:
+                    generated_tool = generate_tool_from_uuid(tool)
                     (
                         (
                             self.valid_tools.append(generated_tool),
@@ -208,13 +210,6 @@ class Crew:
                         if generated_tool is not None
                         else None
                     )
-
-                logger.warn(f"{self.valid_tools=}")
-                tool_schemas = (
-                    generate_llm_config(valid_agent_tools)
-                    if valid_agent_tools
-                    else None
-                )
 
                 logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
@@ -235,9 +230,7 @@ class Crew:
             if tool_schemas:
                 config["functions"] = tool_schemas
 
-            system_message = f"""{agent.role}\n\n{agent.system_message}. Additionally, if information from the internet is required for completing the task, write a program to search the
-            internet for what you need and only output this program. If your program requires imports, add a sh script at the top of your output to install these packages.
-            Give this program to the admin. """  # TODO: add what agent it should send to next - Leon
+            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """  # TODO: add what agent it should send to next - Leon
 
             agent_instance = autogen.AssistantAgent(
                 name=self._format_agent_name(agent),
@@ -289,3 +282,4 @@ class Crew:
             await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
+        db.update_status(self.session.id, SessionStatus.FINISHED)
