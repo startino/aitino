@@ -14,6 +14,7 @@ from models import Submission, RelevanceResult
 import reddit_utils 
 from prompting import prompt
 from gptrim import trim
+import time
 
 # Load Enviornment variables
 
@@ -92,10 +93,17 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     Returns:
     - A tuple containing the relevance result as a Pydantic object and the total cost of the operation.
     """
-    with get_openai_callback() as cb:
-        result = chain.invoke({"query": f"{prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {trim(submission.selftext)}```"})
+    for _ in range(3):
+        try:
+            with get_openai_callback() as cb:
+                result = chain.invoke({"query": f"{prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {trim(submission.selftext)}```"})
+                # TODO: Do some cost analysis and saving (for long term insights)
+                return result, cb.total_cost
+        except Exception as e:
+            print(f"An error occurred while invoke_chain: {e}")
+            time.sleep(10)  # Wait for 10 seconds before trying again
 
-        # TODO: Do some cost analysis and saving (for long term insights)
+    raise Exception("Failed to invoke chain after 3 attempts")
 
     return result, cb.total_cost
 

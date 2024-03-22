@@ -28,6 +28,9 @@ GUIDANCE:
 - Most posts relating to physical/in-person businesses are irrelevant.
 - If the author of the post is a technical person, tech founder, or knows how to code, it is likely irrelevant.
 - If they have started their business a while ago, it is likely irrelevant.
+- If they are looking for a job, it is likely irrelevant.
+- If they have already started building their project, it is likely irrelevant.
+- Irrelevant posts will include people offering their OWN services from their development agency or consultancy.
 
 ABOUT THE COMPANY:
 {company_context}
