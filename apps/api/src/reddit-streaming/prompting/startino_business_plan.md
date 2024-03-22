@@ -1,7 +1,5 @@
 # Startino Business Plan
 
-## Tech Co-founder as a Service and Development Agency
-
 ### Identity
 
 Startino combines the upsides of a tech co-founder with a development agency, eliminating the downsides typically associated with each.
@@ -16,33 +14,11 @@ Non-tech founders often struggle to find a reliable tech-founder or development 
 - **Security and Speed**: Combines the legal security and execution speed of an incorporated business.
 - **Equity for Services**: Accepts 15%-30% equity in exchange for lower development costs, aligning our investment with the project's success.
 
-### Competition
-
-- unBranded
-- Zerotomvp
-- buildmystartupidea
-
 ### Target Market
 
 - Non-Tech Founders with at least $5k in funding.
 - Those seeking a Tech Founder or Development Agency.
 - Tech Founders seeking a Non-Tech (business/sales) Founder (phase 2).
-
-### Revenue Streams
-
-- **Retainer**: Subscription model for services rendered.
-- **Equity**: Stake in the company through equity, revenue share, or profit share.
-- **Add-on Subscriptions**: Email and domain management services.
-
-### Milestones
-
-- Acquire the first four clients.
-- Achieve initial profitability.
-
-### Marketing Activities
-
-- **Phase 1**: Create a website targeting "Co-Founder as a Service" and initiate outreach for sales.
-- **Phase 2**: Refine market targeting based on outreach data and focus sales and marketing efforts accordingly.
 
 ### Unique Value Proposition (UVP)
 

@@ -8,7 +8,7 @@ from llms import invoke_chain, create_chain, summarize_submission
 from logging_utils import log_relevance_calculation
 
 # Relevant subreddits to Startino
-SUBREDDIT_NAMES="SaaS+SaaSy+startups+sveltejs+webdev+YoungEntrepreneurs+NoCodeSaas+nocode+EntrepreneuerRideAlong+cofounder+Entrepreneur+smallbusiness+advancedentrepreneur+business"
+SUBREDDIT_NAMES="SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
 
 def start_reddit_stream():
     # Set up the cache directory

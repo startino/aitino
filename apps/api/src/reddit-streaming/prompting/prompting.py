@@ -22,24 +22,23 @@ user_context = f"""
 {purpose}
 
 GUIDELINES:
-Relevant Posts might be:
+Relevant Posts might be...:
 - Seeking technical co-founders for startups.
-- Looking for technical personnel to join startup teams.
+- Looking for technical personnel to join startup team.
 - In search of software development agencies or technical consultancy services.
+- An author has an idea for a software project
 
 Irrelevant Posts might be...:
-- Featuring developed or coded products.
+- Showing off existing products or projects.
 - Focused on physical/in-person business ventures.
-- Authored by technical individuals, such as tech founders or coders.
-- Authored by software developers or individuals in software-related jobs.
-- From businesses established for some time.
+- Authored by technical individuals, such as tech founders, software developers, or other job in the software field.
+- From businesses already established.
 - From individuals seeking employment.
-- Regarding projects that have already begun development.
-- Related to robotic startups.
-- Offering their own development and coding services.
+- Regarding projects or products that have already begun development.
+- People or agencies offering their own development/coding services.
 - Seeking ONLY design services.
 - Seeking ONLY to make a simple website (and not an app/project). 
-- Related to how to do something using a website builder or no code platform (Airtable,Bubble,Webflow,etc)
+- Related to HOW to do something using a website builder or no code platform (Airtable,Bubble,Webflow,etc)
 
 ABOUT THE COMPANY:
 {company_context}
@@ -61,5 +60,4 @@ relevant to look into.
 
 {user_context}
 
-{examples}
 """)

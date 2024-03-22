@@ -86,6 +86,10 @@ def summarize_submission(submission: Submission) -> Submission:
     # Trim the submission content for cost savings
     selftext = trim(submission.selftext)
 
+    # Short submissions are not summarized
+    if (llm.get_num_tokens(selftext) < 100):
+        return submission
+
     template = """
     Please write summary of the following text to reduce its length by following these guidelines:
     - Extract information from each sentence and include it in the summary.
