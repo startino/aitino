@@ -1,4 +1,3 @@
-from distutils.command import clean
 import time
 
 from langchain_openai import ChatOpenAI
@@ -75,6 +74,7 @@ def summarize_submission(submission: Submission) -> Submission:
     """
     Summarizes the content of a submission using LLMs.
     Uses a soft summarizing strength and only summarises each paragraph.
+    It aims to reduce the token count of the submission content by 50%.
 
     Parameters:
     - submission (Submission): The submission object to be summarized.
@@ -82,14 +82,20 @@ def summarize_submission(submission: Submission) -> Submission:
     Returns:
     - The submission object with the selftext replaced with a shorter version (the summary).
     """
-    llm = ChatOpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
 
     # Trim the submission content or cost savings
     selftext = trim(submission.selftext)
 
     template = """
-    Please write summary of the following text to reduce its length in half (roughly):
+    Please write summary of the following text to reduce its length by following these guidelines:
+    - Reduce by 30 - 50 percent (roughly).
+    - Value the quality of the summary over the quantity of the words.
+    - DO NOT remove any important information.
+    - You may use improper sentences to reduce the length.
+    - You may re
 
+    Text:
     {selftext}
     """
 
@@ -106,6 +112,8 @@ def summarize_submission(submission: Submission) -> Submission:
     summary = llm.invoke(summary_prompt)
     
     print (f"Summary: {summary.content}")
+    print(f"Token count: {llm.get_num_tokens(summary.content)}")
+    print(f"Tokens after trimming: {llm.get_num_tokens(trim(summary.content))}")
     print ("\n")
 
     return submission

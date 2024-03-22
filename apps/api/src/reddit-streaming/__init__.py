@@ -1,22 +1,11 @@
-from sqlite3 import Timestamp
 from typing import List
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_community.callbacks import get_openai_callback
-from save_utils import save_submission
-from dotenv import load_dotenv
-import os
-from datetime import datetime
+from saving import save_submission
 import diskcache as dc
 import mail
-from langchain_core.output_parsers import JsonOutputParser
-from models import Submission, RelevanceResult
-import reddit_utils 
-from prompting import CALCULATE_RELEVANCE_PROMPT
-from gptrim import trim
-import time
+from models import Submission
+import reddit_utils
 from llms import invoke_chain, create_chain, summarize_submission
-
+from logging_utils import log_relevance_calculation
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES="SaaS+SaaSy+startups+sveltejs+webdev+YoungEntrepreneurs+NoCodeSaas+nocode+EntrepreneuerRideAlong+cofounder+Entrepreneur+smallbusiness+advancedentrepreneur+business"
@@ -82,6 +71,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
 
     # Calculate mean relevance scores using 3.5-turbo
     for _ in range(0,iterations):
+        submission = summarize_submission(submission)
         chain = create_chain(model)
         result, run_cost = invoke_chain(chain, submission)
 
@@ -123,10 +113,7 @@ def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
     # totally_irrelevant = relevant_at_all(submission)z
     total_cost = 0
     is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
-    # TODO: create helper function for logging properly
-    print(f"URL: {submission.url}")
-    print(f"GPT-4 Is Relevant: {is_relevant}")
-    print(f"GPT-4 Certainty: {certainty}")
+    log_relevance_calculation('gpt-4-turbo-preview', submission, is_relevant, gpt4_cost, reasons)
 
     total_cost += gpt4_cost
 
@@ -168,12 +155,6 @@ def calculate_certainty(bool_list: List[bool]) -> float:
     false_certainty = (length-total) / length
 
     return max(true_certainty, false_certainty)
-
-
-def optimize_submission(submission: Submission) -> Submission:
-    # TODO: implement this function
-    # Should summarize it. Maybe other things idk. 
-    return submission
 
 
 if __name__ == "__main__":
