@@ -145,7 +145,7 @@ async def run_crew(
             content=content,
             role=role,
         )
-        # logger.warn(f"on_reply: {message}")
+        logger.debug(f"on_reply: {message}")
         db.post_message(message)
 
     crew = Crew(profile_id, session, crew_model, on_reply)
