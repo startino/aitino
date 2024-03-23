@@ -79,7 +79,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
         cost += run_cost
 
         total_llm_certainty += result['certainty']
-        
+
         reasons.append(result['reason'])
 
     mean_llm_certainty = total_llm_certainty / iterations

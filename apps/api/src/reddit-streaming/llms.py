@@ -1,4 +1,5 @@
 import time
+from typing import List
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
@@ -8,13 +9,15 @@ from gptrim import trim
 from dotenv import load_dotenv
 import os
 from langchain_community.callbacks import get_openai_callback
-from prompting import calculate_relevance_prompt
-
+from prompting import calculate_relevance_prompt, context as company_context, purpose
+from boolean_parser import BooleanOutputParser
+from langchain.output_parsers import PydanticOutputParser
+from models import FilterOutput
+from dummy_submissions import relevant_submissions, irrelevant_submissions
 
 # Load Enviornment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
 
 def create_chain(model: str):
     """
@@ -29,7 +32,7 @@ def create_chain(model: str):
     - A processing chain configured to use the specified language model and to parse its output.
     """
     
-    llm = ChatOpenAI(model=model, temperature=0.2, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model=model, temperature=0.1, openai_api_key=OPENAI_API_KEY, verbose=True)
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RelevanceResult)
@@ -87,29 +90,38 @@ def summarize_submission(submission: Submission) -> Submission:
     selftext = trim(submission.selftext)
 
     # Short submissions are not summarized
-    if (llm.get_num_tokens(selftext) < 100):
+    if (llm.get_num_tokens(selftext) < 150):
         return submission
 
-    template = """
-    Please write summary of the following text to reduce its length by following these guidelines:
+    template = f"""
+    # Welcome Summary Writer!
+    Your job is to help a Virtual Assistant in filtering Reddit posts.
+    You'll help by summarizing the content of a Reddit post to remove any useless parts.
+
+    # Guidelines
     - Extract information from each sentence and include it in the summary.
-    - You use bulleted lists for output, not numbered lists.
+    - Use bullet points to list the main points.
     - DO NOT remove any crucial information.
     - IF PRESENT, you must include information about the author such as his profession(or student) and if he knows how to code.
     - DO NOT make up any information that was not present in the original text.
-
-    Text:
+    - Commendations and encouragements should be removed.
+    # Body Text To Summarize
+    ```
     {selftext}
+    ```
+
+
+    # Here is more information for context
+
+    {company_context}
+
+    ## Purpose of this process
+    {purpose}
+
     """
 
-    prompt = PromptTemplate(
-        input_variables=["selftext"],
-        template=template
-    )
 
-    summary_prompt = prompt.format(selftext=selftext)
-
-    summary = llm.invoke(summary_prompt)
+    summary = llm.invoke(template)
     summarized_selftext = summary.content
 
     # Calculate token reduction
@@ -126,27 +138,70 @@ def summarize_submission(submission: Submission) -> Submission:
     return submission
 
 
+# uses gpt-3.5-turbo to filter out irrelevant posts by using simple yes no questions
+def filter_submission_with_questions(submission: Submission, questions: List[str]) -> tuple[bool, str]:
+    """
+    Filters out irrelevant posts by asking simple yes/no questions to the LLM.
+    The questions are generated using GPT-3.5-turbo.
+
+    If any one of the questions is answered with a NO, the submission is considered irrelevant.
+
+    Parameters:
+    - submission (Submission): The submission object to be filtered.
+    - questions (List[str]): A list of yes-no questions to be asked to the LLM. 
+    YES answers mean the submission is kept (kept).
+    NO answers mean the submission is discarded (irrelevant).
+
+    Returns:
+    - A boolean indicating whether the submission is relevant.
+    (True = relevant, False = irrelevant)
+    - The question that caused the submission to be filtered out.
+    """
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
+
+    template = """
+    You are a helpful assistant that needs to filter out irrelevant posts.
+    You will read a Reddit post, and then answer a yes-no question based on the 
+    post's content and provide the source. 
+    If the specific information is not present in the post, then answer True.
+
+    {format_instructions}
+    
+    # Question
+    {question}
+
+    # Post
+    Title: {title}
+    Content: {selftext}
+    """
+
+    parser = PydanticOutputParser(pydantic_object=FilterOutput)
+
+    for question in questions:
+        prompt = PromptTemplate(
+            template=template,
+            input_variables=["question", "title", "selftext"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+        chain = prompt | llm | parser
+        filter_output = chain.invoke({"question": question, "title": submission.title, "selftext": submission.selftext})
+        print(f"Question: {question}")
+        print(f"Result: {filter_output}")
+        filter_output = FilterOutput.parse_obj(filter_output)
+        if not filter_output.answer:
+            return False, filter_output.source
+    
+    return True, "SUCCESS"
+
 if __name__ == "__main__":
-    # Example of using the summarize_submission function
-    summarize_submission(Submission(id="010", url="https://aiti.no", created_utc=00000, title="I need a simple front end to fetch my headless CMS data. Maybe nocode? ", 
-                                    selftext="""
-                                    Need to build LittleCode/NoCode supply chain NFC Tag website. Low cost. headless cms
+    # Test the filter_submission_with_questions function
+    submission = relevant_submissions[1]
+    questions = ["Is the author not a tech related person? i.e. a coder, programmer, software developer.",
+                "Is the post NOT asking for employment or looking for a job?",
+                "The project has not already started development, correct?",
+                "Is the post NOT about someone offering their own development or coding services?",
+    ]
+    # print(filter_submission_with_questions(submission, questions))
 
-Hi. Via storyblok.com (or another headless cms or something? i was also thinking about using wordpress but idk) information about a product (text + images/videos) will be stored.
-
-I need to put the content somehow into a very simple website. The link of the website will be stored into a NFC tag.
-
-there are thousands of ways to do that. What’s the best/easiest way? Actually a wordpress website would be the best way i guess. but i dont really like wordpress that much, it is really slow…
-
-any other CMS you can recommend? or with a head
-
-do you know a cheaper alternative to storybloks? and a way to publish the content easy into a website?
-
-actually i’m a react dev but i didnt code for 2 years now and i need to get this done
-
-maybe i use a react boilerplate website where i fetch the headless CMS content?
-
-or maybe there is a SaaS for my “problem”?
-
-video i would host on bunnycdn (cheapest option) or for free on yt
-                                    """))
+    submission = relevant_submissions[0]
+    print(summarize_submission(submission).selftext)
