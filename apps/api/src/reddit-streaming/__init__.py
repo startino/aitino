@@ -111,7 +111,7 @@ def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
     # totally_irrelevant = relevant_at_all(submission)z
     total_cost = 0
     is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
-    log_relevance_calculation('gpt-4-turbo-preview', submission, is_relevant, gpt4_cost, reasons)
+    log_relevance_calculation('gpt-4-turbo-preview', submission, is_relevant, gpt4_cost, reasons[0])
 
     total_cost += gpt4_cost
 
