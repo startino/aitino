@@ -29,7 +29,7 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-
+		console.log(form);
 		const randomAvatar = pickRandomAvatar();
 
 		let data, error;
@@ -46,7 +46,12 @@ export const actions: Actions = {
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
 						system_message: form.data.system_message,
-						tools: [''],
+						tools: [
+							{
+								id: form.data.id,
+								parameter: {}
+							}
+						],
 						avatar: randomAvatar.avatarUrl,
 						version: '1.0'
 					}
@@ -73,9 +78,23 @@ export const actions: Actions = {
 
 		const form = await superValidate(request, createNewAgents);
 
+		const currentAgent = await supabase
+			.from('agents')
+			.select('*')
+			.eq('id',id?.split('$')[1])
+			.single();
+
+
+			const prev_tools = currentAgent.data.tools;
+
+			console.log(prev_tools);
+
+
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not edit agent' });
 		}
+
+		console.log(form);
 
 		let data, error;
 
@@ -86,6 +105,13 @@ export const actions: Actions = {
 					title: form.data.title,
 					role: form.data.role,
 					description: form.data.description,
+					tools: [
+						...currentAgent.data.tools,
+						{
+							id: form.data.id,
+							parameter: {}
+						}
+					],
 					system_message: form.data.system_message,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
@@ -105,24 +131,6 @@ export const actions: Actions = {
 		return {
 			message: 'Agent edited successfully please reload to see the changes you made'
 		};
-	},
-	addTools: async ({ request, url }) => {
-		const id = url.searchParams.get('id');
-		const toolId = url.searchParams.get('toolId');
-
-		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
-
-		let currentTools = currentAgent.data.tools;
-
-		const { data, error } = await supabase
-			.from('agents')
-			.update({
-				tools:
-					currentTools !== null
-						? [...currentTools, { id: toolId, parameter: {} }]
-						: [{ id: toolId, parameter: {} }]
-			})
-			.eq('id', id);
 	},
 	removeTools: async ({ request, url }) => {
 		const id = url.searchParams.get('id');

@@ -5,11 +5,13 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import type { Agent } from '$lib/types/models';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { ZodObject, ZodString } from 'zod';
-	import { MinusCircle, PlusIcon } from 'lucide-svelte';
+	import { MinusCircle, PlusIcon, Plus } from 'lucide-svelte';
 	import { AgentTools } from '$lib/components/ui/agent-editor-items/';
 	import { enhance } from '$app/forms';
+	import { slide } from 'svelte/transition';
 
 	export let agentTools: Agent[] | null;
 	export let selectedAgent: Agent | null = null;
@@ -67,10 +69,41 @@
 				}));
 		}
 	}
+
+	let filter_tools_based_on_agent = agentTools
+		.filter((tool) => selectedAgent?.tools.some((selectedTool) => selectedTool.id === tool.id))
+		.map((tool) => ({
+			id: tool.id,
+			name: tool.name,
+			apikey: tool.apikey,
+			description: tool.description
+		}));
+
+	console.log(filter_tools_based_on_agent, 'filter tools based on agent');
+
+	let showToolsDetail = false;
+
+	let addedTools = [] as {
+		id: string;
+		name: string;
+		api_key_types_id: string;
+		description: string;
+	}[];
+
+	addedTools = [...addedTools, ...filter_tools_based_on_agent];
+
+	$: searchQuery = '';
+	$: filted_from_search = agentTools.filter(
+		(tool) =>
+			tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+	);
+
+	$: console.log(searchQuery, 'searchQuery', filted_from_search, 'filted_from_search');
 </script>
 
 <div class="p-1">
-	<div class="flex w-full items-center gap-2">
+	<div class="mb-2 flex w-full items-center gap-2">
 		<div class="w-full space-y-4">
 			<Label for="title">Title</Label>
 			<Input
@@ -103,13 +136,147 @@
 		<p class="text-red-500">Title is required</p>
 	{/if}
 
-	{#if !isCreate}
+	<!-- main tools style here  -->
+	<span class="mt-4 pr-3 font-bold">Tools: </span>
+	<div class="grid h-48 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+		<!-- svelte-ignore missing-declaration -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		{#if !showToolsDetail}
+			<div
+				class="from-primary-900 to-primary-950 mt-2 flex cursor-pointer items-center justify-center space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+				transition:slide={{ duration: 400 }}
+				on:click={() => {
+					showToolsDetail = true;
+				}}
+			>
+				<div class="flex items-center justify-center transition-all duration-500">
+					<h3 class="font-extrabold"><Plus /></h3>
+				</div>
+			</div>
+
+			{#if addedTools.length > 0}
+				{#each addedTools as tool}
+					<div
+						class="from-primary-800 to-primary-950 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-current transition-all duration-500"
+						transition:slide={{ duration: 400 }}
+					>
+						<div
+							class="flex flex-col items-center justify-center"
+							transition:slide={{ duration: 400 }}
+						>
+							<h3 class="font-extrabold">{tool.name}</h3>
+							{#if isCreate}
+								<input type="hidden" name="id" id="toolsJsonData" bind:value={$formAgent.id} />
+							{:else}
+								<input type="hidden" name="id" id="toolsJsonData" bind:value={selectedAgent.id} />
+							{/if}
+							<p class="text-muted-foreground text-xs">{tool.description}</p>
+						</div>
+					</div>{/each}
+			{/if}
+		{/if}
+		{#if showToolsDetail}
+			<Dialog.Root open={showToolsDetail} onOpenChange={() => (showToolsDetail = false)}>
+				<Dialog.Content class="w-full max-w-4xl">
+					<Dialog.Header>Search for tools</Dialog.Header>
+					<Input
+						placeholder="Search tools..."
+						type="text"
+						bind:value={searchQuery}
+						class="focus-visible:ring-1 focus-visible:ring-offset-0"
+					/>
+
+					{#if filted_from_search.length === 0}
+						<div class="flex h-full w-full items-center justify-center">
+							<h3 class="">No tools found!</h3>
+						</div>
+					{/if}
+					<div class="grid h-96 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+						{#each filted_from_search as tool}
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<!-- svelte-ignore a11y-no-static-element-interactions -->
+							<div
+								class="from-primary-900 to-primary-950 relative z-50 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+								transition:slide={{ duration: 400 }}
+								on:click={() => {
+									if (isCreate) {
+										$formAgent.id = tool.id;
+									} else {
+										selectedAgent.id = tool.id;
+									}
+									showToolsDetail = false;
+									addedTools = [...addedTools, tool];
+									addedTools.map((tool) => {
+										console.log([tool.id], 'tool id here');
+									});
+									console.log(addedTools, 'add tools here');
+								}}
+							>
+								<Plus
+									class="text-primary-900 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] opacity-0 hover:-z-50 hover:opacity-100"
+									size="100"
+								/>
+
+								<div class="flex flex-col items-center justify-center">
+									<h3 class="font-extrabold">{tool.name}</h3>
+									{#if isCreate}
+										<input type="hidden" name="id" id="toolId" bind:value={$formAgent.id} />
+									{:else}
+										<input type="hidden" name="id" id="toolId" bind:value={selectedAgent.id} />
+									{/if}
+									<p class="text-muted-foreground text-xs">{tool.description}</p>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</Dialog.Content>
+			</Dialog.Root>
+			<!-- {#each agentTools as tool} -->
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+
+			<!-- <div
+					class="from-primary-900 to-primary-800 relative z-50 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+					transition:slide={{ duration: 400 }}
+					on:click={() => {
+						if (isCreate) {
+							$formAgent.id = tool.id;
+						} else {
+							selectedAgent.id = tool.id;
+						}
+						showToolsDetail = false;
+						addedTools = [...addedTools, tool];
+						addedTools.map((tool) => {
+							console.log([tool.id], 'tool id here');
+						});
+						console.log(addedTools, 'add tools here');
+					}}
+				>
+					<Plus
+						class="text-primary-900 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] opacity-0 hover:-z-50 hover:opacity-100"
+						size="100"
+					/>
+
+					<div class="flex flex-col items-center justify-center">
+						<h3 class="font-extrabold">{tool.name}</h3>
+						{#if isCreate}
+							<input type="hidden" name="id" id="toolId" bind:value={$formAgent.id} />
+						{:else}
+							<input type="hidden" name="id" id="toolId" bind:value={selectedAgent.id} />
+						{/if}
+						<p class="text-muted-foreground text-xs">{tool.description}</p>
+					</div>
+				</div> -->
+			<!-- {/each} -->
+		{/if}
+	</div>
+
+	<!-- {#if !isCreate}
 		<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
 			<Label for="tools">Tools</Label>
 			<div>
 				<div class="grid grid-cols-3 gap-6 px-6">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						class="border-nprimary relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border px-4 shadow-sm transition duration-300 ease-in-out"
 						on:click={() => (
@@ -157,7 +324,7 @@
 					{/if}
 				</div>
 			</div>
-		</div>{/if}
+		</div>{/if} -->
 
 	<div class="mt-2 space-y-4">
 		<div class="flex items-center">
