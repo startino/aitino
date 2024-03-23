@@ -8,9 +8,9 @@
 
     const crews = data.crews;
 
-	async function startNewSession(crewId: string, title: string) {
+	async function startNewSession(crew: models.Crew, title: string) {
 		// Instantiate and get the new session
-		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.profileId}`)
+		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crew.id}&profile_id=${data.profileId}`)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.json();
