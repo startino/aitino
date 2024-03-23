@@ -15,8 +15,10 @@ export type SessionLoad = {
 	profileId: string;
 	session: models.Session;
 	sessions: models.Session[];
-	messages: models.Message[];
 	crew: models.Crew;
+	crews: models.Crew[];
+	messages: models.Message[];
+	agents: models.Agent[];
 };
 
 export type NoSessionLoad = {
