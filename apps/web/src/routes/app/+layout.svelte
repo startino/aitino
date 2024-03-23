@@ -7,7 +7,6 @@
 	import {
 		CircleUserRound,
 		Dna,
-		Globe,
 		LogOut,
 		MessagesSquare,
 		UsersRound,

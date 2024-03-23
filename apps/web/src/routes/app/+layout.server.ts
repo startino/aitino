@@ -29,7 +29,7 @@ export const load: LayoutServerLoad = async ({ locals: { supabase, stripe, getSe
 
 	data.tiersList = tiersList ?? [];
 
-	data.userTier = profile?.tiers as any;
+	data.userTier = profile?.tiers as any; // TODO: don't use any
 
 	const { data: billing } = await supabase
 		.from('billing_information')

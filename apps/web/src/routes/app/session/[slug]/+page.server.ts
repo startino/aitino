@@ -26,8 +26,10 @@ export const load: PageServerLoad = async ({ params, locals: { getSession } }) =
 		profileId: userSession.user.id,
 		session: session,
 		sessions: await db.getSessions(userSession.user.id),
+		crew: crew,
+		crews: await db.getCrews(userSession.user.id),
 		messages: session ? await db.getMessages(session.id) : ([] as models.Message[]),
-		crew: crew
+		agents: await db.getAgents(userSession.user.id)
 	};
 
 	return data;
