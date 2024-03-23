@@ -60,29 +60,12 @@
 			name: '',
 			items: [
 				{
-					name: 'Crew Library',
-					href: '/app/library/crew',
-					icon: Globe,
-					current: false
-				},
-				{
-					name: 'Agent Library',
-					href: '/app/library/agent',
-					icon: Globe,
-					current: false
-				}
-			]
-		},
-		{
-			name: '',
-			items: [
-				{
-					name: 'Crew Editor',
+					name: 'Crews',
 					href: '/app/editor/crew',
 					icon: UsersRound,
 					current: false
 				},
-				{ name: 'Agent Editor', href: '/app/editor/agent', icon: Dna, current: false }
+				{ name: 'Agents', href: '/app/editor/agent', icon: Dna, current: false }
 			]
 		},
 		{
