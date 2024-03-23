@@ -61,11 +61,11 @@
 			items: [
 				{
 					name: 'Crews',
-					href: '/app/editor/crew',
+					href: '/app/crews/editor',
 					icon: UsersRound,
 					current: false
 				},
-				{ name: 'Agents', href: '/app/editor/agent', icon: Dna, current: false }
+				{ name: 'Agents', href: '/app/agents/editor', icon: Dna, current: false }
 			]
 		},
 		{
