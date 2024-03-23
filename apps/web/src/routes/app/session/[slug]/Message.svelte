@@ -3,11 +3,8 @@
 	import * as models from '$lib/types/models';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as utils from '$lib/utils';
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import type { ActionResult } from '@sveltejs/kit';
-	import { applyAction, deserialize } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
 
 	export let message: models.Message;
 
@@ -29,50 +26,11 @@
 		version: '1'
 	};
 
-	async function getAgent(agentId: string) {
-        console.log(`trying to get agent with id ${agentId}`);
+	// let agents: models.Agent[] = getContext('agents');
 
-        const agent: models.Agent = await fetch(`?/getagent?agent-id=${agentId}`, { method: 'GET'
-        }).then((res) => {
-            console.log(`got response on ${agentId}: ${JSON.stringify(res)}`);
-            return res.json()
-        }).then((data) => {
-            console.log(`got response on ${agentId}: ${JSON.stringify(data)}`);
-            return data.agent;
-        }).catch((error) => {
-            console.error('Failed to fetch agent:', error);
-            return {
-                id: null,
-                created_at: Date.now().toString(),
-                updated_at: Date.now().toString(),
-                title: 'Error',
-                description: 'Error fetching agent data',
-                role: 'error agent',
-                author: 'Futino',
-                model: 'N/A',
-                published: false,
-                system_message: 'N/A',
-                profile_id: 'N/A',
-                tools: [],
-                avatar:
-                    'https://ommkphtudcxplovqfhmu.supabase.co/storage/v1/object/public/agent-avatars/11.png',
-                version: '1'
-            } as models.Agent;
-        });
-
-        console.log(`got response on ${agentId}: ${JSON.stringify(agent)}`);
-        return agent;
-	}
-
-	async function loadAgent() {
-		if (message.sender_id) {
-			agent = await getAgent(message.sender_id);
-		}
-	}
-
-	onMount(() => {
-		loadAgent();
-	});
+	// onMount(() => {
+	// agent = agents.find((a) => a.id === message.sender_id) || agent;
+	// });
 </script>
 
 <div

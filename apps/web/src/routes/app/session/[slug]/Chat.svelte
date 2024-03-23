@@ -4,15 +4,15 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
 	import type { Message, Session } from '$lib/types/models';
-	import { afterUpdate } from 'svelte';
+	import { afterUpdate, getContext } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import { toast } from 'svelte-sonner';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 
-	export let session: Session;
-	export let name: string;
-	export let messages: Message[];
+	let session: Session = getContext('session');
+	let messages: Message[] = getContext('messages');
+	console.log(session);
 
 	// Reactivity
 	export let waitingForUser = true;
@@ -31,19 +31,19 @@
 				filter: `session_id=eq.${session.id}`
 			},
 			async (payload) => {
-                console.log(payload);
-                const message = payload.new as Message;
-                console.log(message);
-                messages = [...messages, message]
-            }
+				console.log(payload);
+				const message = payload.new as Message;
+				console.log(message);
+				messages = [...messages, message];
+			}
 		)
 		.subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                console.log('connected to message-insert-channel');
-            } else {
-                console.error("message-insert-channel status: " + status);
-            }
-        });
+			if (status === 'SUBSCRIBED') {
+				console.log('connected to message-insert-channel');
+			} else {
+				console.error('message-insert-channel status: ' + status);
+			}
+		});
 
 	supabase
 		.channel('session-update-channel')
@@ -56,19 +56,19 @@
 				filter: `id=eq.${session.id}`
 			},
 			async (payload) => {
-                console.log(payload);
-                const session = payload.new as Session;
-                console.log(session);
+				console.log(payload);
+				const session = payload.new as Session;
+				console.log(session);
 				// TODO: Set local status based on message status
 			}
 		)
 		.subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                console.log('connected to session-update-channel');
-            } else {
-                console.error("session-update-channel status: " + status);
-            }
-        });
+			if (status === 'SUBSCRIBED') {
+				console.log('connected to session-update-channel');
+			} else {
+				console.error('session-update-channel status: ' + status);
+			}
+		});
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;
@@ -89,8 +89,7 @@
 		console.log(apiData);
 
 		// Update the session status on the DB
-		const res = await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
-		const data = await res.json();
+		await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
 
 		// Update local status
 		waitingForUser = true;
@@ -115,11 +114,7 @@
 	>
 		<h1 class="mb-6 text-center text-3xl font-bold">{name}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
-		{#await messages}
-			<div class="flex w-full items-center justify-center gap-4">
-				<p>Loading messages...</p>
-			</div>
-		{:then messages}
+		{#if messages}
 			{#if messages.length > 0}
 				{#each messages as message, index}
 					{#if message.content != 'CONTINUE'}
@@ -135,7 +130,11 @@
 					<p>No messages have been sent yet.</p>
 				</div>
 			{/if}
-		{/await}
+		{:else}
+			<div class="flex w-full items-center justify-center gap-4">
+				<p>Loading messages...</p>
+			</div>
+		{/if}
 
 		<div
 			class="absolute bottom-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-row items-center justify-center gap-1 bg-surface"

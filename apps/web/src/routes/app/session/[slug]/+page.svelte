@@ -1,33 +1,33 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import type { SessionsLoad } from '$lib/types/loads';
+	import type { SessionLoad } from '$lib/types/loads';
 	import Chat from './Chat.svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { Loader2 } from 'lucide-svelte';
 	import SessionNavigator from './SessionNavigator.svelte';
-	import * as models from '$lib/types/models';
+	import { Loader2 } from 'lucide-svelte';
+	import { setContext } from 'svelte';
 
-	export let data: SessionsLoad;
+	export let data: SessionLoad;
 
-	let crew: models.Crew = data.crew;
-	let session: models.Session = data.session;
-	let sessions: models.Session[] = data.sessions;
-	let messages: models.Message[] = data.messages;
+	$: crew = data.crew;
+	$: crews = data.crews;
+	$: session = data.session;
+	$: sessions = data.sessions;
+	$: messages = data.messages;
+	$: agents = data.agents;
 
-	// Reactivity for the Crew chat
-	let waitingforUser = false;
+	setContext('crew', crew);
+	setContext('crews', crews);
+	setContext('session', session);
+	setContext('sessions', sessions);
+	setContext('messages', messages);
+	setContext('agents', agents);
 </script>
 
 <div class="flex h-full flex-row place-items-center">
 	<div class="flex h-full w-full">
-        <Chat {session} name={session?.title} {messages} waitingForUser={waitingforUser} />
+		<Chat />
 	</div>
 	{#if sessions}
-		<SessionNavigator
-			{sessions}
-			{crew}
-			{session}
-		/>
+		<SessionNavigator {sessions} {crew} {session} />
 	{:else}
 		<Loader2 />
 	{/if}
