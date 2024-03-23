@@ -50,7 +50,7 @@
 				},
 				{
 					name: 'Sessions',
-					href: '/app/sessions',
+					href: '/app/session',
 					icon: MessagesSquare,
 					current: false
 				}

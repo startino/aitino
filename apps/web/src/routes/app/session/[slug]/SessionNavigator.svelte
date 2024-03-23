@@ -9,24 +9,17 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { Crew, Session } from '$lib/types/models';
+    import { PUBLIC_API_URL } from '$env/static/public';
     import * as models from '$lib/types/models';
+	import { redirect } from '@sveltejs/kit';
 
 	const dispatch = createEventDispatcher();
 
 	export let sessions: Session[];
 	export let crew: Crew | null;
-	export let activeSession: Session | null;
+	export let session: Session | null;
 
 	let newSessionName: string = '';
-
-	const handleloadSession = (session: models.Session) => {
-		console.log('Loading session', JSON.stringify(session));
-		dispatch('handleloadSession', { session });
-	};
-
-	const handleStartNewSession = (title: string, crewId: string) => {
-		dispatch('handleStartNewSession', { title, crewId });
-	};
 
 	// Reactivity for renaming
 	let renamePopoverOpen = false;
@@ -60,12 +53,12 @@
 		const currentTitle = sessions.find((session) => session.id === sessionId);
 
 		// If no session is being renamed, ignore
-		if (!activeSession) {
+		if (!session) {
 			resetRenamingUI();
 			return;
 		}
 		// If no changes were made or if empty, reset the UI and ignore
-		if (activeSession?.title == renamingValue && renamingValue === '') {
+		if (session?.title == renamingValue && renamingValue === '') {
 			resetRenamingUI();
 			return;
 		}
@@ -99,9 +92,35 @@
 		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
-		if (activeSession?.id === sessionId) {
-			activeSession = null;
+		if (session?.id === sessionId) {
+			session = null;
 		}
+	}
+
+	async function loadSession(session: models.Session) {
+		console.log('Loading session', JSON.stringify(session));
+        redirect(303, "/app/session/" + session.id);
+	};
+
+
+	async function startNewSession(crewId: string, title: string) {
+        console.log('Starting new session', crewId, title);
+		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.profileId}`)
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error('Failed to start new session. bad respose: ' + response);
+				}
+			})
+			.catch((error) => {
+				console.error('Failed to start new session. error', error);
+			});
+
+		const session: models.Session = res.data.session;
+		console.log('session: ', session);
+
+        redirect(303, "/app/session/" + session.id);
 	}
 </script>
 
@@ -114,7 +133,7 @@
 	<Sheet.Content side="right">
 		<Sheet.Header>
 			<Sheet.Description>
-				{#if activeSession}
+				{#if session}
 					Click anywhere on the left to continue with your most recent session
 				{:else}
 					Create a new session or select an existing one
@@ -158,7 +177,7 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => handleStartNewSession(newSessionName, crew.id)}
+										on:click={() => startNewSession(newSessionName, crew.id)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>
@@ -213,10 +232,10 @@
 										<Button
 											builders={[builder]}
 											variant="outline"
-											class="flex w-full flex-row justify-between {activeSession?.id == session.id
+											class="flex w-full flex-row justify-between {session?.id == session.id
 												? 'bg-accent text-accent-foreground'
 												: 'hover:bg-accent/20 hover:text-foreground'}"
-											on:click={() => handleloadSession(session)}
+											on:click={() => loadSession(session)}
 										>
 											{session.title}
 											<div class="	text-right text-xs">
