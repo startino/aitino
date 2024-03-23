@@ -27,6 +27,7 @@
 	{form}
 	data={data.agentForm}
 	agentTools={myTools}
+	apiKeyTypes={data.api_key_types}
 />
 
 <div class="bg-background min-h-screen p-8">
@@ -61,4 +62,11 @@
 
 <!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
 
-<EditAgent {selectedAgent} on:close={handleClose} {open} {form} agentTools={myTools} />
+<EditAgent
+	{selectedAgent}
+	on:close={handleClose}
+	{open}
+	{form}
+	agentTools={myTools}
+	apiKeyTypes={data.api_key_types}
+/>

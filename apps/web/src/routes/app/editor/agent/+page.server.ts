@@ -12,9 +12,15 @@ export const load = (async ({ locals }) => {
 		.select('*')
 		.eq('profile_id', session?.user.id);
 
+	const {data, error} = await supabase.from('API_key_types').select('*');
+	const api_key_types = data;
+
+	console.log(api_key_types, 'api_key_types');
+
 	const agentTools = await supabase.from('tools').select('*');
 	return {
 		currentUserAgents,
+		api_key_types,
 		agentTools,
 		agentForm: await superValidate(createNewAgents)
 	};
@@ -81,14 +87,12 @@ export const actions: Actions = {
 		const currentAgent = await supabase
 			.from('agents')
 			.select('*')
-			.eq('id',id?.split('$')[1])
+			.eq('id', id?.split('$')[1])
 			.single();
 
+		const prev_tools = currentAgent.data.tools;
 
-			const prev_tools = currentAgent.data.tools;
-
-			console.log(prev_tools);
-
+		console.log(prev_tools);
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not edit agent' });

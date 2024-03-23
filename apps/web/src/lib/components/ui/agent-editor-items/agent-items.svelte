@@ -5,16 +5,26 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import type { Agent } from '$lib/types/models';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { ZodObject, ZodString } from 'zod';
-	import { MinusCircle, PlusIcon, Plus } from 'lucide-svelte';
+	import { ZodObject, ZodString, string } from 'zod';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Plus, ChevronDown } from 'lucide-svelte';
 	import { AgentTools } from '$lib/components/ui/agent-editor-items/';
-	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
+	import { toast } from 'svelte-sonner';
 
-	export let agentTools: Agent[] | null;
-	export let selectedAgent: Agent | null = null;
+	type AgentTools = {
+		id: string;
+		name: string;
+		description: string;
+		api_key_types_id: string;
+		created_at: string;
+	};
+
+	export let apiKeyTypes: ArrayLike<unknown> | Iterable<unknown>;
+	export let agentTools: AgentTools[];
+	export let selectedAgent: Agent;
 	export let formAgent: SuperFormData<
 		ZodObject<{
 			title: ZodString;
@@ -24,11 +34,10 @@
 			model: ZodString;
 		}>
 	> | null = null;
-
 	export let errors: Record<string, any> | null = null;
 	export let isCreate: boolean = false;
+
 	let toolApiKeys = {} as Record<string, string>;
-	let displayTools: Agent | null = null;
 	let open = false;
 
 	const models = [
@@ -43,15 +52,8 @@
 	$: model = isCreate ? $formAgent?.model : selectedAgent?.model || models[0].value;
 	$: system_message = isCreate ? $formAgent?.system_message : selectedAgent?.system_message || '';
 
-	const addTool = ({ currentTool }) => {
-		checkSelected = [...checkSelected, currentTool];
-	};
-
 	$: checkSelected = [] as { name: string; apikey: string; description: string; id: string }[];
 
-	const removeSelected = (name: string) => {
-		checkSelected = checkSelected.filter((tool) => tool.name !== name);
-	};
 	const handleClose = () => {
 		open = false;
 		console.log(open, 'open');
@@ -75,7 +77,7 @@
 		.map((tool) => ({
 			id: tool.id,
 			name: tool.name,
-			apikey: tool.apikey,
+			api_key_types_id: tool.api_key_types_id,
 			description: tool.description
 		}));
 
@@ -99,7 +101,21 @@
 			tool.description.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
-	$: console.log(searchQuery, 'searchQuery', filted_from_search, 'filted_from_search');
+	$: console.log(agentTools, 'searchQuery', filted_from_search, 'filted_from_search');
+
+	let selectedName: string;
+	let selectedId: string;
+
+	function handleSelect(tool: {
+		id: string;
+		name: string;
+		api_key_types_id: string;
+		description: string;
+	}) {
+		selectedName = tool.name;
+		selectedId = tool.id;
+		console.log(selectedName, 'new api name here');
+	}
 </script>
 
 <div class="p-1">
@@ -136,7 +152,6 @@
 		<p class="text-red-500">Title is required</p>
 	{/if}
 
-	<!-- main tools style here  -->
 	<span class="mt-4 pr-3 font-bold">Tools: </span>
 	<div class="grid h-48 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
 		<!-- svelte-ignore missing-declaration -->
@@ -194,31 +209,11 @@
 					{/if}
 					<div class="grid h-96 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
 						{#each filted_from_search as tool}
-							<!-- svelte-ignore a11y-click-events-have-key-events -->
-							<!-- svelte-ignore a11y-no-static-element-interactions -->
 							<div
-								class="from-primary-900 to-primary-950 relative z-50 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+								class="from-primary-900 to-primary-950 relative mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
 								transition:slide={{ duration: 400 }}
-								on:click={() => {
-									if (isCreate) {
-										$formAgent.id = tool.id;
-									} else {
-										selectedAgent.id = tool.id;
-									}
-									showToolsDetail = false;
-									addedTools = [...addedTools, tool];
-									addedTools.map((tool) => {
-										console.log([tool.id], 'tool id here');
-									});
-									console.log(addedTools, 'add tools here');
-								}}
 							>
-								<Plus
-									class="text-primary-900 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] opacity-0 hover:-z-50 hover:opacity-100"
-									size="100"
-								/>
-
-								<div class="flex flex-col items-center justify-center">
+								<div class="flex flex-col items-center justify-between">
 									<h3 class="font-extrabold">{tool.name}</h3>
 									{#if isCreate}
 										<input type="hidden" name="id" id="toolId" bind:value={$formAgent.id} />
@@ -227,104 +222,65 @@
 									{/if}
 									<p class="text-muted-foreground text-xs">{tool.description}</p>
 								</div>
+
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
+								<!-- svelte-ignore a11y-no-static-element-interactions -->
+								<div
+									on:click|stopPropagation={() => (
+										(showToolsDetail = true), console.log(apiKeyTypes, 'from click')
+									)}
+									class="w-full"
+								>
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger asChild let:builder>
+											<Button variant="outline" class="ml-auto w-full" builders={[builder]}>
+												Select your API <ChevronDown class="ml-2 h-4 w-4" />
+											</Button>
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content class="z-50">
+											{#each apiKeyTypes as api}
+												<DropdownMenu.CheckboxItem
+													checked={selectedName === api.name}
+													on:click={() => handleSelect(api)}
+												>
+													{api.name}
+												</DropdownMenu.CheckboxItem>
+											{/each}
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
+								</div>
+								<div class="text-background relative my-4 p-6">
+									<Button
+										class="absolute bottom-0 left-0 flex w-full items-center justify-center"
+										on:click={() => {
+											if (selectedId === tool.api_key_types_id) {
+												console.log(selectedId, 'from success selected id here');
+
+												showToolsDetail = false;
+												addedTools = [...addedTools, tool];
+											} else {
+												console.log(selectedId, 'failure selected id here');
+												console.log(tool.api_key_types_id, 'apik selected id here');
+												showToolsDetail = true;
+												toast.error('Please select correct API key type');
+											}
+											if (isCreate) {
+												$formAgent.id = tool.id;
+											} else {
+												selectedAgent.id = tool.id;
+											}
+										}}
+									>
+										<Plus /> Add tool</Button
+									>
+								</div>
 							</div>
 						{/each}
 					</div>
 				</Dialog.Content>
 			</Dialog.Root>
-			<!-- {#each agentTools as tool} -->
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
-
-			<!-- <div
-					class="from-primary-900 to-primary-800 relative z-50 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
-					transition:slide={{ duration: 400 }}
-					on:click={() => {
-						if (isCreate) {
-							$formAgent.id = tool.id;
-						} else {
-							selectedAgent.id = tool.id;
-						}
-						showToolsDetail = false;
-						addedTools = [...addedTools, tool];
-						addedTools.map((tool) => {
-							console.log([tool.id], 'tool id here');
-						});
-						console.log(addedTools, 'add tools here');
-					}}
-				>
-					<Plus
-						class="text-primary-900 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] opacity-0 hover:-z-50 hover:opacity-100"
-						size="100"
-					/>
-
-					<div class="flex flex-col items-center justify-center">
-						<h3 class="font-extrabold">{tool.name}</h3>
-						{#if isCreate}
-							<input type="hidden" name="id" id="toolId" bind:value={$formAgent.id} />
-						{:else}
-							<input type="hidden" name="id" id="toolId" bind:value={selectedAgent.id} />
-						{/if}
-						<p class="text-muted-foreground text-xs">{tool.description}</p>
-					</div>
-				</div> -->
-			<!-- {/each} -->
 		{/if}
 	</div>
-
-	<!-- {#if !isCreate}
-		<div class="mt-2 h-52 space-y-2 overflow-auto [&::-webkit-scrollbar]:hidden">
-			<Label for="tools">Tools</Label>
-			<div>
-				<div class="grid grid-cols-3 gap-6 px-6">
-					<div
-						class="border-nprimary relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border px-4 shadow-sm transition duration-300 ease-in-out"
-						on:click={() => (
-							(open = true),
-							console.log(selectedAgent, $formAgent, addTool({ currentTool: selectedAgent }))
-						)}
-					>
-						<form
-							class="relative flex cursor-pointer items-center justify-center rounded-lg p-4 shadow-sm"
-						>
-							<PlusIcon
-								size="52"
-								class="bg-nprimary text-nprimary-on hover:bg-nprimary-container hover:text-nprimary-container-on flex items-center justify-center gap-2 rounded-full p-2 transition-colors duration-300 ease-in-out"
-							/>
-						</form>
-					</div>
-
-					{#if checkSelected.length > 0}
-						{#each checkSelected as tool}
-							<form
-								action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
-								method="POST"
-								use:enhance
-								class=" border-nprimary bg-surface hover:border-nprimary group overflow-hidden rounded-lg border transition duration-300 ease-in-out"
-							>
-								<div
-									class=" relative p-4 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
-								>
-									<h3 class="text-primary-500 pr-4 text-xl font-bold">{tool.name}</h3>
-									<p class="text-secondary-100">{tool.description}</p>
-									<Button
-										type="submit"
-										class="absolute right-2 top-2 transform rounded-full bg-transparent p-2 transition-transform duration-300 ease-in-out hover:rotate-90 hover:bg-transparent "
-										on:click={() => {
-											setTimeout(() => {
-												removeSelected(tool.name);
-											}, 3000);
-										}}
-									>
-										<MinusCircle class="text-destructive h-5 w-5" />
-									</Button>
-								</div>
-							</form>
-						{/each}
-					{/if}
-				</div>
-			</div>
-		</div>{/if} -->
 
 	<div class="mt-2 space-y-4">
 		<div class="flex items-center">

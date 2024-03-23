@@ -10,6 +10,7 @@
 	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
 
+	export let apiKeyTypes: string[] | null;
 	export let form: ActionData;
 
 	let state: 'loading' | 'error' | 'idle' = 'idle';
@@ -42,7 +43,7 @@
 				};
 			}}
 		>
-			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools}/>
+			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools} {apiKeyTypes}/>
 			<Button
 				type="submit"
 				disabled={isFormIncomplete}
