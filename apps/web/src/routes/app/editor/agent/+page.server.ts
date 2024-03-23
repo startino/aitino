@@ -12,10 +12,8 @@ export const load = (async ({ locals }) => {
 		.select('*')
 		.eq('profile_id', session?.user.id);
 
-	const {data, error} = await supabase.from('API_key_types').select('*');
+	const { data, error } = await supabase.from('API_key_types').select('*');
 	const api_key_types = data;
-
-	console.log(api_key_types, 'api_key_types');
 
 	const agentTools = await supabase.from('tools').select('*');
 	return {
@@ -141,7 +139,11 @@ export const actions: Actions = {
 		const toolId = url.searchParams.get('toolId');
 		const form = await request.formData();
 
+		console.log(id, toolId, 'id, toolId');
+
 		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
+
+		console.log(currentAgent, 'currentAgent');
 
 		const deleteTool = currentAgent.data.tools.filter((tool) => tool.id !== toolId);
 		const { data, error } = await supabase

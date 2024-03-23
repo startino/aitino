@@ -9,10 +9,11 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ZodObject, ZodString, string } from 'zod';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Plus, ChevronDown } from 'lucide-svelte';
+	import { Plus, ChevronDown, Loader2Icon } from 'lucide-svelte';
 	import { AgentTools } from '$lib/components/ui/agent-editor-items/';
 	import { slide } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
+	import { enhance } from '$app/forms';
 
 	type AgentTools = {
 		id: string;
@@ -116,6 +117,10 @@
 		selectedId = tool.id;
 		console.log(selectedName, 'new api name here');
 	}
+
+	let showLoading = false;
+	let loadingStates = {};
+
 </script>
 
 <div class="p-1">
@@ -173,7 +178,7 @@
 			{#if addedTools.length > 0}
 				{#each addedTools as tool}
 					<div
-						class="from-primary-800 to-primary-950 mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-current transition-all duration-500"
+						class="from-primary-800 to-primary-950 mt-2 flex cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-current transition-all duration-500"
 						transition:slide={{ duration: 400 }}
 					>
 						<div
@@ -188,7 +193,37 @@
 							{/if}
 							<p class="text-muted-foreground text-xs">{tool.description}</p>
 						</div>
-					</div>{/each}
+						<form
+							method="POST"
+							action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
+							class="relative my-4 p-6"
+							use:enhance
+						>
+							<Button
+								class="absolute bottom-0 left-0 flex w-full items-center justify-center  transition-all duration-500 hover:scale-95"
+								variant="destructive"
+								type="submit"
+								on:click={() => {
+									showLoading = true;
+									loadingStates[tool.id] = true;
+									setTimeout(() => {
+										addedTools = addedTools.filter((tooldeleted) => tool.id !== tooldeleted.id);
+										showLoading = false;
+										loadingStates[tool.id] = false;
+									}, 1000);
+
+									console.log(addedTools, 'addedTools');
+									console.log(tool.id, 'tool');
+								}}
+							>
+								Remove
+
+								{#if loadingStates[tool.id] === true}
+									<Loader2Icon class="mr-2 flex h-4 w-8 animate-spin  " />{/if}
+							</Button>
+						</form>
+					</div>
+				{/each}
 			{/if}
 		{/if}
 		{#if showToolsDetail}
@@ -210,7 +245,7 @@
 					<div class="grid h-96 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
 						{#each filted_from_search as tool}
 							<div
-								class="from-primary-900 to-primary-950 relative mt-2 cursor-pointer space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+								class="from-primary-900 to-primary-950 relative mt-2 flex max-h-56 cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
 								transition:slide={{ duration: 400 }}
 							>
 								<div class="flex flex-col items-center justify-between">
@@ -237,7 +272,7 @@
 												Select your API <ChevronDown class="ml-2 h-4 w-4" />
 											</Button>
 										</DropdownMenu.Trigger>
-										<DropdownMenu.Content class="z-50">
+										<DropdownMenu.Content class="z-50 transition-all duration-500 hover:scale-95">
 											{#each apiKeyTypes as api}
 												<DropdownMenu.CheckboxItem
 													checked={selectedName === api.name}
@@ -251,7 +286,7 @@
 								</div>
 								<div class="text-background relative my-4 p-6">
 									<Button
-										class="absolute bottom-0 left-0 flex w-full items-center justify-center"
+										class="absolute bottom-0 left-0 flex w-full items-center justify-center transition-all duration-500 hover:scale-95"
 										on:click={() => {
 											if (selectedId === tool.api_key_types_id) {
 												console.log(selectedId, 'from success selected id here');
