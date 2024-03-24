@@ -53,7 +53,5 @@ export const load: LayoutServerLoad = async ({ locals: { supabase, stripe, getSe
 		data.stripeSub = null;
 	}
 
-	console.log('data: ', data);
-
 	return data;
 };

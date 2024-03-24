@@ -3,10 +3,11 @@
 	import * as models from '$lib/types/models';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as utils from '$lib/utils';
-	import { getContext, onMount } from 'svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+    import { onMount } from 'svelte';
 
 	export let message: models.Message;
+    export let agents: models.Agent[];
 
 	let agent: models.Agent = {
 		id: null,
@@ -26,11 +27,9 @@
 		version: '1'
 	};
 
-	// let agents: models.Agent[] = getContext('agents');
-
-	// onMount(() => {
-	// agent = agents.find((a) => a.id === message.sender_id) || agent;
-	// });
+	onMount(() => {
+        agent = agents.find((a) => a.id === message.sender_id) || agent;
+	});
 </script>
 
 <div
