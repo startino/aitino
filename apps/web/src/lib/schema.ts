@@ -31,6 +31,7 @@ export const waitlistSchema = z.object({
 });
 
 export const createNewAgents = z.object({
+	id: z.string(),
 	title: z
 		.string()
 		.min(1, { message: 'Title must not be empty' })
