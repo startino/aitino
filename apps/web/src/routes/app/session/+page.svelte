@@ -6,11 +6,12 @@
 
 	export let data: NoSessionLoad;
 
-	const crews = data.crews;
+    let profileId: string = data.profileId;
+	let crews: models.Crew[] = data.crews;
 
 	async function startNewSession(crew: models.Crew, title: string) {
 		// Instantiate and get the new session
-		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crew.id}&profile_id=${data.profileId}`)
+		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crew.id}&profile_id=${profileId}`)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.json();
