@@ -19,7 +19,7 @@ export const load = (async ({ locals }) => {
 
 	const user_api_keys = userApis;
 
-	const { data, error } = await supabase.from('API_key_types').select('*');
+	const { data, error } = await supabase.from('api_key_types').select('*');
 	const api_key_types = data;
 
 	const agentTools = await supabase.from('tools').select('*');
