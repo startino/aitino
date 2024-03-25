@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import { Input } from "$lib/components/ui/input";
-	import * as Card from "$lib/components/ui/card";
-	import { Label } from "$lib/components/ui/label";
-	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-	import { createEventDispatcher } from "svelte";
-	import { toast } from "svelte-sonner";
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import * as Card from '$lib/components/ui/card';
+	import { Label } from '$lib/components/ui/label';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
-	import { X } from "lucide-svelte";
+	import { X } from 'lucide-svelte';
 
 	const dispatch = createEventDispatcher();
 
 	export let form: any = {};
 
 	export function closeModal() {
-		dispatch("closeModal");
+		dispatch('closeModal');
 	}
 
 	export let showModal = false;

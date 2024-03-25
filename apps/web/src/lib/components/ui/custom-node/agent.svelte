@@ -39,7 +39,7 @@
 </script>
 
 <Card.Root
-	class="{isTarget ? 'bg-card border-2 border-dashed ' : ''} {isReceiver
+	class="{isTarget ? 'border-2 border-dashed bg-card ' : ''} {isReceiver
 		? 'bg-primary-950'
 		: ''} aspect-1transition w-[300px]"
 >
@@ -76,7 +76,7 @@
 	</Card.Header>
 	<Card.Content class="grid gap-2 text-center">
 		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
-		<Button href="/app/editor/agent">Edit Agent</Button>
+		<Button href="/app/agents/editor">Edit Agent</Button>
 		<Handle type="target" id="top-{id}" position={Position.Top} />
 		<Handle type="source" id="bottom-{id}" position={Position.Bottom} />
 	</Card.Content>

@@ -13,7 +13,7 @@
 
 <!-- Static sidebar for desktop -->
 <div
-	class="bg-primary-900/50 hidden h-full overflow-y-clip rounded-2xl border p-6 lg:z-50 lg:grid lg:w-72"
+	class="hidden h-full overflow-y-clip rounded-2xl border bg-primary-900/50 p-6 lg:z-50 lg:grid lg:w-72"
 >
 	<div class="mb-4 grid">
 		<h1 contenteditable on:input={(e) => (title = e.target.innerText)}>

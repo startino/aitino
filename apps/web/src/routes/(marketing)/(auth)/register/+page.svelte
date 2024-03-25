@@ -118,7 +118,7 @@
 						<span class="w-full border-t" />
 					</div>
 					<div class="relative flex justify-center text-xs uppercase">
-						<span class="bg-card text-muted-foreground px-2"> Or continue with </span>
+						<span class="bg-card px-2 text-muted-foreground"> Or continue with </span>
 					</div>
 				</div>
 				<form action="?/register" method="POST" class="space-y-4" use:enhance>
@@ -130,7 +130,7 @@
 							type="display_name"
 							placeholder="Display name"
 							bind:value={$formRegister.display_name}
-							class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+							class="flex  h-9 w-full rounded-md border border-input bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 						/>
 						{#if $errors.display_name}
 							<Alert.Root variant="destructive" class="border-none p-0">
@@ -146,7 +146,7 @@
 							name="email"
 							placeholder="minilik@gmail.com"
 							bind:value={$formRegister.email}
-							class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+							class="flex  h-9 w-full rounded-md border border-input bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 						/>
 						{#if $errors.email}
 							<Alert.Root variant="destructive" class="border-none p-0">
@@ -162,7 +162,7 @@
 							name="password"
 							placeholder="********"
 							bind:value={$formRegister.password}
-							class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+							class="flex  h-9 w-full rounded-md border border-input bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 						/>
 						{#if $errors.password && $errors.password.length > 0}
 							<Alert.Root variant="destructive" class="border-none p-0">
@@ -193,10 +193,10 @@
 		</Card.Content>
 		<div class="flex w-full justify-end p-0">
 			<Card.Footer>
-				<p class="text-foreground text-md block text-right">
+				<p class="text-md block text-right text-foreground">
 					Already have an account? <a
 						href="/login"
-						class="text-secondary hover:text-accent/75 underline">Sign in</a
+						class="text-secondary underline hover:text-accent/75">Sign in</a
 					>
 				</p>
 			</Card.Footer>

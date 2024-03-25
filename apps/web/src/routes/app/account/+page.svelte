@@ -140,7 +140,7 @@
 					<Button
 						variant="outline"
 						aria-label="add input"
-						class="border-border rounded-full border"
+						class="rounded-full border border-border"
 						on:click={addInput}
 					>
 						<Plus />
@@ -223,7 +223,7 @@
 					<div class="space-y-4">
 						{#each myApi as api, index}
 							<div
-								class="bg-background flex items-center rounded-lg p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
+								class="flex items-center rounded-lg bg-background p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
 								transition:slide={{ duration: 200 }}
 							>
 								<div class="flex flex-col">
@@ -232,7 +232,7 @@
 									<div class="flex">
 										<h3 class="mr-1 text-lg font-semibold">{api.name}</h3>
 										<span
-											class="text-primary cursor-pointer"
+											class="cursor-pointer text-primary"
 											title={api.value}
 											on:click={() => toggleVisibility(index)}>?</span
 										>

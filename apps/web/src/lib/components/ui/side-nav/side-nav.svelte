@@ -38,7 +38,7 @@
 </script>
 
 <!-- Static sidebar for desktop -->
-<div class=" flex h-full py-8 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
+<div class="flex h-full py-4 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
 	<!-- Sidebar component, swap this element with another sidebar if you like -->
 	<div
 		class="flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border bg-primary-950/30 px-6 pb-6 text-white"
@@ -99,13 +99,13 @@
 						</ul>
 					{/each}
 				</li>
-				<li class="mt-auto pl-0 sm:mt-auto sm:pl-0">
-					<ul role="list" class=" m-0 list-none pl-0 sm:m-0 sm:pl-0">
+				<li class="mt-auto">
+					<ul role="list" class="list-none">
 						{#each bottomNavigation as { name, href, icon, current }}
-							<li class="pb-0 pl-0 sm:pl-0">
+							<li>
 								<a
 									href={'/app/' + href}
-									class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
+									class="group flex gap-x-3 rounded-md px-2 py-1 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
 										href
 									)
 										? 'bg-accent/90 text-foreground hover:bg-accent '

@@ -1,6 +1,6 @@
-import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
-import type { Provider } from "@supabase/supabase-js";
+import { fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import type { Provider } from '@supabase/supabase-js';
 
 export const load = (async () => {
 	return {};
@@ -8,8 +8,8 @@ export const load = (async () => {
 
 export const actions: Actions = {
 	login: async ({ request, locals, cookies, url }) => {
-		const provider = url.searchParams.get("provider") as Provider;
-	
+		const provider = url.searchParams.get('provider') as Provider;
+
 		if (provider) {
 			const { data, error: err } = await locals.supabase.auth.signInWithOAuth({
 				provider: provider
@@ -18,7 +18,7 @@ export const actions: Actions = {
 			if (err) {
 				console.log(err);
 				return fail(400, {
-					message: "Something went wrong"
+					message: 'Something went wrong'
 				});
 			}
 
@@ -28,7 +28,7 @@ export const actions: Actions = {
 
 		if (!body.email || !body.password) {
 			return fail(400, {
-				error: "Please provide your credentials to enjoy the services of Aitino"
+				error: 'Please provide your credentials to enjoy the services of Aitino'
 			});
 		}
 		const { data, error } = await locals.supabase.auth.signInWithPassword({
@@ -42,6 +42,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(307, "/app");
+		throw redirect(307, '/app');
 	}
 };

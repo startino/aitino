@@ -88,7 +88,7 @@
 					<div class="rounded-lg p-8 px-4">
 						<h3 class="font-extrabold">{tool?.name}</h3>
 						<input type="hidden" name="toolName" id="toolsJsonData" value={tool.name} />
-						<p class="text-muted-foreground text-xs">{tool.description}</p>
+						<p class="text-xs text-muted-foreground">{tool.description}</p>
 						<input type="hidden" name="toolDescription" value={tool.description} />
 						<input type="hidden" name="toolDescription" value={tool.id} />
 

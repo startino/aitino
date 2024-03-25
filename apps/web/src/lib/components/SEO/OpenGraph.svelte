@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { SEOImage } from "./types";
+	import type { SEOImage } from './types';
 
 	export let article = false;
 	export let datePublished: string;
 	export let lastUpdated: string;
-	export let facebookAuthorPage = "";
-	export let facebookPage = "";
+	export let facebookAuthorPage = '';
+	export let facebookPage = '';
 	export let image: SEOImage | null;
 	export let squareImage: SEOImage | null;
 	export let metadescription: string;
@@ -19,7 +19,7 @@
 	<meta property="og:site_name" content={siteTitle} />
 	<meta property="og:locale" content={ogLanguage} />
 	<meta property="og:url" content={url} />
-	<meta property="og:type" content={article ? "article" : "website"} />
+	<meta property="og:type" content={article ? 'article' : 'website'} />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={metadescription} />
 	{#if image}

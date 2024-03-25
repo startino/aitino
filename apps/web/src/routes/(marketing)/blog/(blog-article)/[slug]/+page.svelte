@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount, type SvelteComponent } from "svelte";
-	import SEO from "$lib/components/SEO/index.svelte";
-	import { page } from "$app/stores";
+	import { onMount, type SvelteComponent } from 'svelte';
+	import SEO from '$lib/components/SEO/index.svelte';
+	import { page } from '$app/stores';
 
-	import { base } from "$app/paths";
+	import { base } from '$app/paths';
 
 	export let data;
 
@@ -34,11 +34,11 @@
 		<div class="flex flex-row place-items-center gap-x-6 text-sm">
 			<div class="relative flex items-center gap-x-4">
 				<img
-					src={metadata.author == "Jorge Lewis"
-						? "/people/jorge-lewis.png"
-						: metadata.author == "Jonas Lindberg"
-							? "/people/jonas-lindberg.jpg"
-							: "/favicon.png"}
+					src={metadata.author == 'Jorge Lewis'
+						? '/people/jorge-lewis.png'
+						: metadata.author == 'Jonas Lindberg'
+							? '/people/jonas-lindberg.jpg'
+							: '/favicon.png'}
 					alt="{metadata.author}'s Profile Picture"
 					class="not-prose h-10 w-10 rounded-full bg-card"
 				/>

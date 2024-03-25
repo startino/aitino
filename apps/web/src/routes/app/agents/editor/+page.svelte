@@ -27,13 +27,15 @@
 	{form}
 	data={data.agentForm}
 	agentTools={myTools}
+	apiKeyTypes={data.api_key_types}
+	user_api_keys={data.user_api_keys}
 />
 
-<div class="bg-background min-h-screen p-8">
+<div class="min-h-screen bg-background p-8">
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 		{#each myAgents as agent}
 			<div
-				class="bg-surface group relative flex flex-col overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
+				class="group relative flex flex-col overflow-hidden rounded-lg bg-surface shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
 			>
 				<div class="flex-shrink-0">
 					<img
@@ -49,7 +51,7 @@
 					<p class="text-on-surface/80 mt-2 flex-grow text-sm">{agent.role}</p>
 				</div>
 				<Button
-					class="bg-primary text-background hover:bg-primary/90 text-md mt-4 w-full rounded-none p-2 font-semibold transition-colors duration-300"
+					class="text-md mt-4 w-full rounded-none bg-primary p-2 font-semibold text-background transition-colors duration-300 hover:bg-primary/90"
 					on:click={() => {
 						editAgent(agent);
 					}}>Edit Agent</Button
@@ -61,4 +63,12 @@
 
 <!-- <ComingSoonPage releaseVersion="v0.3.0" /> -->
 
-<EditAgent {selectedAgent} on:close={handleClose} {open} {form} agentTools={myTools} />
+<EditAgent
+	{selectedAgent}
+	on:close={handleClose}
+	{open}
+	{form}
+	agentTools={myTools}
+	apiKeyTypes={data.api_key_types}
+	user_api_keys={data.user_api_keys}
+/>
