@@ -1,13 +1,36 @@
+#import logging
+#from uuid import UUID
+#from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, APIRouter
+#from src.interfaces import db
+#from src.models import Session
+#from src.dependencies import rate_limit, rate_limit_profile, rate_limit_tiered, RateLimitResponse
+#from src.models import CrewModel, Message, Session
+#from src.parser import parse_input_v0_2 as parse_input
+#from src import mock as mocks
+#from src.crew import Crew
+
 import logging
+from typing import Any
 from uuid import UUID
+
+import autogen
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+
+from src import mock as mocks
+from src.autobuilder import build_agents
+from src.crew import Crew
+from src.dependencies import (
+    RateLimitResponse,
+    rate_limit,
+    rate_limit_profile,
+    rate_limit_tiered,
+)
+from src.improver import PromptType, improve_prompt
 from src.interfaces import db
-from src.models import Session
-from src.dependencies import rate_limit, rate_limit_profile, rate_limit_tiered, RateLimitResponse
 from src.models import CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
-from src import mock as mocks
-from src.crew import Crew
 
 router = APIRouter(
     prefix="/sessions",
@@ -17,25 +40,12 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 @router.get("/")
-def get_sessions(profile_id: UUID):
-    sessions = []
-    #if not profile_id and not session_id:
-    #    logger.error("no profile id or session id given, need atleast one")
-    #    raise HTTPException(status_code=400, detail="no profile id or session id given, need atleast one")
-
-    if profile_id:
-        sessions = db.get_sessions(profile_id)
-
-    return sessions
-
-@router.get("/{session_id}")
-def get_session(session_id: UUID) -> Session | None:
-    session = db.get_session(session_id)
-
-    return session if session else None
+def get_sessions(profile_id: UUID) -> list[Session]:
+    return db.get_sessions(profile_id)
+   
 
 @router.post("/upsert")
-def upsert_session(session_id: UUID, content) -> str:
+def upsert_session(session_id: UUID, content: dict) -> str:
     db.upsert_session(session_id, content)
     return "successfully upserted session"
 
@@ -124,3 +134,8 @@ async def run_crew(
         "data": {"session": session.model_dump()},
         "rate_limit": current_rate_limit.__dict__(),
     }
+
+
+@router.get("/{session_id}")
+def get_session(session_id: UUID) -> Session | None:
+    return db.get_session(session_id)
