@@ -1,8 +1,8 @@
 <script lang="ts">
-	import "$styling";
-	import { Toaster } from "svelte-sonner";
-	import { invalidate } from "$app/navigation";
-	import { onMount } from "svelte";
+	import '$styling';
+	import { Toaster } from 'svelte-sonner';
+	import { invalidate } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	export let data;
 
@@ -14,7 +14,7 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
-				invalidate("supabase:auth");
+				invalidate('supabase:auth');
 			}
 		});
 
@@ -22,6 +22,6 @@
 	});
 </script>
 
-<Toaster/>
+<Toaster />
 
 <slot />

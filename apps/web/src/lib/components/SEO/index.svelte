@@ -1,10 +1,10 @@
 <script lang="ts">
-	import website from "$lib/config/website";
-	import OpenGraph from "./OpenGraph.svelte";
-	import Twitter from "./Twitter.svelte";
-	import type { SEOImage } from "./types";
+	import website from '$lib/config/website';
+	import OpenGraph from './OpenGraph.svelte';
+	import Twitter from './Twitter.svelte';
+	import type { SEOImage } from './types';
 
-	let favIconSrc = "/favicon.png";
+	let favIconSrc = '/favicon.png';
 
 	const {
 		author,
@@ -23,14 +23,14 @@
 	} = website;
 
 	export let article = false;
-	export let lastUpdated = "";
-	export let datePublished = "";
+	export let lastUpdated = '';
+	export let datePublished = '';
 	export let metadescription: string;
 	export let slug;
 	export let timeToRead = 0;
 	export let title;
 
-	const defaultAlt = "a picture of an ai agent";
+	const defaultAlt = 'a picture of an ai agent';
 
 	export let ogImage: SEOImage | null = {
 		url: favIconSrc,

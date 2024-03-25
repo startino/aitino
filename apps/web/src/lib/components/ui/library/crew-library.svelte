@@ -99,7 +99,7 @@
 			</div>
 			<form
 				method="POST"
-				class="border-border bg-card grid grid-cols-8 items-center rounded-md border p-6"
+				class="grid grid-cols-8 items-center rounded-md border border-border bg-card p-6"
 				on:submit|preventDefault={async (e) => {
 					const file = e.target[0].files[0];
 
@@ -118,7 +118,7 @@
 				<div class="col-span-7 flex flex-col justify-center gap-2 align-middle">
 					<label for="file_input" class="mb-2 text-sm font-medium"> Upload a Crew </label>
 					<input
-						class="block w-full cursor-pointer rounded-md border file:mr-4 file:rounded-sm file:border-0 file:bg-foreground-50 file:px-4 file:py-2 file:text-base file:font-semibold"
+						class="file:bg-foreground-50 block w-full cursor-pointer rounded-md border file:mr-4 file:rounded-sm file:border-0 file:px-4 file:py-2 file:text-base file:font-semibold"
 						id="file_input"
 						type="file"
 						accept=".json"

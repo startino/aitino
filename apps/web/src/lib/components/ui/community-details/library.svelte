@@ -23,7 +23,7 @@
 	<Dialog.Content
 		class={type === 'agent'
 			? 'h-5/6 w-full max-w-6xl space-y-8 overflow-y-auto rounded-lg p-8 shadow-2xl [&::-webkit-scrollbar]:hidden'
-			: 'bg-background relative max-w-5xl transform rounded-xl p-8 shadow-xl transition-all duration-500 ease-in-out hover:scale-105'}
+			: 'relative max-w-5xl transform rounded-xl bg-background p-8 shadow-xl transition-all duration-500 ease-in-out hover:scale-105'}
 	>
 		{#if type === 'agent'}
 			<AgentItems agentDisplayDetails={agentItem} />

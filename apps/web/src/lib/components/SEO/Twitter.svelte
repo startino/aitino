@@ -24,6 +24,6 @@
 	<meta name="twitter:data1" content={author} />
 	{#if article && timeToRead > 0}
 		<meta name="twitter:label2" content="Est. reading time" />
-		<meta name="twitter:data2" content={timeToRead !== 1 ? `${timeToRead} minutes` : "1 minute"} />
+		<meta name="twitter:data2" content={timeToRead !== 1 ? `${timeToRead} minutes` : '1 minute'} />
 	{/if}
 </svelte:head>

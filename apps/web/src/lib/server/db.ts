@@ -1,8 +1,7 @@
-
-import { supabase } from "$lib/supabase";
-import type { TablesInsert } from "$lib/types/supabase";
-import { error } from "@sveltejs/kit";
-import type { Crew, Message, Session, Agent  } from "$lib/types/models";
+import { supabase } from '$lib/supabase';
+import type { TablesInsert } from '$lib/types/supabase';
+import { error } from '@sveltejs/kit';
+import type { Crew, Message, Session, Agent } from '$lib/types/models';
 
 export async function getAgent(agentId: string) {
 	const { data, error: err } = await supabase.from('agents').select('*').eq('id', agentId).single();
@@ -16,9 +15,12 @@ export async function getAgent(agentId: string) {
 }
 
 export async function setSessionStatus(sessionId: string, status: string) {
-	const { data, error: err } = await supabase.from("sessions").update({ status: status }).eq("id", sessionId);
+	const { data, error: err } = await supabase
+		.from('sessions')
+		.update({ status: status })
+		.eq('id', sessionId);
 	if (err) {
-		throw error(500, "Failed attempt at setting session status.");
+		throw error(500, 'Failed attempt at setting session status.');
 	}
 }
 
@@ -26,7 +28,8 @@ export async function getMessages(session_id: string) {
 	const { data, error: err } = await supabase
 		.from('messages')
 		.select('*')
-		.eq('session_id', session_id).order('created_at', { ascending: true });
+		.eq('session_id', session_id)
+		.order('created_at', { ascending: true });
 	if (err) {
 		throw error(500, 'Failed attempt at retrieving messages. Please reload the page.');
 	}
@@ -39,28 +42,44 @@ export async function getMessages(session_id: string) {
 }
 
 export async function renameSession(sessionId: string, newTitle: string) {
-	const { data, error: err } = await supabase.from("sessions").update({ title: newTitle }).eq("id", sessionId);
+	const { data, error: err } = await supabase
+		.from('sessions')
+		.update({ title: newTitle })
+		.eq('id', sessionId);
 	if (err) {
-		throw error(500, "Failed attempt at renaming session.");
+		throw error(500, 'Failed attempt at renaming session.');
 	}
 }
 
 export async function deleteSession(sessionId: string) {
-	const { data, error: err } = await supabase.from("sessions").delete().eq("id", sessionId);
+	const { data, error: err } = await supabase.from('sessions').delete().eq('id', sessionId);
 	if (err) {
-		throw error(500, "Failed attempt at deleting session.");
+		throw error(500, 'Failed attempt at deleting session.');
 	}
 }
 
-export async function postCrew(data: TablesInsert<"crews">) {
-	if (!data.id) throw error(400, "Invalid Crew ID");
-	if (!data.profile_id) throw error(400, "There is no profile connected to this crew. Try logging in again.");
-	if (!data.title) throw error(400, "Crew is missing a title");
-	if (!data.description) throw error(400, "Crew is missing a description");
-	if (!data.nodes) throw error(400, "Invalid Crew Nodes");
-	if (!data.edges) throw error(400, "Invalid Crew Edges");
+export async function postCrew(data: TablesInsert<'crews'>) {
+	if (!data.id) throw error(400, 'Invalid Crew ID');
+	if (!data.profile_id)
+		throw error(400, 'There is no profile connected to this crew. Try logging in again.');
+	if (!data.title) throw error(400, 'Crew is missing a title');
+	if (!data.description) throw error(400, 'Crew is missing a description');
+	if (!data.nodes) throw error(400, 'Invalid Crew Nodes');
+	if (!data.edges) throw error(400, 'Invalid Crew Edges');
 
 	return supabase.from('crews').upsert(data);
+}
+
+export async function getCrew(crewId: string) {
+	const { data, error: err } = await supabase.from('crews').select('*').eq('id', crewId).single();
+	if (err) {
+		console.error('Error getting crew with id ' + crewId + ' error: ' + err);
+		return null;
+	}
+	if (!data) {
+		return null;
+	}
+	return data as Crew;
 }
 
 export async function getCrews(profileId: string) {
@@ -94,7 +113,10 @@ export async function getAllCrews() {
 }
 
 export async function getAgents(profileId: string) {
-	const { data, error: err } = await supabase.from('agents').select('*').eq('profile_id', profileId);
+	const { data, error: err } = await supabase
+		.from('agents')
+		.select('*')
+		.eq('profile_id', profileId);
 	if (err) {
 		return [];
 	}
@@ -104,12 +126,11 @@ export async function getAgents(profileId: string) {
 	const agents: Agent[] = data as Agent[];
 
 	return agents;
-
 }
 
 export async function getPublishedAgents() {
 	const { data, error: err } = await supabase.from('agents').select('*').eq('published', true);
-	
+
 	if (err) {
 		return [];
 	}
@@ -123,7 +144,7 @@ export async function getPublishedAgents() {
 
 export async function getPublishedCrews() {
 	const { data, error: err } = await supabase.from('crews').select('*').eq('published', true);
-	
+
 	if (err) {
 		return [];
 	}
@@ -137,13 +158,9 @@ export async function getPublishedCrews() {
 
 export async function getSessions(profileId: string, crewId: string | null = null) {
 	// Filter by profile_id and crewId if it exists
-	const { data, error: err } = crewId ? await supabase
-		.from("sessions")
-		.select("*")
-		.eq("profile_id", profileId)
-		.eq("crew_id", crewId) : await supabase.from("sessions")
-		.select("*")
-		.eq("profile_id", profileId);
+	const { data, error: err } = crewId
+		? await supabase.from('sessions').select('*').eq('profile_id', profileId).eq('crew_id', crewId)
+		: await supabase.from('sessions').select('*').eq('profile_id', profileId);
 
 	if (err) {
 		return [];
@@ -159,12 +176,13 @@ export async function getSessions(profileId: string, crewId: string | null = nul
 
 // Get the most recent session
 export async function getRecentSession(profileId: string) {
-
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = await supabase
-		.from("sessions")
-		.select("*")
-		.eq("profile_id", profileId).order("created_at", { ascending: false }).limit(1);
+		.from('sessions')
+		.select('*')
+		.eq('profile_id', profileId)
+		.order('created_at', { ascending: false })
+		.limit(1);
 
 	if (err) {
 		return null;
@@ -180,9 +198,10 @@ export async function getRecentSession(profileId: string) {
 
 export async function getSession(sessionId: string) {
 	const { data, error: err } = await supabase
-		.from("sessions")
-		.select("*")
-		.eq("id", sessionId).single();
+		.from('sessions')
+		.select('*')
+		.eq('id', sessionId)
+		.single();
 
 	if (err) {
 		return null;
@@ -200,9 +219,11 @@ export async function getSession(sessionId: string) {
 export async function getRecentCrew(profileId: string) {
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = await supabase
-		.from("crews")
-		.select("*")
-		.eq("profile_id", profileId).order("updated_at", { ascending: false }).limit(1);
+		.from('crews')
+		.select('*')
+		.eq('profile_id', profileId)
+		.order('updated_at', { ascending: false })
+		.limit(1);
 
 	if (err) {
 		return null;

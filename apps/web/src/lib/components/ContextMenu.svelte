@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useEdges, useNodes } from "@xyflow/svelte";
-	import * as Select from "./ui/select";
+	import { useEdges, useNodes } from '@xyflow/svelte';
+	import * as Select from './ui/select';
 
 	export let onClick: () => void;
 	export let id: string;

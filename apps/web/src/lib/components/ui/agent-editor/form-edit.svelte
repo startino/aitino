@@ -42,7 +42,7 @@
 				};
 			}}
 		>
-			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools}/>
+			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools} />
 			<Button
 				type="submit"
 				disabled={isFormIncomplete}
