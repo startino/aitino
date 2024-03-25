@@ -18,5 +18,5 @@ def add_crew(crew: CrewRequestModel):
     if not db.get_profile_from_id(crew.profile_id):
         raise HTTPException(404, "profile not found")
     response = db.post_crew(crew)
-    return "win"
+    return "success"
     

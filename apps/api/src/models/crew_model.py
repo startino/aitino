@@ -17,10 +17,10 @@ class CrewModel(CrewBaseModel):
     )  # Must set delegator_id for each sub_crew in sub_crews
 
 class CrewRequestModel(CrewBaseModel):
-    prompt: str
+    prompt: dict
     profile_id: UUID
-    edges: list[str]
+    edges: list[dict]
     published: bool
     title: str
     description: str
-    nodes: list[AgentModel]
+    nodes: list[dict]

@@ -6,4 +6,4 @@ class Profile(BaseModel):
     tier_id: UUID
     created_at: str
     display_name: str
-    stripe_customer_id: str
+    stripe_customer_id: str | None
