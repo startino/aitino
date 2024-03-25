@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from enum import StrEnum, auto
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from dotenv import load_dotenv
@@ -46,6 +46,36 @@ def get_session(session_id: UUID) -> Session | None:
     if len(response.data) == 0:
         return None
     return Session(**response.data[0])
+
+
+def get_sessions(profile_id: UUID) -> list[Session] | None:
+    """Gets all sessions for given profile id."""
+    logger.debug(f"Getting all sessions from profile_id: {profile_id}")
+    response = supabase.table("sessions").select("*").eq("profile_id", profile_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    sessions = []
+
+    try:
+        sessions = [Session(**session) for session in response.data]
+    except ValidationError as e:
+        logger.error(f"Error validating session: {e}")
+
+    return sessions
+    
+    
+def upsert_session(session_id: UUID, content: dict[str, Any]) -> None:
+    content['id'] = str(session_id)
+    existing_row = supabase.table("sessions").select("*").eq("id", session_id).execute()
+
+    if len(existing_row.data) == 0:
+        logger.warning(f"inserting session with id: {session_id}")
+        supabase.table("sessions").insert(content).execute()
+
+    else:
+        logger.warning(f"updating session with id: {session_id}")
+        supabase.table("sessions").update(content).eq("id", session_id).execute()
 
 
 def post_session(session: Session) -> None:
@@ -102,8 +132,8 @@ def post_agents(agents: list[AgentModel]) -> None:
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
-def post_crew(message: Message, composition: CrewModel) -> None:
-    post_agents(CrewModel.agents)
+def post_crew(message: Message, crew_model: CrewModel, profile_id: UUID, edges: dict, published: bool) -> None:
+    ...
     # TODO: (Leon) Implement posting the rest of the crew
 
 
@@ -116,4 +146,4 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 
 if __name__ == "__main__":
-    update_status(UUID("6e975637-d033-4ef1-a734-82c7949b4306"), SessionStatus.FINISHED)
+    upsert_session(UUID("2e2e432b-f7c3-409b-932f-de8c7472be80"), {"title": "test_126", "profile_id": "070c1d2e-9d72-4854-a55e-52ade5a42071", "status": "finished"})

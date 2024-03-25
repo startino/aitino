@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class SessionStatus(StrEnum):
     RUNNING = auto()
     FINISHED = auto()
-    CANCELLED = auto()
+    IDLE = auto()
 
 
 class Session(BaseModel):
