@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, XCircle } from 'lucide-svelte';
+	import { Plus, PlusCircle, XCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	import { AppShell } from '$lib/components/layout/shell';
@@ -148,6 +148,36 @@
 				</Card.Content>
 			</Card.Root>
 		</Tabs.Content>
+		<Tabs.Content value="billing">
+			<Card.Root class="overflow-hidden rounded-lg shadow-xl">
+				<Card.Header class="text-on-primary bg-gradient-to-r p-6">
+					<h2 class="text-xl font-semibold">Membership</h2>
+				</Card.Header>
+				<Card.Content class="p-6">
+					<div class="space-y-8">
+						<div class="bg-background rounded-lg bg-gradient-to-r p-6 space-y-4 shadow-sm">
+							<div class="text-2xl font-semibold ">Current Plan</div>
+							<p class="font-medium">Starter</p>
+							<div class="mt-4 flex gap-4 transition-all duration-200 ease-in-out">
+								<Button class=" border bg-transparent text-current " href="/app/subscription"
+									>Change Plan</Button
+								>
+								<Button
+									class=" flex items-center gap-2 rounded-md border bg-transparent  text-current"
+								>
+									<Plus /> Add a promo code
+								</Button>
+							</div>
+						</div>
+						<div class="bg-background rounded-lg p-6 shadow-sm  space-y-4">
+							<div class="text-2xl font-semibold">Current Billing Cycle</div>
+							<p class="text-sm">Mar 20, 2024 - Apr 19, 2024</p>
+						</div>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</Tabs.Content>
+
 		<Tabs.Content value="api">
 			<Card.Root>
 				<Card.Header>API Keys</Card.Header>
