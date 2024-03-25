@@ -12,6 +12,13 @@ export const load = (async ({ locals }) => {
 		.select('*')
 		.eq('profile_id', session?.user.id);
 
+	const { data: userApis, error: userApiError } = await supabase
+		.from('users_api_keys')
+		.select('*')
+		.eq('profile_id', session?.user.id);
+
+	const user_api_keys = userApis;
+
 	const { data, error } = await supabase.from('API_key_types').select('*');
 	const api_key_types = data;
 
@@ -20,6 +27,7 @@ export const load = (async ({ locals }) => {
 		currentUserAgents,
 		api_key_types,
 		agentTools,
+		user_api_keys,
 		agentForm: await superValidate(createNewAgents)
 	};
 }) satisfies PageServerLoad;
@@ -80,7 +88,10 @@ export const actions: Actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
+		
+
 		const form = await superValidate(request, createNewAgents);
+		console.log(form, 'form');
 
 		const currentAgent = await supabase
 			.from('agents')

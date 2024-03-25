@@ -28,6 +28,7 @@
 	data={data.agentForm}
 	agentTools={myTools}
 	apiKeyTypes={data.api_key_types}
+	user_api_keys={data.user_api_keys}
 />
 
 <div class="bg-background min-h-screen p-8">
@@ -69,4 +70,5 @@
 	{form}
 	agentTools={myTools}
 	apiKeyTypes={data.api_key_types}
+	user_api_keys={data.user_api_keys}
 />

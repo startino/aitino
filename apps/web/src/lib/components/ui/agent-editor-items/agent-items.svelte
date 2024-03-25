@@ -7,7 +7,7 @@
 	import type { Agent } from '$lib/types/models';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { ZodObject, ZodString, string } from 'zod';
+	import { ZodObject, ZodString } from 'zod';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Plus, ChevronDown, Loader2Icon } from 'lucide-svelte';
 	import { AgentTools } from '$lib/components/ui/agent-editor-items/';
@@ -26,6 +26,9 @@
 	export let apiKeyTypes: ArrayLike<unknown> | Iterable<unknown>;
 	export let agentTools: AgentTools[];
 	export let selectedAgent: Agent;
+	export let user_api_keys: string[] | null;
+	console.log(user_api_keys, 'from user create forom');
+
 	export let formAgent: SuperFormData<
 		ZodObject<{
 			title: ZodString;
@@ -120,7 +123,6 @@
 
 	let showLoading = false;
 	let loadingStates = {};
-
 </script>
 
 <div class="p-1">
@@ -193,35 +195,36 @@
 							{/if}
 							<p class="text-muted-foreground text-xs">{tool.description}</p>
 						</div>
-						<form
-							method="POST"
-							action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
-							class="relative my-4 p-6"
-							use:enhance
-						>
-							<Button
-								class="absolute bottom-0 left-0 flex w-full items-center justify-center  transition-all duration-500 hover:scale-95"
-								variant="destructive"
-								type="submit"
-								on:click={() => {
-									showLoading = true;
-									loadingStates[tool.id] = true;
-									setTimeout(() => {
-										addedTools = addedTools.filter((tooldeleted) => tool.id !== tooldeleted.id);
-										showLoading = false;
-										loadingStates[tool.id] = false;
-									}, 1000);
-
-									console.log(addedTools, 'addedTools');
-									console.log(tool.id, 'tool');
-								}}
+						{#if !isCreate}
+							<form
+								method="POST"
+								action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
+								class="relative my-4 p-6"
+								use:enhance
 							>
-								Remove
+								<Button
+									class="absolute bottom-0 left-0 flex w-full items-center justify-center  transition-all duration-500 hover:scale-95"
+									variant="destructive"
+									type="submit"
+									on:click={() => {
+										showLoading = true;
+										loadingStates[tool.id] = true;
+										setTimeout(() => {
+											addedTools = addedTools.filter((tooldeleted) => tool.id !== tooldeleted.id);
+											showLoading = false;
+											loadingStates[tool.id] = false;
+										}, 1000);
 
-								{#if loadingStates[tool.id] === true}
-									<Loader2Icon class="mr-2 flex h-4 w-8 animate-spin  " />{/if}
-							</Button>
-						</form>
+										console.log(addedTools, 'addedTools');
+										console.log(tool.id, 'tool');
+									}}
+								>
+									Remove
+
+									{#if loadingStates[tool.id] === true}
+										<Loader2Icon class="mr-2 flex h-4 w-8 animate-spin  " />{/if}
+								</Button>
+							</form>{/if}
 					</div>
 				{/each}
 			{/if}
@@ -289,10 +292,21 @@
 										class="absolute bottom-0 left-0 flex w-full items-center justify-center transition-all duration-500 hover:scale-95"
 										on:click={() => {
 											if (selectedId === tool.api_key_types_id) {
-												console.log(selectedId, 'from success selected id here');
-
-												showToolsDetail = false;
-												addedTools = [...addedTools, tool];
+												console.log(user_api_keys, 'from success selected id here');
+												if (isCreate) {
+													showToolsDetail = false;
+													addedTools = [...addedTools, tool];
+												} else {
+													user_api_keys?.forEach((key) => {
+														if (key.api_key_type_id === selectedId) {
+															showToolsDetail = false;
+															addedTools = [...addedTools, tool];
+															toast.success('Added tool ' + tool.name);
+														} else {
+															toast.error('Please add the api key in you profile');
+														}
+													});
+												}
 											} else {
 												console.log(selectedId, 'failure selected id here');
 												console.log(tool.api_key_types_id, 'apik selected id here');

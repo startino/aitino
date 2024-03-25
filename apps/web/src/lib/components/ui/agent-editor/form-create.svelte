@@ -13,9 +13,9 @@
 	import type { Agent } from '$lib/types/models';
 
 	export let data: SuperValidated<AgentFormSchema>;
-	export let agentTools: Agent[] | null;
-	export let apiKeyTypes: string[] | null; 
-
+	export let agentTools: string[] | null;
+	export let apiKeyTypes: string[] | null;
+	export let user_api_keys: string[] | null;
 	const { form: formAgent, errors } = superForm(data, {
 		validators: createNewAgents
 	});
@@ -40,7 +40,14 @@
 	</div>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<form action="?/creatAgents" method="POST" use:enhance>
-			<AgentEditorItems {errors} {formAgent} isCreate={true} {agentTools} {apiKeyTypes} />
+			<AgentEditorItems
+				{errors}
+				{formAgent}
+				isCreate={true}
+				{agentTools}
+				{apiKeyTypes}
+				{user_api_keys}
+			/>
 			<Button
 				type="submit"
 				variant="outline"
