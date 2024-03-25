@@ -80,6 +80,7 @@ async def run_crew(
     id: UUID,
     profile_id: UUID,
     background_tasks: BackgroundTasks,
+    session_title: str,
     session_id: UUID | None = None,
     reply: str | None = None,
     mock: bool = False,
@@ -128,6 +129,7 @@ async def run_crew(
         session = Session(
             crew_id=id,
             profile_id=profile_id,
+            title=session_title,
         )
         db.post_session(session)
 

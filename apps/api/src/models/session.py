@@ -15,5 +15,6 @@ class Session(BaseModel):
     id: UUID = Field(default_factory=lambda: uuid4())
     crew_id: UUID
     profile_id: UUID
+    title: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
     status: SessionStatus = SessionStatus.RUNNING
