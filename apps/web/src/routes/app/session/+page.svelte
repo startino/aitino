@@ -23,11 +23,8 @@
 			});
 
 		const session: models.Session = res.data.session;
-		console.log('session: ', session);
 
-		if (!session) {
-			console.error('Failed to start new session: ' + JSON.stringify(res));
-		}
+		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
 	}
 </script>
 

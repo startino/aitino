@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { createEventDispatcher } from 'svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as utils from '$lib/utils';
 	import { Input } from '$lib/components/ui/input';
@@ -13,8 +12,7 @@
 	import * as models from '$lib/types/models';
 	import { redirect } from '@sveltejs/kit';
 
-	const dispatch = createEventDispatcher();
-
+    export let profileId: string;
 	export let sessions: Session[];
 	export let crew: Crew | null;
 	export let session: Session | null;
@@ -65,7 +63,7 @@
 
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
-		const response = await fetch(`?/rename`, {
+		await fetch(`?/rename`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId, newTitle: renamingValue })
 		}).then((res) => res.json());
@@ -84,7 +82,7 @@
 	async function deleteSession(sessionId: string) {
 		deletingInProgress = true;
 		deletingSession = sessionId;
-		const response = await fetch(`?/delete`, {
+		await fetch(`?/delete`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId })
 		});
@@ -99,12 +97,12 @@
 
 	async function loadSession(session: models.Session) {
 		console.log('Loading session', JSON.stringify(session));
-		redirect(303, '/app/session/' + session.id);
+		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
 	}
 
 	async function startNewSession(crewId: string, title: string) {
 		console.log('Starting new session', crewId, title);
-		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.profileId}`)
+		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${profileId}`)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.json();
@@ -119,7 +117,7 @@
 		const session: models.Session = res.data.session;
 		console.log('session: ', session);
 
-		redirect(303, '/app/session/' + session.id);
+		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
 	}
 </script>
 
@@ -176,16 +174,16 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(newSessionName, crew.id)}>Start Session</Button
+										on:click={() => startNewSession(crew.id, newSessionName)}>Start Session</Button
 									>
 								</Dialog.Footer>
 							</Dialog.Content>
 						</Dialog.Root>
 					{/if}
 					<ScrollArea class="flex h-full max-h-[85vh] w-full flex-col rounded-md pr-4">
-						{#await sessions}
+						{#if !sessions}
 							<p>Loading...</p>
-						{:then sessions}
+						{:else}
 							{#each sessions as session}
 								<li class="my-3 flex w-full flex-row gap-4">
 									{#if renamePopoverOpen && renamingSession === session.id}
@@ -256,7 +254,7 @@
 									{/if}
 								</li>
 							{/each}
-						{/await}
+						{/if}
 					</ScrollArea>
 				</div>
 			</Sheet.Close>

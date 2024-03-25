@@ -8,6 +8,7 @@
 
 	export let data: SessionLoad;
 
+    let profileId: string = data.profileId;
 	let crew: models.Crew = data.crew;
 	let crews: models.Crew[] = data.crews;
 	let session: models.Session = data.session;
@@ -21,7 +22,7 @@
 		<Chat {session} {messages} {agents} />
 	</div>
 	{#if sessions}
-		<SessionNavigator {sessions} {crew} {session} />
+		<SessionNavigator {profileId} {sessions} {crew} {session} />
 	{:else}
 		<Loader2 />
 	{/if}
