@@ -4,7 +4,7 @@ export const PROMPT_LIMIT = 1;
 type Sample_type = {
 	male: string[];
 	female: string[];
-}
+};
 
 export const SAMPLE_FULL_NAMES: Sample_type = {
 	male: [

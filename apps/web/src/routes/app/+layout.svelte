@@ -4,14 +4,7 @@
 	import { Shell } from '$lib/components/layout/shell';
 	import { SideNav } from '$lib/components/ui/side-nav';
 
-	import {
-		CircleUserRound,
-		Dna,
-		LogOut,
-		MessagesSquare,
-		UsersRound,
-		Zap
-	} from 'lucide-svelte';
+	import { CircleUserRound, Dna, LogOut, MessagesSquare, UsersRound, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import { UserCheck, type Icon } from 'lucide-svelte';
 	import { setContext } from '$lib/utils';

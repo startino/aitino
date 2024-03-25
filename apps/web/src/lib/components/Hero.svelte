@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import { toast } from "svelte-sonner";
-	import FormItem from "./FormItem.svelte";
+	import { Button } from '$lib/components/ui/button';
+	import { toast } from 'svelte-sonner';
+	import FormItem from './FormItem.svelte';
 </script>
 
 <div class="relative mx-auto flex w-full flex-col gap-y-12 text-white lg:gap-y-4">

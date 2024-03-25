@@ -135,7 +135,7 @@
 	<section class="relative flex h-screen w-screen flex-col justify-center">
 		<div class="flex w-screen flex-col justify-evenly py-6 md:mt-24 lg:mt-28 xl:mt-32">
 			<div
-				class="text-foreground mx-auto flex w-full flex-col place-items-center gap-y-4 px-2 sm:gap-y-8"
+				class="mx-auto flex w-full flex-col place-items-center gap-y-4 px-2 text-foreground sm:gap-y-8"
 			>
 				<Logo height="h-16" class="hidden rounded-xl lg:flex" />
 				<h1
@@ -147,7 +147,7 @@
 				</h1>
 
 				<h3
-					class="text-foreground m-0 mx-auto mt-2 max-w-3xl text-balance text-center text-sm brightness-75 sm:m-0 sm:text-lg md:text-lg lg:text-xl xl:text-2xl"
+					class="m-0 mx-auto mt-2 max-w-3xl text-balance text-center text-sm text-foreground brightness-75 sm:m-0 sm:text-lg md:text-lg lg:text-xl xl:text-2xl"
 				>
 					<SplitTest key="Subtitle Test" variants={Object.keys(subtitleVariants)} let:variant>
 						{@html subtitleVariants[variant]}
@@ -166,10 +166,10 @@
 	>
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 			<div class="mb-8 max-w-2xl md:mx-auto md:text-center xl:max-w-none">
-				<h2 class="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+				<h2 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
 					Become a more efficient entrepreneur
 				</h2>
-				<p class="text-foreground/80 mt-6 text-lg tracking-tight">
+				<p class="mt-6 text-lg tracking-tight text-foreground/80">
 					Here's a list of Aitino's features that will save you time and money.
 				</p>
 			</div>
@@ -190,7 +190,7 @@
 								</Card.Description>
 							</Card.Header>
 							<Card.Content class="space-y-2">
-								<div class="border-border mx-auto w-full max-w-3xl rounded-xl border">
+								<div class="mx-auto w-full max-w-3xl rounded-xl border border-border">
 									{#if feature.image != ''}
 										<img
 											class="w-full rounded-xl object-cover"
@@ -200,7 +200,7 @@
 									{:else}
 										<div class="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:px-8">
 											<h2
-												class="text-accent text-center text-3xl font-semibold uppercase tracking-tight sm:text-4xl md:text-5xl"
+												class="text-center text-3xl font-semibold uppercase tracking-tight text-accent sm:text-4xl md:text-5xl"
 											>
 												Coming Soon
 											</h2>
@@ -218,7 +218,7 @@
 	<section class=" py-24 sm:py-32" id="benefits-section">
 		<div class="mx-auto max-w-7xl px-6 lg:px-8">
 			<div class="mx-auto max-w-2xl sm:text-center">
-				<h2 class="text-primary text-base font-semibold leading-7">Everything you need</h2>
+				<h2 class="text-base font-semibold leading-7 text-primary">Everything you need</h2>
 				<p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
 					Not VC backed? Not a problem.
 				</p>
@@ -238,19 +238,19 @@
 				/>
 				<div class="relative" aria-hidden="true">
 					<div
-						class="from-primary-900/20 absolute -inset-x-1 bottom-0 bg-gradient-to-t pt-[7%]"
+						class="absolute -inset-x-1 bottom-0 bg-gradient-to-t from-primary-900/20 pt-[7%]"
 					></div>
 				</div>
 			</div>
 		</div>
 		<div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-20 md:mt-24 lg:px-8">
 			<dl
-				class="text-foreground/75 mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16"
+				class="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-foreground/75 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16"
 			>
 				{#each benefits as { title, description, icon }}
 					<div class="relative pl-9">
-						<dt class="text-foreground inline font-semibold">
-							<svelte:component this={icon} class="text-primary absolute left-1 top-1 h-5 w-5" />
+						<dt class="inline font-semibold text-foreground">
+							<svelte:component this={icon} class="absolute left-1 top-1 h-5 w-5 text-primary" />
 							{title}.
 						</dt>
 						<dd class="inline">
@@ -277,13 +277,13 @@
 
 	<section>
 		<div class="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:px-8">
-			<h2 class="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+			<h2 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
 				Frequently asked questions
 			</h2>
-			<p class="text-foreground/75 mt-6 max-w-2xl text-base leading-7">
+			<p class="mt-6 max-w-2xl text-base leading-7 text-foreground/75">
 				Have a different question and can’t find the answer you’re looking for? Reach out to us by <a
 					href="mailto:contact@futi.no"
-					class="text-accent hover:text-accent-700 font-semibold">sending us an email</a
+					class="font-semibold text-accent hover:text-accent-700">sending us an email</a
 				> and we’ll get back to you as soon as we can.
 			</p>
 			<div class="mt-20">
@@ -292,10 +292,10 @@
 				>
 					{#each faqs as { question, answer }}
 						<div>
-							<dt class="text-foreground text-balance text-lg font-semibold">
+							<dt class="text-balance text-lg font-semibold text-foreground">
 								{question}
 							</dt>
-							<dd class="leading- text-foreground/75 mt-2 text-pretty text-sm">
+							<dd class="leading- mt-2 text-pretty text-sm text-foreground/75">
 								{@html answer}
 							</dd>
 						</div>

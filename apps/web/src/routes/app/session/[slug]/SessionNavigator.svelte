@@ -9,8 +9,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { Crew, Session } from '$lib/types/models';
-    import { PUBLIC_API_URL } from '$env/static/public';
-    import * as models from '$lib/types/models';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import * as models from '$lib/types/models';
 	import { redirect } from '@sveltejs/kit';
 
 	const dispatch = createEventDispatcher();
@@ -99,12 +99,11 @@
 
 	async function loadSession(session: models.Session) {
 		console.log('Loading session', JSON.stringify(session));
-        redirect(303, "/app/session/" + session.id);
-	};
-
+		redirect(303, '/app/session/' + session.id);
+	}
 
 	async function startNewSession(crewId: string, title: string) {
-        console.log('Starting new session', crewId, title);
+		console.log('Starting new session', crewId, title);
 		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${data.profileId}`)
 			.then((response) => {
 				if (response.status === 200) {
@@ -120,7 +119,7 @@
 		const session: models.Session = res.data.session;
 		console.log('session: ', session);
 
-        redirect(303, "/app/session/" + session.id);
+		redirect(303, '/app/session/' + session.id);
 	}
 </script>
 
@@ -177,8 +176,7 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(newSessionName, crew.id)}
-										>Start Session</Button
+										on:click={() => startNewSession(newSessionName, crew.id)}>Start Session</Button
 									>
 								</Dialog.Footer>
 							</Dialog.Content>

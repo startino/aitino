@@ -4,7 +4,8 @@
 
 <label
 	for={$$props.for}
-	class="{$$props.class} flex flex-row rounded title-medium tracking-wide gap-2">
+	class="{$$props.class} title-medium flex flex-row gap-2 rounded tracking-wide"
+>
 	{$$props.text}
 	<slot />
 </label>
@@ -14,4 +15,5 @@
 	class="hidden peer/{$$props.for}"
 	bind:group={activeTabValue}
 	value={$$props.value}
-	id={$$props.for} />
+	id={$$props.for}
+/>

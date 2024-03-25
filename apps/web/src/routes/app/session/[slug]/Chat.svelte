@@ -12,11 +12,11 @@
 
 	export let session: models.Session;
 	export let messages: models.Message[];
-    export let agents: models.Agent[];
+	export let agents: models.Agent[];
 
-    console.log('session: ', session);
-    console.log('messages: ', messages);
-    console.log('agents: ', agents);
+	console.log('session: ', session);
+	console.log('messages: ', messages);
+	console.log('agents: ', agents);
 
 	// Reactivity
 	export let waitingForUser = true;
@@ -116,7 +116,7 @@
 		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-14 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
-        <h1 class="fixed top-4 z-10 text-left text-bold text-2xl">{session.title}</h1>
+		<h1 class="text-bold fixed top-4 z-10 text-left text-2xl">{session.title}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#if messages}
 			{#if messages.length > 0}

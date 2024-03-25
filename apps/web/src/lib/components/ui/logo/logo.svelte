@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let height: string = "h-9 w-9";
+	export let height: string = 'h-9 w-9';
 
 	export let label: boolean = false;
 </script>

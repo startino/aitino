@@ -4,7 +4,7 @@
 	import SessionNavigator from './SessionNavigator.svelte';
 	import { Loader2 } from 'lucide-svelte';
 	import { setContext } from 'svelte';
-    import * as models from '$lib/types/models';
+	import * as models from '$lib/types/models';
 
 	export let data: SessionLoad;
 

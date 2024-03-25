@@ -105,7 +105,7 @@
 							<li>
 								<a
 									href={'/app/' + href}
-									class="group flex py-1 gap-x-3 rounded-md px-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
+									class="group flex gap-x-3 rounded-md px-2 py-1 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
 										href
 									)
 										? 'bg-accent/90 text-foreground hover:bg-accent '

@@ -1,11 +1,11 @@
 ---
 title: "Unveiling the Future: How Aitino's Multi-Agent Systems Will Redefine Innovation"
 description: Explore how cutting-edge research validates the pivotal role of multi-agent systems in shaping our future. Dive into insights and breakthroughs in this thought-provoking exploration.
-date: "2024-2-23"
+date: '2024-2-23'
 category: Article
 published: false
 timeToRead: 3
-thumbnail: "/blog/low_res_n_00014_.png"
+thumbnail: '/blog/low_res_n_00014_.png'
 author: Jorge Lewis
 ---
 

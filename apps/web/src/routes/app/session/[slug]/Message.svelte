@@ -4,10 +4,10 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as utils from '$lib/utils';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-    import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let message: models.Message;
-    export let agents: models.Agent[];
+	export let agents: models.Agent[];
 
 	let agent: models.Agent = {
 		id: null,
@@ -28,7 +28,7 @@
 	};
 
 	onMount(() => {
-        agent = agents.find((a) => a.id === message.sender_id) || agent;
+		agent = agents.find((a) => a.id === message.sender_id) || agent;
 	});
 </script>
 

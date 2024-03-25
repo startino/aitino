@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Handle, Position, type NodeProps } from "@xyflow/svelte";
-	import * as Card from "./ui/card";
+	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
+	import * as Card from './ui/card';
 </script>
 
 <Card.Root>

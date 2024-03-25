@@ -111,7 +111,7 @@
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
-						class="border-nprimary relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border px-4 shadow-sm transition duration-300 ease-in-out"
+						class="relative flex h-full cursor-pointer justify-center gap-4 rounded-lg border border-nprimary px-4 shadow-sm transition duration-300 ease-in-out"
 						on:click={() => (
 							(open = true),
 							console.log(selectedAgent, $formAgent, addTool({ currentTool: selectedAgent }))
@@ -122,7 +122,7 @@
 						>
 							<PlusIcon
 								size="52"
-								class="bg-nprimary text-nprimary-on hover:bg-nprimary-container hover:text-nprimary-container-on flex items-center justify-center gap-2 rounded-full p-2 transition-colors duration-300 ease-in-out"
+								class="flex items-center justify-center gap-2 rounded-full bg-nprimary p-2 text-nprimary-on transition-colors duration-300 ease-in-out hover:bg-nprimary-container hover:text-nprimary-container-on"
 							/>
 						</form>
 					</div>
@@ -133,12 +133,12 @@
 								action="?/removeTools&id={selectedAgent.id}&toolId={tool.id}"
 								method="POST"
 								use:enhance
-								class=" border-nprimary bg-surface hover:border-nprimary group overflow-hidden rounded-lg border transition duration-300 ease-in-out"
+								class=" group overflow-hidden rounded-lg border border-nprimary bg-surface transition duration-300 ease-in-out hover:border-nprimary"
 							>
 								<div
 									class=" relative p-4 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-lg"
 								>
-									<h3 class="text-primary-500 pr-4 text-xl font-bold">{tool.name}</h3>
+									<h3 class="pr-4 text-xl font-bold text-primary-500">{tool.name}</h3>
 									<p class="text-secondary-100">{tool.description}</p>
 									<Button
 										type="submit"
@@ -149,7 +149,7 @@
 											}, 3000);
 										}}
 									>
-										<MinusCircle class="text-destructive h-5 w-5" />
+										<MinusCircle class="h-5 w-5 text-destructive" />
 									</Button>
 								</div>
 							</form>
@@ -161,7 +161,7 @@
 
 	<div class="mt-2 space-y-4">
 		<div class="flex items-center">
-			<span class="text-accent pr-3 font-bold">prompt: </span>
+			<span class="pr-3 font-bold text-accent">prompt: </span>
 			<Input
 				id="prompt"
 				name="prompt"
