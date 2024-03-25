@@ -4,15 +4,7 @@
 	import { Shell } from '$lib/components/layout/shell';
 	import { SideNav } from '$lib/components/ui/side-nav';
 
-	import {
-		CircleUserRound,
-		Dna,
-		Globe,
-		LogOut,
-		MessagesSquare,
-		UsersRound,
-		Zap
-	} from 'lucide-svelte';
+	import { CircleUserRound, Dna, LogOut, MessagesSquare, UsersRound, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import { UserCheck, type Icon } from 'lucide-svelte';
 	import { setContext } from '$lib/utils';
@@ -50,7 +42,7 @@
 				},
 				{
 					name: 'Sessions',
-					href: '/app/sessions',
+					href: '/app/session',
 					icon: MessagesSquare,
 					current: false
 				}
@@ -60,29 +52,12 @@
 			name: '',
 			items: [
 				{
-					name: 'Crew Library',
-					href: '/app/library/crew',
-					icon: Globe,
-					current: false
-				},
-				{
-					name: 'Agent Library',
-					href: '/app/library/agent',
-					icon: Globe,
-					current: false
-				}
-			]
-		},
-		{
-			name: '',
-			items: [
-				{
-					name: 'Crew Editor',
-					href: '/app/editor/crew',
+					name: 'Crews',
+					href: '/app/crews/editor',
 					icon: UsersRound,
 					current: false
 				},
-				{ name: 'Agent Editor', href: '/app/editor/agent', icon: Dna, current: false }
+				{ name: 'Agents', href: '/app/agents/editor', icon: Dna, current: false }
 			]
 		},
 		{

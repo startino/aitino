@@ -1,18 +1,18 @@
 <script lang="ts">
-	import "$styling";
-	import { setContext } from "svelte";
-	import { Shell } from "$lib/components/layout/shell";
-	import Header from "$lib/components/Header.svelte";
-	import Footer from "$lib/components/Footer.svelte";
+	import '$styling';
+	import { setContext } from 'svelte';
+	import { Shell } from '$lib/components/layout/shell';
+	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	export let data;
 
-	setContext("splitTestIdentifier", data?.splitTestIdentifier);
+	setContext('splitTestIdentifier', data?.splitTestIdentifier);
 
 	export let CTAButtons: {
 		[label: string]: { href: string; highlight: boolean };
 	} = {
-		"Sign In": { href: "/register", highlight: true }
+		'Sign In': { href: '/register', highlight: true }
 	};
 </script>
 

@@ -29,37 +29,37 @@ export async function POST({ request, locals: { stripe } }) {
 	 * Review important events for Billing webhooks:
 	 * https://stripe.com/docs/billing/webhooks
 	 */
-	switch (event.type) {
-		case 'customer.subscription.created':
-			// Subscription was created
-			// Note: status will be `incomplete`
-			break;
-		case 'customer.subscription.updated':
-			// Subscription has been changed
-			break;
-		case 'invoice.paid':
-			// Used to provision services after the trial has ended.
-			// The status of the invoice will show up as paid. Store the status in our
-			// database to reference when a user accesses our service to avoid hitting rate limits.
-			break;
-		case 'invoice.payment_failed':
-			// If the payment fails or the customer does not have a valid payment method,
-			//  an invoice.payment_failed event is sent, the subscription becomes past_due.
-			// Use this webhook to notify our user that their payment has
-			// failed and to retrieve new card details.
-			break;
-		case 'customer.subscription.deleted':
-			if (event.request != null) {
-				// handle a subscription canceled by our request
-				// from above.
-			} else {
-				// handle subscription canceled automatically based
-				// upon our subscription settings.
-			}
-			break;
-		default:
-		// Unexpected event type
-	}
+	// switch (event.type) {
+	// 	case 'customer.subscription.created':
+	// 		// Subscription was created
+	// 		// Note: status will be `incomplete`
+	// 		break;
+	// 	case 'customer.subscription.updated':
+	// 		// Subscription has been changed
+	// 		break;
+	// 	case 'invoice.paid':
+	// 		// Used to provision services after the trial has ended.
+	// 		// The status of the invoice will show up as paid. Store the status in our
+	// 		// database to reference when a user accesses our service to avoid hitting rate limits.
+	// 		break;
+	// 	case 'invoice.payment_failed':
+	// 		// If the payment fails or the customer does not have a valid payment method,
+	// 		//  an invoice.payment_failed event is sent, the subscription becomes past_due.
+	// 		// Use this webhook to notify our user that their payment has
+	// 		// failed and to retrieve new card details.
+	// 		break;
+	// 	case 'customer.subscription.deleted':
+	// 		if (event.request != null) {
+	// 			// handle a subscription canceled by our request
+	// 			// from above.
+	// 		} else {
+	// 			// handle subscription canceled automatically based
+	// 			// upon our subscription settings.
+	// 		}
+	// 		break;
+	// 	default:
+	// 	// Unexpected event type
+	// }
 
 	// return a 200 with an empty JSON response
 	return json({});

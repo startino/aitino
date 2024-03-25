@@ -1,24 +1,24 @@
 const workflows = [
 	{
-		name: "Visualization Agent Workflow",
-		description: "This workflow is used for visualization tasks.",
+		name: 'Visualization Agent Workflow',
+		description: 'This workflow is used for visualization tasks.',
 		sender: {
-			id: "0"
+			id: '0'
 		},
 		receiver: {
-			id: "1"
+			id: '1'
 		},
-		type: "twoagents"
+		type: 'twoagents'
 	},
 	{
-		name: "General Agent Workflow",
-		description: "This workflow is used for general purpose tasks.",
+		name: 'General Agent Workflow',
+		description: 'This workflow is used for general purpose tasks.',
 		sender: {
-			id: "0"
+			id: '0'
 		},
 		receiver: {
-			id: "1"
+			id: '1'
 		},
-		type: "twoagents"
+		type: 'twoagents'
 	}
 ];

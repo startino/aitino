@@ -1,23 +1,23 @@
 <script lang="ts">
-	import type { Writable } from "svelte/store";
-	import { Position, useHandleConnections, useSvelteFlow, type NodeProps } from "@xyflow/svelte";
-	import { X } from "lucide-svelte";
+	import type { Writable } from 'svelte/store';
+	import { Position, useHandleConnections, useSvelteFlow, type NodeProps } from '@xyflow/svelte';
+	import { X } from 'lucide-svelte';
 
-	import * as Card from "$lib/components/ui/card";
-	import { Input } from "$lib/components/ui/input";
-	import Handle from "$lib/components/Handle.svelte";
-	import { getContext } from "$lib/utils";
-	import { PromptEditor } from "$lib/components/ui/prompt-editor";
+	import * as Card from '$lib/components/ui/card';
+	import { Input } from '$lib/components/ui/input';
+	import Handle from '$lib/components/Handle.svelte';
+	import { getContext } from '$lib/utils';
+	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 
 	type $$Props = NodeProps;
 
 	export let data: { title: Writable<string>; content: Writable<string> };
-	export let id: $$Props["id"];
+	export let id: $$Props['id'];
 
 	const { content, title } = data;
 
-	const { receiver, count } = getContext("crew");
-	const connects = useHandleConnections({ nodeId: id, type: "source" });
+	const { receiver, count } = getContext('crew');
+	const connects = useHandleConnections({ nodeId: id, type: 'source' });
 	const { deleteElements } = useSvelteFlow();
 
 	$: isConnectable = $connects.length === 0;

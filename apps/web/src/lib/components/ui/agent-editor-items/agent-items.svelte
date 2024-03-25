@@ -332,7 +332,7 @@
 
 	<div class="mt-2 space-y-4">
 		<div class="flex items-center">
-			<span class="text-accent pr-3 font-bold">prompt: </span>
+			<span class="pr-3 font-bold text-accent">prompt: </span>
 			<Input
 				id="prompt"
 				name="prompt"

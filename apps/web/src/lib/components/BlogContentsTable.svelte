@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores";
+	import { page } from '$app/stores';
 	import {
 		Paperclip,
 		Receipt,
@@ -9,8 +9,8 @@
 		Building,
 		Table,
 		ScrollText
-	} from "lucide-svelte";
-	import type { SvelteComponent } from "svelte";
+	} from 'lucide-svelte';
+	import type { SvelteComponent } from 'svelte';
 </script>
 
 <!-- Static sidebar for desktop -->
@@ -36,7 +36,7 @@
 								<li class="m-0 pl-0 sm:m-0 sm:pl-0">
 									<!-- Current: "bg-gray-800 text-primary-foreground", Default: "text-gray-400 hover:text-primary-foreground hover:bg-gray-800" -->
 									<a
-										href={"/home/" + href}
+										href={'/home/' + href}
 										class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
 											href
 										)
@@ -63,7 +63,7 @@
 						{#each bottomNavigation as { name, href, icon, current }}
 							<li class="pb-0 pl-0 sm:pl-0">
 								<a
-									href={"/home/" + href}
+									href={'/home/' + href}
 									class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
 										href
 									)

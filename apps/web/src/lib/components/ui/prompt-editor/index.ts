@@ -1,1 +1,1 @@
-export { default as PromptEditor } from "./prompt-editor.svelte";
+export { default as PromptEditor } from './prompt-editor.svelte';

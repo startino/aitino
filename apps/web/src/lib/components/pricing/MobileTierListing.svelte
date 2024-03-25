@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { formatCurrency } from "$lib/utils";
-	import { features, type NorpTier } from "$lib/pricing-data";
-	import { CheckCircle2, Info } from "lucide-svelte";
-	import { Button } from "../ui/button";
+	import { formatCurrency } from '$lib/utils';
+	import { features, type NorpTier } from '$lib/pricing-data';
+	import { CheckCircle2, Info } from 'lucide-svelte';
+	import { Button } from '../ui/button';
 
 	export let tier: NorpTier;
-	export let cycle: string = "yearly";
+	export let cycle: string = 'yearly';
 </script>
 
 <div
 	class="relative flex flex-col place-items-start gap-2 text-left"
-	id={tier.name.toLowerCase().replace(" ", "")}
+	id={tier.name.toLowerCase().replace(' ', '')}
 >
 	<img
 		src={tier.thumbnail}
@@ -28,7 +28,7 @@
 	<div class="flex flex-row items-end gap-2">
 		<div class="flex flex-row place-items-center">
 			<h1 class="text-5xl font-semibold leading-none tracking-tight text-primary">
-				{cycle == "yearly" ? formatCurrency(tier.cost * 0.833) : formatCurrency(tier.cost)}
+				{cycle == 'yearly' ? formatCurrency(tier.cost * 0.833) : formatCurrency(tier.cost)}
 			</h1>
 		</div>
 	</div>
