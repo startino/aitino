@@ -2,7 +2,7 @@ import * as db from '$lib/server/db';
 import type { SessionLoad } from '$lib/types/loads';
 import * as models from '$lib/types/models';
 import type { PageServerLoad, Actions } from './$types';
-import { fail, error, json } from '@sveltejs/kit';
+import { fail, error, json, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params, locals: { getSession } }) => {
 	const userSession = await getSession();
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params, locals: { getSession } }) =
 	// const session = await db.getRecentSession(userSession.user.id);
 	const session = await db.getSession(params.slug);
 
-	if (!session) throw error(404, 'This session does not exist. Please reload the page.');
+	if (!session) redirect(303, '/app/session');
 
 	const crew: models.Crew | null = await db.getCrew(session.crew_id);
 

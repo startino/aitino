@@ -113,7 +113,7 @@
 
 <main class="container relative flex max-w-5xl flex-col justify-end overflow-y-hidden">
 	<ScrollArea
-		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-12 transition-all duration-500"
+		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-14 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
         <h1 class="fixed top-4 z-10 text-left text-bold text-2xl">{session.title}</h1>
