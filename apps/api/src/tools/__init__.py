@@ -15,6 +15,10 @@ from src.tools.scraper import ID as SCRAPER_TOOL_ID
 from src.tools.scraper import ScraperTool
 from src.tools.alpha_vantage import ID as ALPHA_VANTAGE_TOOL_ID
 from src.tools.alpha_vantage import AlphaVantageTool
+from src.tools.wikipedia import ID as WIKIPEDIA_TOOL_ID
+from src.tools.wikipedia import wikipedia_tool
+from src.tools.bing import ID as BING_SEARCH_TOOL_ID
+from src.tools.bing import bing_tool
 
 tools: dict[str, BaseTool] = {
     ARXIV_TOOL_ID: ArxivTool(),
@@ -22,6 +26,8 @@ tools: dict[str, BaseTool] = {
     MOVE_TOOL_ID: MoveFileTool(),
     SCRAPER_TOOL_ID: ScraperTool(),
     ALPHA_VANTAGE_TOOL_ID: AlphaVantageTool(),
+    WIKIPEDIA_TOOL_ID: wikipedia_tool,
+    BING_SEARCH_TOOL_ID: bing_tool,
 }
 
 logger = logging.getLogger("root")
@@ -73,6 +79,7 @@ if __name__ == "__main__":
         "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f",
         "bb207b0c-e998-4a40-9508-ec37dd195b0c",
         "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f",
+        "243f1c6b-dfc5-4d64-ab7f-331e74858393",
     ]
     generated_tools = []
     for tool in agents_tools:
