@@ -261,6 +261,7 @@ def get_api_key_types() -> list[APIKeyTypeResponseModel]:
     return  [APIKeyTypeResponseModel(**data) for data in response.data]
 
 
+
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     logger.debug(f"Updating session status: {status} for session: {session_id}")
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
