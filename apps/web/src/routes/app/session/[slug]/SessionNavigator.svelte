@@ -10,7 +10,6 @@
 	import type { Crew, Session } from '$lib/types/models';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import * as models from '$lib/types/models';
-	import { redirect } from '@sveltejs/kit';
 
     export let profileId: string;
 	export let sessions: Session[];
@@ -48,8 +47,6 @@
 			return;
 		}
 
-		const currentTitle = sessions.find((session) => session.id === sessionId);
-
 		// If no session is being renamed, ignore
 		if (!session) {
 			resetRenamingUI();
@@ -63,10 +60,11 @@
 
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
-		await fetch(`?/rename`, {
+
+		await fetch(`/api/sessions/update`, {
 			method: 'POST',
-			body: JSON.stringify({ sessionId, newTitle: renamingValue })
-		}).then((res) => res.json());
+			body: JSON.stringify({ sessionId, content: { title: renamingValue } })
+		});
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.map((session) => {
@@ -75,6 +73,7 @@
 			}
 			return session as Session;
 		});
+
 		// Reset the renaming variables
 		resetRenamingUI();
 	}
@@ -101,7 +100,6 @@
 	}
 
 	async function startNewSession(crewId: string, title: string) {
-		console.log('Starting new session', crewId, title);
 		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${profileId}`)
 			.then((response) => {
 				if (response.status === 200) {
@@ -115,7 +113,6 @@
 			});
 
 		const session: models.Session = res.data.session;
-		console.log('session: ', session);
 
 		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
 	}

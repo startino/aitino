@@ -87,13 +87,7 @@
 		}
 
 		// 'Resume' the conversation to Crew API
-		const url = `${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`;
-		const apiRes = await fetch(url);
-		const apiData = await apiRes.json();
-		console.log(apiData);
-
-		// Update the session status on the DB
-		await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
+	    await fetch(`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`);
 
 		// Update local status
 		waitingForUser = true;
