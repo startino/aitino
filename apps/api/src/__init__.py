@@ -80,7 +80,7 @@ def improve(
 
 @app.get(
     "/crew"
-)  # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
+)  
 async def run_crew(
     id: UUID,
     profile_id: UUID,
@@ -92,6 +92,7 @@ async def run_crew(
     current_rate_limit: RateLimitResponse = Depends(
         rate_limit_profile(limit=4, period_seconds=60)
     ),
+    # change current rate limit to tiered later, its annoying for testing so its currently using profile rate limiter
 ) -> dict:
     if reply and not session_id:
         raise HTTPException(

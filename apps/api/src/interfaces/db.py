@@ -140,7 +140,17 @@ def insert_crew(crew: CrewRequestModel) -> None:
     #supabase.table("crews").upsert(crew.model_dump())
 
 
-def get_api_keys(profile_id: UUID) -> list[str]: ...
+def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
+    """Gets an api key given a profile id and the type of api key."""
+    response = (
+        supabase.table("users_api_keys")
+        .select("api_key")
+        .filter("profile_id", "eq", str(profile_id))
+        .filter("api_key_type_id", "eq", str(api_key_type_id))
+        .execute()
+    )
+    return response.data[0]["api_key"]
+    # This thing might be wrong, dont care right now
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:

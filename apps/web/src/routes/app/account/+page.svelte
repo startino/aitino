@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, XCircle } from 'lucide-svelte';
+	import { Plus, PlusCircle, XCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	import { AppShell } from '$lib/components/layout/shell';
@@ -12,6 +12,12 @@
 	import { slide } from 'svelte/transition';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
+	import type { PageData } from './$types';
+	import { enhance } from '$app/forms';
+
+	export let data: PageData;
+	let newApiName = '';
+	let newApiValue = '';
 
 	let inputs: { name: string; value: string }[] = [];
 
@@ -30,18 +36,10 @@
 		inputs.push({ name: '', value: '' });
 		inputs = inputs;
 	}
-	let apiNames = ['Google Maps', 'OpenWeather', 'Twitter API', 'Facebook API'];
 
-	let myApi = [
-		{
-			name: 'googleApi',
-			value: 'qwertyuokjhgfdssdfghjkertyuiqwertyuokjhgfdssdfghjkertyuiqwertyuokjhgfdssdfghjkertyui'
-		},
-		{
-			name: 'openai',
-			value: 'qwertyuokjhgfdssdfghjkertyuiqwertyuokjhgfdssdfghjkertyuiqwertyuokjhgfdssdfghjkertyui'
-		}
-	];
+	$: apiTypes = data.data;
+
+	$: myApi = data.currentUserApis;
 
 	function removeInput(index: number) {
 		inputs.splice(index, 1);
@@ -62,28 +60,11 @@
 		}
 	}
 
-	let newApiName = '';
-	let newApiValue = '';
-
-	function addApi() {
-		if (newApiName && newApiValue) {
-			myApi = [...myApi, { name: newApiName, value: newApiValue }];
-			newApiName = '';
-			newApiValue = '';
-		}
-	}
-	function toggleVisibility(index: number) {
-		myApi[index].isVisible = !myApi[index].isVisible;
-		myApi = myApi;
-	}
 	function removeApi(index: number) {
-		myApi = myApi.filter((_, i) => i !== index);
+		myApi = myApi?.filter((_, i) => i !== index);
 	}
 
-	// Function to handle selection
-	function handleSelect(name: string) {
-		newApiName = name;
-	}
+	$: apiId = null;
 </script>
 
 <AppShell>
@@ -140,7 +121,7 @@
 					<Button
 						variant="outline"
 						aria-label="add input"
-						class="rounded-full border border-border"
+						class="border-border rounded-full border"
 						on:click={addInput}
 					>
 						<Plus />
@@ -148,11 +129,46 @@
 				</Card.Content>
 			</Card.Root>
 		</Tabs.Content>
+		<Tabs.Content value="billing">
+			<Card.Root class="overflow-hidden rounded-lg shadow-xl">
+				<Card.Header class="text-on-primary bg-gradient-to-r p-6">
+					<h2 class="text-xl font-semibold">Membership</h2>
+				</Card.Header>
+				<Card.Content class="p-6">
+					<div class="space-y-8">
+						<div class="bg-background space-y-4 rounded-lg bg-gradient-to-r p-6 shadow-sm">
+							<div class="text-2xl font-semibold">Current Plan</div>
+							<p class="font-medium">Starter</p>
+							<div class="mt-4 flex gap-4 transition-all duration-200 ease-in-out">
+								<Button class=" border bg-transparent text-current " href="/app/subscription"
+									>Change Plan</Button
+								>
+								<Button
+									class=" flex items-center gap-2 rounded-md border bg-transparent  text-current"
+								>
+									<Plus /> Add a promo code
+								</Button>
+							</div>
+						</div>
+						<div class="bg-background space-y-4 rounded-lg p-6 shadow-sm">
+							<div class="text-2xl font-semibold">Current Billing Cycle</div>
+							<p class="text-sm">Mar 20, 2024 - Apr 19, 2024</p>
+						</div>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</Tabs.Content>
+
 		<Tabs.Content value="api">
 			<Card.Root>
-				<Card.Header>API Keys</Card.Header>
+				<Card.Header class="text-xl font-semibold">Your API Keys</Card.Header>
 				<Card.Content>
-					<form class="mb-6" on:submit|preventDefault={addApi}>
+					<form
+						class="mb-6"
+						action="?/addAPI&id={apiId !== undefined ? apiId : ''}"
+						method="POST"
+						use:enhance
+					>
 						<div class="flex flex-wrap gap-4 md:items-end">
 							<div class="max-w-lg flex-1">
 								<DropdownMenu.Root>
@@ -162,12 +178,14 @@
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content class="z-50">
-										{#each apiNames as name}
+										{#each apiTypes as apiType}
 											<DropdownMenu.CheckboxItem
-												checked={newApiName === name}
-												on:click={() => handleSelect(name)}
+												checked={newApiName === apiType.name}
+												on:click={() => {
+													apiId = apiType.id;
+												}}
 											>
-												{name}
+												{apiType.name}
 											</DropdownMenu.CheckboxItem>
 										{/each}
 									</DropdownMenu.Content>
@@ -177,6 +195,7 @@
 								<Input
 									placeholder="API Value"
 									bind:value={newApiValue}
+									name="apiValue"
 									class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
 								/>
 							</div>
@@ -192,42 +211,29 @@
 
 					<div class="space-y-4">
 						{#each myApi as api, index}
-							<div
-								class="flex items-center rounded-lg bg-background p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
+							<form
+								action="?/removeAPI&id={api.id}"
+								method="POST"
+								use:enhance
+								class="bg-background flex items-center rounded-lg p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
 								transition:slide={{ duration: 200 }}
 							>
 								<div class="flex flex-col">
-									<!-- svelte-ignore a11y-click-events-have-key-events -->
-									<!-- svelte-ignore a11y-no-static-element-interactions -->
 									<div class="flex">
 										<h3 class="mr-1 text-lg font-semibold">{api.name}</h3>
-										<span
-											class="cursor-pointer text-primary"
-											title={api.value}
-											on:click={() => toggleVisibility(index)}>?</span
-										>
-									</div>
-									<!-- svelte-ignore a11y-click-events-have-key-events -->
-									<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-
-									<div class="flex gap-6">
-										<p
-											class="cursor-pointer"
-											on:click={() => toggleVisibility(index)}
-											title={api.value}
-										>
-											{api.isVisible ? api.value : ' '}
-										</p>
 									</div>
 								</div>
 								<Button
 									variant="destructive"
-									on:click={() => removeApi(index)}
+									type="submit"
+									on:click={() => {
+										removeApi(index);
+									}}
 									class="ml-auto bg-transparent hover:scale-105 hover:bg-transparent"
 								>
 									<XCircle class="text-destructive hover:scale-105" size="18" />
 								</Button>
-							</div>
+							</form>
 						{/each}
 					</div>
 				</Card.Content>
