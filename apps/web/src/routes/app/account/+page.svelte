@@ -227,9 +227,7 @@
 									variant="destructive"
 									type="submit"
 									on:click={() => {
-										setTimeout(() => {
-											removeApi(index);
-										}, 2000);
+										removeApi(index);
 									}}
 									class="ml-auto bg-transparent hover:scale-105 hover:bg-transparent"
 								>
