@@ -1,9 +1,7 @@
-import asyncio
 import logging
 import re
-from asyncio import Queue
 from typing import Any, cast
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import autogen
 from autogen.cache import Cache
@@ -12,10 +10,10 @@ from src.models.session import SessionStatus
 
 from .interfaces import db
 from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
-from .tooling.langchain_tooling import (
+from .tools import (
     generate_llm_config,
     generate_tool_from_uuid,
-    get_tool_id_from_agent,
+    get_tool_ids_from_agent,
 )
 
 logger = logging.getLogger("root")
@@ -117,8 +115,6 @@ class Crew:
         recipient_id = None  # None means admin
         sender_id = None  # None means admin
 
-
-        
         for agent in self.crew_model.agents:
             check_name = self._format_agent_name(agent)
             if check_name == recipient.name:
@@ -127,8 +123,17 @@ class Crew:
                 sender_id = agent.id
 
         # checks if all of the fields are false
-        if not any([recipient_id, sender_id, sender_name == "Admin", recipient.name == "chat_manager"]): 
-            logger.warn(f"on_reply: both ids are none, sender is not admin and recipient is not chat manager")
+        if not any(
+            [
+                recipient_id,
+                sender_id,
+                sender_name == "Admin",
+                recipient.name == "chat_manager",
+            ]
+        ):
+            logger.warn(
+                f"on_reply: both ids are none, sender is not admin and recipient is not chat manager"
+            )
 
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
@@ -192,7 +197,7 @@ class Crew:
                     "model": [agent.model],
                 },
             )
-            tool_ids = get_tool_id_from_agent(agent.tools)
+            tool_ids = get_tool_ids_from_agent(agent.tools)
             if len(tool_ids):
                 for tool in tool_ids:
                     generated_tool = generate_tool_from_uuid(tool)
