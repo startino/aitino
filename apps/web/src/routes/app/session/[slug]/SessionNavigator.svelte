@@ -10,7 +10,7 @@
 	import type { Crew, Session } from '$lib/types/models';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import * as models from '$lib/types/models';
-    import * as api from '$lib/api';
+	import * as api from '$lib/api';
 	import type { UUID } from '$lib/types';
 
 	export let profileId: string;
@@ -63,7 +63,7 @@
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
 
-        api.upsertSession(session.id as UUID, { title: renamingValue });
+		api.upsertSession(session.id as UUID, { title: renamingValue });
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.map((session) => {
@@ -78,24 +78,24 @@
 	}
 
 	async function deleteSession(sessionId: string) {
-        console.log('Deleting session', sessionId);
+		console.log('Deleting session', sessionId);
 		deletingInProgress = true;
 		deletingSession = sessionId;
-        
-        const success: boolean = await api.deleteSession(sessionId as UUID);
 
-        if (!success) {
-            console.error('Failed to delete session');
-            return;
-        }
-        console.log('Successfully deleted session');
+		const success: boolean = await api.deleteSession(sessionId as UUID);
+
+		if (!success) {
+			console.error('Failed to delete session');
+			return;
+		}
+		console.log('Successfully deleted session');
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
 		if (session?.id === sessionId) {
-            window.location.href = '/app/session/';
+			window.location.href = '/app/session/';
 		}
 	}
 
@@ -105,12 +105,12 @@
 	}
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
-        const session = await api.startSession(profileId as UUID, crewId as UUID, title);
+		const session = await api.startSession(profileId as UUID, crewId as UUID, title);
 
-        if (!session) {
-            console.error('Failed to start session');
-            return;
-        }
+		if (!session) {
+			console.error('Failed to start session');
+			return;
+		}
 
 		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
@@ -169,7 +169,8 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(profileId, crew.id, newSessionName)}>Start Session</Button
+										on:click={() => startNewSession(profileId, crew.id, newSessionName)}
+										>Start Session</Button
 									>
 								</Dialog.Footer>
 							</Dialog.Content>

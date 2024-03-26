@@ -7,7 +7,7 @@
 
 	export let data: SessionLoad;
 
-    let profileId: string = data.profileId;
+	let profileId: string = data.profileId;
 	let crew: models.Crew = data.crew;
 	let crews: models.Crew[] = data.crews;
 	let session: models.Session = data.session;
@@ -15,7 +15,6 @@
 	let messages: models.Message[] = data.messages;
 	let agents: models.Agent[] = data.agents;
 </script>
-
 
 <h1 class="fixed top-4 pl-4 text-2xl font-bold">{session.title}</h1>
 <div class="flex h-full flex-row place-items-center">

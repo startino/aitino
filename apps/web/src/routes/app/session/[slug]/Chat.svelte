@@ -83,7 +83,9 @@
 		}
 
 		// 'Resume' the conversation to Crew API
-	    await fetch(`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`);
+		await fetch(
+			`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
+		);
 
 		// Update local status
 		waitingForUser = true;

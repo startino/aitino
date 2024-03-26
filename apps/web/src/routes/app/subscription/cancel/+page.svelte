@@ -12,7 +12,7 @@
 	});
 </script>
 
-<Card.Root class="border-destructive mx-auto">
+<Card.Root class="mx-auto border-destructive">
 	<Card.Header>
 		<Card.Title>
 			<h1 class="text-3xl font-bold">{data.title}</h1>
