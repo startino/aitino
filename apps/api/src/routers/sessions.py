@@ -12,7 +12,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import CrewModel, Message, Session
+from src.models import CrewModel, Message, Session, RunRequestModel
 from src.parser import parse_input_v0_2 as parse_input
 
 router = APIRouter(
@@ -54,26 +54,19 @@ def delete_session(session_id: UUID) -> bool:
     return True
 
 
-@router.get("/run")
+@router.post("/run")
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
-    id: UUID,
-    profile_id: UUID,
+    run_request: RunRequestModel,
     background_tasks: BackgroundTasks,
-    session_title: str = "Untitled",
-    session_id: UUID | None = None,
-    reply: str | None = None,
     mock: bool = False,
-    current_rate_limit: RateLimitResponse = Depends(
-        rate_limit_profile(limit=4, period_seconds=60)
-    ),
 ) -> dict:
-    if reply and not session_id:
+    if run_request.reply and not run_request.session_id:
         raise HTTPException(
             status_code=400,
             detail="If a reply is provided, a session_id must also be provided.",
         )
-    if session_id and not reply:
+    if run_request.session_id and not run_request.reply:
         raise HTTPException(
             status_code=400,
             detail="If a session_id is provided, a reply must also be provided.",
@@ -82,34 +75,34 @@ async def run_crew(
     if mock:
         message, crew_model = parse_input(mocks.crew_model)
     else:
-        message, crew_model = db.get_compiled(id)
+        message, crew_model = db.get_compiled(run_request.id)
 
-    if reply:
-        message = reply
+    if run_request.reply:
+        message = run_request.reply
 
     if not message or not crew_model:
         raise HTTPException(status_code=400, detail=f"Failed to get crew with id {id}")
 
-    session = db.get_session(session_id) if session_id else None
-    cached_messages = db.get_messages(session_id) if session_id else None
+    session = db.get_session(run_request.session_id) if run_request.session_id else None
+    cached_messages = db.get_messages(run_request.session_id) if run_request.session_id else None
 
-    if session_id and not session:
+    if run_request.session_id and not session:
         raise HTTPException(
             status_code=400,
-            detail=f"Session with id {session_id} not found",
+            detail=f"Session with id {run_request.session_id} not found",
         )
 
-    if session_id and not cached_messages:
+    if run_request.session_id and not cached_messages:
         raise HTTPException(
             status_code=400,
-            detail=f"Session with id {session_id} found, but has no messages",
+            detail=f"Session with id {run_request.session_id} found, but has no messages",
         )
 
     if session is None:
         session = Session(
-            crew_id=id,
-            profile_id=profile_id,
-            title=session_title,
+            crew_id=run_request.id,
+            profile_id=run_request.profile_id,
+            title=run_request.session_title,
         )
         db.post_session(session)
 
@@ -121,7 +114,7 @@ async def run_crew(
     ) -> None:
         message = Message(
             session_id=session.id,
-            profile_id=profile_id,
+            profile_id=session.profile_id,
             recipient_id=recipient_id,
             sender_id=sender_id,
             content=content,
@@ -130,12 +123,11 @@ async def run_crew(
         logger.debug(f"on_reply: {message}")
         db.post_message(message)
 
-    crew = Crew(profile_id, session, crew_model, on_reply)
+    crew = Crew(session.profile_id, session, crew_model, on_reply)
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
     return {
         "status": "success",
         "data": {"session": session.model_dump()},
-        "rate_limit": current_rate_limit.__dict__(),
     }
