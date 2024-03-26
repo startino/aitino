@@ -1,10 +1,10 @@
 import logging
 from uuid import UUID
 
-from src.models.crew_model import CrewRequestModel
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
 from src.interfaces import db
+from src.models.crew_model import CrewRequestModel
 
 router = APIRouter(
     prefix="/crews",
@@ -12,6 +12,7 @@ router = APIRouter(
 )
 
 logger = logging.getLogger("root")
+
 
 @router.post("/")
 def insert_crew(crew: CrewRequestModel):
