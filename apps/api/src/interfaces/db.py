@@ -107,7 +107,17 @@ def post_crew(message: Message, composition: CrewModel) -> None:
     # TODO: (Leon) Implement posting the rest of the crew
 
 
-def get_api_keys(profile_id: UUID) -> list[str]: ...
+def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
+    """Gets an api key given a profile id and the type of api key."""
+    response = (
+        supabase.table("users_api_keys")
+        .select("api_key")
+        .filter("profile_id", "eq", str(profile_id))
+        .filter("api_key_type_id", "eq", str(api_key_type_id))
+        .execute()
+    )
+    return response.data[0]["api_key"]
+    # This thing might be wrong, dont care right now
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
@@ -116,4 +126,8 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 
 if __name__ == "__main__":
-    update_status(UUID("6e975637-d033-4ef1-a734-82c7949b4306"), SessionStatus.FINISHED)
+    api_key = get_tool_api_key(
+        UUID("93f3efda-672f-44a2-b64f-b7509e5f046f"),
+        UUID("3b64fe26-20b9-4064-907e-f2708b5f1656"),
+    )
+    print(api_key)
