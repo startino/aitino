@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 from langchain_community.tools import BingSearchRun
 from langchain_community.utilities import BingSearchAPIWrapper

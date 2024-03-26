@@ -10,8 +10,8 @@ from pydantic import ValidationError
 from supabase import Client, create_client
 
 from src.models import AgentModel, CrewModel, Message, Session, SessionStatus
-from src.models.profile import Profile
 from src.models.crew_model import CrewRequestModel
+from src.models.profile import Profile
 from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
@@ -50,7 +50,9 @@ def get_session(session_id: UUID) -> Session | None:
     return Session(**response.data[0])
 
 
-def get_sessions(profile_id: UUID | None = None, session_id: UUID | None = None) -> list[Session]:
+def get_sessions(
+    profile_id: UUID | None = None, session_id: UUID | None = None
+) -> list[Session]:
     """Gets all sessions for given profile id."""
     logger.debug(f"Getting all sessions from profile_id: {profile_id}")
     query = supabase.table("sessions").select("*")
@@ -79,13 +81,14 @@ def upsert_session(session_id: UUID, content: dict[str, Any]) -> None:
     existing_row = supabase.table("sessions").select("*").eq("id", session_id).execute()
     # built in upsert didnt work, had to give already defined foreign keys or it would error
     if len(existing_row.data) == 0:
-        insert_session(session_id, content)  
+        insert_session(session_id, content)
         return
     update_session(session_id, content)
 
+
 def insert_session(session_id: UUID, content: dict[str, Any]) -> None:
-        logger.info(f"inserting session with id: {session_id}")
-        supabase.table("sessions").insert(content).execute()
+    logger.info(f"inserting session with id: {session_id}")
+    supabase.table("sessions").insert(content).execute()
 
 
 def update_session(session_id: UUID, content: dict[str, Any]):
@@ -104,7 +107,8 @@ def post_session(session: Session) -> None:
 def delete_session(session_id: UUID) -> None:
     supabase.table("sessions").delete().eq("id", session_id).execute()
 
-def get_messages(session_id: UUID) -> list[Message] | None:
+
+def get_messages(session_id: UUID) -> list[Message]:
     """Get all messages for a given session."""
     logger.debug(f"Getting messages for session {session_id}")
     response = (
@@ -151,8 +155,8 @@ def post_agents(agents: list[AgentModel]) -> None:
 
 
 def insert_crew(crew: CrewRequestModel) -> None:
-    supabase.table("crews").insert(crew.model_dump(mode='json')).execute()
-    #supabase.table("crews").upsert(crew.model_dump())
+    supabase.table("crews").insert(crew.model_dump(mode="json")).execute()
+    # supabase.table("crews").upsert(crew.model_dump())
 
 
 def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
