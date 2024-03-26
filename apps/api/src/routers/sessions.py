@@ -12,7 +12,16 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import CrewModel, Message, Session, SessionUpdate
+from src.models import (
+    CrewModel,
+    Message,
+    RunRequestModel,
+    RunResponseModel,
+    Session,
+    SessionResponse,
+    SessionUpdate,
+)
+from src.models.session import SessionRequest
 from src.parser import parse_input_v0_2 as parse_input
 
 router = APIRouter(
@@ -23,44 +32,43 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 
-@router.post("/")
+@router.get("/", response_model=list[Session])
 def get_sessions(
     profile_id: UUID | None = None, session_id: UUID | None = None
 ) -> list[Session]:
     return db.get_sessions(profile_id, session_id)
 
 
-@router.post("/upsert")
-def upsert_session(session_id: UUID, content: SessionUpdate) -> bool:
-    db.upsert_session(session_id, content.model_dump(exclude_none=True))
-    return True
+@router.post("{session_id}/upsert/", response_model=SessionResponse)
+def upsert_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
+    return db.upsert_session(session_id, content)
 
 
-@router.post("/update")
-def update_session(session_id: UUID, content: SessionUpdate) -> bool:
-    db.update_session(session_id, content.model_dump(exclude_none=True))
-    return True
+@router.patch("/{session_id}", response_model=SessionResponse)
+def update_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
+    return db.update_session(session_id, content)
 
 
-@router.post("/insert")
-def insert_session(session_id: UUID, content: SessionUpdate) -> bool:
-    db.insert_session(session_id, content.model_dump(exclude_none=True))
-    return True
+@router.post("/", response_model=SessionResponse)
+def insert_session(content: SessionRequest) -> SessionResponse:
+    return db.insert_session(content)
 
 
-@router.post("/delete")
-def delete_session(session_id: UUID) -> bool:
+@router.delete("/{session_id}", status_code=204)
+def delete_session(session_id: UUID) -> None:
+    if not get_sessions(session_id=session_id):
+        raise HTTPException(404, "session not found")
+
     db.delete_session(session_id)
-    return True
 
 
-@router.post("/run")
+@router.post("/run", response_model=RunResponseModel)
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     run_request: RunRequestModel,
     background_tasks: BackgroundTasks,
     mock: bool = False,
-) -> dict:
+) -> RunResponseModel:
     if run_request.reply and not run_request.session_id:
         raise HTTPException(
             status_code=400,
@@ -84,7 +92,9 @@ async def run_crew(
         raise HTTPException(status_code=400, detail=f"Failed to get crew with id {id}")
 
     session = db.get_session(run_request.session_id) if run_request.session_id else None
-    cached_messages = db.get_messages(run_request.session_id) if run_request.session_id else None
+    cached_messages = (
+        db.get_messages(run_request.session_id) if run_request.session_id else None
+    )
 
     if run_request.session_id and not session:
         raise HTTPException(
@@ -123,11 +133,12 @@ async def run_crew(
         logger.debug(f"on_reply: {message}")
         db.post_message(message)
 
-    crew = Crew(session.profile_id, session, crew_model, on_reply)
+    try:
+        crew = Crew(session.profile_id, session, crew_model, on_reply)
+    except ValueError as e:
+        logger.error(e)
+        raise HTTPException(400, "crew model bad input")
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
-    return {
-        "status": "success",
-        "data": {"session": session.model_dump()},
-    }
+    return RunResponseModel(status="success", session=session)

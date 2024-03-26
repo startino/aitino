@@ -28,7 +28,8 @@ class CrewRequestModel(CrewBaseModel):
     published: bool
     title: str
     description: str
-    nodes: list[dict]
+    nodes: list[str]
+
 
 class CrewUpdateModel(BaseModel):
     receiver_id: UUID | None = None
@@ -38,7 +39,19 @@ class CrewUpdateModel(BaseModel):
     published: bool | None = None
     title: str | None = None
     description: str | None = None
-    nodes: list[dict] | None = None
+    nodes: list[str] | None = None
 
     class Config:
         exclude_none = True
+
+
+class CrewResponseModel(BaseModel):
+    profile_id: UUID
+    edges: list[dict]
+    published: bool
+    title: str
+    description: str
+    nodes: list[str]
+    receiver_id: UUID | None = None
+    avatar: str | None = None
+    prompt: dict | None = None
