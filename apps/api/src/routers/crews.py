@@ -17,6 +17,9 @@ logger = logging.getLogger("root")
 def add_crew(crew: CrewRequestModel):
     if not db.get_profile_from_id(crew.profile_id):
         raise HTTPException(404, "profile not found")
-    response = db.post_crew(crew)
+    db.insert_crew(crew)
     return "success"
+
+@router.post("/update")
+def update_crew(crew)
     

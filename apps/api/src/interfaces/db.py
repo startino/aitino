@@ -135,8 +135,9 @@ def post_agents(agents: list[AgentModel]) -> None:
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
-def post_crew(crew: CrewRequestModel) -> None:
+def insert_crew(crew: CrewRequestModel) -> None:
     supabase.table("crews").insert(crew.model_dump(mode='json')).execute()
+    #supabase.table("crews").upsert(crew.model_dump())
 
 
 def get_api_keys(profile_id: UUID) -> list[str]: ...
