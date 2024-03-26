@@ -26,6 +26,6 @@
 	</Card.Content>
 
 	<Card.Footer>
-		<Button href="/app/subscription">Go to your subscription page<MoveRight /></Button>
+		<Button href="/app">Enjoy the App<MoveRight /></Button>
 	</Card.Footer>
 </Card.Root>

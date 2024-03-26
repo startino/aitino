@@ -44,7 +44,13 @@
 				};
 			}}
 		>
-			<AgentEditorItems {selectedAgent} isCreate={false} {agentTools} {apiKeyTypes} {user_api_keys}/>
+			<AgentEditorItems
+				{selectedAgent}
+				isCreate={false}
+				{agentTools}
+				{apiKeyTypes}
+				{user_api_keys}
+			/>
 			<Button
 				type="submit"
 				disabled={isFormIncomplete}

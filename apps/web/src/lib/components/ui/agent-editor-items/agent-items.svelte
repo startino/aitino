@@ -166,7 +166,7 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		{#if !showToolsDetail}
 			<div
-				class="from-primary-900 to-primary-950 mt-2 flex cursor-pointer items-center justify-center space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+				class="mt-2 flex cursor-pointer items-center justify-center space-y-4 rounded-lg bg-gradient-to-t from-primary-900 to-primary-950 p-4 text-center text-white transition-all duration-500"
 				transition:slide={{ duration: 400 }}
 				on:click={() => {
 					showToolsDetail = true;
@@ -180,7 +180,7 @@
 			{#if addedTools.length > 0}
 				{#each addedTools as tool}
 					<div
-						class="from-primary-800 to-primary-950 mt-2 flex cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-current transition-all duration-500"
+						class="mt-2 flex cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t from-primary-800 to-primary-950 p-4 text-center text-current transition-all duration-500"
 						transition:slide={{ duration: 400 }}
 					>
 						<div
@@ -193,7 +193,7 @@
 							{:else}
 								<input type="hidden" name="id" id="toolsJsonData" bind:value={selectedAgent.id} />
 							{/if}
-							<p class="text-muted-foreground text-xs">{tool.description}</p>
+							<p class="text-xs text-muted-foreground">{tool.description}</p>
 						</div>
 						{#if !isCreate}
 							<form
@@ -248,7 +248,7 @@
 					<div class="grid h-96 grid-cols-3 gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
 						{#each filted_from_search as tool}
 							<div
-								class="from-primary-900 to-primary-950 relative mt-2 flex max-h-56 cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t p-4 text-center text-white transition-all duration-500"
+								class="relative mt-2 flex max-h-56 cursor-pointer flex-col justify-between space-y-4 rounded-lg bg-gradient-to-t from-primary-900 to-primary-950 p-4 text-center text-white transition-all duration-500"
 								transition:slide={{ duration: 400 }}
 							>
 								<div class="flex flex-col items-center justify-between">
@@ -258,7 +258,7 @@
 									{:else}
 										<input type="hidden" name="id" id="toolId" bind:value={selectedAgent.id} />
 									{/if}
-									<p class="text-muted-foreground text-xs">{tool.description}</p>
+									<p class="text-xs text-muted-foreground">{tool.description}</p>
 								</div>
 
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -287,7 +287,7 @@
 										</DropdownMenu.Content>
 									</DropdownMenu.Root>
 								</div>
-								<div class="text-background relative my-4 p-6">
+								<div class="relative my-4 p-6 text-background">
 									<Button
 										class="absolute bottom-0 left-0 flex w-full items-center justify-center transition-all duration-500 hover:scale-95"
 										on:click={() => {

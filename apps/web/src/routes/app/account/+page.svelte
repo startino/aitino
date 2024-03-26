@@ -14,6 +14,11 @@
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import { getContext } from '$lib/utils.js';
+	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
+
+	const subscriptionStore = getContext('subscriptionStore');
 
 	export let data: PageData;
 	let newApiName = '';
@@ -121,7 +126,7 @@
 					<Button
 						variant="outline"
 						aria-label="add input"
-						class="border-border rounded-full border"
+						class="rounded-full border border-border"
 						on:click={addInput}
 					>
 						<Plus />
@@ -131,34 +136,92 @@
 		</Tabs.Content>
 		<Tabs.Content value="billing">
 			<Card.Root class="overflow-hidden rounded-lg shadow-xl">
-				<Card.Header class="text-on-primary bg-gradient-to-r p-6">
-					<h2 class="text-xl font-semibold">Membership</h2>
+				<Card.Header class="p-6">
+					<h2 class="text-2xl font-bold">
+						{$subscriptionStore.sub ? 'Your Subscription' : 'Choose a subscription'}
+					</h2>
 				</Card.Header>
 				<Card.Content class="p-6">
-					<div class="space-y-8">
-						<div class="bg-background space-y-4 rounded-lg bg-gradient-to-r p-6 shadow-sm">
-							<div class="text-2xl font-semibold">Current Plan</div>
-							<p class="font-medium">Starter</p>
-							<div class="mt-4 flex gap-4 transition-all duration-200 ease-in-out">
-								<Button class=" border bg-transparent text-current " href="/app/subscription"
-									>Change Plan</Button
-								>
-								<Button
-									class=" flex items-center gap-2 rounded-md border bg-transparent  text-current"
-								>
-									<Plus /> Add a promo code
-								</Button>
+					{#if $subscriptionStore.sub}
+						<div class="space-y-8">
+							<div class="from-background-950 rounded-lg bg-background to-primary-800">
+								<div class="rounded-lg p-6 pt-2">
+									<div class="mb-4 flex items-center justify-between">
+										<div>
+											<h4 class="text-lg font-semibold">{$subscriptionStore.tier?.name}</h4>
+											<p>{$subscriptionStore.sub.plan.interval}ly Subscription</p>
+										</div>
+										<img
+											src={$subscriptionStore.tier?.image}
+											alt=""
+											class="h-20 w-20 rounded-full"
+										/>
+									</div>
+									{#if $subscriptionStore.paymentMethod}
+										<div class="mb-4">
+											<h5 class="mb-1 font-semibold">Payment Method</h5>
+											<Card.Root class="border-none bg-transparent">
+												<Card.Content class="px-0 ">
+													<p class="font-medium">
+														<span>{$subscriptionStore.paymentMethod.card?.brand}</span>
+														<span>...{$subscriptionStore.paymentMethod.card?.last4}</span>
+													</p>
+												</Card.Content>
+											</Card.Root>
+										</div>
+									{/if}
+									<div>
+										<h5 class="mb-1 font-semibold">Renewal Date</h5>
+										<p>
+											{new Date(
+												$subscriptionStore.sub.current_period_end * 1000
+											).toLocaleDateString(undefined, {
+												year: 'numeric',
+												month: 'long',
+												day: '2-digit'
+											})}
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="text-right">
+								<AlertDialog.Root closeOnOutsideClick>
+									<AlertDialog.Trigger asChild let:builder>
+										<Button builders={[builder]} variant="destructive">Cancel Subscription</Button>
+									</AlertDialog.Trigger>
+									<AlertDialog.Content>
+										<AlertDialog.Header>
+											<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+											<AlertDialog.Description>
+												This action cannot be undone. This will immediately cancel your
+												subscription.
+											</AlertDialog.Description>
+										</AlertDialog.Header>
+										<AlertDialog.Footer>
+											<AlertDialog.Cancel>
+												<Button
+													variant="outline"
+													class="border-none bg-transparent hover:bg-transparent">Close</Button
+												>
+											</AlertDialog.Cancel>
+											<AlertDialog.Action>
+												<a href="/app/subscription/cancel">
+													<Button class="border-none bg-transparent hover:bg-transparent"
+														>Cancel Subscription</Button
+													>
+												</a>
+											</AlertDialog.Action>
+										</AlertDialog.Footer>
+									</AlertDialog.Content>
+								</AlertDialog.Root>
 							</div>
 						</div>
-						<div class="bg-background space-y-4 rounded-lg p-6 shadow-sm">
-							<div class="text-2xl font-semibold">Current Billing Cycle</div>
-							<p class="text-sm">Mar 20, 2024 - Apr 19, 2024</p>
-						</div>
-					</div>
+					{:else}
+						<PricingTiers />
+					{/if}
 				</Card.Content>
 			</Card.Root>
 		</Tabs.Content>
-
 		<Tabs.Content value="api">
 			<Card.Root>
 				<Card.Header class="text-xl font-semibold">Your API Keys</Card.Header>
@@ -215,7 +278,7 @@
 								action="?/removeAPI&id={api.id}"
 								method="POST"
 								use:enhance
-								class="bg-background flex items-center rounded-lg p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
+								class="flex items-center rounded-lg bg-background p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
 								transition:slide={{ duration: 200 }}
 							>
 								<div class="flex flex-col">

@@ -2,7 +2,6 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { MoveLeft } from 'lucide-svelte';
-	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { getContext } from '$lib/utils';
 
@@ -10,7 +9,6 @@
 	const subStore = getContext('subscriptionStore');
 	onMount(async () => {
 		$subStore.sub = null;
-		await invalidate('/app');
 	});
 </script>
 
@@ -26,6 +24,6 @@
 	</Card.Content>
 
 	<Card.Footer>
-		<Button href="/app"><MoveLeft />Go Back Home</Button>
+		<Button href="/app"><MoveLeft />Go Back</Button>
 	</Card.Footer>
 </Card.Root>

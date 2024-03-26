@@ -1,30 +1,28 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { NoSessionLoad } from '$lib/types/loads';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import * as models from '$lib/types/models';
+	import * as api from '$lib/api';
+	import type { UUID } from '$lib/types';
 
 	export let data: NoSessionLoad;
 
-	const crews = data.crews;
+	let profileId: string = data.profileId;
+	let crews: models.Crew[] = data.crews;
 
-	async function startNewSession(crew: models.Crew, title: string) {
-		// Instantiate and get the new session
-		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crew.id}&profile_id=${data.profileId}`)
-			.then((response) => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error('Failed to start new session. bad respose: ' + response);
-				}
-			})
-			.catch((error) => {
-				console.error('Failed to start new session. error', error);
-			});
+	async function startNewSession(profileId: string, crewId: string, title: string) {
+		const session: models.Session | false = await api.startSession(
+			profileId as UUID,
+			crewId as UUID,
+			title
+		);
 
-		const session: models.Session = res.data.session;
+		if (!session) {
+			console.error('Failed to start new session');
+			return;
+		}
 
-		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
 </script>
 
@@ -35,7 +33,9 @@
 		<h1>It looks like you haven't started a session yet...</h1>
 		{#if crews}
 			<!-- Allow user to choose crew -->
-			<Button on:click={() => startNewSession(crews[0], 'New Session')}>Run Your Crew!</Button>
+			<Button on:click={() => startNewSession(profileId, crews[0].id, 'New Session')}
+				>Run Your Crew!</Button
+			>
 		{:else}
 			<p>Loading...</p>
 		{/if}

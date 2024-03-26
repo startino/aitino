@@ -3,8 +3,9 @@ import type { Writable } from 'svelte/store';
 
 import type { Variant } from '$lib/components/ui/button';
 import type { Tables } from '$lib/types/supabase';
-import type Stripe from '@stripe/stripe-js';
-import type { PaymentMethod } from '@stripe/stripe-js';
+import type Stripe from 'stripe';
+
+export type UUID = `${string}-${string}-4${string}-${'89ab'}${string}-${string}`;
 
 export type Crew = Tables<'crews'>;
 
@@ -23,9 +24,9 @@ export type PanelAction = {
 export interface ContextMap {
 	crew: CrewContext;
 	subscriptionStore: Writable<{
-		sub: Stripe.Subscription | null;
+		sub: Stripe.Response<Stripe.Subscription> | null;
 		tier: any | null;
-		paymentMethod: PaymentMethod | null;
+		paymentMethod: Stripe.Response<Stripe.PaymentMethod> | null;
 	}>;
 }
 

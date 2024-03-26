@@ -14,10 +14,6 @@
 	export let messages: models.Message[];
 	export let agents: models.Agent[];
 
-	console.log('session: ', session);
-	console.log('messages: ', messages);
-	console.log('agents: ', agents);
-
 	// Reactivity
 	export let waitingForUser = true;
 
@@ -87,13 +83,9 @@
 		}
 
 		// 'Resume' the conversation to Crew API
-		const url = `${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`;
-		const apiRes = await fetch(url);
-		const apiData = await apiRes.json();
-		console.log(apiData);
-
-		// Update the session status on the DB
-		await fetch(`?/set-status?session.id=${session.id}?status=awaiting_agent`);
+		await fetch(
+			`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
+		);
 
 		// Update local status
 		waitingForUser = true;
@@ -116,7 +108,6 @@
 		class="flex h-full max-h-screen w-full flex-col gap-4 overflow-y-scroll pb-24 pt-14 transition-all duration-500"
 		bind:this={chatContainerElement}
 	>
-		<h1 class="text-bold fixed top-4 z-10 text-left text-2xl">{session.title}</h1>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#if messages}
 			{#if messages.length > 0}

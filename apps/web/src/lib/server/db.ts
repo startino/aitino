@@ -41,13 +41,10 @@ export async function getMessages(session_id: string) {
 	return data as Message[];
 }
 
-export async function renameSession(sessionId: string, newTitle: string) {
-	const { data, error: err } = await supabase
-		.from('sessions')
-		.update({ title: newTitle })
-		.eq('id', sessionId);
+export async function updateSession(sessionId: string, content: object) {
+	const { data, error: err } = await supabase.from('sessions').update(content).eq('id', sessionId);
 	if (err) {
-		throw error(500, 'Failed attempt at renaming session.');
+		throw error(500, 'Failed attempt at updating session.');
 	}
 }
 
