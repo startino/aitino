@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { formatDate } from "$lib/utils";
-	import * as config from "$lib/config";
-	import SEO from "$lib/components/SEO/index.svelte";
-
-	export let data;
+	import SEO from '$lib/components/SEO/index.svelte';
 </script>
 
 <SEO

@@ -1,6 +1,6 @@
-import { get_blog_data, get_blog_list } from "$lib/server/blog/index.js";
+import { get_blog_data, get_blog_list } from '$lib/server/blog/index.js';
 
-export const prerender = "auto";
+export const prerender = 'auto';
 
 export async function load() {
 	return {

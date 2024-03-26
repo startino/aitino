@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { createEventDispatcher } from 'svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as utils from '$lib/utils';
 	import { Input } from '$lib/components/ui/input';
@@ -9,23 +8,16 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { Crew, Session } from '$lib/types/models';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import * as models from '$lib/types/models';
+	import { redirect } from '@sveltejs/kit';
 
-	const dispatch = createEventDispatcher();
-
-	export let allSessions: Session[];
-	export let recentCrew: Crew | null;
-	export let activeSession: Session | null;
+    export let profileId: string;
+	export let sessions: Session[];
+	export let crew: Crew | null;
+	export let session: Session | null;
 
 	let newSessionName: string = '';
-
-	const handleloadSession = (id: string) => {
-		console.log('Loading session', id);
-		dispatch('handleloadSession', { id });
-	};
-
-	const handleStartNewSession = (title: string, crewId: string) => {
-		dispatch('handleStartNewSession', { title, crewId });
-	};
 
 	// Reactivity for renaming
 	let renamePopoverOpen = false;
@@ -56,29 +48,28 @@
 			return;
 		}
 
-		const currentTitle = (await allSessions).find((session) => session.id === sessionId);
+		const currentTitle = sessions.find((session) => session.id === sessionId);
 
 		// If no session is being renamed, ignore
-		if (!activeSession) {
+		if (!session) {
 			resetRenamingUI();
 			return;
 		}
 		// If no changes were made or if empty, reset the UI and ignore
-		if (activeSession?.title == renamingValue && renamingValue === '') {
+		if (session?.title == renamingValue && renamingValue === '') {
 			resetRenamingUI();
 			return;
 		}
 
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
-		const response = await fetch(`?/rename`, {
+		await fetch(`?/rename`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId, newTitle: renamingValue })
 		}).then((res) => res.json());
 
 		// Update the session locally in order to not refetch
-		const localVariable = await allSessions;
-		allSessions = localVariable.map((session) => {
+		sessions = sessions.map((session) => {
 			if (session.id === sessionId) {
 				session.title = renamingValue;
 			}
@@ -91,19 +82,42 @@
 	async function deleteSession(sessionId: string) {
 		deletingInProgress = true;
 		deletingSession = sessionId;
-		const response = await fetch(`?/delete`, {
+		await fetch(`?/delete`, {
 			method: 'POST',
 			body: JSON.stringify({ sessionId })
 		});
-		const data = await response.json();
 		// Update the session locally in order to not refetch
-		const localSessions = await allSessions;
-		allSessions = localSessions.filter((session) => session.id !== sessionId);
+		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
-		if (activeSession?.id === sessionId) {
-			activeSession = null;
+		if (session?.id === sessionId) {
+			session = null;
 		}
+	}
+
+	async function loadSession(session: models.Session) {
+		console.log('Loading session', JSON.stringify(session));
+		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
+	}
+
+	async function startNewSession(crewId: string, title: string) {
+		console.log('Starting new session', crewId, title);
+		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${profileId}`)
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error('Failed to start new session. bad respose: ' + response);
+				}
+			})
+			.catch((error) => {
+				console.error('Failed to start new session. error', error);
+			});
+
+		const session: models.Session = res.data.session;
+		console.log('session: ', session);
+
+		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
 	}
 </script>
 
@@ -116,7 +130,7 @@
 	<Sheet.Content side="right">
 		<Sheet.Header>
 			<Sheet.Description>
-				{#if activeSession}
+				{#if session}
 					Click anywhere on the left to continue with your most recent session
 				{:else}
 					Create a new session or select an existing one
@@ -127,7 +141,7 @@
 		<Sheet.Footer class="mt-2">
 			<Sheet.Close asChild let:builder>
 				<div class="flex h-full w-full flex-col gap-2">
-					{#if recentCrew}
+					{#if crew}
 						<Dialog.Root>
 							<Dialog.Trigger let:builder>
 								<Button class="mb-2 w-full" builders={[builder]}>Start New Session</Button>
@@ -153,25 +167,24 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{recentCrew.title}
+											{crew.title}
 										</Button>
 									</div>
 								</div>
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => handleStartNewSession(newSessionName, recentCrew.id)}
-										>Start Session</Button
+										on:click={() => startNewSession(crew.id, newSessionName)}>Start Session</Button
 									>
 								</Dialog.Footer>
 							</Dialog.Content>
 						</Dialog.Root>
 					{/if}
 					<ScrollArea class="flex h-full max-h-[85vh] w-full flex-col rounded-md pr-4">
-						{#await allSessions}
+						{#if !sessions}
 							<p>Loading...</p>
-						{:then allSessions}
-							{#each allSessions as session}
+						{:else}
+							{#each sessions as session}
 								<li class="my-3 flex w-full flex-row gap-4">
 									{#if renamePopoverOpen && renamingSession === session.id}
 										<Input
@@ -215,10 +228,10 @@
 										<Button
 											builders={[builder]}
 											variant="outline"
-											class="flex w-full flex-row justify-between {activeSession?.id == session.id
+											class="flex w-full flex-row justify-between {session?.id == session.id
 												? 'bg-accent text-accent-foreground'
 												: 'hover:bg-accent/20 hover:text-foreground'}"
-											on:click={() => handleloadSession(session.id)}
+											on:click={() => loadSession(session)}
 										>
 											{session.title}
 											<div class="	text-right text-xs">
@@ -241,7 +254,7 @@
 									{/if}
 								</li>
 							{/each}
-						{/await}
+						{/if}
 					</ScrollArea>
 				</div>
 			</Sheet.Close>

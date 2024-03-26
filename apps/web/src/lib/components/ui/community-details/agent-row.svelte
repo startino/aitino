@@ -24,7 +24,7 @@
 					<img
 						src={agent.avatar}
 						alt={agent.title}
-						class="border-primary rounded-full border-4 object-cover shadow-2xl"
+						class="rounded-full border-4 border-primary object-cover shadow-2xl"
 					/>
 				</div>
 				<div class="flex flex-col">
@@ -36,11 +36,11 @@
 				</div>
 			</div>
 			<div class="flex h-full items-center justify-between px-0">
-				<Button variant="ghost" class="text-foreground max-w-xs px-12 hover:bg-transparent"
+				<Button variant="ghost" class="max-w-xs px-12 text-foreground hover:bg-transparent"
 					>see more</Button
 				>
 				<button
-					class="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md px-12 py-2 text-sm font-bold transition-colors hover:scale-[98%] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+					class="inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md bg-primary px-12 py-2 text-sm font-bold text-primary-foreground ring-offset-background transition-colors hover:scale-[98%] hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 					on:click|stopPropagation={() => {
 						dispatch('load', agent);
 					}}

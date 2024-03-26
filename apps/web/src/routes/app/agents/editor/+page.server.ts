@@ -12,10 +12,22 @@ export const load = (async ({ locals }) => {
 		.select('*')
 		.eq('profile_id', session?.user.id);
 
+	const { data: userApis, error: userApiError } = await supabase
+		.from('users_api_keys')
+		.select('*')
+		.eq('profile_id', session?.user.id);
+
+	const user_api_keys = userApis;
+
+	const { data, error } = await supabase.from('api_key_types').select('*');
+	const api_key_types = data;
+
 	const agentTools = await supabase.from('tools').select('*');
 	return {
 		currentUserAgents,
+		api_key_types,
 		agentTools,
+		user_api_keys,
 		agentForm: await superValidate(createNewAgents)
 	};
 }) satisfies PageServerLoad;
@@ -29,7 +41,7 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-
+		console.log(form);
 		const randomAvatar = pickRandomAvatar();
 
 		let data, error;
@@ -46,7 +58,12 @@ export const actions: Actions = {
 						role: form.data.role,
 						published: form.data.published === 'on' ? true : false,
 						system_message: form.data.system_message,
-						tools: [''],
+						tools: [
+							{
+								id: form.data.id,
+								parameter: {}
+							}
+						],
 						avatar: randomAvatar.avatarUrl,
 						version: '1.0'
 					}
@@ -71,11 +88,26 @@ export const actions: Actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
+		
+
 		const form = await superValidate(request, createNewAgents);
+		console.log(form, 'form');
+
+		const currentAgent = await supabase
+			.from('agents')
+			.select('*')
+			.eq('id', id?.split('$')[1])
+			.single();
+
+		const prev_tools = currentAgent.data.tools;
+
+		console.log(prev_tools);
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'Could not edit agent' });
 		}
+
+		console.log(form);
 
 		let data, error;
 
@@ -86,6 +118,13 @@ export const actions: Actions = {
 					title: form.data.title,
 					role: form.data.role,
 					description: form.data.description,
+					tools: [
+						...currentAgent.data.tools,
+						{
+							id: form.data.id,
+							parameter: {}
+						}
+					],
 					system_message: form.data.system_message,
 					model: form.data.model,
 					published: form.data.published === 'on' ? true : false
@@ -106,30 +145,16 @@ export const actions: Actions = {
 			message: 'Agent edited successfully please reload to see the changes you made'
 		};
 	},
-	addTools: async ({ request, url }) => {
-		const id = url.searchParams.get('id');
-		const toolId = url.searchParams.get('toolId');
-
-		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
-
-		let currentTools = currentAgent.data.tools;
-
-		const { data, error } = await supabase
-			.from('agents')
-			.update({
-				tools:
-					currentTools !== null
-						? [...currentTools, { id: toolId, parameter: {} }]
-						: [{ id: toolId, parameter: {} }]
-			})
-			.eq('id', id);
-	},
 	removeTools: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 		const toolId = url.searchParams.get('toolId');
 		const form = await request.formData();
 
+		console.log(id, toolId, 'id, toolId');
+
 		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
+
+		console.log(currentAgent, 'currentAgent');
 
 		const deleteTool = currentAgent.data.tools.filter((tool) => tool.id !== toolId);
 		const { data, error } = await supabase

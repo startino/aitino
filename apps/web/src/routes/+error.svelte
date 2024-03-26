@@ -1,5 +1,5 @@
 <script>
-	import { page } from "$app/stores";
+	import { page } from '$app/stores';
 
 	const { status, error } = $page;
 </script>
@@ -15,7 +15,7 @@
 			{error?.message}
 		</h1>
 		<p class="mt-6 text-base leading-7 text-foreground/70">
-			{status == 404 ? "Sorry, we couldn’t find the page you’re looking for." : ""}
+			{status == 404 ? 'Sorry, we couldn’t find the page you’re looking for.' : ''}
 		</p>
 		<div class="mt-10 flex items-center justify-center gap-x-6">
 			<a

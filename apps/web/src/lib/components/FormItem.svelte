@@ -119,7 +119,7 @@
 	class="mx-auto mt-2 flex h-fit w-fit flex-wrap-reverse items-center justify-between gap-2 sm:flex-row md:p-4 lg:mt-6 xl:mt-12"
 >
 	<Button
-		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95 "
+		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground "
 		href="https://github.com/Futino/"
 		target="_blank"
 	>
@@ -134,7 +134,7 @@
 	</Button>
 
 	<Button
-		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95"
+		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground"
 		href="https://www.youtube.com/@futinolimited"
 		target="_blank"
 	>
@@ -148,7 +148,7 @@
 		</div>
 	</Button>
 	<Button
-		class="text-accent hover:bg-primary hover:text-primary-foreground bg-transparent p-6 font-bold transition-all duration-300 ease-in-out hover:scale-95"
+		class="bg-transparent p-6 font-bold text-accent transition-all duration-300 ease-in-out hover:scale-95 hover:bg-primary hover:text-primary-foreground"
 		href="https://discord.gg/6M3dSFnufV"
 		target="_blank"
 	>
