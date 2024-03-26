@@ -15,7 +15,6 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
 	import { getContext } from '$lib/utils.js';
 
 	const subscriptionStore = getContext('subscriptionStore');
@@ -141,38 +140,6 @@
 				</Card.Header>
 				<Card.Content class="p-6">
 					<div class="space-y-8">
-						<!-- <h3 class="mb-4 text-xl font-semibold">Current Plan</h3>
-							<div class="from-primary-950 to-primary-800 bg-background rounded-lg p-6 text-white">
-								<h4 class="mb-2 text-lg font-semibold">{$subscriptionStore.tier?.name}</h4>
-								<p>
-									Billing Cycle: <span class="font-medium"
-										>{$subscriptionStore.sub.plan.interval}ly</span
-										>
-								</p>
-								{#if $subscriptionStore.paymentMethod}
-									<p class="mt-2">
-										Payment Method: <span
-										>{$subscriptionStore.paymentMethod.card?.brand} ending in {$subscriptionStore
-											.paymentMethod.card?.last4}</span
-										>
-									</p>
-								{/if}
-							</div> -->
-							<!-- <div class="duration-400 mt-4 flex gap-4 transition-all">
-								<Button
-								href="/app/subscription"
-									class="border-primary transition-hover border bg-transparent text-current duration-300 hover:border-none"
-									>Change Plan</Button
-								>
-								<Button
-									variant="ghost"
-									class="border-primary transition-hover border duration-300 hover:border-none"
-									><Plus /> Add Promo Code</Button
-									>
-								</div> -->
-								<!-- <div>
-						</div> -->
-						<!-- <h3 class="mb-4 text-xl font-semibold">Subscription Details</h3> -->
 						<div class="from-background-950 to-primary-800 bg-background rounded-lg">
 							<div class="rounded-lg p-6 pt-2">
 								<div class="mb-4 flex items-center justify-between">
