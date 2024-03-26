@@ -22,14 +22,7 @@
 	};
 </script>
 
-<CreateAgent
-	on:close={() => (open = false)}
-	{form}
-	data={data.agentForm}
-	agentTools={myTools}
-	apiKeyTypes={data.api_key_types}
-	user_api_keys={data.user_api_keys}
-/>
+
 
 <div class="min-h-screen bg-background p-8">
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -58,6 +51,14 @@
 				>
 			</div>
 		{/each}
+		<CreateAgent
+	on:close={() => (open = false)}
+	{form}
+	data={data.agentForm}
+	agentTools={myTools}
+	apiKeyTypes={data.api_key_types}
+	user_api_keys={data.user_api_keys}
+/>
 	</div>
 </div>
 
