@@ -88,8 +88,6 @@ export const actions: Actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
-		
-
 		const form = await superValidate(request, createNewAgents);
 		console.log(form, 'form');
 

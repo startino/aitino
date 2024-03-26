@@ -10,9 +10,10 @@
 	import type { Crew, Session } from '$lib/types/models';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import * as models from '$lib/types/models';
-	import { redirect } from '@sveltejs/kit';
+	import * as api from '$lib/api';
+	import type { UUID } from '$lib/types';
 
-    export let profileId: string;
+	export let profileId: string;
 	export let sessions: Session[];
 	export let crew: Crew | null;
 	export let session: Session | null;
@@ -48,8 +49,6 @@
 			return;
 		}
 
-		const currentTitle = sessions.find((session) => session.id === sessionId);
-
 		// If no session is being renamed, ignore
 		if (!session) {
 			resetRenamingUI();
@@ -63,10 +62,8 @@
 
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
-		await fetch(`?/rename`, {
-			method: 'POST',
-			body: JSON.stringify({ sessionId, newTitle: renamingValue })
-		}).then((res) => res.json());
+
+		api.upsertSession(session.id as UUID, { title: renamingValue });
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.map((session) => {
@@ -75,53 +72,51 @@
 			}
 			return session as Session;
 		});
+
 		// Reset the renaming variables
 		resetRenamingUI();
 	}
 
 	async function deleteSession(sessionId: string) {
+		console.log('Deleting session', sessionId);
 		deletingInProgress = true;
 		deletingSession = sessionId;
-		await fetch(`?/delete`, {
-			method: 'POST',
-			body: JSON.stringify({ sessionId })
-		});
+
+		const success: boolean = await api.deleteSession(sessionId as UUID);
+
+		if (!success) {
+			console.error('Failed to delete session');
+			return;
+		}
+		console.log('Successfully deleted session');
+
 		// Update the session locally in order to not refetch
 		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
 		if (session?.id === sessionId) {
-			session = null;
+			window.location.href = '/app/session/';
 		}
 	}
 
 	async function loadSession(session: models.Session) {
 		console.log('Loading session', JSON.stringify(session));
-		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
 
-	async function startNewSession(crewId: string, title: string) {
-		console.log('Starting new session', crewId, title);
-		const res = await fetch(`${PUBLIC_API_URL}/crew?id=${crewId}&profile_id=${profileId}`)
-			.then((response) => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error('Failed to start new session. bad respose: ' + response);
-				}
-			})
-			.catch((error) => {
-				console.error('Failed to start new session. error', error);
-			});
+	async function startNewSession(profileId: string, crewId: string, title: string) {
+		const session = await api.startSession(profileId as UUID, crewId as UUID, title);
 
-		const session: models.Session = res.data.session;
-		console.log('session: ', session);
+		if (!session) {
+			console.error('Failed to start session');
+			return;
+		}
 
-		window.location.href = '/app/session/' + session.id;  // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
 </script>
 
-<Sheet.Root onOutsideClick={() => renameSession(renamingSession)}>
+<Sheet.Root>
 	<Sheet.Trigger asChild let:builder>
 		<Button builders={[builder]} class="my-auto mr-8 h-14 w-14">
 			<ArrowLeftFromLine size="24" />
@@ -174,7 +169,8 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(crew.id, newSessionName)}>Start Session</Button
+										on:click={() => startNewSession(profileId, crew.id, newSessionName)}
+										>Start Session</Button
 									>
 								</Dialog.Footer>
 							</Dialog.Content>

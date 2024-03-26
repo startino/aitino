@@ -5,6 +5,8 @@ import type { Variant } from '$lib/components/ui/button';
 import type { Tables } from '$lib/types/supabase';
 import type Stripe from 'stripe';
 
+export type UUID = `${string}-${string}-4${string}-${'89ab'}${string}-${string}`;
+
 export type Crew = Tables<'crews'>;
 
 export type SvelteEvent<E extends Event = Event, T extends EventTarget = Element> = E & {

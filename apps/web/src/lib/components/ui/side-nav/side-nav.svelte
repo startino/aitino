@@ -41,7 +41,7 @@
 <div class="flex h-full py-4 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
 	<!-- Sidebar component, swap this element with another sidebar if you like -->
 	<div
-		class="bg-primary-950/30 flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border px-6 pb-6 text-white"
+		class="flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border bg-primary-950/30 px-6 pb-6 text-white"
 	>
 		<div class="flex h-16 shrink-0 items-center px-2 pt-6">
 			<a href="/app/auto-build" class="mr-4 flex place-items-center space-x-2">
@@ -67,13 +67,13 @@
 											href
 										)
 											? 'bg-accent/90 text-accent-foreground hover:bg-accent '
-											: 'text-foreground hover:bg-primary/5 hover:text-accent opacity-100'}"
+											: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
 									>
 										<svelte:component this={icon} />
 										{name}
 										{#if pendingCount}
 											<span
-												class="bg-accent text-accent-foreground ml-auto rounded-full px-2 py-1 text-xs font-semibold"
+												class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
 											>
 												{pendingCount}
 											</span>
@@ -109,7 +109,7 @@
 										href
 									)
 										? 'bg-accent/90 text-foreground hover:bg-accent '
-										: 'text-foreground hover:bg-primary/5 hover:text-accent opacity-100'}"
+										: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
 								>
 									<svelte:component this={icon} />
 									{name}
