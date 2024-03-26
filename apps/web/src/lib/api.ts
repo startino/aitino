@@ -38,11 +38,18 @@ export const startSession = async (
 	try {
 		const response: models.Session | false = await fetch(`${PUBLIC_API_URL}/sessions/run`, {
 			method: 'POST',
-			body: JSON.stringify({ crew_id: crewId, profile_id: profileId, title })
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: crewId,
+				profile_id: profileId,
+				title
+			})
 		})
 			.then(async (response) => {
 				if (!response.ok) {
-					console.error(`Failed to upsert session. Bad response`, response, await response.json());
+					console.error(`Failed to start session. Bad response`, response, await response.json());
 					return false;
 				}
 				const {

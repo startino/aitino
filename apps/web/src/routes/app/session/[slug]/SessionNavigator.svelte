@@ -82,7 +82,7 @@
 		deletingInProgress = true;
 		deletingSession = sessionId;
         
-        const success = await api.deleteSession(sessionId as UUID);
+        const success: boolean = await api.deleteSession(sessionId as UUID);
 
         if (!success) {
             console.error('Failed to delete session');
