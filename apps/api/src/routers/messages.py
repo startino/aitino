@@ -17,7 +17,7 @@ from src.parser import parse_input_v0_2 as parse_input
 
 router = APIRouter(
     prefix="/messages",
-    tags=["messages"],
+    tags=["messages"]
 )
 
 logger = logging.getLogger("root")

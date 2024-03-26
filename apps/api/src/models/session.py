@@ -18,3 +18,10 @@ class Session(BaseModel):
     title: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
     status: SessionStatus = SessionStatus.RUNNING
+
+class SessionUpdate(BaseModel):
+    id: UUID | None = None
+    crew_id: UUID | None = None
+    profile_id: UUID | None = None
+    title: str | None = None
+    status: SessionStatus | None = None

@@ -159,6 +159,10 @@ def insert_crew(crew: CrewRequestModel) -> None:
     # supabase.table("crews").upsert(crew.model_dump())
 
 
+def update_crew(crew_id: UUID, content: dict) -> None:
+    supabase.table("crews").update(content).eq("id", crew_id).execute()
+
+
 def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
     """Gets an api key given a profile id and the type of api key."""
     response = (

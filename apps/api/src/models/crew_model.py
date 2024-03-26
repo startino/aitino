@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -14,7 +16,7 @@ class CrewModel(CrewBaseModel):
         None  # None means admin again, so its the original crew (has no parent crew)
     )
     agents: list[AgentModel]
-    sub_crews: list["CrewModel"] = (
+    sub_crews: list[CrewModel] = (
         []
     )  # Must set delegator_id for each sub_crew in sub_crews
 
@@ -27,3 +29,16 @@ class CrewRequestModel(CrewBaseModel):
     title: str
     description: str
     nodes: list[dict]
+
+class CrewUpdateModel(BaseModel):
+    receiver_id: UUID | None = None
+    prompt: dict | None = None
+    profile_id: UUID | None = None
+    edges: list[dict] | None = None
+    published: bool | None = None
+    title: str | None = None
+    description: str | None = None
+    nodes: list[dict] | None = None
+
+    class Config:
+        exclude_none = True

@@ -12,7 +12,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import CrewModel, Message, Session
+from src.models import CrewModel, Message, Session, SessionUpdate
 from src.parser import parse_input_v0_2 as parse_input
 
 router = APIRouter(
@@ -31,20 +31,20 @@ def get_sessions(
 
 
 @router.post("/upsert")
-def upsert_session(session_id: UUID, content: dict) -> bool:
-    db.upsert_session(session_id, content)
+def upsert_session(session_id: UUID, content: SessionUpdate) -> bool:
+    db.upsert_session(session_id, content.model_dump(exclude_none=True))
     return True
 
 
 @router.post("/update")
-def update_session(session_id: UUID, content: dict) -> bool:
-    db.update_session(session_id, content)
+def update_session(session_id: UUID, content: SessionUpdate) -> bool:
+    db.update_session(session_id, content.model_dump(exclude_none=True))
     return True
 
 
 @router.post("/insert")
-def insert_session(session_id: UUID, content: dict) -> bool:
-    db.insert_session(session_id, content)
+def insert_session(session_id: UUID, content: SessionUpdate) -> bool:
+    db.insert_session(session_id, content.model_dump(exclude_none=True))
     return True
 
 
@@ -54,7 +54,7 @@ def delete_session(session_id: UUID) -> bool:
     return True
 
 
-@router.get("/run")
+@router.post("/run")
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     id: UUID,
