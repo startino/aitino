@@ -1,8 +1,8 @@
 import * as db from '$lib/server/db';
 import type { SessionLoad } from '$lib/types/loads';
 import * as models from '$lib/types/models';
-import type { PageServerLoad, Actions } from './$types';
-import { fail, error, json, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { error, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params, locals: { getSession } }) => {
 	const userSession = await getSession();
