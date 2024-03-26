@@ -26,8 +26,6 @@ export const actions: Actions = {
 
 		const apiValue = body.get('apiValue') as string;
 
-		console.log(apiValue, 'apiValue');
-
 		if (!id || !apiValue) {
 			return fail(400, {
 				message: 'Missing required fields'
@@ -39,9 +37,8 @@ export const actions: Actions = {
 			api_key: apiValue
 		});
 
-		console.log(error, 'error');
-
 		if (error) {
+			console.log(error, 'error');
 			return fail(400, {
 				message: error.message
 			});
@@ -52,11 +49,9 @@ export const actions: Actions = {
 		};
 	},
 
-	removeAPI: async ({ request, locals, url }) => {
+	removeAPI: async ({ locals, url }) => {
 		const id = url.searchParams.get('id');
 		const session = await locals.getSession();
-
-		console.log(id, 'id');
 
 		if (!id) {
 			return fail(400, {
@@ -73,7 +68,6 @@ export const actions: Actions = {
 			return { status: 500, body: { error: 'Internal Server Error' } };
 		}
 
-		console.log(data, 'data');
-		return { status: 200, body: { message: 'API Key deleted successfully' } };
+		return { message: 'API Key deleted successfully' };
 	}
 };
