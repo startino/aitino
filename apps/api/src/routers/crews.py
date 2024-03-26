@@ -14,12 +14,8 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 @router.post("/")
-def add_crew(crew: CrewRequestModel):
+def insert_crew(crew: CrewRequestModel):
     if not db.get_profile_from_id(crew.profile_id):
         raise HTTPException(404, "profile not found")
     db.insert_crew(crew)
     return "success"
-
-@router.post("/update")
-def update_crew(crew)
-    

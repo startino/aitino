@@ -1,25 +1,9 @@
-#import logging
-#from uuid import UUID
-#from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, APIRouter
-#from src.interfaces import db
-#from src.models import Session
-#from src.dependencies import rate_limit, rate_limit_profile, rate_limit_tiered, RateLimitResponse
-#from src.models import CrewModel, Message, Session
-#from src.parser import parse_input_v0_2 as parse_input
-#from src import mock as mocks
-#from src.crew import Crew
-
 import logging
-from typing import Any
 from uuid import UUID
 
-import autogen
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 
 from src import mock as mocks
-from src.autobuilder import build_agents
 from src.crew import Crew
 from src.dependencies import (
     RateLimitResponse,
@@ -27,7 +11,6 @@ from src.dependencies import (
     rate_limit_profile,
     rate_limit_tiered,
 )
-from src.improver import PromptType, improve_prompt
 from src.interfaces import db
 from src.models import CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
@@ -39,15 +22,35 @@ router = APIRouter(
 
 logger = logging.getLogger("root")
 
-@router.get("/")
-def get_sessions(profile_id: UUID) -> list[Session]:
-    return db.get_sessions(profile_id)
-   
+@router.post("/")
+def get_sessions(profile_id: UUID | None = None, session_id: UUID | None = None) -> list[Session]:
+    return db.get_sessions(profile_id, session_id)
+
+
 
 @router.post("/upsert")
-def upsert_session(session_id: UUID, content: dict) -> str:
+def upsert_session(session_id: UUID, content: dict) -> bool:
     db.upsert_session(session_id, content)
-    return "successfully upserted session"
+    return True
+
+
+@router.post("/update")
+def update_session(session_id: UUID, content: dict) -> bool:
+    db.update_session(session_id, content)
+    return True
+
+
+@router.post("/insert")
+def insert_session(session_id: UUID, content: dict) -> bool:
+    db.insert_session(session_id, content)
+    return True
+
+
+@router.post("/delete")
+def delete_session(session_id: UUID) -> bool:
+    db.delete_session(session_id)
+    return True
+
 
 @router.get("/run")
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
@@ -135,7 +138,3 @@ async def run_crew(
         "rate_limit": current_rate_limit.__dict__(),
     }
 
-
-@router.get("/{session_id}")
-def get_session(session_id: UUID) -> Session | None:
-    return db.get_session(session_id)

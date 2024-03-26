@@ -50,12 +50,18 @@ def get_session(session_id: UUID) -> Session | None:
     return Session(**response.data[0])
 
 
-def get_sessions(profile_id: UUID) -> list[Session]:
+def get_sessions(profile_id: UUID | None = None, session_id: UUID | None = None) -> list[Session]:
     """Gets all sessions for given profile id."""
     logger.debug(f"Getting all sessions from profile_id: {profile_id}")
-    response = (
-        supabase.table("sessions").select("*").eq("profile_id", profile_id).execute()
-    )
+    query = supabase.table("sessions").select("*")
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    if session_id:
+        query = query.eq("id", session_id)
+
+    response = query.execute()
+
     sessions = []
     if len(response.data) == 0:
         return sessions
@@ -69,16 +75,22 @@ def get_sessions(profile_id: UUID) -> list[Session]:
 
 
 def upsert_session(session_id: UUID, content: dict[str, Any]) -> None:
-    content["id"] = str(session_id)
+    logger.info(f"upserting session with id: {session_id}")
     existing_row = supabase.table("sessions").select("*").eq("id", session_id).execute()
-
+    # built in upsert didnt work, had to give already defined foreign keys or it would error
     if len(existing_row.data) == 0:
-        logger.warning(f"inserting session with id: {session_id}")
+        insert_session(session_id, content)  
+        return
+    update_session(session_id, content)
+
+def insert_session(session_id: UUID, content: dict[str, Any]) -> None:
+        logger.info(f"inserting session with id: {session_id}")
         supabase.table("sessions").insert(content).execute()
 
-    else:
-        logger.warning(f"updating session with id: {session_id}")
-        supabase.table("sessions").update(content).eq("id", session_id).execute()
+
+def update_session(session_id: UUID, content: dict[str, Any]):
+    logger.info(f"updating session with id: {session_id}")
+    supabase.table("sessions").update(content).eq("id", session_id).execute()
 
 
 def post_session(session: Session) -> None:
@@ -88,6 +100,9 @@ def post_session(session: Session) -> None:
         json.loads(json.dumps(session.model_dump(), default=str))
     ).execute()
 
+
+def delete_session(session_id: UUID) -> None:
+    supabase.table("sessions").delete().eq("id", session_id).execute()
 
 def get_messages(session_id: UUID) -> list[Message] | None:
     """Get all messages for a given session."""
