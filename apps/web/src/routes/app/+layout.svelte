@@ -25,7 +25,7 @@
 		name: string;
 		items: {
 			name: string;
-			href?: string;
+			href: string;
 			icon: ComponentType<Icon>;
 			current: boolean;
 			pendingCount?: number;
@@ -67,12 +67,6 @@
 					name: 'Account',
 					href: '/app/account',
 					icon: CircleUserRound,
-					current: false
-				},
-				{
-					name: 'Subscription',
-					href: '/app/subscription',
-					icon: UserCheck,
 					current: false
 				}
 			]
