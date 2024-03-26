@@ -78,17 +78,24 @@
 	}
 
 	async function deleteSession(sessionId: string) {
+        console.log('Deleting session', sessionId);
 		deletingInProgress = true;
 		deletingSession = sessionId;
         
-        api.deleteSession(sessionId as UUID);
+        const success = api.deleteSession(sessionId as UUID);
+
+        if (!success) {
+            console.error('Failed to delete session');
+            return;
+        }
+        console.log('Successfully deleted session');
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
 		if (session?.id === sessionId) {
-			session = null;
+            window.location.href = '/app/session/';
 		}
 	}
 

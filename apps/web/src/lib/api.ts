@@ -58,23 +58,28 @@ export const startSession = async (
 
 export const deleteSession = async (sessionId: UUID): Promise<boolean> => {
 	console.log('deleteSession', sessionId);
-	const success: boolean = await fetch(`${PUBLIC_API_URL}/sessions/delete`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ session_id: sessionId })
-	})
-		.then(async (response) => {
-			if (!response.ok) {
-				console.error(`Failed to upsert session. Bad response`, response, await response.json());
-				return false;
+	try {
+		const success: boolean = await fetch(
+			`${PUBLIC_API_URL}/sessions/delete?session_id=${sessionId}`,
+			{
+				method: 'POST'
 			}
-			return true;
-		})
-		.catch((error) => {
-			console.error(`deleteSession: error`, error);
-			return false;
-		});
-	return success;
+		)
+			.then(async (response) => {
+				if (!response.ok) {
+					console.error(`Failed to upsert session. Bad response`, response, await response.json());
+					return false;
+				}
+				console.log('deleteSession: success', response, await response.json());
+				return true;
+			})
+			.catch((error) => {
+				console.error(`deleteSession: error`, error);
+				return false;
+			});
+		return success;
+	} catch (error) {
+		console.error(`deleteSession: error`, error);
+		return false;
+	}
 };
