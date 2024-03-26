@@ -37,7 +37,7 @@
 		inputs = inputs;
 	}
 
-	$: apiNames = data.data;
+	$: apiTypes = data.data;
 
 	$: myApi = data.currentUserApis;
 
@@ -178,14 +178,14 @@
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content class="z-50">
-										{#each apiNames as name}
+										{#each apiTypes as apiType}
 											<DropdownMenu.CheckboxItem
-												checked={newApiName === name.name}
+												checked={newApiName === apiType.name}
 												on:click={() => {
-													apiId = name.id;
+													apiId = apiType.id;
 												}}
 											>
-												{name.name}
+												{apiType.name}
 											</DropdownMenu.CheckboxItem>
 										{/each}
 									</DropdownMenu.Content>
