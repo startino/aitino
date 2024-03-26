@@ -35,25 +35,31 @@ export const startSession = async (
 	title: string
 ): Promise<models.Session | false> => {
 	console.log('startSession', profileId, crewId, title);
-	const response: models.Session | false = await fetch(
-		`${PUBLIC_API_URL}/sessions/run?id=${crewId}&profile_id=${profileId}&session_title=${encodeURIComponent(title)}`
-	)
-		.then(async (response) => {
-			if (!response.ok) {
-				console.error(`Failed to upsert session. Bad response`, response, await response.json());
-				return false;
-			}
-			const {
-				data: { session }
-			} = (await response.json()) as { data: { session: models.Session } };
-			return session;
+	try {
+		const response: models.Session | false = await fetch(`${PUBLIC_API_URL}/sessions/run`, {
+			method: 'POST',
+			body: JSON.stringify({ crew_id: crewId, profile_id: profileId, title })
 		})
-		.catch((error) => {
-			console.error(`startSession: error`, error);
-			return false;
-		});
+			.then(async (response) => {
+				if (!response.ok) {
+					console.error(`Failed to upsert session. Bad response`, response, await response.json());
+					return false;
+				}
+				const {
+					data: { session }
+				} = (await response.json()) as { data: { session: models.Session } };
+				return session;
+			})
+			.catch((error) => {
+				console.error(`startSession: error`, error);
+				return false;
+			});
 
-	return response;
+		return response;
+	} catch (error) {
+		console.error(`deleteSession: error`, error);
+		return false;
+	}
 };
 
 export const deleteSession = async (sessionId: UUID): Promise<boolean> => {
