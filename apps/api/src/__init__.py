@@ -20,10 +20,15 @@ from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewModel, Message, Session
 from .parser import parse_input_v0_2 as parse_input
+from .routers import crews, sessions
 
 logger = logging.getLogger("root")
 
 app = FastAPI()
+
+
+app.include_router(sessions.router)
+app.include_router(crews.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,6 +85,7 @@ async def run_crew(
     id: UUID,
     profile_id: UUID,
     background_tasks: BackgroundTasks,
+    session_title: str = "Untitled",
     session_id: UUID | None = None,
     reply: str | None = None,
     mock: bool = False,
@@ -129,6 +135,7 @@ async def run_crew(
         session = Session(
             crew_id=id,
             profile_id=profile_id,
+            title=session_title,
         )
         db.post_session(session)
 
