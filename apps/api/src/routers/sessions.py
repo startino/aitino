@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, APIRouter
+from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
 from src import mock as mocks
 from src.crew import Crew
@@ -22,10 +22,12 @@ router = APIRouter(
 
 logger = logging.getLogger("root")
 
-@router.post("/")
-def get_sessions(profile_id: UUID | None = None, session_id: UUID | None = None) -> list[Session]:
-    return db.get_sessions(profile_id, session_id)
 
+@router.post("/")
+def get_sessions(
+    profile_id: UUID | None = None, session_id: UUID | None = None
+) -> list[Session]:
+    return db.get_sessions(profile_id, session_id)
 
 
 @router.post("/upsert")
@@ -137,4 +139,3 @@ async def run_crew(
         "data": {"session": session.model_dump()},
         "rate_limit": current_rate_limit.__dict__(),
     }
-
