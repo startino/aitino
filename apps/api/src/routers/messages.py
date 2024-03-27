@@ -15,10 +15,7 @@ from src.interfaces import db
 from src.models import CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
 
-router = APIRouter(
-    prefix="/messages",
-    tags=["messages"],
-)
+router = APIRouter(prefix="/messages", tags=["messages"])
 
 logger = logging.getLogger("root")
 
