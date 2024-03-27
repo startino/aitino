@@ -219,7 +219,20 @@ def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
     if len(response.data) < len(agent_ids):
         return None
 
-    return {d["id"]: d["description"] for d in response.data}
+    return {data["id"]: data["description"] for data in response.data}
+
+
+# typed as list[str] even though its technically UUID,
+# since its typed this way in the get_tool_ids_from_agents
+def get_api_key_type_ids(tool_ids: list[str]) -> dict[str, str]:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tools")
+        .select("id", "api_key_type_id")
+        .in_("id", tool_ids)
+        .execute()
+    )
+    return {data["id"]: data["api_key_type_id"] for data in response.data}
 
 
 def post_agents(agents: list[AgentModel]) -> None:
@@ -273,17 +286,23 @@ def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[CrewRespon
     return [CrewResponseModel(**data) for data in response.data]
 
 
-def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
-    """Gets an api key given a profile id and the type of api key."""
+def get_tool_api_keys(
+    profile_id: UUID, api_key_type_ids: list[str] | None = None
+) -> dict[str, str]:
+    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
+    # casted_ids = [str(api_key_type_id) for api_key_type_id in api_key_type_ids]
     supabase: Client = create_client(url, key)
-    response = (
+    query = (
         supabase.table("users_api_keys")
-        .select("api_key")
-        .filter("profile_id", "eq", str(profile_id))
-        .filter("api_key_type_id", "eq", str(api_key_type_id))
-        .execute()
+        .select("api_key", "api_key_type_id")
+        .eq("profile_id", profile_id)
     )
-    return response.data[0]["api_key"]
+
+    if api_key_type_ids:
+        query = query.in_("api_key_type_id", api_key_type_ids)
+
+    response = query.execute()
+    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
 
 
 def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
@@ -419,6 +438,8 @@ def insert_profile(profile: ProfileRequestModel) -> ProfileResponseModel:
     return ProfileResponseModel(**response.data[0])
 
 
+# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]:
+#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id)
 if __name__ == "__main__":
     from src.models import Session
 
