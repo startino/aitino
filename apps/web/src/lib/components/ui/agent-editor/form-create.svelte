@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, Plus } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { createNewAgents, type AgentFormSchema } from '$lib/schema';
@@ -33,11 +33,18 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>
-	<div class="absolute bottom-5 right-5">
-		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })} on:click={handleTrigger}>
-			Create Agent
-		</Dialog.Trigger>
-	</div>
+	<!-- <div>
+		
+	</div> -->
+	<Dialog.Trigger
+		on:click={handleTrigger}
+		class="to-primary-800 bg-background transition-hover from-primary-950 group relative flex  flex-col overflow-hidden rounded-lg shadow-lg duration-1000 hover:scale-105 hover:bg-gradient-to-br hover:shadow-xl"
+	>
+		<Plus
+			class=" absolute left-[50%] top-[50%] z-10 flex-shrink-0 translate-x-[-50%] translate-y-[-50%] transition-all duration-300 "
+			size="120"
+		/>
+	</Dialog.Trigger>
 	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
 		<form action="?/creatAgents" method="POST" use:enhance>
 			<AgentEditorItems
