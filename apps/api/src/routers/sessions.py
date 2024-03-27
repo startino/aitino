@@ -39,11 +39,6 @@ def get_sessions(
     return db.get_sessions(profile_id, session_id)
 
 
-@router.post("{session_id}/upsert/", response_model=SessionResponse)
-def upsert_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
-    return db.upsert_session(session_id, content)
-
-
 @router.patch("/{session_id}", response_model=SessionResponse)
 def update_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
     return db.update_session(session_id, content)

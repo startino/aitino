@@ -87,17 +87,6 @@ def get_sessions(
     return sessions
 
 
-def upsert_session(
-    session_id: UUID, content: SessionUpdate | SessionRequest
-) -> SessionResponse:
-    logger.info(f"upserting session with id: {session_id}")
-    existing_row = supabase.table("sessions").select("*").eq("id", session_id).execute()
-    # built in upsert didnt work, had to give already defined foreign keys or it would error
-    if len(existing_row.data) == 0:
-        return insert_session(content)  # type: ignore
-    return update_session(session_id, content)  # type: ignore
-
-
 def insert_session(content: SessionRequest) -> SessionResponse:
     logger.info(f"inserting session")
     response = (
