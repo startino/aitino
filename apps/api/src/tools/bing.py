@@ -7,6 +7,9 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
 from langchain_community.tools import BingSearchRun
 from langchain_community.utilities import BingSearchAPIWrapper
+from langchain.agents import Tool
+from langchain.pydantic_v1 import BaseModel, Field
+from langchain.tools import BaseTool
 
 load_dotenv()
 
