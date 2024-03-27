@@ -10,21 +10,39 @@
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import { invalidateAll } from '$app/navigation';
+	import { Loader2 } from 'lucide-svelte';
+	import type { ActionData, PageData } from './$types';
 
-	export let data;
-	export let form;
+	export let data: PageData;
+	export let form: ActionData;
 
 	$: myCrews = data.data as ArrayLike<unknown> | Iterable<unknown>;
 
 	let selectedcrew: Crew;
 	let open = false;
+	let state: 'idle' | 'loading' | 'error' = 'idle';
 
 	const editcrew = async (crew: Crew) => {
 		selectedcrew = crew;
 		open = true;
 	};
 
-	console.log(form, 'form');
+	$: handleSubmit = async () => {
+		console.log(form, 'form');
+
+		if (form?.success) {
+			toast.promise(invalidateAll(), {
+				loading: 'Saving changes...',
+				success: 'Changes saved successfully',
+				error: 'An error occurred while saving changes'
+			});
+
+			state = 'idle';
+			open = false;
+		}
+	};
+
+	$: handleSubmit();
 </script>
 
 <div class="bg-background min-h-screen p-8">
@@ -81,7 +99,7 @@
 					<Input
 						id="title"
 						name="title"
-						value={selectedcrew.title}
+						bind:value={selectedcrew.title}
 						class="col-span-3 focus-visible:ring-1 focus-visible:ring-offset-0"
 					/>
 				</div>
@@ -92,30 +110,35 @@
 					</Label>
 				</div>
 			</div>
+			{#if selectedcrew.title.trim().length === 0}
+				<p class="text-red-500">Title is required</p>
+			{/if}
 			<div class="mb-2 flex w-full items-center gap-2">
 				<div class="w-full space-y-4">
 					<Label for="description" class="text-right">Description</Label>
 					<Textarea
 						id="description"
 						name="description"
-						value={selectedcrew.description}
+						bind:value={selectedcrew.description}
 						class="block h-24 w-full resize-none focus-visible:ring-1 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
 			</div>
+			{#if selectedcrew.description.trim().length === 0}
+				<p class="text-red-500">Description is required</p>
+			{/if}
 			<Dialog.Footer>
 				<Button
+					disabled={selectedcrew.title.trim().length === 0 ||
+						selectedcrew.description.trim().length === 0}
 					type="submit"
 					on:click={() => {
-						if (form?.success) {
-							toast.promise(invalidateAll(), {
-								loading: 'Saving changes...',
-								success: 'Changes saved successfully',
-								error: 'An error occurred while saving changes'
-							});
-							open = false;
-						}
-					}}>Save changes</Button
+						state = 'loading';
+					}}
+				>
+					{#if state === 'loading'}
+						<Loader2 class="mr-2 mt-1 h-4 w-4 animate-spin" />
+					{/if} Save changes</Button
 				>
 			</Dialog.Footer>
 		</form></Dialog.Content
