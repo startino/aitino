@@ -81,7 +81,7 @@ move_file: dict = {
     "created_at": "2024-01-01T00:00:00.000Z",
 }
 
-tool, prompt = "bing search run", "Hunter x Hunter"
+tool, prompt = "alpha vantage tool", "get currency exchange rate between USD and NOK"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",

@@ -183,11 +183,12 @@ class Crew:
         if not descriptions:
             raise ValueError("at least one agent id is invalid")
 
-        formatted_descriptions = self._extract_uuid(
-            descriptions
-        )  # idk why this is the only way i got it working, but will hopefully simplify later...
+        formatted_descriptions = self._extract_uuid(descriptions)
+        # idk why this is the only way i got it working, but will hopefully simplify later...
         # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
-        # logger.warn(f"formatted descriptions: {formatted_descriptions}")
+
+        profile_api_keys = db.get_tool_api_keys(self.profile_id)
+
         for agent in crew_model.agents:
             valid_agent_tools = []
             tool_schemas = {}
@@ -198,17 +199,16 @@ class Crew:
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
+            api_key_types = db.get_api_key_type_ids(tool_ids)
+
+            # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
             if len(tool_ids):
                 for tool in tool_ids:
-                    generated_tool = generate_tool_from_uuid(tool)
-                    (
-                        (
-                            self.valid_tools.append(generated_tool),
-                            valid_agent_tools.append(generated_tool),
-                        )
-                        if generated_tool is not None
-                        else None
-                    )
+                    try:
+                        generated_tool = generate_tool_from_uuid(tool, api_key_types, profile_api_keys)
+                    except TypeError as e:
+                        raise e
+                    ((self.valid_tools.append(generated_tool), valid_agent_tools.append(generated_tool)) if generated_tool is not None else None)
 
                 logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
