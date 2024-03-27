@@ -53,7 +53,7 @@
 			items: [
 				{
 					name: 'Crews',
-					href: '/app/crews/editor',
+					href: '/app/crews',
 					icon: UsersRound,
 					current: false
 				},
