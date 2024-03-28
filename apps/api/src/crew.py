@@ -205,10 +205,19 @@ class Crew:
             if len(tool_ids):
                 for tool in tool_ids:
                     try:
-                        generated_tool = generate_tool_from_uuid(tool, api_key_types, profile_api_keys)
+                        generated_tool = generate_tool_from_uuid(
+                            tool, api_key_types, profile_api_keys
+                        )
                     except TypeError as e:
                         raise e
-                    ((self.valid_tools.append(generated_tool), valid_agent_tools.append(generated_tool)) if generated_tool is not None else None)
+                    (
+                        (
+                            self.valid_tools.append(generated_tool),
+                            valid_agent_tools.append(generated_tool),
+                        )
+                        if generated_tool is not None
+                        else None
+                    )
 
                 logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
