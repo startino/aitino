@@ -2,14 +2,13 @@ import os
 from typing import Type
 
 from dotenv import load_dotenv
-from langchain.agents import Tool
-from langchain.pydantic_v1 import BaseModel, Field
-from langchain.tools import BaseTool
 from langchain_community.tools import BingSearchRun
 from langchain_community.utilities import BingSearchAPIWrapper
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
+from langchain_community.tools import BingSearchRun
+from langchain_community.utilities import BingSearchAPIWrapper
 
 load_dotenv()
 
@@ -21,7 +20,6 @@ ID = "71e4ddcc-4475-46f2-9816-894173b1292e"
 
 class BingToolInput(BaseModel):
     tool_input: str = Field(title="Query", description="Search query input to search bing")
-
 
 class BingTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = BingToolInput
