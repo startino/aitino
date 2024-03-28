@@ -20,7 +20,7 @@ from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewModel, Message, Session
 from .parser import parse_input_v0_2 as parse_input
-from .routers import crews, messages, sessions
+from .routers import agents, crews, messages, sessions
 
 logger = logging.getLogger("root")
 
@@ -29,6 +29,7 @@ app = FastAPI()
 sessions.router.include_router(messages.router)
 app.include_router(sessions.router)
 app.include_router(crews.router)
+app.include_router(agents.router)
 
 app.add_middleware(
     CORSMiddleware,
