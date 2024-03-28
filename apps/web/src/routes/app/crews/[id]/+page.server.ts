@@ -1,10 +1,15 @@
 import * as db from '$lib/server/db';
 import type { Crew } from '$lib/types/models';
 import type { CrewLoad } from '$lib/types/loads';
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad, Actions } from '../editor/$types';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, locals: { getSession, supabase } }) => {
+export const load: PageServerLoad = async ({
+	cookies,
+	locals: { getSession, supabase },
+	params
+}) => {
+	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
 
@@ -25,16 +30,15 @@ export const load: PageServerLoad = async ({ cookies, locals: { getSession, supa
 	const userAgents = db.getAgents(profileId);
 	const publishedAgents = db.getPublishedAgents();
 
-	const userCrews = await db.getCrews(profileId);
+	const userCrews = await db.getCrew(id);
 
-	crew = userCrews[0] ?? crew;
+	console.log(userCrews, 'userCrews', id, 'crewId');
 
-	console.log({ crew });
+	crew = userCrews ?? crew;
 
 	const { data: crewAgents, error } = await supabase.from('agents').select().in('id', crew.nodes);
 
 	if (!error) {
-		console.log({ crewAgents });
 		// maps agents data to svelte flow nodes
 		crew.nodes = crewAgents.map((a) => ({
 			id: a.id,

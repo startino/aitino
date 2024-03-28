@@ -22,6 +22,7 @@
 	import type { PanelAction, SaveResult } from '$lib/types';
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
 	import { goto } from '$app/navigation';
+	import { afterUpdate, onMount } from 'svelte';
 
 	export let data;
 
@@ -245,7 +246,7 @@
 		$count.prompts++;
 	}
 
-	console.log(data.crew.id, 'from save node 0');
+	// console.log(data.crew.id, 'from save node 0');
 </script>
 
 <div style="height:100vh;">
