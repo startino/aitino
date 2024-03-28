@@ -110,9 +110,9 @@ if __name__ == "__main__":
         "71e4ddcc-4475-46f2-9816-894173b1292e": "5281bbc4-45ea-4f4b-b790-e92c62bbc019",
     }
     api_keys = {
-        '3b64fe26-20b9-4064-907e-f2708b5f1656': '26be6b883469d721ddaae011bcdc13528aa202a61688e5bfeee797c47b2c8712',
-        "5281bbc4-45ea-4f4b-b790-e92c62bbc019": "5a1293d6d2ab4c87a57edcc057f56203",
-        "8a29840f-4748-4ce4-88e6-44e1ef5b7637": "XW8MBS5AI3177W5P",
+        '3b64fe26-20b9-4064-907e-f2708b5f1656': '26be6b883469d721ddaae011bcdc13528aa202a61688e5bfeee797c47b2c8712',  # serpapi
+        "5281bbc4-45ea-4f4b-b790-e92c62bbc019": "5a1293d6d2ab4c87a57edcc057f56203",  # bing search
+        "8a29840f-4748-4ce4-88e6-44e1ef5b7637": "XW8MBS5AI3177W5P",  # alpha vantage
     }
     agents_tools = [
         "f57d47fd-5783-4aac-be34-17ba36bb6242",  # Move File Tool
