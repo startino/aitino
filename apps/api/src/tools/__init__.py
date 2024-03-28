@@ -1,7 +1,7 @@
+import inspect
 import logging
 import os
 import random
-import inspect
 from typing import Any
 
 from langchain_core.tools import BaseTool
@@ -71,6 +71,7 @@ def has_param(cls, param_name):
     init_signature = inspect.signature(cls.__init__)
     return param_name in init_signature.parameters
 
+
 def generate_tool_from_uuid(
     tool: str, api_key_types: dict[str, str], api_keys: dict[str, str]
 ):
@@ -87,15 +88,14 @@ def generate_tool_from_uuid(
                 # set current api key that will be given to current tool (the api_keys dict has key "api_key_type_íd" and value "api_key")
                 api_key = api_keys[tool_key_type]
 
-
-            if has_param(tool_cls, 'api_key'):
-                #logger.info("has parameter 'api_key'")
+            if has_param(tool_cls, "api_key"):
+                # logger.info("has parameter 'api_key'")
                 if not api_key:
-                    raise TypeError("api key should not be none when passed to tool that needs api key")
+                    raise TypeError(
+                        "api key should not be none when passed to tool that needs api key"
+                    )
 
                 return tools[tool_id](api_key=api_key)
-                    
-                    
 
             logger.info("making tool without api_key")
             return tool_cls()
@@ -105,23 +105,22 @@ def generate_tool_from_uuid(
 
 if __name__ == "__main__":
     api_key_types = {
-        'fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f': '8a29840f-4748-4ce4-88e6-44e1ef5b7637', 
-        '4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f': '3b64fe26-20b9-4064-907e-f2708b5f1656',
-        '71e4ddcc-4475-46f2-9816-894173b1292e': '5281bbc4-45ea-4f4b-b790-e92c62bbc019',
+        "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f": "8a29840f-4748-4ce4-88e6-44e1ef5b7637",
+        "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f": "3b64fe26-20b9-4064-907e-f2708b5f1656",
+        "71e4ddcc-4475-46f2-9816-894173b1292e": "5281bbc4-45ea-4f4b-b790-e92c62bbc019",
     }
-        #'3b64fe26-20b9-4064-907e-f2708b5f1656': '26be6b883469d721ddaae011bcdc13528aa202a61688e5bfeee797c47b2c8712', 
     api_keys = {
-        '5281bbc4-45ea-4f4b-b790-e92c62bbc019': '5a1293d6d2ab4c87a57edcc057f56203',
-        '8a29840f-4748-4ce4-88e6-44e1ef5b7637': 'XW8MBS5AI3177W5P',
+        '3b64fe26-20b9-4064-907e-f2708b5f1656': '26be6b883469d721ddaae011bcdc13528aa202a61688e5bfeee797c47b2c8712',
+        "5281bbc4-45ea-4f4b-b790-e92c62bbc019": "5a1293d6d2ab4c87a57edcc057f56203",
+        "8a29840f-4748-4ce4-88e6-44e1ef5b7637": "XW8MBS5AI3177W5P",
     }
-        #"71e4ddcc-4475-46f2-9816-894173b1292e",
     agents_tools = [
-        "f57d47fd-5783-4aac-be34-17ba36bb6242", # Move File Tool
-        "ca16f5dd-c17f-4231-a3e6-4b6ddf2f3d67", # Read File Tool
-        "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f", # Scraper Tool
-        "bb207b0c-e998-4a40-9508-ec37dd195b0c", # Arxiv Tool
-        "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f", # Alpha Vantage Tool
-        "243f1c6b-dfc5-4d64-ab7f-331e74858393", # Wikipedia Tool
+        "f57d47fd-5783-4aac-be34-17ba36bb6242",  # Move File Tool
+        "ca16f5dd-c17f-4231-a3e6-4b6ddf2f3d67",  # Read File Tool
+        "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f",  # Scraper Tool
+        "bb207b0c-e998-4a40-9508-ec37dd195b0c",  # Arxiv Tool
+        "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f",  # Alpha Vantage Tool
+        "243f1c6b-dfc5-4d64-ab7f-331e74858393",  # Wikipedia Tool
     ]
     generated_tools = []
     for tool in agents_tools:
