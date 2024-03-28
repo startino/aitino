@@ -24,6 +24,14 @@
 
 <div class="bg-background min-h-screen p-8">
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+		<CreateAgent
+			on:close={() => (open = false)}
+			{form}
+			data={data.agentForm}
+			agentTools={myTools}
+			apiKeyTypes={data.api_key_types}
+			user_api_keys={data.user_api_keys}
+		/>
 		{#each myAgents as agent}
 			<div
 				class="bg-surface group relative flex flex-col overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
@@ -49,14 +57,6 @@
 				>
 			</div>
 		{/each}
-		<CreateAgent
-			on:close={() => (open = false)}
-			{form}
-			data={data.agentForm}
-			agentTools={myTools}
-			apiKeyTypes={data.api_key_types}
-			user_api_keys={data.user_api_keys}
-		/>
 	</div>
 </div>
 
