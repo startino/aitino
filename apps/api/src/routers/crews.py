@@ -14,7 +14,7 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 
-@router.post("/")
+@router.post("/", status_code = 201)
 def insert_crew(crew: CrewRequestModel) -> CrewResponseModel:
     if not db.get_profile_from_id(crew.profile_id):
         raise HTTPException(404, "profile not found")

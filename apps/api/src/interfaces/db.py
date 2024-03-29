@@ -19,13 +19,17 @@ from src.models import (
     CrewResponseModel,
     CrewUpdateModel,
     Message,
+    ProfileResponseModel,
+    ProfileUpdateModel,
     Session,
     SessionRequest,
     SessionResponse,
     SessionStatus,
     SessionUpdate,
+    ProfileRequestModel,
+    APIKeyRequestModel,
+    APIKeyResponseModel,
 )
-from src.models.profile import Profile
 from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
@@ -221,16 +225,26 @@ def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
     return response.data[0]["api_key"]
 
 
+def get_api_keys(profile_id: UUID) -> dict[UUID, str]:
+    response = supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id).execute()
+    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
+
+
+def insert_api_key(api_key: APIKeyRequestModel) -> APIKeyResponseModel:
+    response = supabase.table("users_api_keys").insert(json.loads(api_key.model_dump_json())).execute()
+    return APIKeyResponseModel(**response.data[0])
+
+
+def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel | None:
+    response = supabase.table("users_api_keys").delete().eq("id", api_key_id).execute()
+    if not len(response.data):
+        return None
+    return APIKeyResponseModel(**response.data[0])
+
+
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     logger.debug(f"Updating session status: {status} for session: {session_id}")
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
-
-
-def get_profile_from_id(profile_id: UUID) -> Profile | None:
-    response = supabase.table("profiles").select("*").eq("id", profile_id).execute()
-    if len(response.data) == 0:
-        return None
-    return Profile(**response.data[0])
 
 
 def get_published_agents() -> list[AgentResponseModel]:
@@ -282,15 +296,47 @@ def delete_agent(agent_id: UUID) -> AgentResponseModel:
     return AgentResponseModel(**response.data[0])
 
 
+def get_profiles() -> list[ProfileResponseModel]:
+    response = supabase.table("profiles").select("*").execute()
+    return [ProfileResponseModel(**data) for data in response.data]
+
+
+def get_profile_from_id(profile_id: UUID) -> ProfileResponseModel | None:
+    response = supabase.table("profiles").select("*").eq("id", profile_id).execute()
+    if len(response.data) == 0:
+        return None
+    return ProfileResponseModel(**response.data[0])
+
+
+def update_profile(
+    profile_id: UUID, content: ProfileUpdateModel
+) -> ProfileResponseModel:
+    response = (
+        supabase.table("profiles")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("id", profile_id)
+        .execute()
+    )
+    return ProfileResponseModel(**response.data[0])
+
+
+def insert_profile(profile: ProfileRequestModel) -> ProfileResponseModel:
+    response = supabase.table("profiles").insert(json.loads(profile.model_dump_json(exclude_none=True))).execute()
+    return ProfileResponseModel(**response.data[0])
+
+
 if __name__ == "__main__":
     from src.models import Session
 
-    print(
-        insert_session(
-            SessionRequest(
-                crew_id=UUID("1c11a9bf-748f-482b-9746-6196f136401a"),
-                profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
-                title="hello",
-            )
-        )
-    )
+#    print(
+#        insert_session(
+#            SessionRequest(
+#                crew_id=UUID("1c11a9bf-748f-482b-9746-6196f136401a"),
+#                profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
+#                title="hello",
+#            )
+#        )
+#    )
+#
+    
+    print(get_api_keys(UUID("070c1d2e-9d72-4854-a55e-52ade5a42071")))
