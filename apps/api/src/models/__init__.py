@@ -1,5 +1,10 @@
 from .agent_config import AgentConfig
-from .agent_model import AgentModel
+from .agent_model import (
+    AgentModel,
+    AgentRequestModel,
+    AgentResponseModel,
+    AgentUpdateModel,
+)
 from .code_execution_config import CodeExecutionConfig
 from .crew_model import (
     CrewModel,
@@ -36,4 +41,7 @@ __all__ = [
     "SessionRequest",
     "RunResponseModel",
     "CrewResponseModel",
+    "AgentResponseModel",
+    "AgentRequestModel",
+    "AgentUpdateModel",
 ]
