@@ -11,9 +11,13 @@ from supabase import Client, create_client
 
 from src.models import (
     AgentModel,
+    AgentRequestModel,
+    AgentResponseModel,
+    AgentUpdateModel,
     CrewModel,
     CrewRequestModel,
     CrewResponseModel,
+    CrewUpdateModel,
     Message,
     Session,
     SessionRequest,
@@ -21,7 +25,6 @@ from src.models import (
     SessionStatus,
     SessionUpdate,
 )
-from src.models.crew_model import CrewUpdateModel
 from src.models.profile import Profile
 from src.parser import parse_input_v0_2 as parse_input
 
@@ -185,9 +188,25 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
     return CrewResponseModel(**response.data[0])
 
 
-def get_crew(crew_id: UUID) -> CrewResponseModel:
+def get_crew_from_id(crew_id: UUID) -> CrewResponseModel:
     response = supabase.table("crews").select("*").eq("id", crew_id).execute()
     return CrewResponseModel(**response.data[0])
+
+
+def get_published_crews() -> list[CrewResponseModel]:
+    response = supabase.table("crews").select("*").eq("published", "TRUE").execute()
+    return [CrewResponseModel(**data) for data in response.data]
+
+
+def get_user_crews(profile_id: UUID, ascending: bool = True) -> list[CrewResponseModel]:
+    response = (
+        supabase.table("crews")
+        .select("*")
+        .eq("profile_id", profile_id)
+        .order("created_at", desc=(not ascending))
+        .execute()
+    )
+    return [CrewResponseModel(**data) for data in response.data]
 
 
 def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
@@ -200,7 +219,6 @@ def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
         .execute()
     )
     return response.data[0]["api_key"]
-    # This thing might be wrong, dont care right now
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
@@ -213,6 +231,55 @@ def get_profile_from_id(profile_id: UUID) -> Profile | None:
     if len(response.data) == 0:
         return None
     return Profile(**response.data[0])
+
+
+def get_published_agents() -> list[AgentResponseModel]:
+    response = supabase.table("agents").select("*").eq("published", "TRUE").execute()
+    return [AgentResponseModel(**data) for data in response.data]
+
+
+def get_users_agents(profile_id: UUID) -> list[AgentResponseModel]:
+    response = (
+        supabase.table("agents").select("*").eq("profile_id", profile_id).execute()
+    )
+    return [AgentResponseModel(**data) for data in response.data]
+
+
+def get_agent_by_id(agent_id: UUID) -> AgentResponseModel | None:
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+    if not response.data:
+        return None
+
+    return AgentResponseModel(**response.data[0])
+
+
+def get_agents_from_crew(crew_id: UUID) -> list[AgentResponseModel]:
+    nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
+    response = (
+        supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
+    )
+    return [AgentResponseModel(**data) for data in response.data]
+
+
+def insert_agent(content: AgentRequestModel) -> AgentResponseModel:
+    response = (
+        supabase.table("agents").insert(json.loads(content.model_dump_json())).execute()
+    )
+    return AgentResponseModel(**response.data[0])
+
+
+def update_agents(content: AgentUpdateModel) -> AgentResponseModel:
+    response = (
+        supabase.table("agents")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+    return AgentResponseModel(**response.data[0])
+
+
+def delete_agent(agent_id: UUID) -> AgentResponseModel:
+    response = supabase.table("agents").delete().eq("id", agent_id).execute()
+    return AgentResponseModel(**response.data[0])
 
 
 if __name__ == "__main__":

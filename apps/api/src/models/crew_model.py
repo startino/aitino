@@ -46,6 +46,7 @@ class CrewUpdateModel(BaseModel):
 
 
 class CrewResponseModel(BaseModel):
+    id: UUID
     profile_id: UUID
     edges: list[dict]
     published: bool
