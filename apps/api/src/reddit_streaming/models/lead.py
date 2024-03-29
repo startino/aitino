@@ -16,3 +16,4 @@ class Lead(BaseModel):
     status: str
     title: str
     body: str
+    url: str

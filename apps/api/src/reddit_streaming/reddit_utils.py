@@ -19,6 +19,8 @@ def get_subreddits(subreddit_names:str):
     )
     print("Reddit sign in success! Username: ", reddit.user.me())
 
+    subreddits = reddit.subreddit(subreddit_names)
+    
     return subreddits
 
 

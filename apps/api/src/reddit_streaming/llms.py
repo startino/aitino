@@ -33,7 +33,7 @@ def create_chain(model: str):
     - A processing chain configured to use the specified language model and to parse its output.
     """
     
-    llm = ChatOpenAI(model=model, temperature=0.1, openai_api_key=OPENAI_API_KEY, verbose=True)
+    llm = ChatOpenAI(model=model, temperature=0.1, openai_api_key=OPENAI_API_KEY)
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RelevanceResult)
