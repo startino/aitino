@@ -2,9 +2,9 @@ from typing import List
 from saving import save_submission
 import diskcache as dc
 import mail
-from models import Submission
+from models import Submission, FilterQuestion
 import reddit_utils
-from llms import invoke_chain, create_chain, summarize_submission
+from llms import invoke_chain, create_chain, summarize_submission, filter_with_questions
 from logging_utils import log_relevance_calculation
 
 # Relevant subreddits to Startino
@@ -26,7 +26,7 @@ def start_reddit_stream():
             continue
 
         # Use LLMs to see if submission is relevant (expensive part)
-        is_relevant, cost, reason = evaluate_relevance(submission)
+        is_relevant, cost, reason = evaluate_relevance(submission, filter_with_questions=True)
 
         # Send email if its relevant
         if (is_relevant):
@@ -92,7 +92,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
     return majority_vote(votes), certainty, cost, reasons
 
 
-def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
+def evaluate_relevance(submission: Submission, filter: bool) -> tuple[bool, float, str]:
     """
     Determines the relevance of a submission using GPT-3.5-turbo, 
     optionally escalating to GPT-4-turbo for higher accuracy.
@@ -105,40 +105,29 @@ def evaluate_relevance(submission: Submission) -> tuple[bool, float, str]:
     - total_cost (float): The total cost incurred from relevance calculations.
     """
 
-    ## TODO: switch from certainty method to funnel method
-    # I realized certainty method doesn't work with GPT-3. might work with multiple GOOD models. 
-    # but at that point its more expensive. so scratch that.
-    # totally_irrelevant = relevant_at_all(submission)z
-    total_cost = 0
+    if (filter):
+        questions = [
+            FilterQuestion(question="Is the author himself a tech related person? i.e. a coder, programmer, software developer.", reject_on=True),
+            FilterQuestion(question="Has the project already started development?", reject_on=True),
+            FilterQuestion(question="Is the author currently engaged in job searching activities and promoting their technical expertise?", reject_on=True),
+            FilterQuestion(question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.", reject_on=True),
+        ]
+        
+        keep_submission, source = filter_with_questions(submission, questions)
+        if not keep_submission:
+            return False, 0, source
+    
     is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
     log_relevance_calculation('gpt-4-turbo-preview', submission, is_relevant, gpt4_cost, reasons[0])
 
-    total_cost += gpt4_cost
-
     # I've come to conclude that GPT-3.5 sucks.
-    # So I am temporarily removing the extra steps
+    # So I am temporarily removing the method of using certainty
     # TODO: Give this another go but with better prompting
     # and use "relevance_score" as a float instead "is_relevant" as a bool
     # Since it seems like if it is picking between yes/no,
-    # its inputted certainty will always be high
-    if (False):
-        is_relevant, certainty, gpt4_cost = calculate_relevance('gpt-4-turbo-preview', 3, submission)
+    # its certainty will always be high
 
-        print(f"GPT-4 Relevant: {is_relevant}")
-        print(f"GPT-4 Certainty: {certainty}")
-        print(f"GPT-4 Cost: {gpt4_cost} ")
-        
-        total_cost += gpt4_cost
-
-        print(f"Total Cost: {total_cost} \n")
-
-        # Return the results from GPT-4-turbo
-        return is_relevant, total_cost
-    else:
-        print(f"Total Cost: {total_cost}")
-        print("\n")
-        # Return the results from GPT-3.5-turbo since its accurate and valid
-        return is_relevant, total_cost, reasons[-1]
+    return is_relevant, total_cost, reasons[-1]
 
 
 def majority_vote(bool_list: List[bool]) -> bool:

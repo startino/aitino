@@ -10,9 +10,8 @@ from dotenv import load_dotenv
 import os
 from langchain_community.callbacks import get_openai_callback
 from prompting import calculate_relevance_prompt, context as company_context, purpose
-from boolean_parser import BooleanOutputParser
 from langchain.output_parsers import PydanticOutputParser
-from models import FilterOutput
+from models import FilterOutput, FilterQuestion
 from dummy_submissions import relevant_submissions, irrelevant_submissions
 
 # Load Enviornment variables
@@ -139,7 +138,7 @@ def summarize_submission(submission: Submission) -> Submission:
 
 
 # uses gpt-3.5-turbo to filter out irrelevant posts by using simple yes no questions
-def filter_submission_with_questions(submission: Submission, questions: List[str]) -> tuple[bool, str]:
+def filter_with_questions(submission: Submission, questions: List[FilterQuestion]) -> tuple[bool, str]:
     """
     Filters out irrelevant posts by asking simple yes/no questions to the LLM.
     The questions are generated using GPT-3.5-turbo.
@@ -158,12 +157,15 @@ def filter_submission_with_questions(submission: Submission, questions: List[str
     - The question that caused the submission to be filtered out.
     """
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
+    parser = PydanticOutputParser(pydantic_object=FilterOutput)
 
     template = """
-    You are a helpful assistant that needs to filter out irrelevant posts.
+    You are a helpful assistant that helps to filter posts.
     You will read a Reddit post, and then answer a yes-no question based on the 
-    post's content and provide the source. 
-    If the specific information is not present in the post, then answer True.
+    post's content and provide the source.
+
+    The term "OP" refers to Original Poster, the person who made the post, also
+    known as the author.
 
     {format_instructions}
     
@@ -174,34 +176,40 @@ def filter_submission_with_questions(submission: Submission, questions: List[str
     Title: {title}
     Content: {selftext}
     """
-
-    parser = PydanticOutputParser(pydantic_object=FilterOutput)
-
+    
     for question in questions:
+
         prompt = PromptTemplate(
             template=template,
             input_variables=["question", "title", "selftext"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
+
         chain = prompt | llm | parser
-        filter_output = chain.invoke({"question": question, "title": submission.title, "selftext": submission.selftext})
-        print(f"Question: {question}")
-        print(f"Result: {filter_output}")
+
+        filter_output = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
+
         filter_output = FilterOutput.parse_obj(filter_output)
-        if not filter_output.answer:
+        
+        print(f"{filter_output} | Rejected on: {question.reject_on}")
+
+        if question.reject_on == filter_output.answer:
+           
+            # Remove the submission
             return False, filter_output.source
     
     return True, "SUCCESS"
 
+
 if __name__ == "__main__":
     # Test the filter_submission_with_questions function
-    submission = relevant_submissions[1]
-    questions = ["Is the author not a tech related person? i.e. a coder, programmer, software developer.",
-                "Is the post NOT asking for employment or looking for a job?",
-                "The project has not already started development, correct?",
-                "Is the post NOT about someone offering their own development or coding services?",
+    submission = relevant_submissions[4]
+    questions = [FilterQuestion(question="Is the author himself a tech related person? i.e. a coder, programmer, software developer.", reject_on=True),
+                FilterQuestion(question="Has the project already started development?", reject_on=True),
+                FilterQuestion(question="Is the author currently engaged in job searching activities and promoting their technical expertise?", reject_on=True),
+                FilterQuestion(question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.", reject_on=True),
     ]
-    # print(filter_submission_with_questions(submission, questions))
+    print(filter_with_questions(submission, questions))
 
     submission = relevant_submissions[0]
-    print(summarize_submission(submission).selftext)
+    #print(summarize_submission(submission).selftext)

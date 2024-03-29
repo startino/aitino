@@ -7,5 +7,5 @@ from langchain_openai import ChatOpenAI
 
 # Define your desired data structure.
 class FilterOutput(BaseModel):
-    answer: bool = Field(description="answer to the question. True or False.")
+    answer: bool = Field(description="Answer to the yes-no question.")
     source: str = Field(description="Either the piece of text you used to answer the question or the logical reason behind it. Should be brief and only have the relevant information")

@@ -1,3 +1,4 @@
+from ast import Sub
 from models import Submission
 
 relevant_submissions = [
@@ -17,8 +18,26 @@ Submission(id="2", url="https://aiti.no", created_utc=00000, title="I have an in
            I am a law student (close to graduating) and have realized that it makes more sense to bring someone in who could take care of the coding end, rather than attempting to learn code myself while balancing my legal career.
            Where can I find someone who would be interested in joining this with me? Also, does anyone here have experience with having AI write code for them? Any advice would be greatly appreciated
             """),
-
-
+Submission(id="3", url="https://aiti.no", created_utc=00000, title="Help with an APP",
+           selftext="""
+           I just wanted to make a post and see if anyone could recommend me a very good/skilled app designer/developer. 
+           Long story short, I have an idea of an app I want to create but I need someone to make that dream a reality 
+           as I have no technological background nor do I know much about creating an app. Any help would be appreciated!
+              """),
+Submission(id="4", url="https://aiti.no", created_utc=00000, title="Cloud Based Software Engineer?",
+           selftext="""
+           Hey all, I have a cloud based Golf Course Management software solution I am trying to create but have absolutely no software engineering experience,
+           all of my experience is in sales and business management. I have quite the budget to get my idea off the ground if anyone knows someone or is seasoned 
+           in software creation please do let me know/ get in touch.
+                """),
+Submission(id="5", url="https://aiti.no", created_utc=00000, title="Using freelance websites for MVP!!",
+           selftext="""
+            I have an idea i am working on and looked into lowcode option, mobile app development.
+            Its just that I cant spare enough time to learn and implement instead thinking of getting MVP done from upwork or fiverr.
+            I think it will help expedite MVP and validate the idea faster.
+            Has anyone done this before?? Any experiences or things to watch out for?? Any recommendations??
+            Other thoughts??
+                """),
 ]
 
 irrelevant_submissions = [
@@ -34,5 +53,13 @@ irrelevant_submissions = [
                 maybe i use a react boilerplate website where i fetch the headless CMS content?
                 or maybe there is a SaaS for my “problem”?
                 video i would host on bunnycdn (cheapest option) or for free on yt
-                """)
+                """),
+    Submission(id="101", url="https://aiti.no", created_utc=00000, title="Seeking Advice on Finding an Investor for Scaling Up My Garden Business",
+               selftext="""
+               I run a garden business and I'm looking for advice on how to find the right investor to help me scale up. 
+               I want to expand my operations to be able to purchase supplies in bulk at lower costs. 
+               Over the past year, my business has generated a turnover of €400,000, with nearly €90,000 in profit. 
+               I'm seeking around €40,000 for the upcoming summer season, during which we anticipate high sales. 
+               Any tips or recommendations on finding potential investors would be greatly appreciated. Thank you!
+                """),
 ]
