@@ -4,6 +4,8 @@ from typing import List
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
+from src.reddit_streaming.models import evaluated_submission
+from src.reddit_streaming.models.evaluated_submission import EvaluatedSubmission
 from models import Submission, RelevanceResult
 from gptrim import trim
 from dotenv import load_dotenv
@@ -33,7 +35,7 @@ def create_chain(model: str):
     - A processing chain configured to use the specified language model and to parse its output.
     """
     
-    llm = ChatOpenAI(model=model, temperature=0.1, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model=model, temperature=0.1)
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RelevanceResult)
@@ -63,7 +65,7 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     for _ in range(3):
         try:
             with get_openai_callback() as cb:
-                result = chain.invoke({"query": f"{calculate_relevance_prompt} \n\n POST CONTENT:\n ```{submission.title}\n\n {submission.selftext}```"})
+                result = chain.invoke({"query": f"{calculate_relevance_prompt} \n\n #POST CONTENT:\n ```{submission.title}\n{submission.selftext}```"})
                 # TODO: Do some cost analysis and saving (for long term insights)
                 return result, cb.total_cost
         except Exception as e:
@@ -85,7 +87,7 @@ def summarize_submission(submission: Submission) -> Submission:
     Returns:
     - The submission object with the selftext replaced with a shorter version (the summary).
     """
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
     # Trim the submission content for cost savings
     selftext = trim(submission.selftext)
@@ -127,7 +129,7 @@ def summarize_submission(submission: Submission) -> Submission:
 
     # Calculate token reduction
     pre_token_count = llm.get_num_tokens(selftext)
-    post_token_count = llm.get_num_tokens(summarized_selftext)
+    post_token_count = llm.get_num_tokens(str(summarized_selftext))
     reduction = ( pre_token_count - post_token_count ) / pre_token_count * 100
 
     # Print the token reduction
@@ -140,7 +142,7 @@ def summarize_submission(submission: Submission) -> Submission:
 
 
 # uses gpt-3.5-turbo to filter out irrelevant posts by using simple yes no questions
-def filter_with_questions(submission: Submission, questions: List[FilterQuestion]) -> tuple[bool, str]:
+def filter_with_questions(submission: Submission, questions: List[FilterQuestion]) -> tuple[bool, str, float]:
     """
     Filters out irrelevant posts by asking simple yes/no questions to the LLM.
     The questions are generated using GPT-3.5-turbo.
@@ -158,7 +160,10 @@ def filter_with_questions(submission: Submission, questions: List[FilterQuestion
     (True = relevant, False = irrelevant)
     - The question that caused the submission to be filtered out.
     """
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key=OPENAI_API_KEY)
+
+    cost = 0
+
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     parser = PydanticOutputParser(pydantic_object=FilterOutput)
 
     template = """
@@ -189,22 +194,25 @@ def filter_with_questions(submission: Submission, questions: List[FilterQuestion
 
         chain = prompt | llm | parser
 
-        filter_output = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
+        with get_openai_callback() as cb:
+                result = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
+                # TODO: Do some cost analysis and saving (for long term insights)
+                cost += cb.total_cost
 
-        filter_output = FilterOutput.parse_obj(filter_output)
+        filter_output = FilterOutput(**filter_output)
         
         if question.reject_on == filter_output.answer:
            
             # Remove the submission
-            return False, filter_output.source
+            return False, filter_output.source, cost
     
-    return True, "SUCCESS"
+    return True, "SUCCESS", cost
 
-def calculate_relevance(model: str,iterations: int, submission: Submission):
+def calculate_relevance(model: str,iterations: int, submission: Submission) -> EvaluatedSubmission:
     """
     Calculates the relevance of a submission by iterating multiple times
     and also calculates the mean certainty of the repetitions.
-
+    
     Parameters:
     - model (str): The model name to use for relevance determination.
     - iterations (int): The number of times to run the calculation.
@@ -217,7 +225,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
     """
 
     cost = 0
-    votes: List[bool] = []
+    votes: list[bool] = []
     
     total_llm_certainty = 0
     total_vote_certainty = 0
@@ -230,7 +238,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
     llm_weight = 1 - vote_weight
 
     # If more than one iteration, then uses last index
-    reasons: List[str] = []
+    reasons: list[str] = []
 
     # Calculate mean relevance scores using 3.5-turbo
     for _ in range(0,iterations):
@@ -251,11 +259,12 @@ def calculate_relevance(model: str,iterations: int, submission: Submission):
     # Calculate final certainty
     certainty = mean_llm_certainty * llm_weight + mean_vote_certainty * vote_weight
 
-    # TODO: Make model of this
-    return majority_vote(votes), certainty, cost, reasons
+    evaluated_submission = EvaluatedSubmission(submission, votes[0], cost, reasons[0])
+
+    return evaluated_submission
 
 
-def evaluate_relevance(submission: Submission, filter: bool) -> tuple[bool, float, str]:
+def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmission:
     """
     Determines the relevance of a submission using GPT-3.5-turbo, 
     optionally escalating to GPT-4-turbo for higher accuracy.
@@ -276,17 +285,17 @@ def evaluate_relevance(submission: Submission, filter: bool) -> tuple[bool, floa
             FilterQuestion(question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.", reject_on=True),
         ]
         
-        keep_submission, source = filter_with_questions(submission, questions)
+        keep_submission, source, cost = filter_with_questions(submission, questions)
         if not keep_submission:
             print("Filtered out submission")
             print("Source: ", source)
             print("Title: ", submission.title)
             print("Selftext: ", submission.selftext)
             print("\n")
-            return False, 0, source
+            return EvaluatedSubmission(submission, False, 0, source)
     
-    is_relevant, certainty, gpt4_cost, reasons = calculate_relevance('gpt-4-turbo-preview', 1, submission)
-    log_relevance_calculation('gpt-4-turbo-preview', submission, is_relevant, gpt4_cost, reasons[0])
+    evalualuated_submission = calculate_relevance('gpt-4-turbo-preview', 1, submission)
+    log_relevance_calculation('gpt-4-turbo-preview', submission, evalualuated_submission.is_relevant, evalualuated_submission.cost, evalualuated_submission.reason)
 
     # I've come to conclude that GPT-3.5 sucks.
     # So I am temporarily removing the method of using certainty
@@ -295,7 +304,7 @@ def evaluate_relevance(submission: Submission, filter: bool) -> tuple[bool, floa
     # Since it seems like if it is picking between yes/no,
     # its certainty will always be high
 
-    return is_relevant, gpt4_cost, reasons[-1]
+    return evalualuated_submission
 
 
 if __name__ == "__main__":
