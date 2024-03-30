@@ -4,8 +4,8 @@ from typing import List
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from src.reddit_streaming.models import evaluated_submission
-from src.reddit_streaming.models.evaluated_submission import EvaluatedSubmission
+from src.rest.models import evaluated_submission
+from src.rest.models.evaluated_submission import EvaluatedSubmission
 from models import Submission, RelevanceResult
 from gptrim import trim
 from dotenv import load_dotenv
