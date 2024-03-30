@@ -1,5 +1,5 @@
 from .relevance_result import RelevanceResult
-from .submission import Submission
+from .dummy_submission import DummySubmission
 from .filter_output import FilterOutput
 from .filter_question import FilterQuestion
 from .evaluated_submission import EvaluatedSubmission
@@ -8,7 +8,7 @@ from .reddit_comment import RedditComment
 
 __all__ = [
     "RelevanceResult",
-    "Submission",
+    "DummySubmission",
     "FilterOutput",
     "FilterQuestion",
     "EvaluatedSubmission",

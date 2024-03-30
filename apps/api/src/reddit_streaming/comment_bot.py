@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from models import Submission, RedditComment
+from models import EvaluatedSubmission, RedditComment
 from dummy_submissions import relevant_submissions, irrelevant_submissions
 from prompts import generate_comment_prompt
 
@@ -12,8 +12,8 @@ import os
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-def generate_comment(submission) -> RedditComment:
-    llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0.3, openai_api_key=OPENAI_API_KEY)
+def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
+    llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0.3)
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RedditComment)
