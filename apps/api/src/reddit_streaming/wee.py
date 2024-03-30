@@ -11,7 +11,8 @@ lead = Lead(
     last_event="comment_posted",
     status="subscriber",
     title="Hello",
-    body="Hello, I am interested in your product.")
+    body="Hello, I am interested in your product.",
+    url="https://www.reddit.com/r/futino")
 db.post_lead(lead)
 
 leads = db.get_due_leads()

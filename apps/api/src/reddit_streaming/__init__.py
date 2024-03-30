@@ -7,6 +7,7 @@ import reddit_utils
 from llms import evaluate_relevance, invoke_chain, create_chain, summarize_submission, filter_with_questions
 from logging_utils import log_relevance_calculation
 from interfaces import db
+import comment_bot
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES="SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
@@ -51,8 +52,11 @@ def start_reddit_stream():
                 title=submission.title,
                 body=submission.selftext,
                 url= submission.url))
+            
             # Comment on the post
-            # TODO: implement this
+            comment_bot.send_comment(submission)
+
+            db.post_
 
         # Save to local file and cache
         save_submission(submission, is_relevant, cost, reason)

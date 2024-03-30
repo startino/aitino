@@ -1,4 +1,5 @@
-import praw
+from praw import Reddit
+from praw.models import Subreddits
 import os
 from dotenv import load_dotenv
 import reddit_utils
@@ -19,16 +20,11 @@ def get_subreddits(subreddit_names:str):
     )
     print("Reddit sign in success! Username: ", reddit.user.me())
 
-    subreddits = reddit.subreddit(subreddit_names)
+    subreddits: Subreddits = reddit.subreddit(subreddit_names)
     
     return subreddits
 
 
-def reply(submission, reply_text):
-    reply_template = "[Let me google that for you](https://lmgtfy.com/?q={})"
-    url_title = quote_plus(submission.title)
-    reply_text = reply_template.format(url_title)
-    submission.reply(reply_text)
 
 def compose():
     print('sdf')

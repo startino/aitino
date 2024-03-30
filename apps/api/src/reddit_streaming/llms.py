@@ -9,7 +9,7 @@ from gptrim import trim
 from dotenv import load_dotenv
 import os
 from langchain_community.callbacks import get_openai_callback
-from prompting import calculate_relevance_prompt, context as company_context, purpose
+from prompts import calculate_relevance_prompt, context as company_context, purpose
 from langchain.output_parsers import PydanticOutputParser
 from models import FilterOutput, FilterQuestion
 from dummy_submissions import relevant_submissions, irrelevant_submissions
