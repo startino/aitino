@@ -44,8 +44,3 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
 def send_comment(submission):
     text = generate_comment(submission)
     submission.reply(text)
-
-
-if __name__ == "__main__":
-    submission = relevant_submissions[0]
-    print(generate_comment(submission))

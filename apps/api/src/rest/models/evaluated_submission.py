@@ -1,10 +1,15 @@
+from typing import Optional
 from praw.models import Submission
+from pydantic import BaseModel, ConfigDict
 
-class EvaluatedSubmission(Submission):
-    def __init__(self, submission: Submission, is_relevant: bool, cost: float, reason: str, qualifying_question: str | None = None, source: str | None = None):
-        super().__init__(**submission.__dict__)
-        self.is_relevant = is_relevant
-        self.cost = cost
-        self.reason = reason
-        self.qualifying_question = qualifying_question
-        self.source = source
+# TODO: inhertit Submission class to just extend it with additional fields
+# I struggled with this since its not a pydantic class and I could not find a 
+# way to inherit it without dictionary bugs
+class EvaluatedSubmission(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    submission: Submission
+    is_relevant: bool
+    cost: float
+    reason: Optional[str] = None
+    qualifying_question: Optional[str] = None

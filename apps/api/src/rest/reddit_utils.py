@@ -2,7 +2,6 @@ from praw import Reddit
 from praw.models import Subreddits
 import os
 from dotenv import load_dotenv
-import reddit_utils
 from urllib.parse import quote_plus
 
 
@@ -11,7 +10,7 @@ REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
 REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
 
 def get_subreddits(subreddit_names:str):
-    reddit = praw.Reddit(
+    reddit = Reddit(
         client_id="N8d22rDKxw06lEVozaiDKA",
         client_secret=REDDIT_CLIENT_ID,
         password=REDDIT_PASSWORD,
@@ -24,12 +23,3 @@ def get_subreddits(subreddit_names:str):
     
     return subreddits
 
-
-
-def compose():
-    print('sdf')
-
-if __name__ == "__main__":
-    subreddits = get_subreddits("futino")
-    
-    

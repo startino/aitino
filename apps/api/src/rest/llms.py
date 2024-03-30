@@ -1,22 +1,22 @@
 import time
 from typing import List
+import os
+from dotenv import load_dotenv
 
+from gptrim import trim
+from praw.models import Submission
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
-from src.rest.models import evaluated_submission
-from src.rest.models.evaluated_submission import EvaluatedSubmission
-from models import Submission, RelevanceResult
-from gptrim import trim
-from dotenv import load_dotenv
-import os
+from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_community.callbacks import get_openai_callback
+
+from models import EvaluatedSubmission, RelevanceResult, FilterOutput, FilterQuestion
 from prompts import calculate_relevance_prompt, context as company_context, purpose
-from langchain.output_parsers import PydanticOutputParser
-from models import FilterOutput, FilterQuestion
 from dummy_submissions import relevant_submissions, irrelevant_submissions
 from utils import majority_vote, calculate_certainty_from_bools
 from logging_utils import log_relevance_calculation
+
+
 
 # Load Enviornment variables
 load_dotenv()
@@ -142,7 +142,7 @@ def summarize_submission(submission: Submission) -> Submission:
 
 
 # uses gpt-3.5-turbo to filter out irrelevant posts by using simple yes no questions
-def filter_with_questions(submission: Submission, questions: List[FilterQuestion]) -> tuple[bool, str, float]:
+def filter_with_questions(submission: Submission, questions: list[FilterQuestion]) -> tuple[bool, str, float]:
     """
     Filters out irrelevant posts by asking simple yes/no questions to the LLM.
     The questions are generated using GPT-3.5-turbo.
@@ -151,7 +151,7 @@ def filter_with_questions(submission: Submission, questions: List[FilterQuestion
 
     Parameters:
     - submission (Submission): The submission object to be filtered.
-    - questions (List[str]): A list of yes-no questions to be asked to the LLM. 
+    - questions (list[str]): A list of yes-no questions to be asked to the LLM. 
     YES answers mean the submission is kept (kept).
     NO answers mean the submission is discarded (irrelevant).
 
@@ -199,7 +199,7 @@ def filter_with_questions(submission: Submission, questions: List[FilterQuestion
                 # TODO: Do some cost analysis and saving (for long term insights)
                 cost += cb.total_cost
 
-        filter_output = FilterOutput(**filter_output)
+        filter_output = FilterOutput.parse_obj(result)
         
         if question.reject_on == filter_output.answer:
            
@@ -259,7 +259,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission) -> E
     # Calculate final certainty
     certainty = mean_llm_certainty * llm_weight + mean_vote_certainty * vote_weight
 
-    evaluated_submission = EvaluatedSubmission(submission, votes[0], cost, reasons[0])
+    evaluated_submission = EvaluatedSubmission(submission=submission, is_relevant=votes[0], cost=float(cost), reason=reasons[0])
 
     return evaluated_submission
 
@@ -292,7 +292,7 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
             print("Title: ", submission.title)
             print("Selftext: ", submission.selftext)
             print("\n")
-            return EvaluatedSubmission(submission, False, 0, source)
+            return EvaluatedSubmission(submission=submission, is_relevant=False, cost=cost, reason=source)
     
     evalualuated_submission = calculate_relevance('gpt-4-turbo-preview', 1, submission)
     log_relevance_calculation('gpt-4-turbo-preview', submission, evalualuated_submission.is_relevant, evalualuated_submission.cost, evalualuated_submission.reason)

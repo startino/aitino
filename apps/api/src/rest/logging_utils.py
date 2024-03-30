@@ -1,4 +1,4 @@
-from models import Submission
+from praw.models import Submission
 from datetime import datetime
 
 def log_relevance_calculation(model: str, submission: Submission, is_relevant: bool, cost: float, reason: str):
