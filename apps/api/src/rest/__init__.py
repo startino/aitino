@@ -43,8 +43,8 @@ def start_reddit_stream():
 
             # Save to database
             db.post_lead(Lead(
-                redditor=submission.author,
-                source="Reddit",
+                redditor=submission.author.name,
+                source="THEIRPOST",
                 last_event="comment_posted",
                 status="subscriber",
                 title=submission.title,

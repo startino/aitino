@@ -279,10 +279,10 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
 
     if (filter):
         questions = [
-            FilterQuestion(question="Is the author himself a tech related person? i.e. a coder, programmer, software developer.", reject_on=True),
+            FilterQuestion(question="Is the author himself a technical person? is/was he a programmer? is/was he a software developer?", reject_on=True),
             FilterQuestion(question="Has the project already started development?", reject_on=True),
             FilterQuestion(question="Is the author currently engaged in job searching activities and promoting their technical expertise?", reject_on=True),
-            FilterQuestion(question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.", reject_on=True),
+            FilterQuestion(question="Is the author starting a non digital business? Like a bakery, garden business, salon, etc.", reject_on=True),
         ]
         
         keep_submission, source, cost = filter_with_questions(submission, questions)
