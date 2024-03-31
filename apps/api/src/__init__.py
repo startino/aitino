@@ -1,11 +1,8 @@
-import asyncio
 import logging
-import re
 from typing import Any
 from uuid import UUID
 
 import autogen
-from autogen import Agent, ConversableAgent
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -13,15 +10,26 @@ from fastapi.responses import RedirectResponse
 from . import mock as mocks
 from .autobuilder import build_agents
 from .crew import Crew
-from .dependencies import rate_limit, rate_limit_profile, rate_limit_tiered
+from .dependencies import (
+    RateLimitResponse,
+    rate_limit,
+    rate_limit_profile,
+    rate_limit_tiered,
+)
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewModel, Message, Session
 from .parser import parse_input_v0_2 as parse_input
+from .routers import agents, crews, messages, sessions
 
 logger = logging.getLogger("root")
 
 app = FastAPI()
+
+sessions.router.include_router(messages.router)
+app.include_router(sessions.router)
+app.include_router(crews.router)
+app.include_router(agents.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -63,90 +71,12 @@ def compile(id: UUID) -> dict[str, str | CrewModel]:
 
 
 @app.get(
-    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=30))]
+    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]
 )
 def improve(
     word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
 ) -> str:
     return improve_prompt(word_limit, prompt, prompt_type, temperature)
-
-
-@app.get("/crew", dependencies=[Depends(rate_limit_tiered)])
-async def run_crew(
-    id: UUID,
-    profile_id: UUID,
-    background_tasks: BackgroundTasks,
-    session_id: UUID | None = None,
-    reply: str | None = None,
-    mock: bool = False,
-) -> dict:
-    if reply and not session_id:
-        raise HTTPException(
-            status_code=400,
-            detail="If a reply is provided, a session_id must also be provided.",
-        )
-    if session_id and not reply:
-        raise HTTPException(
-            status_code=400,
-            detail="If a session_id is provided, a reply must also be provided.",
-        )
-
-    if mock:
-        message, composition = parse_input(mocks.v0_2_0_composition)
-    else:
-        message, composition = db.get_compiled(id)
-
-    if reply:
-        message = reply
-
-    if not message or not composition:
-        raise HTTPException(status_code=400, detail=f"Failed to get crew with id {id}")
-
-    session = db.get_session(session_id) if session_id else None
-    cached_messages = db.get_messages(session_id) if session_id else None
-
-    if session_id and not session:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Session with id {session_id} not found",
-        )
-
-    if session_id and not cached_messages:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Session with id {session_id} found, but has no messages",
-        )
-
-    if session is None:
-        session = Session(
-            crew_id=id,
-            profile_id=profile_id,
-        )
-        db.post_session(session)
-
-    async def on_reply(
-        recipient_id: UUID,
-        sender_id: UUID,
-        content: str,
-        role: str,
-    ) -> None:
-        message = Message(
-            session_id=session.id,
-            profile_id=profile_id,
-            recipient_id=recipient_id,
-            sender_id=sender_id,
-            content=content,
-            role=role,
-        )
-        logger.debug(f"on_reply: {message}")
-
-        db.post_message(message)
-
-    crew = Crew(profile_id, session, composition, on_reply)
-
-    background_tasks.add_task(crew.run, message, messages=cached_messages)
-
-    return {"status": "success", "data": {"session": session.model_dump()}}
 
 
 @app.get(

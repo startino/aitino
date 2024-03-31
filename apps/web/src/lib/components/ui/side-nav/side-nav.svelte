@@ -38,7 +38,7 @@
 </script>
 
 <!-- Static sidebar for desktop -->
-<div class=" flex h-full py-8 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
+<div class="flex h-full py-4 pl-4 lg:z-50 lg:w-72 lg:flex-col{$$props.class}">
 	<!-- Sidebar component, swap this element with another sidebar if you like -->
 	<div
 		class="flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border bg-primary-950/30 px-6 pb-6 text-white"
@@ -60,52 +60,52 @@
 							{#each items as { name, href, icon, pendingCount }}
 								<li class="m-0 pl-0 sm:m-0 sm:pl-0">
 									<!-- Current: "bg-gray-800 text-primary-foreground", Default: "text-gray-400 hover:text-primary-foreground hover:bg-gray-800" -->
-									{#if name === 'Subscription' && !subscribed}
-										<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
-											<Dialog.Trigger class="mx-auto mt-4 block">
-												<Button>Upgrade</Button>
-											</Dialog.Trigger>
-											<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
-												<PricingTiers
-													on:choose={() => {
-														tiersOpen = false;
-													}}
-												/>
-											</Dialog.Content>
-											<Dialog.Overlay />
-										</Dialog.Root>
-									{:else}
-										<a
-											{href}
-											class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
-												href
-											)
-												? 'bg-accent/90 text-accent-foreground hover:bg-accent '
-												: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
-										>
-											<svelte:component this={icon} />
-											{name}
-											{#if pendingCount}
-												<span
-													class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
-												>
-													{pendingCount}
-												</span>
-											{/if}
-										</a>
-									{/if}
+
+									<a
+										{href}
+										class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
+											href
+										)
+											? 'bg-accent/90 text-accent-foreground hover:bg-accent '
+											: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
+									>
+										<svelte:component this={icon} />
+										{name}
+										{#if pendingCount}
+											<span
+												class="ml-auto rounded-full bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground"
+											>
+												{pendingCount}
+											</span>
+										{/if}
+									</a>
 								</li>
 							{/each}
 						</ul>
 					{/each}
+					{#if !subscribed}
+						<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
+							<Dialog.Trigger class="mx-auto mt-4 block">
+								<Button>Upgrade</Button>
+							</Dialog.Trigger>
+							<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
+								<PricingTiers
+									on:choose={() => {
+										tiersOpen = false;
+									}}
+								/>
+							</Dialog.Content>
+							<Dialog.Overlay />
+						</Dialog.Root>
+					{/if}
 				</li>
-				<li class="mt-auto pl-0 sm:mt-auto sm:pl-0">
-					<ul role="list" class=" m-0 list-none pl-0 sm:m-0 sm:pl-0">
+				<li class="mt-auto">
+					<ul role="list" class="list-none">
 						{#each bottomNavigation as { name, href, icon, current }}
-							<li class="pb-0 pl-0 sm:pl-0">
+							<li>
 								<a
 									href={'/app/' + href}
-									class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
+									class="group flex gap-x-3 rounded-md px-2 py-1 text-sm font-semibold transition transition-colors transition-transform hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
 										href
 									)
 										? 'bg-accent/90 text-foreground hover:bg-accent '

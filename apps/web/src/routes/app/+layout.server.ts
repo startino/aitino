@@ -1,7 +1,10 @@
 import type Stripe from 'stripe';
+import { error } from '@sveltejs/kit';
+import type { LayoutServerLoad } from './$types';
 
-export const load = async ({ locals: { supabase, stripe, getSession } }) => {
-	const session = await getSession();
+export const load: LayoutServerLoad = async ({ locals: { supabase, stripe, getSession } }) => {
+	const userSession = await getSession();
+	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
 	const data: {
 		stripeSub: Stripe.Response<Stripe.Subscription> | null;
@@ -13,25 +16,25 @@ export const load = async ({ locals: { supabase, stripe, getSession } }) => {
 	const { data: subscription } = await supabase
 		.from('subscriptions')
 		.select()
-		.eq('profile_id', session?.user.id)
+		.eq('profile_id', userSession?.user.id)
 		.single();
 
 	const { data: profile } = await supabase
 		.from('profiles')
 		.select('tiers ( * )')
-		.eq('id', session?.user.id)
+		.eq('id', userSession?.user.id)
 		.single();
 
 	const { data: tiersList } = await supabase.from('tiers').select();
 
 	data.tiersList = tiersList ?? [];
 
-	data.userTier = profile?.tiers as any;
+	data.userTier = profile?.tiers as any; // TODO: don't use any
 
 	const { data: billing } = await supabase
 		.from('billing_information')
 		.select()
-		.eq('profile_id', session?.user.id)
+		.eq('profile_id', userSession?.user.id)
 		.single();
 
 	try {

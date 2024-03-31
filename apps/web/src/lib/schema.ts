@@ -31,6 +31,7 @@ export const waitlistSchema = z.object({
 });
 
 export const createNewAgents = z.object({
+	id: z.string(),
 	title: z
 		.string()
 		.min(1, { message: 'Title must not be empty' })
@@ -44,6 +45,8 @@ export const createNewAgents = z.object({
 		.min(10, { message: 'Description must be at least 20 characters' })
 		.max(1000, { message: 'Description must be 1000 characters or less' }),
 	published: z.string(),
+	tools: z.string(),
+	system_message: z.string(),
 	model: z.string()
 });
 

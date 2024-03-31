@@ -57,7 +57,7 @@
 					<span class="w-full border-t" />
 				</div>
 				<div class="relative flex justify-center space-y-8 text-xs uppercase">
-					<span class="bg-card text-muted-foreground px-2"> Or continue with </span>
+					<span class="bg-card px-2 text-muted-foreground"> Or continue with </span>
 				</div>
 			</div>
 			<form action="?/login" method="POST" class="space-y-8" use:enhance>
@@ -69,7 +69,7 @@
 						type="email"
 						placeholder="minilik@gmail.com"
 						on:input={clearForm}
-						class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex  h-9 w-full rounded-md border border-input bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 					/>
 				</div>
 				<div class="grid gap-2">
@@ -79,7 +79,7 @@
 						name="password"
 						on:input={clearForm}
 						type="password"
-						class="border-input  placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex  h-9 w-full rounded-md border border-input bg-transparent px-3 py-6 text-sm shadow-sm ring-offset-0 transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
 					/>
 				</div>
 				{#if form?.error}
@@ -99,10 +99,10 @@
 	</Card.Content>
 	<div class="flex w-full justify-end p-0">
 		<Card.Footer>
-			<p class="text-foreground text-md block text-right">
+			<p class="text-md block text-right text-foreground">
 				Don't have an account? <a
 					href="/register"
-					class="text-secondary hover:text-accent/75 underline">Sign up</a
+					class="text-secondary underline hover:text-accent/75">Sign up</a
 				>
 			</p>
 		</Card.Footer>

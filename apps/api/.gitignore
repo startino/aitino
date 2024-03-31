@@ -174,7 +174,4 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
-
-# Security key
-*.asc
+src/tooling/test_files/*

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Gem } from "lucide-svelte";
-	import { onMount } from "svelte";
+	import { Gem } from 'lucide-svelte';
+	import { onMount } from 'svelte';
 
 	export let promotions: {
 		label: string;
@@ -10,7 +10,7 @@
 	}[];
 	export let activeTabValue = 0;
 
-	let positionClass: string = "left: 0px";
+	let positionClass: string = 'left: 0px';
 	let rowHeight: number = 0;
 
 	// Offset from gap. Needs to be same as gap-x of flex-row. Unit is px.
@@ -28,13 +28,13 @@
 			}
 		});
 
-		let newString = "left: " + left.toString() + "px";
-		positionClass = "left: " + left.toString() + "px";
+		let newString = 'left: ' + left.toString() + 'px';
+		positionClass = 'left: ' + left.toString() + 'px';
 		activeTabValue = tabValue;
 
-		cycle = tabValue == 0 ? "monthly" : "yearly";
+		cycle = tabValue == 0 ? 'monthly' : 'yearly';
 	}
-	export let cycle: string = "monthly";
+	export let cycle: string = 'monthly';
 
 	onMount(() => {
 		handleClick(1);

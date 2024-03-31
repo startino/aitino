@@ -2,8 +2,8 @@ import type { Edge, Node } from '@xyflow/svelte';
 
 export type Message = {
 	id: string;
-	session_id: string;
-	content: string;
+	session_id: string | null;
+	content: string | null;
 	sender_id: string;
 	recipient_id: string;
 	created_at: string;
@@ -21,6 +21,7 @@ export type Crew = {
 	created_at: string;
 	published: boolean;
 	avatar: string;
+	prompt: { id: string; content: string } | null;
 };
 
 export type Session = {
@@ -28,15 +29,18 @@ export type Session = {
 	title: string;
 	crew_id: string;
 	profile_id: string;
+	reply: string;
+	status: string;
 	created_at: string;
+	last_opened_at: string;
 };
 
 export type Agent = {
-	id: string;
+	id: string | null;
 	created_at: string;
 	updated_at: string;
 	title: string;
-	description: string[];
+	description: string;
 	role: string;
 	author: string;
 	model: string;
@@ -45,5 +49,5 @@ export type Agent = {
 	profile_id: string;
 	tools: string[];
 	avatar: string;
-	version: string
+	version: string;
 };

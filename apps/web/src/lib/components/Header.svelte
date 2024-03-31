@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { fade, fly, slide } from "svelte/transition";
-	import { Button } from "$lib/components/ui/button";
-	import Logo from "./ui/logo/logo.svelte";
+	import { onMount } from 'svelte';
+	import { fade, fly, slide } from 'svelte/transition';
+	import { Button } from '$lib/components/ui/button';
+	import Logo from './ui/logo/logo.svelte';
 
 	export let pages: { [key: string]: string }[] = [
 		{
-			name: "Home",
-			href: "/"
+			name: 'Home',
+			href: '/'
 		},
 		{
-			name: "Features",
-			href: "/#features-section"
+			name: 'Features',
+			href: '/#features-section'
 		},
 		{
-			name: "Benefits",
-			href: "/#benefits-section"
+			name: 'Benefits',
+			href: '/#benefits-section'
 		},
 		{
-			name: "Pricing",
-			href: "/#pricing-section"
+			name: 'Pricing',
+			href: '/#pricing-section'
 		}
 	];
 	/** Labels and hrefs of CTA buttons on the hero. Recommended 1-2.*/
@@ -44,7 +44,7 @@
 	}
 
 	onMount(() => {
-		window.addEventListener("scroll", () => {
+		window.addEventListener('scroll', () => {
 			activeheaderClass = window.scrollY > 12 && sticky ? miniHeaderClass : largeHeaderClass;
 		});
 	});
