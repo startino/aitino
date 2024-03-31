@@ -17,7 +17,6 @@ from utils import majority_vote, calculate_certainty_from_bools
 from logging_utils import log_relevance_calculation
 
 
-
 # Load Enviornment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -72,7 +71,7 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
             print(f"An error occurred while invoke_chain: {e}")
             time.sleep(10)  # Wait for 10 seconds before trying again
 
-    raise Exception("Failed to invoke chain after 3 attempts")
+    raise Exception("Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached.")
 
 
 def summarize_submission(submission: Submission) -> Submission:
@@ -194,19 +193,27 @@ def filter_with_questions(submission: Submission, questions: list[FilterQuestion
 
         chain = prompt | llm | parser
 
-        with get_openai_callback() as cb:
-                result = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
-                # TODO: Do some cost analysis and saving (for long term insights)
-                cost += cb.total_cost
+        # Error checking since gpt-3.5 sucks at json formatting lol
+        for i in range(10):
+            try:
+                with get_openai_callback() as cb:
+                        result = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
+                        # TODO: Do some cost analysis and saving (for long term insights)
+                        cost += cb.total_cost
+            except Exception as e:
+                print(f"An error occurred while filtering using questions: {e}")
+                time.sleep(2)  # Wait for 10 seconds before trying again
+                if i == 4:
+                    return True, "ERRORED", cost
 
         filter_output = FilterOutput.parse_obj(result)
         
         if question.reject_on == filter_output.answer:
-           
             # Remove the submission
             return False, filter_output.source, cost
     
     return True, "SUCCESS", cost
+
 
 def calculate_relevance(model: str,iterations: int, submission: Submission) -> EvaluatedSubmission:
     """
@@ -242,7 +249,10 @@ def calculate_relevance(model: str,iterations: int, submission: Submission) -> E
 
     # Calculate mean relevance scores using 3.5-turbo
     for _ in range(0,iterations):
-        submission = summarize_submission(submission)
+
+        # TODO: implement when summarization becomes more accurate
+        # submission = summarize_submission(submission)
+
         chain = create_chain(model)
         result, run_cost = invoke_chain(chain, submission)
 

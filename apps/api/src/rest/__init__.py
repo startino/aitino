@@ -4,7 +4,7 @@ import diskcache as dc
 import mail
 from models import FilterQuestion, Lead
 import reddit_utils
-from llms import evaluate_relevance, invoke_chain, create_chain, summarize_submission, filter_with_questions
+from relevance_bot import evaluate_relevance, invoke_chain, create_chain, summarize_submission, filter_with_questions
 from logging_utils import log_relevance_calculation
 from interfaces import db
 import comment_bot

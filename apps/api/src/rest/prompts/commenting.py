@@ -22,6 +22,9 @@ context = f"""
 """
 
 guidance = """
+- Keep the comment concise and to the point.
+- Don't mention about cost effectiveness of Futino.
+- Mention how we gaurantee our dedication through our services for equity model.
 """
 
 examples = f"""
@@ -30,11 +33,12 @@ you can use to guide your response.
 
 FORMAT:
 ```
-[example 1]
+1. [example 1]
 
-[example 2]
+2. [example 2]
 
-...
+n. ...
+
 ```
 
 GOOD EXAMPLES:
