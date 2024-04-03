@@ -14,6 +14,11 @@ from .crew_model import (
 )
 from .llm_config import LLMConfig
 from .message import Message
+from .profile import (
+    ProfileRequestModel,
+    ProfileResponseModel,
+    ProfileUpdateModel,
+)
 from .session import (
     RunRequestModel,
     RunResponseModel,
@@ -22,6 +27,10 @@ from .session import (
     SessionResponse,
     SessionStatus,
     SessionUpdate,
+)
+from .api_key import(
+    APIKeyRequestModel,
+    APIKeyResponseModel,
 )
 
 __all__ = [
@@ -44,4 +53,8 @@ __all__ = [
     "AgentResponseModel",
     "AgentRequestModel",
     "AgentUpdateModel",
+    "ProfileResponseModel",
+    "ProfileUpdateModel",
+    "ProfileRequestModel",
+    "APIKeyRequestModel",
 ]
