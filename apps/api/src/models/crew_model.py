@@ -54,6 +54,7 @@ class CrewResponseModel(BaseModel):
     published: bool
     title: str
     description: str
+    updated_at: datetime
     nodes: list[str]
     receiver_id: UUID | None = None
     avatar: str | None = None
