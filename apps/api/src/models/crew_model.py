@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -47,6 +48,7 @@ class CrewUpdateModel(BaseModel):
 
 class CrewResponseModel(BaseModel):
     id: UUID
+    created_at: datetime
     profile_id: UUID
     edges: list[dict]
     published: bool
