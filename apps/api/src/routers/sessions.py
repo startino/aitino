@@ -9,7 +9,6 @@ from src.dependencies import (
     rate_limit,
     rate_limit_profile,
     rate_limit_tiered,
-    rate_limit_crew,
     get_crew_id_from_body,
 )
 from src.interfaces import db

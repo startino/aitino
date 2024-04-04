@@ -1,3 +1,4 @@
+import base64
 import logging
 import os
 from datetime import datetime, timedelta, timezone
@@ -23,6 +24,10 @@ ALGORITHM = "HS256"
 
 logger = logging.getLogger("root")
 
+TEST_USER = os.environ.get("DEVELOPER_TEST_USER")
+TEST_PROFILE_ID = os.environ.get("DEVELOPER_TEST_PROFILE_ID")
+if TEST_USER:
+    ENCODED_TEST_USER = TEST_USER.encode()
 
 async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
     credentials_exception = HTTPException(
@@ -31,15 +36,24 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBea
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # authorises with test profile
     if token.credentials == "xdd":
         profile = db.get_profile_from_id(UUID("eebb6aaf-0412-41ff-ade9-547dbbc6d9f1"))
         assert profile
         return profile
 
-    payload = jwt.decode(
-        token.credentials, JWT_SECRET, algorithms=[ALGORITHM], audience="authenticated"
-    )
+    # authorises with test profile
+    if token.credentials == base64.b64encode(ENCODED_TEST_USER).decode():
+        profile = db.get_profile_from_id(UUID(TEST_PROFILE_ID))
+        assert profile
+        return profile
+    try: 
+        payload = jwt.decode(
+            token.credentials, JWT_SECRET, algorithms=[ALGORITHM], audience="authenticated"
+        )
+    except jwt.exceptions.PyJWTError as e:
+        logger.error(e)
+        raise credentials_exception
+
     user_id: str = payload.get("sub")
     profile = db.get_profile_from_id(UUID(user_id))
 
