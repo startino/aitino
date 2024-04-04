@@ -35,6 +35,8 @@ from .api_key import(
     APIKeyUpdateModel,
 )
 from .user import User
+from .rate_limit import RateLimitResponse
+
 __all__ = [
     "AgentConfig",
     "CodeExecutionConfig",

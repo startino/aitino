@@ -3,31 +3,13 @@ import uuid
 from dataclasses import dataclass
 from typing import Callable, cast
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 
 from src.interfaces.db import supabase
 from src.interfaces.redis_cache import get_redis
+from src.models import RateLimitResponse, RunRequestModel
 
 logger = logging.getLogger("root")
-
-
-@dataclass
-class RateLimitResponse:
-    limit: int
-    current_requests: int
-    time_to_refresh: int
-
-    @property
-    def remaining_requests(self) -> int:
-        return self.limit - self.current_requests
-
-    def __dict__(self) -> dict:
-        return {
-            "limit": self.limit,
-            "current_requests": self.current_requests,
-            "time_to_refresh": self.time_to_refresh,
-            "remaining_requests": self.remaining_requests,
-        }
 
 
 def _validate_profile_id(profile_id: str) -> str:
@@ -81,7 +63,7 @@ def rate_limit(limit: int, period_seconds: int, endpoint: str) -> Callable:
     return func
 
 
-def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
+def rate_limit_tiered() -> Callable:
     """
     Dependency for rate limiting using the subscription tier of a profile id
 
@@ -90,24 +72,27 @@ def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
     raises:
         404: Invalid tier in given profile id, 429: Exceeded the rate limit
     """
-    redis = get_redis()
-    key = f"rate_limit_tiered:{profile_id}"
-    current_requests = cast(int, redis.incr(key))
+    def func(profile_id: str):
+        redis = get_redis()
+        key = f"rate_limit_tiered:{profile_id}"
+        current_requests = cast(int, redis.incr(key))
 
-    tier_id = _validate_profile_id(profile_id)
-    tier = supabase.table("tiers").select("period", "limit").eq("id", tier_id).execute()
+        tier_id = _validate_profile_id(profile_id)
+        tier = supabase.table("tiers").select("period", "limit").eq("id", tier_id).execute()
 
-    if not tier:
-        raise HTTPException(status_code=404, detail="Tier not found")
+        if not tier:
+            raise HTTPException(status_code=404, detail="Tier not found")
 
-    limit = tier.data[0]["limit"]
-    period = tier.data[0]["period"]
-    if current_requests > limit:
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+        limit = tier.data[0]["limit"]
+        period = tier.data[0]["period"]
+        if current_requests > limit:
+            raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
-    if current_requests == 1:
-        redis.expire(key, period * 3600)
-    return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
+        if current_requests == 1:
+            redis.expire(key, period * 3600)
+        return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
+    
+    return func
 
 
 def rate_limit_profile(
@@ -140,3 +125,7 @@ def rate_limit_profile(
         return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
     return func
+
+
+def get_crew_id_from_body(run_request: RunRequestModel) -> str:
+    return str(run_request.id)

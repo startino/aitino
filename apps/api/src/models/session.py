@@ -5,6 +5,8 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
+from src.models.rate_limit import RateLimitResponse
+
 
 class SessionStatus(StrEnum):
     RUNNING = auto()
@@ -53,3 +55,4 @@ class RunRequestModel(BaseModel):
 class RunResponseModel(BaseModel):
     status: Literal["success"] | Literal["failure"]
     session: Session
+    rate_limit_data: RateLimitResponse

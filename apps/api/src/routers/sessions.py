@@ -6,10 +6,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 from src import mock as mocks
 from src.crew import Crew
 from src.dependencies import (
-    RateLimitResponse,
     rate_limit,
     rate_limit_profile,
     rate_limit_tiered,
+    rate_limit_crew,
+    get_crew_id_from_body,
 )
 from src.interfaces import db
 from src.models import (
@@ -20,6 +21,8 @@ from src.models import (
     Session,
     SessionResponse,
     SessionUpdate,
+    RateLimitResponse,
+
 )
 from src.models.session import SessionRequest
 from src.parser import parse_input_v0_2 as parse_input
@@ -63,6 +66,7 @@ async def run_crew(
     run_request: RunRequestModel,
     background_tasks: BackgroundTasks,
     mock: bool = False,
+    rate_limit_response: RateLimitResponse = Depends(rate_limit_tiered),
 ) -> RunResponseModel:
     if run_request.reply and not run_request.session_id:
         raise HTTPException(
@@ -136,4 +140,4 @@ async def run_crew(
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
-    return RunResponseModel(status="success", session=session)
+    return RunResponseModel(status="success", session=session, rate_limit_data=rate_limit_response)
