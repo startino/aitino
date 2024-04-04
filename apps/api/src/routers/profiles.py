@@ -57,7 +57,7 @@ def insert_api_key(api_key_request: APIKeyRequestModel) -> APIKeyResponseModel:
     return db.insert_api_key(api_key_request)
 
 
-@router.delete("api_keys/{api_key_id}")
+@router.delete("/api_keys/{api_key_id}")
 def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel:
     deleted_key = db.delete_api_key(api_key_id)
     if not deleted_key:

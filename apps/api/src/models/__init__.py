@@ -32,7 +32,7 @@ from .api_key import(
     APIKeyRequestModel,
     APIKeyResponseModel,
 )
-
+from .user import User
 __all__ = [
     "AgentConfig",
     "CodeExecutionConfig",
