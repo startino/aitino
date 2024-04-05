@@ -16,7 +16,6 @@ from src.tools.move_file import ID as MOVE_TOOL_ID
 from src.tools.move_file import MoveFileTool
 from src.tools.read_file import ID as READ_TOOL_ID
 from src.tools.read_file import ReadFileTool
-from src.tools.scraper import API_KEY_TYPE as SCRAPER_API_KEY_TYPE
 from src.tools.scraper import ID as SCRAPER_TOOL_ID
 from src.tools.scraper import ScraperTool
 from src.tools.wikipedia_tool import ID as WIKIPEDIA_TOOL_ID
