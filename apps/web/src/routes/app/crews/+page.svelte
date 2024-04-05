@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import type { Crew } from '$lib/types/models';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import SuperDebug from 'sveltekit-superforms';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Switch } from '$lib/components/ui/switch';
@@ -20,9 +18,6 @@
 			if (form.valid) {
 				open = false;
 				toast.success(form.message);
-			} else if (form.errors._errors) {
-				toast.error(form.errors._errors[0]);
-				console.log(form);
 			}
 
 			state = 'idle';
@@ -87,8 +82,6 @@
 			on:submit={() => (state = 'loading')}
 			use:enhance
 		>
-			<SuperDebug data={$form} />
-
 			<div class="mb-2 flex w-full items-center gap-2">
 				<div class="w-full space-y-4">
 					<Label for="title" class="text-right">Title</Label>
