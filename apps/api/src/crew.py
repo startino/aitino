@@ -219,16 +219,12 @@ class Crew:
                         else None
                     )
 
-                logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
                     generate_llm_config(valid_agent_tools)
                     if valid_agent_tools
                     else None
                 )
 
-            logger.warn(
-                f"agent tools: {agent.tools}, valid agent tools: {valid_agent_tools=}, valid tools: {self.valid_tools}"
-            )
             config = {
                 "seed": self.seed,
                 "temperature": 0,
