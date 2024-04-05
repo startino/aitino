@@ -21,14 +21,14 @@ def insert_crew(crew: CrewRequestModel) -> CrewResponseModel:
     return db.insert_crew(crew)
 
 
-@router.get("/{profile_id}")  # /crews/abc123?ascending=True
-def get_user_crews(profile_id: UUID, ascending: bool = True) -> list[CrewResponseModel]:
-    return db.get_user_crews(profile_id, ascending)
-
-
 @router.get("/{crew_id}")
 def get_crew(crew_id: UUID) -> CrewResponseModel:
     return db.get_crew_from_id(crew_id)
+
+
+@router.get("/")  # /crews/?by_profile=profile_id
+def get_crews_of_user(by_profile: UUID, ascending: bool = False) -> list[CrewResponseModel]:
+    return db.get_user_crews(by_profile, ascending)
 
 
 @router.get("/published")

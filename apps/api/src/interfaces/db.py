@@ -202,7 +202,7 @@ def get_published_crews() -> list[CrewResponseModel]:
     return [CrewResponseModel(**data) for data in response.data]
 
 
-def get_user_crews(profile_id: UUID, ascending: bool = True) -> list[CrewResponseModel]:
+def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[CrewResponseModel]:
     response = (
         supabase.table("crews")
         .select("*")
