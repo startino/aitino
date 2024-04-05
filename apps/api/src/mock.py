@@ -81,7 +81,7 @@ move_file: dict = {
     "created_at": "2024-01-01T00:00:00.000Z",
 }
 
-tool, prompt = "alpha vantage tool", "convert JPY to NOK"
+tool, prompt = "duckduckgo search tool", "search for information about Google Gemini with region set to the UK"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
