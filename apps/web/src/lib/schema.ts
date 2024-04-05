@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+export const editCrewSchema = z.object({
+	id: z.string(),
+	title: z.string().default('Untitled'),
+	description: z.string().default('No description'),
+	published: z.boolean().default(false)
+});
+
 export const formSchema = z.object({
 	display_name: z
 		.string()

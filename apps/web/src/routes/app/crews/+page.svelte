@@ -2,116 +2,112 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { Crew } from '$lib/types/models';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import SuperDebug from 'sveltekit-superforms';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Switch } from '$lib/components/ui/switch';
 	import { timeSince } from '$lib/utils';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { Loader2 } from 'lucide-svelte';
-	import type { ActionData, PageData } from './$types';
+	import { superForm } from 'sveltekit-superforms/client';
 
-	export let data: PageData;
-	export let form: ActionData;
+	export let data;
 
-	$: myCrews = data.data as ArrayLike<unknown> | Iterable<unknown>;
-
-	let selectedcrew: Crew;
-	let open = false;
-	let state: 'idle' | 'loading' | 'error' = 'idle';
-
-	const editcrew = async (crew: Crew) => {
-		selectedcrew = crew;
-		open = true;
-	};
-
-	$: handleSubmit = async () => {
-		console.log(form, 'form');
-
-		if (form?.success) {
-			toast.promise(invalidateAll(), {
-				loading: 'Saving changes...',
-				success: 'Changes saved successfully',
-				error: 'An error occurred while saving changes'
-			});
+	const { form, errors, enhance } = superForm(data.form, {
+		onUpdated({ form }) {
+			if (form.valid) {
+				open = false;
+				toast.success(form.message);
+			} else if (form.errors._errors) {
+				toast.error(form.errors._errors[0]);
+				console.log(form);
+			}
 
 			state = 'idle';
-			open = false;
 		}
-	};
+	});
 
-	$: handleSubmit();
+	let open = false;
+	let state: 'idle' | 'loading' | 'error' = 'idle';
 </script>
 
-<div class="bg-background min-h-screen p-8">
-	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-		{#each myCrews as crew}
-			<div
-				class="bg-surface group relative flex flex-col overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
-			>
-				<div class="flex-shrink-0">
-					<img
-						src={crew.avatar}
-						alt={`Avatar of ${crew.title}`}
-						class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110"
-					/>
-				</div>
-				<div class="flex flex-grow flex-col p-4">
-					<div class="flex justify-between">
-						<h3 class="text-on-surface text-lg font-semibold">{crew.title}</h3>
-					</div>
-					<p class="text-on-surface/80 mt-2 flex-grow text-sm">{crew.description}</p>
-					<div class="mt-4 text-sm text-gray-600">
-						<p>Created: {timeSince(new Date(crew.created_at))} ago</p>
-						<p>Updated: {timeSince(new Date(crew.updated_at))} ago</p>
-					</div>
+<div class="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-4 p-8">
+	{#each data.crews as crew (crew.id)}
+		<div class="bg-card rounded-lg">
+			<img src={crew.avatar} alt={`Avatar of ${crew.title}`} class="h-32 w-full object-cover" />
+			<div class="p-4">
+				<h3 title={crew.title} class="mb-2 line-clamp-1 text-ellipsis text-lg font-semibold">
+					{crew.title}
+				</h3>
+				<p class="mb-4 line-clamp-3 text-ellipsis text-sm">{crew.description}</p>
+				<div class="mb-3 text-sm text-gray-600">
+					<p>Created {timeSince(crew.created_at)} ago</p>
+					<p>Updated {timeSince(crew.updated_at)} ago</p>
 				</div>
 				<div class="flex w-full items-center justify-center gap-4">
 					<Button
 						class="w-full"
 						on:click={() => {
-							window.open(`/app/crews/${crew.id}`, '_self');
-						}}>Load</Button
+							goto(`/app/crews/${crew.id}`);
+						}}
 					>
+						Load
+					</Button>
 					<Button
-						class="text-md w-full font-semibold transition-colors duration-300"
+						class="w-full"
+						variant="outline"
 						on:click={() => {
-							editcrew(crew);
+							$form = {
+								id: crew.id,
+								title: crew.title,
+								description: crew.description,
+								published: crew.published
+							};
+							open = true;
 						}}>Edit</Button
 					>
 				</div>
 			</div>
-		{/each}
-	</div>
+		</div>
+	{/each}
 </div>
 
 <Dialog.Root {open} onOpenChange={(o) => (open = o)}>
-	<Dialog.Content class="sm:max-w-[425px]">
+	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Edit crew</Dialog.Title>
 		</Dialog.Header>
-		<form class="p-3" action="?/editCrew&id={selectedcrew.id}" method="POST" use:enhance>
+
+		<form
+			class="p-4"
+			action="?/editCrew"
+			method="POST"
+			on:submit={() => (state = 'loading')}
+			use:enhance
+		>
+			<SuperDebug data={$form} />
+
 			<div class="mb-2 flex w-full items-center gap-2">
 				<div class="w-full space-y-4">
 					<Label for="title" class="text-right">Title</Label>
+					<input bind:value={$form.id} name="id" hidden />
 					<Input
-						id="title"
 						name="title"
-						bind:value={selectedcrew.title}
+						bind:value={$form.title}
 						class="col-span-3 focus-visible:ring-1 focus-visible:ring-offset-0"
 					/>
 				</div>
 				<div class="mt-8 flex items-center space-x-2">
 					<Label for="published" class="flex items-center">
-						<Switch id="published" name="published" bind:checked={selectedcrew.published} />
+						<Switch id="published" name="published" bind:checked={$form.published} />
 						<span class="ml-2 text-sm text-gray-700">Published</span>
 					</Label>
 				</div>
 			</div>
-			{#if selectedcrew.title.trim().length === 0}
-				<p class="text-red-500">Title is required</p>
+			{#if $errors.title}
+				<p class="text-red-500">{$errors.title[0]}</p>
 			{/if}
 			<div class="mb-2 flex w-full items-center gap-2">
 				<div class="w-full space-y-4">
@@ -119,27 +115,24 @@
 					<Textarea
 						id="description"
 						name="description"
-						bind:value={selectedcrew.description}
+						bind:value={$form.description}
 						class="block h-24 w-full resize-none focus-visible:ring-1 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
 					></Textarea>
 				</div>
 			</div>
-			{#if selectedcrew.description.trim().length === 0}
-				<p class="text-red-500">Description is required</p>
+			{#if $errors.description}
+				<p class="text-red-500">{$errors.description[0]}</p>
+			{/if}
+			{#if $errors._errors}
+				<p class="text-red-500">{$errors._errors[0]}</p>
 			{/if}
 			<Dialog.Footer>
-				<Button
-					disabled={selectedcrew.title.trim().length === 0 ||
-						selectedcrew.description.trim().length === 0}
-					type="submit"
-					on:click={() => {
-						state = 'loading';
-					}}
-				>
+				<Button type="submit">
 					{#if state === 'loading'}
 						<Loader2 class="mr-2 mt-1 h-4 w-4 animate-spin" />
-					{/if} Save changes</Button
-				>
+					{/if}
+					Save changes
+				</Button>
 			</Dialog.Footer>
 		</form></Dialog.Content
 	>
