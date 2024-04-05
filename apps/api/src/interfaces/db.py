@@ -208,8 +208,9 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
 
 
 def get_crew_from_id(crew_id: UUID) -> CrewResponseModel:
-    response = supabase.table("crews").select("*").eq("id", crew_id).execute()
-    return CrewResponseModel(**response.data[0])
+    response = supabase.table("crews").select("*").eq("id", str(crew_id)).single().execute()
+    
+    return CrewResponseModel(**response.data)
 
 
 def get_published_crews() -> list[CrewResponseModel]:
@@ -379,5 +380,5 @@ if __name__ == "__main__":
 #        )
 #    )
 #
-    
-    print(get_api_keys(UUID("070c1d2e-9d72-4854-a55e-52ade5a42071")))
+    print(get_crew_from_id(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
+    #print(get_api_keys(UUID("070c1d2e-9d72-4854-a55e-52ade5a42071")))

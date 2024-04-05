@@ -17,7 +17,7 @@ ID = "71e4ddcc-4475-46f2-9816-894173b1292e"
 
 
 class BingToolInput(BaseModel):
-    query: str = Field(title="Query", description="Search query input to search bing")
+    tool_input: str = Field(title="Query", description="Search query input to search bing")
 
 
 class BingTool(Tool, BaseTool):

@@ -3,14 +3,14 @@ from typing import Type
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
-from langchain_community.tools import WikipediaQueryRun
+from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 
 ID = "243f1c6b-dfc5-4d64-ab7f-331e74858393"
 
 
 class WikipediaToolInput(BaseModel):
-    query: str = Field(
+    tool_input: str = Field(
         title="Query", description="Search query input to search wikipedia"
     )
 
