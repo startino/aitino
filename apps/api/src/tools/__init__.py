@@ -21,6 +21,8 @@ from src.tools.scraper import ID as SCRAPER_TOOL_ID
 from src.tools.scraper import ScraperTool
 from src.tools.wikipedia_tool import ID as WIKIPEDIA_TOOL_ID
 from src.tools.wikipedia_tool import WikipediaTool
+from src.tools.duckduckgo_tool import ID as DDGS_TOOL_ID
+from src.tools.duckduckgo_tool import DuckDuckGoSearchTool
 
 tools: dict = {
     ARXIV_TOOL_ID: ArxivTool,
@@ -30,6 +32,8 @@ tools: dict = {
     ALPHA_VANTAGE_TOOL_ID: AlphaVantageTool,
     WIKIPEDIA_TOOL_ID: WikipediaTool,
     BING_SEARCH_TOOL_ID: BingTool,
+    DDGS_TOOL_ID: DuckDuckGoSearchTool,
+
 }
 
 logger = logging.getLogger("root")
@@ -121,6 +125,7 @@ if __name__ == "__main__":
         "bb207b0c-e998-4a40-9508-ec37dd195b0c",  # Arxiv Tool
         "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f",  # Alpha Vantage Tool
         "243f1c6b-dfc5-4d64-ab7f-331e74858393",  # Wikipedia Tool
+        "7dc53d81-cdac-4320-8077-1a7ab9497551",  # DuckDuckGoSearch Tool
     ]
     generated_tools = []
     for tool in agents_tools:
