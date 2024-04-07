@@ -7,9 +7,10 @@
 	import { timeSince } from '$lib/utils';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { toast } from 'svelte-sonner';
-	import { goto } from '$app/navigation';
 	import { Loader2 } from 'lucide-svelte';
 	import { superForm } from 'sveltekit-superforms/client';
+	import { onMount } from 'svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let data;
 
@@ -42,14 +43,7 @@
 					<p>Updated {timeSince(crew.updated_at)} ago</p>
 				</div>
 				<div class="flex w-full items-center justify-center gap-4">
-					<Button
-						class="w-full"
-						on:click={() => {
-							goto(`/app/crews/${crew.id}`);
-						}}
-					>
-						Load
-					</Button>
+					<Button href="/app/crews/{crew.id}" class="w-full">Load</Button>
 					<Button
 						class="w-full"
 						variant="outline"

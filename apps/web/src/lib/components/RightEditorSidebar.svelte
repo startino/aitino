@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Loader2 } from 'lucide-svelte';
 	import { getContext } from '$lib/utils';
 	import type { PanelAction } from '$lib/types';
 	import { Button } from '$lib/components/ui/button';
@@ -13,7 +14,7 @@
 
 <!-- Static sidebar for desktop -->
 <div
-	class="hidden h-full overflow-y-clip rounded-2xl border bg-primary-900/50 p-6 lg:z-50 lg:grid lg:w-72"
+	class="bg-primary-900/50 hidden h-full overflow-y-clip rounded-2xl border p-6 lg:z-50 lg:grid lg:w-72"
 >
 	<div class="mb-4 grid">
 		<h1 contenteditable on:input={(e) => (title = e.target.innerText)}>
@@ -36,8 +37,17 @@
 						{action.name}
 					</slot>
 				{:else}
-					<Button on:click={action.onclick} variant={action.buttonVariant} class="w-full">
-						{action.name}
+					<Button
+						on:click={action.onclick}
+						variant={action.buttonVariant ?? 'outline'}
+						class="w-full"
+					>
+						<span class="flex gap-2">
+							{#if action.loading}
+								<Loader2 class="animate-spin" />
+							{/if}
+							{action.name}
+						</span>
 					</Button>
 				{/if}
 			</li>

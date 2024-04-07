@@ -29,23 +29,21 @@ export class CrewsService {
         });
     }
     /**
-     * Get User Crews
-     * @param profileId
+     * Get Crews Of User
+     * @param byProfile
      * @param ascending
      * @returns CrewResponseModel Successful Response
      * @throws ApiError
      */
-    public static getUserCrewsCrewsProfileIdGet(
-        profileId: string,
-        ascending: boolean = true,
+    public static getCrewsOfUserCrewsGet(
+        byProfile: string,
+        ascending: boolean = false,
     ): CancelablePromise<Array<CrewResponseModel>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/crews/{profile_id}',
-            path: {
-                'profile_id': profileId,
-            },
+            url: '/crews/',
             query: {
+                'by_profile': byProfile,
                 'ascending': ascending,
             },
             errors: {

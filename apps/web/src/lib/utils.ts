@@ -130,7 +130,7 @@ export function getCleanNodes(nodes: Node[]): Node[] {
 }
 
 // creates an array of writable nodes
-export function getWritableNodes(nodes: Node[]): Node[] {
+export function getWritablePrompt(nodes: Node[]): Node[] {
 	return [
 		...nodes
 			.filter((n) => n.type === 'prompt')
