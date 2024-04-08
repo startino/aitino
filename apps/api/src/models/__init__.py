@@ -33,6 +33,7 @@ from .api_key import(
     APIKeyResponseModel,
     APIKeyTypeModel,
     APIKeyUpdateModel,
+    APIKeyTypeResponseModel,
 )
 from .user import User
 __all__ = [
@@ -62,4 +63,5 @@ __all__ = [
     "APIKeyResponseModel",
     "APIKeyTypeModel",
     "APIKeyUpdateModel",
+    "APIKeyTypeResponseModel",
 ]
