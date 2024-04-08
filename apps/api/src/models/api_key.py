@@ -22,3 +22,9 @@ class APIKeyResponseModel(BaseModel):
 
 class APIKeyUpdateModel(BaseModel):
     api_key: str
+
+class APIKeyTypeResponseModel(BaseModel):
+    id: UUID
+    created_at: datetime
+    name: str | None = None
+    description: str | None = None
