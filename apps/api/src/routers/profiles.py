@@ -36,7 +36,7 @@ def get_profile(profile_id: UUID) -> ProfileResponseModel:
 
 @router.get("/{profile_id}/api_keys")
 def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
-    """Returns api keys with the format: {api_key_type_id: api_key}."""
+    """Returns api keys with the api key type as an object with the id, name, description etc."""
     if not db.get_profile_from_id(profile_id):
         raise HTTPException(404, "profile not found")
 
