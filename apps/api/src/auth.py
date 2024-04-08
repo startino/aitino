@@ -33,7 +33,7 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBea
 
     # authorises with test profile
     if token.credentials == "xdd":
-        profile = db.get_profile_from_id(UUID("9b94033b-7dc1-46a8-a9e7-f18d1f7631a0"))
+        profile = db.get_profile_from_id(UUID("eebb6aaf-0412-41ff-ade9-547dbbc6d9f1"))
         assert profile
         return profile
 
