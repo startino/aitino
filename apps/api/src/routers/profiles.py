@@ -10,6 +10,7 @@ from src.models import (
     ProfileRequestModel,
     APIKeyResponseModel,
     APIKeyRequestModel,
+    APIKeyUpdateModel,
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
@@ -34,7 +35,7 @@ def get_profile(profile_id: UUID) -> ProfileResponseModel:
     
 
 @router.get("/{profile_id}/api_keys")
-def get_api_keys(profile_id: UUID) -> dict[UUID, str]:
+def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
     """Returns api keys with the format: {api_key_type_id: api_key}."""
     if not db.get_profile_from_id(profile_id):
         raise HTTPException(404, "profile not found")
@@ -64,3 +65,7 @@ def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel:
         raise HTTPException(404, "api key id not found")
 
     return deleted_key
+
+@router.patch("/api_keys/{api_key_id}")
+def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKeyResponseModel:
+    return db.update_api_key(api_key_id, api_key_update)
