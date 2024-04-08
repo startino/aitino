@@ -31,6 +31,7 @@ from src.models import (
     APIKeyResponseModel,
     APIKeyTypeModel,
     APIKeyUpdateModel,
+    APIKeyTypeResponseModel,
 )
 from src.parser import parse_input_v0_2 as parse_input
 
@@ -252,6 +253,13 @@ def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel | None:
 def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKeyResponseModel:
     response = supabase.table("users_api_keys").update(json.loads(api_key_update.model_dump_json())).eq("id", api_key_id).execute()
     return APIKeyResponseModel(**response.data[0])
+
+
+def get_api_key_types() -> list[APIKeyTypeResponseModel]:
+    logger.debug("Getting all api key types")
+    response = supabase.table("api_key_types").select("*").execute()
+    return  [APIKeyTypeResponseModel(**data) for data in response.data]
+
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     logger.debug(f"Updating session status: {status} for session: {session_id}")
