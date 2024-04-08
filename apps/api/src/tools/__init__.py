@@ -22,6 +22,8 @@ from src.tools.wikipedia_tool import ID as WIKIPEDIA_TOOL_ID
 from src.tools.wikipedia_tool import WikipediaTool
 from src.tools.duckduckgo_tool import ID as DDGS_TOOL_ID
 from src.tools.duckduckgo_tool import DuckDuckGoSearchTool
+from src.tools.google_serper import ID as GOOGLE_SERPER_TOOL_ID
+from src.tools.google_serper import GoogleSerperTool
 
 tools: dict = {
     ARXIV_TOOL_ID: ArxivTool,
@@ -32,7 +34,7 @@ tools: dict = {
     WIKIPEDIA_TOOL_ID: WikipediaTool,
     BING_SEARCH_TOOL_ID: BingTool,
     DDGS_TOOL_ID: DuckDuckGoSearchTool,
-
+    GOOGLE_SERPER_TOOL_ID: GoogleSerperTool,
 }
 
 logger = logging.getLogger("root")
@@ -108,14 +110,16 @@ def generate_tool_from_uuid(
 
 if __name__ == "__main__":
     api_key_types = {
-        "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f": "8a29840f-4748-4ce4-88e6-44e1ef5b7637",
-        "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f": "3b64fe26-20b9-4064-907e-f2708b5f1656",
-        "71e4ddcc-4475-46f2-9816-894173b1292e": "5281bbc4-45ea-4f4b-b790-e92c62bbc019",
+        "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f": "8a29840f-4748-4ce4-88e6-44e1ef5b7637",  # alpha vantage
+        "4ac25953-dc41-42d5-b9f2-bcae3b2c1d9f": "3b64fe26-20b9-4064-907e-f2708b5f1656",  # serpapi
+        "71e4ddcc-4475-46f2-9816-894173b1292e": "5281bbc4-45ea-4f4b-b790-e92c62bbc019",  # bing search
+        "3e2665a8-6d73-42ee-a64f-50ddcc0621c6": "4d950712-8b4c-4cc0-a24d-7599638119f2",  # google search
     }
     api_keys = {
         '3b64fe26-20b9-4064-907e-f2708b5f1656': '26be6b883469d721ddaae011bcdc13528aa202a61688e5bfeee797c47b2c8712',  # serpapi
         "5281bbc4-45ea-4f4b-b790-e92c62bbc019": "5a1293d6d2ab4c87a57edcc057f56203",  # bing search
         "8a29840f-4748-4ce4-88e6-44e1ef5b7637": "XW8MBS5AI3177W5P",  # alpha vantage
+        "4d950712-8b4c-4cc0-a24d-7599638119f2": "83265e13beb058d57a90ea1dfb24417f25931040",  # google search
     }
     agents_tools = [
         "f57d47fd-5783-4aac-be34-17ba36bb6242",  # Move File Tool
@@ -125,6 +129,7 @@ if __name__ == "__main__":
         "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f",  # Alpha Vantage Tool
         "243f1c6b-dfc5-4d64-ab7f-331e74858393",  # Wikipedia Tool
         "7dc53d81-cdac-4320-8077-1a7ab9497551",  # DuckDuckGoSearch Tool
+        "3e2665a8-6d73-42ee-a64f-50ddcc0621c6",  # Google Serper Tool
     ]
     generated_tools = []
     for tool in agents_tools:
