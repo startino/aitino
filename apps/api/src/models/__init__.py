@@ -31,6 +31,8 @@ from .session import (
 from .api_key import(
     APIKeyRequestModel,
     APIKeyResponseModel,
+    APIKeyTypeModel,
+    APIKeyUpdateModel,
 )
 from .user import User
 __all__ = [
@@ -57,4 +59,7 @@ __all__ = [
     "ProfileUpdateModel",
     "ProfileRequestModel",
     "APIKeyRequestModel",
+    "APIKeyResponseModel",
+    "APIKeyTypeModel",
+    "APIKeyUpdateModel",
 ]
