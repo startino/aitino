@@ -1,24 +1,7 @@
 import { supabase } from '$lib/supabase';
 import { fail } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.getSession();
-	const { data, error } = await supabase.from('api_key_types').select('*');
-	const { data: userData, error: userError } = await supabase
-		.from('users_api_keys')
-		.select('*')
-		.eq('profile_id', session?.user.id);
-
-	const currentUserApis = data?.filter((d) => userData?.some((u) => u.api_key_type_id === d.id));
-
-	return {
-		data,
-		currentUserApis
-	};
-};
-
-export const actions: Actions = {
+export const actions = {
 	addAPI: async ({ request, locals, url }) => {
 		const id = url.searchParams.get('id');
 		const session = await locals.getSession();

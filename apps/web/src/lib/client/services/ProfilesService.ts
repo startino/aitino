@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { APIKeyRequestModel } from '../models/APIKeyRequestModel';
 import type { APIKeyResponseModel } from '../models/APIKeyResponseModel';
+import type { APIKeyUpdateModel } from '../models/APIKeyUpdateModel';
 import type { ProfileRequestModel } from '../models/ProfileRequestModel';
 import type { ProfileResponseModel } from '../models/ProfileResponseModel';
 import type { ProfileUpdateModel } from '../models/ProfileUpdateModel';
@@ -89,12 +90,12 @@ export class ProfilesService {
      * Get Api Keys
      * Returns api keys with the format: {api_key_type_id: api_key}.
      * @param profileId
-     * @returns string Successful Response
+     * @returns APIKeyResponseModel Successful Response
      * @throws ApiError
      */
     public static getApiKeysProfilesProfileIdApiKeysGet(
         profileId: string,
-    ): CancelablePromise<Record<string, string>> {
+    ): CancelablePromise<Array<APIKeyResponseModel>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/profiles/{profile_id}/api_keys',
@@ -140,6 +141,30 @@ export class ProfilesService {
             path: {
                 'api_key_id': apiKeyId,
             },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Update Api Key
+     * @param apiKeyId
+     * @param requestBody
+     * @returns APIKeyResponseModel Successful Response
+     * @throws ApiError
+     */
+    public static updateApiKeyProfilesApiKeysApiKeyIdPatch(
+        apiKeyId: string,
+        requestBody: APIKeyUpdateModel,
+    ): CancelablePromise<APIKeyResponseModel> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/profiles/api_keys/{api_key_id}',
+            path: {
+                'api_key_id': apiKeyId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: `Validation Error`,
             },

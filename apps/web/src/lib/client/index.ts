@@ -13,6 +13,8 @@ export { AgentResponseModel } from './models/AgentResponseModel';
 export type { AgentUpdateModel } from './models/AgentUpdateModel';
 export type { APIKeyRequestModel } from './models/APIKeyRequestModel';
 export type { APIKeyResponseModel } from './models/APIKeyResponseModel';
+export type { APIKeyTypeModel } from './models/APIKeyTypeModel';
+export type { APIKeyUpdateModel } from './models/APIKeyUpdateModel';
 export type { AuthResponse } from './models/AuthResponse';
 export type { CrewModel } from './models/CrewModel';
 export type { CrewRequestModel } from './models/CrewRequestModel';
