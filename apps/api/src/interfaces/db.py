@@ -29,6 +29,8 @@ from src.models import (
     ProfileRequestModel,
     APIKeyRequestModel,
     APIKeyResponseModel,
+    APIKeyTypeModel,
+    APIKeyUpdateModel,
 )
 from src.parser import parse_input_v0_2 as parse_input
 
@@ -225,9 +227,14 @@ def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
     return response.data[0]["api_key"]
 
 
-def get_api_keys(profile_id: UUID) -> dict[UUID, str]:
-    response = supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id).execute()
-    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
+def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
+    response = supabase.table("users_api_keys").select("*, api_key_types(*)").eq("profile_id", profile_id).execute()
+    api_keys = []
+    for data in response.data:
+        api_key_type = APIKeyTypeModel(**data["api_key_types"])
+        api_keys.append(APIKeyResponseModel(**data, api_key_type=api_key_type))
+        
+    return api_keys #{data["api_key_type_id"]: data["api_key"] for data in response.data}
 
 
 def insert_api_key(api_key: APIKeyRequestModel) -> APIKeyResponseModel:
@@ -241,6 +248,10 @@ def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel | None:
         return None
     return APIKeyResponseModel(**response.data[0])
 
+
+def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKeyResponseModel:
+    response = supabase.table("users_api_keys").update(json.loads(api_key_update.model_dump_json())).eq("id", api_key_id).execute()
+    return APIKeyResponseModel(**response.data[0])
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     logger.debug(f"Updating session status: {status} for session: {session_id}")
