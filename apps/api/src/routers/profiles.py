@@ -11,6 +11,7 @@ from src.models import (
     APIKeyResponseModel,
     APIKeyRequestModel,
     APIKeyUpdateModel,
+    APIKeyTypeResponseModel,
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
@@ -65,6 +66,7 @@ def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel:
         raise HTTPException(404, "api key id not found")
 
     return deleted_key
+
 
 @router.patch("/api_keys/{api_key_id}")
 def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKeyResponseModel:

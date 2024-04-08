@@ -1,9 +1,8 @@
 import logging
-from typing import Any
 from uuid import UUID
 
 import autogen
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -19,10 +18,9 @@ from .dependencies import (
 )
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import CrewModel, Message, Session
-from .parser import parse_input_v0_2 as parse_input
+from .models import CrewModel
 from .routers import auth as auth_router
-from .routers import agents, crews, messages, sessions, profiles
+from .routers import agents, crews, messages, sessions, profiles, api_key_types
 
 logger = logging.getLogger("root")
 
@@ -34,6 +32,7 @@ app.include_router(crews.router)
 app.include_router(agents.router)
 app.include_router(profiles.router)
 app.include_router(auth_router.router)
+app.include_router(api_key_types.router)
 
 app.add_middleware(
     CORSMiddleware,
