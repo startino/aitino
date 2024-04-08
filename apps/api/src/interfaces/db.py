@@ -330,7 +330,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
         api_key_type = APIKeyTypeModel(**data["api_key_types"])
         api_keys.append(APIKeyResponseModel(**data, api_key_type=api_key_type))
         
-    return api_keys #{data["api_key_type_id"]: data["api_key"] for data in response.data}
+    return api_keys 
 
 
 def insert_api_key(api_key: APIKeyRequestModel) -> APIKeyResponseModel:

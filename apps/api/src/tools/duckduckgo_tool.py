@@ -19,7 +19,7 @@ class DuckDuckGoSearchToolInput(BaseModel):
         title="region", description="Region to use for the search", default="wt-wt"
     )
     source: str = Field(
-        title="source", description="Source of information, ex text or news", default="text"
+        title="source", description="Source of information, ex 'text' or 'news'", default="text"
     )
 
 
