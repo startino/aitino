@@ -1,4 +1,4 @@
-from models import EvaluatedSubmission
+from .models import EvaluatedSubmission
 import csv
 import pandas as pd
 

@@ -10,11 +10,11 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_community.callbacks import get_openai_callback
 
-from models import EvaluatedSubmission, RelevanceResult, FilterOutput, FilterQuestion
-from prompts import calculate_relevance_prompt, context as company_context, purpose
-from dummy_submissions import relevant_submissions, irrelevant_submissions
-from utils import majority_vote, calculate_certainty_from_bools
-from logging_utils import log_relevance_calculation
+from .models import EvaluatedSubmission, RelevanceResult, FilterOutput, FilterQuestion
+from .prompts import calculate_relevance_prompt, context as company_context, purpose
+from .dummy_submissions import relevant_submissions, irrelevant_submissions
+from .utils import majority_vote, calculate_certainty_from_bools
+from .logging_utils import log_relevance_calculation
 
 
 # Load Enviornment variables

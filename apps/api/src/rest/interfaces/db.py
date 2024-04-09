@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from models import Lead
+from ..models import Lead
 from datetime import datetime, timedelta
 
 load_dotenv()
