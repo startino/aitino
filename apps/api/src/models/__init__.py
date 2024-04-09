@@ -36,7 +36,6 @@ from .api_key import(
     APIKeyTypeResponseModel,
 )
 from .user import User
-from .rest_comment import PublishCommentRequest
 __all__ = [
     "AgentConfig",
     "CodeExecutionConfig",
@@ -66,5 +65,4 @@ __all__ = [
     "APIKeyUpdateModel",
     "APIKeyTypeResponseModel",
     "User",
-    "PublishCommentRequest",
 ]
