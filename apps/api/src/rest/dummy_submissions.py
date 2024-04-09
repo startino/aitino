@@ -1,5 +1,5 @@
 from ast import Sub
-from models import DummySubmission
+from .models import DummySubmission
 
 relevant_submissions = [
 DummySubmission(id="1", url="https://aiti.no", created_utc=00000, title="I need a simple front end to fetch my headless CMS data. Maybe nocode? ", 

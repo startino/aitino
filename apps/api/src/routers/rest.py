@@ -12,6 +12,6 @@ router = APIRouter(prefix="/rest", tags=["rest"])
 logger = logging.getLogger("root")
 
 
-@router.get("/")
+@router.post("/")
 def publish_comment(submission_id, comment):
     comment_bot.publish_comment(submission_id, comment)

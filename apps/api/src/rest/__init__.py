@@ -1,19 +1,19 @@
 from typing import List
-from saving import save_submission
+from .saving import save_submission
 import diskcache as dc
 import mail
-from models import FilterQuestion, Lead
-import reddit_utils
-from relevance_bot import (
+from .models import FilterQuestion, Lead
+from .reddit_utils import get_subreddits
+from .relevance_bot import (
     evaluate_relevance,
     invoke_chain,
     create_chain,
     summarize_submission,
     filter_with_questions,
 )
-from logging_utils import log_relevance_calculation
-from interfaces import db
-import comment_bot
+from .logging_utils import log_relevance_calculation
+from .interfaces import db
+from .comment_bot import generate_comment
 from praw.models import Submission
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
@@ -58,7 +58,7 @@ def start_reddit_stream():
     # Set up the cache directory
     cache = dc.Cache("./cache")
 
-    subreddits = reddit_utils.get_subreddits(SUBREDDIT_NAMES)
+    subreddits = get_subreddits(SUBREDDIT_NAMES)
 
     for submission in subreddits.stream.submissions():
         # Skip if not a submission (for typing)
@@ -93,7 +93,7 @@ def start_reddit_stream():
                         "url": submission.url,
                     },
                     reddit_id=submission.id,
-                    comment=comment_bot.generate_comment(
+                    comment=generate_comment(
                         evaluated_submission).comment,
                 )
             )
