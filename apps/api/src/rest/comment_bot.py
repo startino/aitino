@@ -54,14 +54,14 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
     return RedditComment(**result)
 
 
-def publish_comment(id, text):
+def publish_comment(id, text, username, password):
     lead = db.get_lead(id)
     if lead is None:
         logging.error(f"Lead with id {id} not found")
         return
 
     submission_id = lead.reddit_id
-    reddit = get_reddit_instance()
+    reddit = get_reddit_instance(username, password)
     submission = reddit.submission(submission_id)
     submission.reply(text)
     db.update_lead(lead.id, status="subscriber", last_event="comment_posted")

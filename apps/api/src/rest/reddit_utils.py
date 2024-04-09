@@ -11,18 +11,18 @@ REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
 REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 
 
-def get_reddit_instance():
+def get_reddit_instance(username, password):
     return Reddit(
         client_id="N8d22rDKxw06lEVozaiDKA",
         client_secret=REDDIT_CLIENT_ID,
-        password=REDDIT_PASSWORD,
+        password=password,
         user_agent="testscript by u/antopia_hk",
-        username=REDDIT_USERNAME,
+        username=username,
     )
 
 
-def get_subreddits(subreddit_names: str):
-    reddit = get_reddit_instance()
+def get_subreddits(subreddit_names: str, username: str, password: str):
+    reddit = get_reddit_instance(username, password)
 
     print("Reddit sign in success! Username: ", reddit.user.me())
 
