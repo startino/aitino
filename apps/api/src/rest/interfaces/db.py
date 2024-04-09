@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from ..models import Lead
+from src.rest.models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
 load_dotenv()
@@ -73,7 +73,7 @@ def post_lead(lead: Lead) -> None:
     ).execute()
 
 
-def update_lead(id: UUID, status: str = "", last_event: str = "") -> None:
+def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishCommentResponse:
     """
     Update a lead in the database.
     """
@@ -82,7 +82,9 @@ def update_lead(id: UUID, status: str = "", last_event: str = "") -> None:
                               "last_event": last_event}.items() if v}
 
     logger.debug(f"Updating lead with data: {data}")
-    supabase.table("leads").update(data).eq("id", str(id)).execute()
+    response = supabase.table("leads").update(data).eq("id", str(id)).execute()
+    # returns the updated object, as a pydantic object
+    return PublishCommentResponse(**response.data[0])
 
 
 if __name__ == "__main__":
