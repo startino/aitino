@@ -8,6 +8,7 @@ from urllib.parse import quote_plus
 load_dotenv()
 REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
 REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
+REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 
 
 def get_reddit_instance():
@@ -16,7 +17,7 @@ def get_reddit_instance():
         client_secret=REDDIT_CLIENT_ID,
         password=REDDIT_PASSWORD,
         user_agent="testscript by u/antopia_hk",
-        username="antopia_hk",
+        username=REDDIT_USERNAME,
     )
 
 
