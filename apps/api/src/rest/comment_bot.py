@@ -1,3 +1,4 @@
+import logging
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
@@ -5,6 +6,7 @@ from models import EvaluatedSubmission, RedditComment
 from dummy_submissions import relevant_submissions, irrelevant_submissions
 from prompts import generate_comment_prompt
 from interfaces import db
+from reddit_utils import get_reddit_instance
 
 from dotenv import load_dotenv
 import os
@@ -43,13 +45,23 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
 
     # Generate a comment
     result = chain.invoke(
-        {"title": submission.title, "selftext": submission.selftext})
+        {
+            "title": submission.submission.title,
+            "selftext": submission.submission.selftext,
+        }
+    )
 
     return RedditComment(**result)
 
 
-def send_comment(submission):
-    text = generate_comment(submission)
+def publish_comment(id, text):
+    lead = db.get_lead(id)
+    if lead is None:
+        logging.error(f"Lead with id {id} not found")
+        return
+
+    submission_id = lead.reddit_id
+    reddit = get_reddit_instance()
+    submission = reddit.submission(submission_id)
     submission.reply(text)
-    db.update_lead(submission.id, status="subscriber",
-                   last_event="comment_posted")
+    db.update_lead(lead.id, status="subscriber", last_event="comment_posted")

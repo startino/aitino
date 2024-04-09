@@ -10,6 +10,7 @@ class Lead(BaseModel):
     """
 
     id: UUID = Field(default_factory=lambda: uuid4())
+    reddit_id: str
     discovered_at: datetime = Field(
         default_factory=lambda: datetime.now(tz=UTC))
     last_contacted_at: datetime = Field(

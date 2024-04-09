@@ -73,7 +73,7 @@ def post_lead(lead: Lead) -> None:
     ).execute()
 
 
-def update_lead(id: int, status: str = "", last_event: str = "") -> None:
+def update_lead(id: UUID, status: str = "", last_event: str = "") -> None:
     """
     Update a lead in the database.
     """

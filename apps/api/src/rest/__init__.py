@@ -16,12 +16,44 @@ from interfaces import db
 import comment_bot
 from praw.models import Submission
 
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import logging
+
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES = (
     "SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
 )
 
+logger = logging.getLogger("root")
 
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:8000",
+        "http://localhost:8001",
+        "http://localhost:8080",
+        "http://localhost:8081",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8001",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:8081",
+        "https://aiti.no",
+        "https://api.aiti.no",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Will be run on server 24/7
 def start_reddit_stream():
     # Set up the cache directory
     cache = dc.Cache("./cache")
@@ -60,6 +92,7 @@ def start_reddit_stream():
                         "body": submission.selftext,
                         "url": submission.url,
                     },
+                    reddit_id=submission.id,
                     comment=comment_bot.generate_comment(
                         evaluated_submission).comment,
                 )
@@ -68,6 +101,13 @@ def start_reddit_stream():
         # Save to local file and cache
         save_submission(evaluated_submission)
         cache.set(submission.id, submission.id)
+
+
+@app.get(
+    "/publish-comment",
+)
+def publish_comment(submission_id, comment):
+    comment_bot.publish_comment(submission_id, comment)
 
 
 if __name__ == "__main__":
