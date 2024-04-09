@@ -29,11 +29,13 @@ def get_lead(lead_id: UUID) -> Lead | None:
     Get a lead from the database.
     """
     logger.debug(f"Getting lead: {lead_id}")
-    response = supabase.table("leads").select("*").eq("id", str(lead_id)).execute()
-    
+    response = supabase.table("leads").select(
+        "*").eq("id", str(lead_id)).execute()
+
     if len(response.data) == 0:
         return None
     return Lead(**response.data[0])
+
 
 def get_due_leads(due_after_days: int = 3) -> list[Lead] | None:
     """
@@ -43,15 +45,21 @@ def get_due_leads(due_after_days: int = 3) -> list[Lead] | None:
 
     date = datetime.now() - timedelta(days=due_after_days)
 
-    response = supabase.table("leads").select("*").neq("status", "dead").lt("last_contacted_at", date).execute()
-    
+    response = (
+        supabase.table("leads")
+        .select("*")
+        .neq("status", "dead")
+        .lt("last_contacted_at", date)
+        .execute()
+    )
+
     leads = []
 
     try:
         leads = [Lead(**lead) for lead in response.data]
     except ValidationError as e:
         logger.error(f"Error validating lead: {e}")
-    
+
     return leads
 
 
@@ -65,16 +73,26 @@ def post_lead(lead: Lead) -> None:
     ).execute()
 
 
+def update_lead(id: int, status: str = "", last_event: str = "") -> None:
+    """
+    Update a lead in the database.
+    """
+    # Create a dictionary with only non-empty values
+    data = {k: v for k, v in {"status": status,
+                              "last_event": last_event}.items() if v}
 
-if __name__ == '__main__':
-   
+    logger.debug(f"Updating lead with data: {data}")
+    supabase.table("leads").update(data).eq("id", str(id)).execute()
 
+
+if __name__ == "__main__":
     lead = Lead(
         redditor="u/antopia_hk",
         source="Reddit",
         last_event="Contacted",
         title="Hello",
-        body="Hello, I am interested in your product.")
+        body="Hello, I am interested in your product.",
+    )
     post_lead(lead)
     lead = get_lead(lead.id)
     print(lead)
