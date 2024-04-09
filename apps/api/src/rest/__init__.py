@@ -1,4 +1,7 @@
+import os
 from typing import List
+
+from dotenv import load_dotenv
 from .saving import save_submission
 import diskcache as dc
 import mail
@@ -24,6 +27,10 @@ import logging
 SUBREDDIT_NAMES = (
     "SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
 )
+
+load_dotenv()
+REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
+REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 
 logger = logging.getLogger("root")
 
@@ -57,8 +64,10 @@ app.add_middleware(
 def start_reddit_stream():
     # Set up the cache directory
     cache = dc.Cache("./cache")
+    if not REDDIT_USERNAME or not REDDIT_PASSWORD:
+        raise TypeError("couldnt find username or password in env vars")
 
-    subreddits = get_subreddits(SUBREDDIT_NAMES)
+    subreddits = get_subreddits(SUBREDDIT_NAMES, REDDIT_USERNAME, REDDIT_PASSWORD)
 
     for submission in subreddits.stream.submissions():
         # Skip if not a submission (for typing)
