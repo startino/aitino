@@ -14,6 +14,7 @@ export type { AgentUpdateModel } from './models/AgentUpdateModel';
 export type { APIKeyRequestModel } from './models/APIKeyRequestModel';
 export type { APIKeyResponseModel } from './models/APIKeyResponseModel';
 export type { APIKeyTypeModel } from './models/APIKeyTypeModel';
+export type { APIKeyTypeResponseModel } from './models/APIKeyTypeResponseModel';
 export type { APIKeyUpdateModel } from './models/APIKeyUpdateModel';
 export type { AuthResponse } from './models/AuthResponse';
 export type { CrewModel } from './models/CrewModel';
@@ -46,6 +47,7 @@ export type { UserIdentity } from './models/UserIdentity';
 export type { ValidationError } from './models/ValidationError';
 
 export { AgentsService } from './services/AgentsService';
+export { ApiKeyTypesService } from './services/ApiKeyTypesService';
 export { AuthenticationService } from './services/AuthenticationService';
 export { CrewsService } from './services/CrewsService';
 export { DefaultService } from './services/DefaultService';

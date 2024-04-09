@@ -88,7 +88,7 @@ export class ProfilesService {
     }
     /**
      * Get Api Keys
-     * Returns api keys with the format: {api_key_type_id: api_key}.
+     * Returns api keys with the api key type as an object with the id, name, description etc.
      * @param profileId
      * @returns APIKeyResponseModel Successful Response
      * @throws ApiError

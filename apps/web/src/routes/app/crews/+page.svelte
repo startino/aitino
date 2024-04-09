@@ -9,8 +9,6 @@
 	import { toast } from 'svelte-sonner';
 	import { Loader2 } from 'lucide-svelte';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { onMount } from 'svelte';
-	import { invalidate } from '$app/navigation';
 
 	export let data;
 

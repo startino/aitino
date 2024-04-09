@@ -1,35 +1,45 @@
-import { supabase } from '$lib/supabase';
 import { fail } from '@sveltejs/kit';
+import { message, setError, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
+import { supabase } from '$lib/supabase';
+import { apiKeySchema } from '$lib/schema';
+import { ProfilesService, ApiKeyTypesService } from '$lib/client';
+
+export const load = async ({ locals }) => {
+	const form = await superValidate(zod(apiKeySchema));
+	const session = await locals.getSession();
+
+	const userApiKeys = await ProfilesService.getApiKeysProfilesProfileIdApiKeysGet(
+		session?.user.id as string
+	);
+
+	const apiKeyTypes = await ApiKeyTypesService.getAllApiKeyTypesApiKeyTypesGet();
+
+	return { form, apiKeyTypes, userApiKeys };
+};
 
 export const actions = {
-	addAPI: async ({ request, locals, url }) => {
-		const id = url.searchParams.get('id');
-		const session = await locals.getSession();
-		const body = await request.formData();
+	add: async ({ request, locals }) => {
+		const form = await superValidate(request, zod(apiKeySchema));
 
-		const apiValue = body.get('apiValue') as string;
-
-		if (!id || !apiValue) {
-			return fail(400, {
-				message: 'Missing required fields'
-			});
+		if (!form.valid) {
+			return fail(400, { form });
 		}
-		const { data, error } = await supabase.from('users_api_keys').insert({
-			profile_id: session?.user.id,
-			api_key_type_id: id,
-			api_key: apiValue
+
+		const session = await locals.getSession();
+
+		const data = await ProfilesService.insertApiKeyProfilesApiKeysPost({
+			profile_id: session?.user.id as string,
+			api_key: form.data.value,
+			api_key_type_id: form.data.typeId
+		}).catch((e) => {
+			return setError(form, 'Something went wrong', { status: 500 });
 		});
 
-		if (error) {
-			console.log(error, 'error');
-			return fail(400, {
-				message: error.message
-			});
-		}
+		console.log(data);
 
-		return {
-			data
-		};
+		return message(form, 'API Key added!');
 	},
 
 	removeAPI: async ({ locals, url }) => {
