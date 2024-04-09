@@ -103,12 +103,5 @@ def start_reddit_stream():
         cache.set(submission.id, submission.id)
 
 
-@app.get(
-    "/publish-comment",
-)
-def publish_comment(submission_id, comment):
-    comment_bot.publish_comment(submission_id, comment)
-
-
 if __name__ == "__main__":
     start_reddit_stream()
