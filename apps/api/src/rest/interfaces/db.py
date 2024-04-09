@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 url: str | None = os.environ.get("REST_SUPABASE_URL")
-key: str | None = os.environ.get("SUPABASE_ANON_KEY")
+key: str | None = os.environ.get("REST_SUPABASE_ANON_KEY")
 
 if url is None or key is None:
     raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
