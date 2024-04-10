@@ -1,28 +1,37 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { NoSessionLoad } from '$lib/types/loads';
-	import * as models from '$lib/types/models';
-	import * as api from '$lib/api';
-	import type { UUID } from '$lib/types';
+	import {
+		SessionsService,
+		type CrewResponseModel,
+		type RunResponseModel,
+		type RunRequestModel
+	} from '$lib/client';
 
 	export let data: NoSessionLoad;
 
 	let profileId: string = data.profileId;
-	let crews: models.Crew[] = data.crews;
+	let crews: CrewResponseModel[] = data.crews;
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
-		const session: models.Session | false = await api.startSession(
-			profileId as UUID,
-			crewId as UUID,
-			title
-		);
+		const runRequest: RunRequestModel = {
+			id: crewId,
+			profile_id: profileId,
+			session_title: title
+		};
 
-		if (!session) {
-			console.error('Failed to start new session');
+		const runResponse: RunResponseModel | null = await SessionsService.runCrewSessionsRunPost(
+			runRequest
+		).catch((e) => {
+			console.error('Failed to start new session', e);
+			return null;
+		});
+
+		if (!runResponse) {
 			return;
 		}
 
-		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + runResponse.session.id; // Can this be done better without full page reload?
 	}
 </script>
 

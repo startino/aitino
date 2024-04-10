@@ -16,13 +16,12 @@
 	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { AgentLibrary, CrewLibrary } from '$lib/components/ui/library';
+	import { AgentLibrary } from '$lib/components/ui/library';
 	import * as CustomNode from '$lib/components/ui/custom-node';
-	import { getContext, getWritableNodes, getCleanNodes, getNodesCount } from '$lib/utils';
-	import type { PanelAction, SaveResult } from '$lib/types';
+	import { getContext, getWritablePrompt, getCleanNodes } from '$lib/utils';
+	import type { PanelAction } from '$lib/types';
 	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
 	import { goto } from '$app/navigation';
-	import { afterUpdate, onMount } from 'svelte';
 
 	export let data;
 
@@ -39,38 +38,30 @@
 
 	let openAgentLibrary = false;
 
-	// Reactivity for loading states
-	$: tryingToRun = false;
-	let saving = false;
+	let status: 'saving' | 'running' | 'idle' = 'idle';
 
-	const actions: PanelAction[] = [
+	let actions: PanelAction[];
+	$: actions = [
 		{
 			name: 'Run',
-			loading: tryingToRun, // TODO: Implement reactivity for loading
+			loading: status === 'running',
 			buttonVariant: 'default',
 			onclick: async () => {
-				tryingToRun = true;
-				const { error } = await save();
-				if (error) {
-					tryingToRun = false;
+				const { failed } = await save();
+				if (failed) {
 					return;
 				}
-				tryingToRun = false;
+				status = 'running';
 				goto('/app/session');
 			}
 		},
 		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addPrompt },
 		{
 			name: 'Add Agent',
-			buttonVariant: 'outline',
-			onclick: () => {
-				openAgentLibrary = true;
-			}
+			isCustom: true
 		},
-		{ name: 'Load Crew', buttonVariant: 'outline', isCustom: true },
 		{
 			name: 'Export',
-			buttonVariant: 'outline',
 			onclick: () => {
 				const jsonString = JSON.stringify(
 					{
@@ -96,23 +87,16 @@
 		},
 		{
 			name: 'Save',
-			buttonVariant: 'outline',
-			loading: saving,
-			onclick: async () => {
-				saving = true;
-				await save();
-				saving = false;
-			}
+			loading: status === 'saving',
+			onclick: save
 		},
-		{ name: 'Layout', buttonVariant: 'outline', onclick: layout }
+		{ name: 'Layout', onclick: layout }
 	];
 
 	const nodeTypes = {
 		agent: CustomNode.Agent,
 		prompt: CustomNode.Prompt
 	};
-
-	let libraryOpen = false;
 
 	const dagreGraph = new dagre.graphlib.Graph();
 	dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -154,18 +138,16 @@
 		return { nodes, edges };
 	}
 
-	const nodes = writable<Node[]>(getWritableNodes(data.crew.nodes));
-	$: data.crew.nodes = getCleanNodes($nodes);
+	const nodes = writable<Node[]>(getWritablePrompt(data.crew.nodes));
 	const edges = writable<Edge[]>(data.crew.edges);
+
+	$: data.crew.nodes = getCleanNodes($nodes);
 	$: data.crew.edges = $edges;
 
 	layout();
 
-	async function save(): Promise<SaveResult> {
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		if (!data.crew.id) {
-			data.crew.id = crypto.randomUUID();
-		}
+	async function save() {
+		status = 'saving';
 
 		const response = await (
 			await fetch('?/save', {
@@ -174,20 +156,23 @@
 			})
 		).json();
 
-		if (response.error) {
-			console.log(response.error);
+		const result = { failed: response.type === 'error' };
+
+		if (result.failed) {
 			toast.error(response.error.message);
-			return { error: true, message: response.error.message };
+		} else {
+			toast.success('Crew successfully saved!');
 		}
 
-		toast.success('Nodes successfully saved!');
-		return { error: false, message: 'Nodes successfully saved!' };
+		status = 'idle';
+		return result;
 	}
 
 	function setReceiver(id: string | null | undefined) {
 		if (!id) {
 			return;
 		}
+
 		const revr = getNodes([id])[0];
 
 		$receiver = { node: revr, targetCount: 1 };
@@ -245,8 +230,6 @@
 
 		$count.prompts++;
 	}
-
-	// console.log(data.crew.id, 'from save node 0');
 </script>
 
 <div style="height:100vh;">
@@ -303,36 +286,18 @@
 		<Panel position="top-right">
 			<RightEditorSidebar bind:description bind:title {actions} let:action>
 				{#if action.isCustom}
-					<Dialog.Root open={libraryOpen} onOpenChange={(o) => (libraryOpen = o)}>
+					<Dialog.Root open={openAgentLibrary} onOpenChange={(o) => (openAgentLibrary = o)}>
 						<Dialog.Trigger>
-							<Button variant={action.buttonVariant} class="w-full">
+							<Button variant={action.buttonVariant ?? 'outline'} class="w-full">
 								{action.name}
 							</Button>
 						</Dialog.Trigger>
 						<Dialog.Content class="max-w-6xl">
-							<CrewLibrary
-								myCrews={data.myCrews}
-								publishedCrews={data.pulishedCrews}
-								on:crew-load={(e) => {
-									const crew = e.detail.crew;
-									$count = crew.nodes;
-									nodes.set(getWritableNodes(crew.nodes));
-									edges.set(crew.edges);
-									libraryOpen = false;
-									title = crew.title;
-									description = crew.description;
-									setReceiver(crew.receiver_id);
-								}}
-								on:crewLoad={({ detail }) => {
-									const crew = detail.crew;
-									console.log(crew, 'crew');
-									$count = getNodesCount(detail.nodes);
-									nodes.set(getWritableNodes(detail.nodes));
-									edges.set(detail.edges);
-									libraryOpen = false;
-									title = detail.title;
-									description = detail.description;
-									setReceiver(detail.id);
+							<AgentLibrary
+								myAgents={data.myAgents}
+								publishedAgents={data.publishedAgents}
+								on:load-agent={({ detail }) => {
+									addAgent(detail);
 								}}
 							/>
 						</Dialog.Content>
@@ -341,18 +306,4 @@
 			</RightEditorSidebar>
 		</Panel>
 	</SvelteFlow>
-
-	<div class="w-full max-w-6xl">
-		<Dialog.Root open={openAgentLibrary} onOpenChange={() => (openAgentLibrary = false)}>
-			<Dialog.Content class="max-w-6xl">
-				<AgentLibrary
-					myAgents={data.myAgents}
-					publishedAgents={data.publishedAgents}
-					on:load-agent={({ detail }) => {
-						addAgent(detail);
-					}}
-				/>
-			</Dialog.Content>
-		</Dialog.Root>
-	</div>
 </div>

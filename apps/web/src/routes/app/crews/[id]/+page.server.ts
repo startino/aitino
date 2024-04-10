@@ -1,46 +1,26 @@
-import * as db from '$lib/server/db';
-import type { Crew } from '$lib/types/models';
-import type { CrewLoad } from '$lib/types/loads';
-import type { PageServerLoad, Actions } from '../editor/$types';
+import type { CrewWithNodesData } from '$lib/types';
+import { CrewsService, AgentsService } from '$lib/client';
 import { error } from '@sveltejs/kit';
+import type { Edge } from '@xyflow/svelte';
 
-export const load: PageServerLoad = async ({
-	cookies,
-	locals: { getSession, supabase },
-	params
-}) => {
+export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
 
-	let crew: Crew = {
-		id: crypto.randomUUID(),
-		profile_id: profileId,
-		receiver_id: '',
-		title: 'Untitled Crew',
-		description: 'No description',
-		nodes: [],
-		edges: [],
-		created_at: '',
-		published: false,
-		avatar: '',
-		prompt: null
-	};
+	const crew = await CrewsService.getCrewCrewsCrewIdGet(id).catch(() => {
+		error(404, 'Crew not found!');
+	});
 
-	const userAgents = db.getAgents(profileId);
-	const publishedAgents = db.getPublishedAgents();
+	let crewWithAgents: CrewWithNodesData = { ...crew, nodes: [], edges: crew.edges as Edge[] };
 
-	const userCrews = await db.getCrew(id);
+	try {
+		const userAgents = await AgentsService.getUsersAgentsAgentsByProfileGet(profileId);
+		const publishedAgents = await AgentsService.getPublishedAgentsAgentsPublishedGet();
+		const crewAgents = await AgentsService.getAgentsFromCrewAgentsByCrewGet(id);
 
-	console.log(userCrews, 'userCrews', id, 'crewId');
-
-	crew = userCrews ?? crew;
-
-	const { data: crewAgents, error } = await supabase.from('agents').select().in('id', crew.nodes);
-
-	if (!error) {
 		// maps agents data to svelte flow nodes
-		crew.nodes = crewAgents.map((a) => ({
+		crewWithAgents.nodes = crewAgents.map((a) => ({
 			id: a.id,
 			type: 'agent',
 			position: { x: 0, y: 0 },
@@ -48,49 +28,36 @@ export const load: PageServerLoad = async ({
 			data: { ...a }
 		}));
 
-		crew.prompt &&
-			crew.nodes.push({
-				id: crew.prompt.id,
+		crewWithAgents.prompt &&
+			crewWithAgents.nodes.push({
+				id: crewWithAgents.prompt.id,
 				type: 'prompt',
 				position: { x: 0, y: 0 },
 				data: { ...crew.prompt }
 			});
+
+		return {
+			profileId: profileId,
+			crew: crewWithAgents,
+			myAgents: userAgents,
+			publishedAgents: publishedAgents
+		};
+	} catch (e) {
+		error(500, 'Somthing went wrong');
 	}
-
-	const publishedCrews = db.getPublishedCrews();
-
-	const data: CrewLoad = {
-		profileId: profileId,
-		crew,
-		myCrews: userCrews,
-		pulishedCrews: await publishedCrews,
-		myAgents: await userAgents,
-		publishedAgents: await publishedAgents
-	};
-
-	return data;
 };
 
-export const actions: Actions = {
-	save: async ({ cookies, request, locals }) => {
+export const actions = {
+	save: async ({ request }) => {
 		const data = await request.json();
 		const prompt = data.nodes.find((n: any) => n.type === 'prompt');
 		const agents = data.nodes.filter((n: any) => n.type === 'agent');
-
-		const { error: err } = await db.postCrew({
-			id: data.id,
-			profile_id: data.profile_id,
-			title: data.title,
-			description: data.description,
-			receiver_id: data.receiver_id,
+		await CrewsService.updateCrewCrewsCrewIdPatch(data.id, {
+			...data,
 			prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
-			nodes: agents.map((n: any) => n.id),
-			edges: data.edges
+			nodes: agents.map((n: any) => n.id)
+		}).catch(() => {
+			error(500, 'Failed saving the Crew...');
 		});
-
-		if (err) {
-			console.log(err);
-			throw error(500, 'Failed attempt at saving Crew. Please try again.');
-		}
 	}
 };

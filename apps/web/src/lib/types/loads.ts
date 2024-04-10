@@ -1,5 +1,6 @@
 // Contains types for .server.ts files data properties
 
+import type { CrewResponseModel } from '$lib/client';
 import * as models from '$lib/types/models';
 import type Stripe from 'stripe';
 
@@ -23,7 +24,7 @@ export type SessionLoad = {
 
 export type NoSessionLoad = {
 	profileId: string;
-	crews: models.Crew[];
+	crews: CrewResponseModel[];
 };
 
 export type CrewLoad = {

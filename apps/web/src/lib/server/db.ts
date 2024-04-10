@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 import type { Crew, Message, Session, Agent } from '$lib/types/models';
 
 export async function getAgent(agentId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('agents').select('*').eq('id', agentId).single();
 	if (err) {
 		throw error(500, 'Failed attempt at retrieving agent. Please reload the page.');
@@ -15,6 +16,7 @@ export async function getAgent(agentId: string) {
 }
 
 export async function setSessionStatus(sessionId: string, status: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase
 		.from('sessions')
 		.update({ status: status })
@@ -25,6 +27,7 @@ export async function setSessionStatus(sessionId: string, status: string) {
 }
 
 export async function getMessages(session_id: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase
 		.from('messages')
 		.select('*')
@@ -42,6 +45,7 @@ export async function getMessages(session_id: string) {
 }
 
 export async function updateSession(sessionId: string, content: object) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('sessions').update(content).eq('id', sessionId);
 	if (err) {
 		throw error(500, 'Failed attempt at updating session.');
@@ -49,6 +53,7 @@ export async function updateSession(sessionId: string, content: object) {
 }
 
 export async function deleteSession(sessionId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('sessions').delete().eq('id', sessionId);
 	if (err) {
 		throw error(500, 'Failed attempt at deleting session.');
@@ -56,6 +61,7 @@ export async function deleteSession(sessionId: string) {
 }
 
 export async function postCrew(data: TablesInsert<'crews'>) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	if (!data.id) throw error(400, 'Invalid Crew ID');
 	if (!data.profile_id)
 		throw error(400, 'There is no profile connected to this crew. Try logging in again.');
@@ -68,6 +74,7 @@ export async function postCrew(data: TablesInsert<'crews'>) {
 }
 
 export async function getCrew(crewId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('crews').select('*').eq('id', crewId).single();
 	if (err) {
 		console.error('Error getting crew with id ' + crewId + ' error: ' + err);
@@ -80,6 +87,7 @@ export async function getCrew(crewId: string) {
 }
 
 export async function getCrews(profileId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('crews').select('*').eq('profile_id', profileId);
 
 	if (err) {
@@ -95,6 +103,7 @@ export async function getCrews(profileId: string) {
 }
 
 export async function getAllCrews() {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('crews').select('*');
 
 	if (err) {
@@ -110,6 +119,7 @@ export async function getAllCrews() {
 }
 
 export async function getAgents(profileId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase
 		.from('agents')
 		.select('*')
@@ -126,6 +136,7 @@ export async function getAgents(profileId: string) {
 }
 
 export async function getPublishedAgents() {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('agents').select('*').eq('published', true);
 
 	if (err) {
@@ -140,6 +151,7 @@ export async function getPublishedAgents() {
 }
 
 export async function getPublishedCrews() {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase.from('crews').select('*').eq('published', true);
 
 	if (err) {
@@ -154,6 +166,7 @@ export async function getPublishedCrews() {
 }
 
 export async function getSessions(profileId: string, crewId: string | null = null) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = crewId
 		? await supabase.from('sessions').select('*').eq('profile_id', profileId).eq('crew_id', crewId)
@@ -173,6 +186,7 @@ export async function getSessions(profileId: string, crewId: string | null = nul
 
 // Get the most recent session
 export async function getRecentSession(profileId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = await supabase
 		.from('sessions')
@@ -194,6 +208,7 @@ export async function getRecentSession(profileId: string) {
 }
 
 export async function getSession(sessionId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	const { data, error: err } = await supabase
 		.from('sessions')
 		.select('*')
@@ -214,6 +229,7 @@ export async function getSession(sessionId: string) {
 
 // Get the most recently modified Crew
 export async function getRecentCrew(profileId: string) {
+	console.warn('You should not be using db.ts, use the api client instead');
 	// Filter by profile_id and crewId if it exists
 	const { data, error: err } = await supabase
 		.from('crews')

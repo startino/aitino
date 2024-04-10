@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+export const apiKeySchema = z.object({
+	typeId: z.string().min(1, 'An API Key Type is required'),
+	value: z.string().min(1, 'The value of the key is required')
+});
+
+export const editCrewSchema = z.object({
+	id: z.string(),
+	title: z.string().default('Untitled'),
+	description: z.string().default('No description'),
+	published: z.boolean().default(false)
+});
+
 export const formSchema = z.object({
 	display_name: z
 		.string()

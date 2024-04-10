@@ -1,14 +1,14 @@
 import { fail } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
-import { z } from 'zod';
+import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from '../schema';
 import type { PageServerLoad, Actions } from './$types';
 import { waitlistSchema } from '$lib/schema';
 
 export const load: PageServerLoad = async (event) => {
-	const contactForm = await superValidate(formSchema);
-	const waitlistForm = await superValidate(waitlistSchema);
+	const contactForm = await superValidate(zod(formSchema));
+	const waitlistForm = await superValidate(zod(waitlistSchema));
 
 	const session = await event.locals.getSession();
 
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	register: async ({ request }) => {
-		const waitlistForm = await superValidate(request, waitlistSchema);
+		const waitlistForm = await superValidate(request, zod(waitlistSchema));
 
 		if (!waitlistForm.valid) {
 			return fail(400, {
