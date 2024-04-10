@@ -11,6 +11,8 @@ from supabase import Client, create_client
 from models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
+from models.evaluated_submission import EvaluatedSubmission
+
 load_dotenv()
 
 url: str | None = os.environ.get("SUPABASE_URL")
@@ -96,15 +98,12 @@ def get_all_leads() -> list[PublishCommentResponse]:
     return [PublishCommentResponse(**data) for data in response.data]
 
 
-if __name__ == "__main__":
-    lead = Lead(
-        redditor="u/antopia_hk",
-        source="Reddit",
-        last_event="Contacted",
-        title="Hello",
-        body="Hello, I am interested in your product.",
-    )
-    post_lead(lead)
-    lead = get_lead(lead.id)
-    print(lead)
-
+def post_evaluated_submission(evaluated_submission: EvaluatedSubmission) -> None:
+    """
+    Post a submission to the database.
+    """
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Posting submission: {evaluated_submission}")
+    supabase.table("evaluated_submissions").insert(
+        json.loads(json.dumps(evaluated_submission.model_dump(), default=str))
+    ).execute()

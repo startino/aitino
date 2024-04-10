@@ -2,7 +2,7 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from saving import save_submission
+from saving import update_db_with_submission
 import diskcache as dc
 import mail
 from models import FilterQuestion, Lead
@@ -79,30 +79,8 @@ def start_reddit_stream():
         # Use LLMs to see if submission is relevant (expensive part)
         evaluated_submission = evaluate_relevance(submission, filter=True)
 
-        # If submission is relevant
-        if evaluated_submission.is_relevant:
-            # Send email
-            # mail.send_submission_via_email(evaluated_submission)
-
-            # Save to database
-            db.post_lead(
-                Lead(
-                    prospect_username=submission.author.name,
-                    source="their_post",
-                    last_event="discovered",
-                    status="under_review",
-                    data={
-                        "title": submission.title,
-                        "body": submission.selftext,
-                        "url": submission.url,
-                    },
-                    reddit_id=submission.id,
-                    comment=generate_comment(evaluated_submission).comment,
-                )
-            )
-
         # Save to local file and cache
-        save_submission(evaluated_submission)
+        update_db_with_submission(evaluated_submission)
         cache.set(submission.id, submission.id)
 
 

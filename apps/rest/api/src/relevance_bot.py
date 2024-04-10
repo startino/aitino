@@ -214,10 +214,11 @@ def filter_with_questions(
                     )
                     # TODO: Do some cost analysis and saving (for long term insights)
                     cost += cb.total_cost
+                break
             except Exception as e:
                 print(f"An error occurred while filtering using questions: {e}")
                 time.sleep(2)  # Wait for 10 seconds before trying again
-                if i == 4:
+                if i == 10:
                     return True, "ERRORED", cost
 
         filter_output = FilterOutput.parse_obj(result)
@@ -378,4 +379,3 @@ if __name__ == "__main__":
 
     submission = relevant_submissions[0]
     # print(summarize_submission(submission).selftext)
-
