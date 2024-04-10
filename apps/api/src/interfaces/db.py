@@ -31,6 +31,9 @@ from src.models import (
     APIKeyTypeModel,
     APIKeyUpdateModel,
     APIKeyTypeResponseModel,
+    MessageRequestModel,
+    MessageResponseModel,
+    MessageUpdateModel,
 )
 from src.parser import parse_input_v0_2 as parse_input
 
@@ -161,6 +164,38 @@ def post_message(message: Message) -> None:
     supabase.table("messages").insert(
         json.loads(json.dumps(message.model_dump(), default=str))
     ).execute()
+
+
+def insert_message(message: MessageRequestModel) -> MessageResponseModel:
+    """Posts a message like the post_message function, but uses a request model"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("messages").insert(json.loads(message.model_dump_json(exclude_none=True))).execute()
+    return MessageResponseModel(**response.data[0])
+
+
+def delete_message(message_id: UUID) -> MessageResponseModel | None:
+    """Deletes a message by an id (the primary key)"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("messages").delete().eq("id", message_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return MessageResponseModel(**response.data[0])
+
+
+def update_message(message_id: UUID, content: MessageUpdateModel) -> MessageResponseModel | None:
+    """Updates a message by an id"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("messages")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("id", message_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    return MessageResponseModel(**response.data[0])
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
@@ -390,3 +425,12 @@ if __name__ == "__main__":
 #    )
 #
     
+    #print(insert_message(MessageRequestModel(
+    #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
+    #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
+    #    content="hello test message",
+    #    recipient_id=UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"),
+    #)))
+
+    print(delete_message(UUID('0e30e657-2ee1-482f-ab07-1952dc4d20fb')))
+    print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateModel(content="wowzer")))

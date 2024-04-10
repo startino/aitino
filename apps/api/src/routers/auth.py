@@ -65,3 +65,4 @@ def email_sign_in(
 @router.post("/sign_in/provider")
 def provider_sign_in(provider_request: SignInWithOAuthCredentials) -> OAuthResponse:
     supabase: Client = create_client(url, key)
+    return supabase.auth.sign_in_with_oauth(provider_request)
