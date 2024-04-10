@@ -17,9 +17,8 @@ url: str | None = os.environ.get("REST_SUPABASE_URL")
 key: str | None = os.environ.get("REST_SUPABASE_ANON_KEY")
 
 if url is None or key is None:
-    raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
+    raise ValueError("REST_SUPABASE_URL and REST_SUPABASE_ANON_KEY must be set")
 
-supabase: Client = create_client(url, key)
 
 logger = logging.getLogger("root")
 
@@ -28,6 +27,7 @@ def get_lead(lead_id: UUID) -> Lead | None:
     """
     Get a lead from the database.
     """
+    supabase: Client = create_client(url, key)
     logger.debug(f"Getting lead: {lead_id}")
     response = supabase.table("leads").select(
         "*").eq("id", str(lead_id)).execute()
@@ -41,6 +41,7 @@ def get_due_leads(due_after_days: int = 3) -> list[Lead] | None:
     """
     Get leads that are due for a follow-up.
     """
+    supabase: Client = create_client(url, key)
     logger.debug("Getting due leads")
 
     date = datetime.now() - timedelta(days=due_after_days)
@@ -67,6 +68,7 @@ def post_lead(lead: Lead) -> None:
     """
     Post a lead to the database.
     """
+    supabase: Client = create_client(url, key)
     logger.debug(f"Posting lead: {lead}")
     supabase.table("leads").insert(
         json.loads(json.dumps(lead.model_dump(), default=str))
@@ -77,6 +79,7 @@ def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishComm
     """
     Update a lead in the database.
     """
+    supabase: Client = create_client(url, key)
     # Create a dictionary with only non-empty values
     data = {k: v for k, v in {"status": status,
                               "last_event": last_event}.items() if v}
@@ -85,6 +88,12 @@ def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishComm
     response = supabase.table("leads").update(data).eq("id", str(id)).execute()
     # returns the updated object, as a pydantic object
     return PublishCommentResponse(**response.data[0])
+
+
+def get_comments() -> list[PublishCommentResponse]:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("leads").select("*").execute()
+    return [PublishCommentResponse(**data) for data in response.data]
 
 
 if __name__ == "__main__":

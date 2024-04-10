@@ -2,10 +2,10 @@ import logging
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from src.interfaces import db
 from src.models import CrewModel, Message, Session
 from src.parser import parse_input_v0_2 as parse_input
 from src.rest import comment_bot
+from src.rest.interfaces import db
 from src.rest.models import PublishCommentRequest, PublishCommentResponse
 
 router = APIRouter(prefix="/rest", tags=["rest"])
@@ -14,7 +14,7 @@ logger = logging.getLogger("root")
 
 
 @router.post("/")
-def publish_comment(publish_request: PublishCommentRequest) -> PublishCommentResponse:
+def publish_comment(publish_request: PublishCommentRequest):
     updated_content = comment_bot.publish_comment(
         publish_request.lead_id, 
         publish_request.comment, 
@@ -25,3 +25,7 @@ def publish_comment(publish_request: PublishCommentRequest) -> PublishCommentRes
         raise HTTPException(404, "lead not found")
 
     return updated_content
+
+@router.get("/")
+def get_comments() -> list[PublishCommentResponse]:
+    return db.get_comments()
