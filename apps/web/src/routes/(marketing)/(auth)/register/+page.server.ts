@@ -1,12 +1,13 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from '$lib/schema';
 import { type Provider } from '@supabase/supabase-js';
 
 export const load = async () => {
 	return {
-		registerForm: await superValidate(formSchema)
+		registerForm: await superValidate(zod(formSchema))
 	};
 };
 
