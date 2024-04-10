@@ -13,7 +13,12 @@ from .crew_model import (
     CrewUpdateModel,
 )
 from .llm_config import LLMConfig
-from .message import Message
+from .message import (
+    Message, 
+    MessageRequestModel, 
+    MessageResponseModel,
+    MessageUpdateModel,
+)
 from .profile import (
     ProfileRequestModel,
     ProfileResponseModel,
@@ -65,4 +70,6 @@ __all__ = [
     "APIKeyUpdateModel",
     "APIKeyTypeResponseModel",
     "User",
+    "MessageRequestModel",
+    "MessageResponseModel",
 ]
