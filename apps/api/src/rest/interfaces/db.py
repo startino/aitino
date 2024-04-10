@@ -90,7 +90,7 @@ def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishComm
     return PublishCommentResponse(**response.data[0])
 
 
-def get_comments() -> list[PublishCommentResponse]:
+def get_all_leads() -> list[PublishCommentResponse]:
     supabase: Client = create_client(url, key)
     response = supabase.table("leads").select("*").execute()
     return [PublishCommentResponse(**data) for data in response.data]
