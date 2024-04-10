@@ -32,9 +32,17 @@ def insert_message(message: MessageRequestModel) -> MessageResponseModel:
 
 @router.delete("/{message_id}")
 def delete_message(message_id: UUID) -> MessageResponseModel:
-    return db.delete_message(message_id)
+    response = db.delete_message(message_id)
+    if not response:
+        raise HTTPException(404, "message not found")
+    
+    return response
 
 
 @router.patch("/{message_id}")
 def update_message(message_id: UUID, content: MessageUpdateModel) -> MessageResponseModel:
-    return db.update_message(message_id, content)
+    response = db.update_message(message_id, content)
+    if not response:
+        raise HTTPException(404, "message not found")
+
+    return response
