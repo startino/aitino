@@ -7,6 +7,10 @@ from uuid import UUID
 from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
+from praw.models import Submission
+
+from src.rest import reddit_utils
+from src.rest.models.evaluated_submission import EvaluatedSubmission
 
 from ..models import Lead
 from datetime import datetime, timedelta
@@ -29,8 +33,7 @@ def get_lead(lead_id: UUID) -> Lead | None:
     Get a lead from the database.
     """
     logger.debug(f"Getting lead: {lead_id}")
-    response = supabase.table("leads").select(
-        "*").eq("id", str(lead_id)).execute()
+    response = supabase.table("leads").select("*").eq("id", str(lead_id)).execute()
 
     if len(response.data) == 0:
         return None
@@ -78,21 +81,33 @@ def update_lead(id: UUID, status: str = "", last_event: str = "") -> None:
     Update a lead in the database.
     """
     # Create a dictionary with only non-empty values
-    data = {k: v for k, v in {"status": status,
-                              "last_event": last_event}.items() if v}
+    data = {k: v for k, v in {"status": status, "last_event": last_event}.items() if v}
 
     logger.debug(f"Updating lead with data: {data}")
     supabase.table("leads").update(data).eq("id", str(id)).execute()
 
 
+def post_submission(submission: EvaluatedSubmission):
+    """
+    Post a submission to the database.
+    """
+    logger.debug(f"Posting submission: {submission}")
+    supabase.table("submissions").insert(
+        json.loads(json.dumps(submission.model_dump(), default=str))
+    ).execute()
+
+
 if __name__ == "__main__":
-    lead = Lead(
-        redditor="u/antopia_hk",
-        source="Reddit",
-        last_event="Contacted",
-        title="Hello",
-        body="Hello, I am interested in your product.",
+    reddit = reddit_utils.get_reddit_instance(
+        username="antopia_hk", password="jorge-loves-donuts-eh-?!"
     )
-    post_lead(lead)
-    lead = get_lead(lead.id)
-    print(lead)
+    test_submission = reddit.submission("n9o4l3")
+    post_submission(
+        EvaluatedSubmission(
+            submission=test_submission,
+            is_relevant=True,
+            cost=0.0,
+            reason="test",
+            qualifying_question="test",
+        )
+    )

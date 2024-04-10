@@ -5,15 +5,13 @@ from dotenv import load_dotenv
 from .saving import save_submission
 import diskcache as dc
 import mail
-from .models import FilterQuestion, Lead
+from .models import Lead
 from .reddit_utils import get_subreddits
-from .relevance_bot import evaluate_relevance
-from .logging_utils import log_relevance_calculation
+from .relevance_bot import evaluate_relevance,
 from .interfaces import db
 from .comment_bot import generate_comment
 from praw.models import Submission
 
-from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 # Relevant subreddits to Startino
@@ -24,6 +22,8 @@ SUBREDDIT_NAMES = (
 load_dotenv()
 REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
 REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
+
+logger = logging.getLogger("root")
 
 
 # Will be run on server 24/7
@@ -54,7 +54,6 @@ def start_reddit_stream():
         if evaluated_submission.is_relevant:
             # Send email
             # mail.send_submission_via_email(evaluated_submission)
-
             # Save to database
             db.post_lead(
                 Lead(
