@@ -104,6 +104,7 @@ def generate_tool_from_uuid(
                         "api key should not be none when passed to tool that needs api key"
                     )
                 tool_object = tools[tool_id](api_key=api_key)
+                logger.info(f"creating tool")
                 return tool_object
 
             logger.info("making tool without api_key")
