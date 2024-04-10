@@ -1,0 +1,41 @@
+Metadata-Version: 2.1
+Name: gptrim
+Version: 0.1.6
+Summary: Reduce the size of GPT inputs by 40-60% without losing most of the information.
+Home-page: https://github.com/vlad-ds/gptrim
+Author: Vlad Gheorghe
+Author-email: vlad.datapro@gmail.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+License-File: LICENSE
+Requires-Dist: nltk (==3.8.1)
+
+gptrim
+======
+
+gptrim is a Python library designed to help you trim text inputs, making
+it easier to fit more content within GPT’s context window. By
+tokenizing, stemming, and removing spaces, this library prepares your
+text inputs for efficient processing with GPT models.
+
+Installation
+------------
+
+.. code:: commandline
+
+   pip install gptrim
+
+Usage
+-----
+
+.. code:: python
+
+   from gptrim import trim
+
+   text = "This is an example sentence to demonstrate gptrim usage."
+   trimmed_text = trim(text)
+   print(trimmed_text)

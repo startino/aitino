@@ -8,13 +8,13 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from src.rest.models import Lead, PublishCommentResponse
+from models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
 load_dotenv()
 
-url: str | None = os.environ.get("REST_SUPABASE_URL")
-key: str | None = os.environ.get("REST_SUPABASE_ANON_KEY")
+url: str | None = os.environ.get("SUPABASE_URL")
+key: str | None = os.environ.get("SUPABASE_ANON_KEY")
 
 if url is None or key is None:
     raise ValueError("REST_SUPABASE_URL and REST_SUPABASE_ANON_KEY must be set")
@@ -29,8 +29,7 @@ def get_lead(lead_id: UUID) -> Lead | None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting lead: {lead_id}")
-    response = supabase.table("leads").select(
-        "*").eq("id", str(lead_id)).execute()
+    response = supabase.table("leads").select("*").eq("id", str(lead_id)).execute()
 
     if len(response.data) == 0:
         return None
@@ -75,14 +74,15 @@ def post_lead(lead: Lead) -> None:
     ).execute()
 
 
-def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishCommentResponse:
+def update_lead(
+    id: UUID, status: str = "", last_event: str = ""
+) -> PublishCommentResponse:
     """
     Update a lead in the database.
     """
     supabase: Client = create_client(url, key)
     # Create a dictionary with only non-empty values
-    data = {k: v for k, v in {"status": status,
-                              "last_event": last_event}.items() if v}
+    data = {k: v for k, v in {"status": status, "last_event": last_event}.items() if v}
 
     logger.debug(f"Updating lead with data: {data}")
     response = supabase.table("leads").update(data).eq("id", str(id)).execute()
@@ -107,3 +107,4 @@ if __name__ == "__main__":
     post_lead(lead)
     lead = get_lead(lead.id)
     print(lead)
+
