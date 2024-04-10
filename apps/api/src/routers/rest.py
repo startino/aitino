@@ -27,5 +27,5 @@ def publish_comment(publish_request: PublishCommentRequest):
     return updated_content
 
 @router.get("/")
-def get_comments() -> list[PublishCommentResponse]:
-    return db.get_comments()
+def get_leads() -> list[PublishCommentResponse]:
+    return db.get_all_leads()
