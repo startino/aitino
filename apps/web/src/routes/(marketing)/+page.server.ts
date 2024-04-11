@@ -3,10 +3,9 @@ import { supabase } from '$lib/supabase';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from '../schema';
-import type { PageServerLoad, Actions } from './$types';
 import { waitlistSchema } from '$lib/schema';
 
-export const load: PageServerLoad = async (event) => {
+export const load = async (event) => {
 	const contactForm = await superValidate(zod(formSchema));
 	const waitlistForm = await superValidate(zod(waitlistSchema));
 
@@ -16,7 +15,7 @@ export const load: PageServerLoad = async (event) => {
 	return { contactForm, waitlistForm };
 };
 
-export const actions: Actions = {
+export const actions = {
 	register: async ({ request }) => {
 		const waitlistForm = await superValidate(request, zod(waitlistSchema));
 
@@ -65,7 +64,7 @@ export const actions: Actions = {
 		};
 	},
 	contactUs: async ({ request }) => {
-		const form = await superValidate(request, formSchema);
+		const form = await superValidate(request, zod(formSchema));
 
 		console.log(form, 'from backend');
 
@@ -94,4 +93,4 @@ export const actions: Actions = {
 			success: true
 		};
 	}
-} satisfies Actions;
+};

@@ -2,22 +2,19 @@
 	import { SplitTest } from 'svelte-split-testing';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import FormItem from '$lib/components/FormItem.svelte';
-	import type { ActionData, PageData } from './$types';
 	import SEO from '$lib/components/SEO/index.svelte';
 	import { Logo } from '$lib/components/ui/logo';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
 	import { faqList as faqs } from '$lib/faq-data';
 	import { fade } from 'svelte/transition';
 	import { Codesandbox, Gauge, HeartHandshake, Key, Settings2, Waves } from 'lucide-svelte';
 
-	export let form: ActionData;
+	export let form;
 
-	export let data: PageData;
+	export let data;
+
 	const titleVariants = {
 		'0': 'Join the Future of AI<br /> with Exclusive Early Access to <span class="bg-gradient-to-b from-primary to-background from-50% bg-clip-text text-transparent">Aitino</span>'
 		// '1': 'Create Solutions Like <br /> Never Before with <span class="bg-gradient-to-r from-primary to-danger bg-clip-text text-transparent">Aitino</span>',

@@ -7,7 +7,7 @@ import { createNewAgents } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 
-export const load = (async ({ locals }) => {
+export const load = async ({ locals }) => {
 	const session = await locals.getSession();
 	const currentUserAgents = await supabase
 		.from('agents')
@@ -32,9 +32,9 @@ export const load = (async ({ locals }) => {
 		user_api_keys,
 		agentForm: await superValidate(zod(createNewAgents))
 	};
-}) satisfies PageServerLoad;
+};
 
-export const actions: Actions = {
+export const actions = {
 	creatAgents: async ({ request, locals }) => {
 		const session = await locals.getSession();
 

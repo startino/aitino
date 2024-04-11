@@ -1,12 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
 import type { Provider } from '@supabase/supabase-js';
 
-export const load = (async () => {
+export const load = async () => {
 	return {};
-}) satisfies PageServerLoad;
+};
 
-export const actions: Actions = {
+export const actions = {
 	login: async ({ request, locals, cookies, url }) => {
 		const provider = url.searchParams.get('provider') as Provider;
 
