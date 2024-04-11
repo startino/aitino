@@ -9,12 +9,12 @@ from pydantic import ValidationError
 from supabase import Client, create_client
 
 from src.models import (
-    AgentModel,
+    Agent,
     AgentRequestModel,
     AgentUpdateModel,
-    CrewModel,
+    CrewProcessed,
     CrewRequestModel,
-    CrewResponseModel,
+    Crew,
     CrewUpdateModel,
     Message,
     Profile,
@@ -50,7 +50,7 @@ logger = logging.getLogger("root")
 
 def get_compiled(
     crew_id: UUID,
-) -> tuple[str, CrewModel] | tuple[Literal[False], Literal[False]]:
+) -> tuple[str, CrewProcessed] | tuple[Literal[False], Literal[False]]:
     """Get the compiled message and crew model for a given Crew ID."""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting compiled message and crew model for {crew_id}")
@@ -60,7 +60,7 @@ def get_compiled(
         logger.error(f"No compiled message and composition for {crew_id}")
         return False, False
 
-    return parse_input(response.data[0])
+    return parse_input(input_data=response.data[0])
 
 
 def get_session(session_id: UUID) -> Session | None:
@@ -234,23 +234,23 @@ def get_api_key_type_ids(tool_ids: list[str]) -> dict[str, str]:
     return {data["id"]: data["api_key_type_id"] for data in response.data}
 
 
-def post_agents(agents: list[AgentModel]) -> None:
+def post_agents(agents: list[Agent]) -> None:
     """Post a list of agents to the database."""
     supabase: Client = create_client(url, key)
     logger.debug(f"Posting agents: {agents}")
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
-def insert_crew(crew: CrewRequestModel) -> CrewResponseModel:
+def insert_crew(crew: CrewRequestModel) -> Crew:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
     )
-    return CrewResponseModel(**response.data[0])
+    return Crew(**response.data[0])
     # supabase.table("crews").upsert(crew.model_dump())
 
 
-def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
+def update_crew(crew_id: UUID, content: CrewUpdateModel) -> Crew:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("crews")
@@ -258,23 +258,23 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
         .eq("id", crew_id)
         .execute()
     )
-    return CrewResponseModel(**response.data[0])
+    return Crew(**response.data[0])
 
 
-def get_crew_from_id(crew_id: UUID) -> CrewResponseModel:
+def get_crew_from_id(crew_id: UUID) -> Crew:
     supabase: Client = create_client(url, key)
     response = supabase.table("crews").select("*").eq("id", str(crew_id)).single().execute()
     
-    return CrewResponseModel(**response.data)
+    return Crew(**response.data)
 
 
-def get_published_crews() -> list[CrewResponseModel]:
+def get_published_crews() -> list[Crew]:
     supabase: Client = create_client(url, key)
     response = supabase.table("crews").select("*").eq("published", "TRUE").execute()
-    return [CrewResponseModel(**data) for data in response.data]
+    return [Crew(**data) for data in response.data]
 
 
-def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[CrewResponseModel]:
+def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[Crew]:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("crews")
@@ -283,7 +283,7 @@ def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[CrewRespon
         .order("created_at", desc=(not ascending))
         .execute()
     )
-    return [CrewResponseModel(**data) for data in response.data]
+    return [Crew(**data) for data in response.data]
 
 
 def get_tool_api_keys(
@@ -350,60 +350,60 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
 
 
-def get_published_agents() -> list[AgentModel]:
+def get_published_agents() -> list[Agent]:
     supabase: Client = create_client(url, key)
     response = supabase.table("agents").select("*").eq("published", "TRUE").execute()
-    return [AgentModel(**data) for data in response.data]
+    return [Agent(**data) for data in response.data]
 
 
-def get_users_agents(profile_id: UUID) -> list[AgentModel]:
+def get_users_agents(profile_id: UUID) -> list[Agent]:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("agents").select("*").eq("profile_id", profile_id).execute()
     )
-    return [AgentModel(**data) for data in response.data]
+    return [Agent(**data) for data in response.data]
 
 
-def get_agent_by_id(agent_id: UUID) -> AgentModel | None:
+def get_agent_by_id(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
     response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if not response.data:
         return None
 
-    return AgentModel(**response.data[0])
+    return Agent(**response.data[0])
 
 
-def get_agents_from_crew(crew_id: UUID) -> list[AgentModel]:
+def get_agents_from_crew(crew_id: UUID) -> list[Agent]:
     supabase: Client = create_client(url, key)
     nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
     response = (
         supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
     )
-    return [AgentModel(**data) for data in response.data]
+    return [Agent(**data) for data in response.data]
 
 
-def insert_agent(content: AgentRequestModel) -> AgentModel:
+def insert_agent(content: AgentRequestModel) -> Agent:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("agents").insert(json.loads(content.model_dump_json())).execute()
     )
-    return AgentModel(**response.data[0])
+    return Agent(**response.data[0])
 
 
-def update_agents(content: AgentUpdateModel) -> AgentModel:
+def update_agents(content: AgentUpdateModel) -> Agent:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("agents")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
         .execute()
     )
-    return AgentModel(**response.data[0])
+    return Agent(**response.data[0])
 
 
-def delete_agent(agent_id: UUID) -> AgentModel:
+def delete_agent(agent_id: UUID) -> Agent:
     supabase: Client = create_client(url, key)
     response = supabase.table("agents").delete().eq("id", agent_id).execute()
-    return AgentModel(**response.data[0])
+    return Agent(**response.data[0])
 
 
 def get_profiles() -> list[Profile]:

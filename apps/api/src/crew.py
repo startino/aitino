@@ -9,7 +9,7 @@ from autogen.cache import Cache
 from src.models.session import SessionStatus
 
 from .interfaces import db
-from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
+from .models import Agent, CodeExecutionConfig, CrewProcessed, Message, Session
 from .tools import (
     generate_llm_config,
     generate_tool_from_uuid,
@@ -24,7 +24,7 @@ class Crew:
         self,
         profile_id: UUID,
         session: Session,
-        crew_model: CrewModel,
+        crew_model: CrewProcessed,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
@@ -138,7 +138,7 @@ class Crew:
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
 
-    def _validate_crew_model(self, crew_model: CrewModel) -> bool:
+    def _validate_crew_model(self, crew_model: CrewProcessed) -> bool:
         if len(crew_model.agents) == 0:
             return False
 
@@ -168,7 +168,7 @@ class Crew:
                 new_dict[key] = value
         return new_dict
 
-    def _format_agent_name(self, agent: AgentModel) -> str:
+    def _format_agent_name(self, agent: Agent) -> str:
         return re.sub(
             r"[^a-zA-Z0-9-]",
             "",
@@ -176,7 +176,7 @@ class Crew:
         )[:64]
 
     def _create_agents(
-        self, crew_model: CrewModel
+        self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
         descriptions = db.get_descriptions([agent.id for agent in crew_model.agents])

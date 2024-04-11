@@ -23,18 +23,6 @@ class MessageRequestModel(BaseModel):
     sender_id: UUID | None = None  # None means admin here
     profile_id: UUID
 
-# this class should inherit from message somehow later, they are basically the same
-# (i just want to have a response model to more clearly document what the object returned from endpoints represents)
-#class Message(BaseModel):
-#    id: UUID
-#    session_id: UUID
-#    profile_id: UUID
-#    sender_id: UUID | None = None  # None means admin here
-#    recipient_id: UUID | None = None  # None means admin here aswell
-#    content: str
-#    role: str
-#    created_at: datetime
-#
 
 class MessageUpdateModel(BaseModel):
     session_id: UUID | None = None
@@ -43,3 +31,4 @@ class MessageUpdateModel(BaseModel):
     recipient_id: UUID | None = None 
     sender_id: UUID | None = None 
     profile_id: UUID | None = None
+

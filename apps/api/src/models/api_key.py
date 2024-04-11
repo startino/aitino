@@ -17,14 +17,10 @@ class APIKeyRequestModel(BaseModel):
     api_key_type_id: UUID
     api_key: str
 
-#class APIKeyTypeModel(BaseModel):
-#    id: UUID
-#    name: str
-#    created_at: datetime
-#    description: str
 
 class APIKeyUpdateModel(BaseModel):
     api_key: str
+
 
 class APIKeyType(BaseModel):
     id: UUID

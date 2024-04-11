@@ -5,19 +5,34 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from .agent_model import AgentModel
+from .agent_model import Agent
 
 
 class CrewBaseModel(BaseModel):
     receiver_id: UUID
 
 
-class CrewModel(CrewBaseModel):
+class CrewProcessed(CrewBaseModel):
     delegator_id: UUID | None = None 
     # None means admin again, so its the original crew (has no parent crew)
-    agents: list[AgentModel]
-    sub_crews: list[CrewResponseModel] = []  
+    agents: list[Agent]
+    sub_crews: list[Crew] = []  
     # Must set delegator_id for each sub_crew in sub_crews
+
+class Crew(BaseModel):
+    id: UUID
+    created_at: datetime
+    profile_id: UUID
+    edges: list[dict]
+    published: bool
+    title: str
+    description: str
+    updated_at: datetime
+    nodes: list[str]
+    receiver_id: UUID | None = None
+    avatar: str | None = None
+    prompt: dict | None = None
+
 
 class CrewRequestModel(CrewBaseModel):
     prompt: dict
@@ -42,17 +57,3 @@ class CrewUpdateModel(BaseModel):
     class Config:
         exclude_none = True
 
-
-class CrewResponseModel(BaseModel):
-    id: UUID
-    created_at: datetime
-    profile_id: UUID
-    edges: list[dict]
-    published: bool
-    title: str
-    description: str
-    updated_at: datetime
-    nodes: list[str]
-    receiver_id: UUID | None = None
-    avatar: str | None = None
-    prompt: dict | None = None

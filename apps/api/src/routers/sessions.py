@@ -13,7 +13,7 @@ from src.dependencies import (
 )
 from src.interfaces import db
 from src.models import (
-    CrewModel,
+    CrewProcessed,
     Message,
     RunRequestModel,
     RunResponse,
