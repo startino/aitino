@@ -12,7 +12,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import Message, MessageRequestModel, MessageResponseModel, MessageUpdateModel
+from src.models import Message, MessageRequestModel, Message, MessageUpdateModel
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -25,12 +25,12 @@ def get_messages_by_session(by_session: UUID) -> list[Message]:
 
 
 @router.post("/")
-def insert_message(message: MessageRequestModel) -> MessageResponseModel:
+def insert_message(message: MessageRequestModel) -> Message:
     return db.insert_message(message)
 
 
 @router.delete("/{message_id}")
-def delete_message(message_id: UUID) -> MessageResponseModel:
+def delete_message(message_id: UUID) -> Message:
     response = db.delete_message(message_id)
     if not response:
         raise HTTPException(404, "message not found")
@@ -39,7 +39,7 @@ def delete_message(message_id: UUID) -> MessageResponseModel:
 
 
 @router.patch("/{message_id}")
-def update_message(message_id: UUID, content: MessageUpdateModel) -> MessageResponseModel:
+def update_message(message_id: UUID, content: MessageUpdateModel) -> Message:
     response = db.update_message(message_id, content)
     if not response:
         raise HTTPException(404, "message not found")
@@ -48,5 +48,5 @@ def update_message(message_id: UUID, content: MessageUpdateModel) -> MessageResp
 
 
 @router.get("/{message_id}")
-def get_message_by_id(message_id: UUID) -> MessageResponseModel:
+def get_message_by_id(message_id: UUID) -> Message:
     return db.get_message_by_id(message_id)

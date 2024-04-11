@@ -18,7 +18,7 @@ from .dependencies import (
 )
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import CrewModel
+from .models import CrewProcessed
 from .routers import auth as auth_router
 from .routers import agents, crews, messages, sessions, profiles, api_key_types, rest
 
@@ -65,7 +65,7 @@ def redirect_to_docs() -> RedirectResponse:
 
 
 @app.get("/compile", dependencies=[Depends(rate_limit(3, 30, "compile"))])
-def compile(id: UUID) -> dict[str, str | CrewModel]:
+def compile(id: UUID) -> dict[str, str | CrewProcessed]:
     message, composition = db.get_compiled(id)
 
     return {

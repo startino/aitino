@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Literal
 from uuid import UUID
@@ -13,10 +15,6 @@ class AgentBaseModel(BaseModel):
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
 
 
-class AgentModel(AgentBaseModel):
-    id: UUID
-
-
 class AgentRequestModel(AgentBaseModel):
     description: str | None = None
     profile_id: UUID
@@ -24,7 +22,7 @@ class AgentRequestModel(AgentBaseModel):
     avatar: str
 
 
-class AgentResponseModel(AgentRequestModel):
+class Agent(AgentRequestModel):
     id: UUID
     created_at: datetime
     published: bool
