@@ -31,7 +31,7 @@
 			{
 				"name": "typescript-svelte-plugin",
 				"enabled": true,
-				"assumeIsSvelteProject": false // if true, skip detection and always assume it's a Svelte project
+				"assumeIsSvelteProject": true // if true, skip detection and always assume it's a Svelte project
 			}
 		]
 	}
