@@ -1,4 +1,9 @@
-import { CrewsService, SessionsService } from '$lib/client/index.js';
+import {
+	AgentsService,
+	CrewsService,
+	MessagesService,
+	SessionsService
+} from '$lib/client/index.js';
 import * as db from '$lib/server/db';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -44,15 +49,27 @@ export const load = async ({ params, locals: { getSession } }) => {
 			);
 		});
 
-	const data = {
+	return {
 		profileId: userSession.user.id,
 		session: session,
-		sessions: await db.getSessions(userSession.user.id),
+		sessions: await SessionsService.getSessionsSessionsGet(userSession.user.id, null).catch(
+			(e: unknown) => {
+				console.error(`Error retrieving sessions: ${e}`);
+				return [];
+			}
+		),
 		crew: crew,
-		crews: await db.getCrews(userSession.user.id),
-		messages: session ? await db.getMessages(session.id) : ([] as models.Message[]),
-		agents: await db.getAgents(userSession.user.id)
+		crews: await CrewsService.getCrewsOfUserCrewsGet(userSession.user.id, false).catch(
+			(e: unknown) => {
+				console.error(`Error retrieving crews: ${e}`);
+				return [];
+			}
+		),
+		// TODO: Why can id be null here? Verify if we can ensure it's always set in the api's return.
+		messages: session.id ? MessagesService.getMessagesSessionsMessagesGet(session.id) : [],
+		agents: await AgentsService.getAgentsFromCrewAgentsByCrewGet(crew.id).catch((e: unknown) => {
+			console.error(`Error retrieving agents: ${e}`);
+			return [];
+		})
 	};
-
-	return data;
 };

@@ -20,7 +20,7 @@ export const load = async ({ url, locals: { getSession } }) => {
 	});
 
 	if (sessions.length > 0 && !url.searchParams.has('debug')) {
-		console.log(`Redirecting to session ${sessions.length}`);
+		console.log(`Redirecting to session ${sessions[0].id}`);
 		redirect(303, `/app/session/${sessions[0].id}`);
 	}
 
