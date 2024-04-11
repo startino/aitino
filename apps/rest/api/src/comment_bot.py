@@ -2,11 +2,11 @@ import logging
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from models import EvaluatedSubmission, RedditComment, PublishCommentResponse
-from dummy_submissions import relevant_submissions, irrelevant_submissions
-from prompts import generate_comment_prompt
-from interfaces import db
-from reddit_utils import get_reddit_instance
+from .models import EvaluatedSubmission, RedditComment, PublishCommentResponse
+from .dummy_submissions import relevant_submissions, irrelevant_submissions
+from .prompts import generate_comment_prompt
+from .interfaces import db
+from .reddit_utils import get_reddit_instance
 
 from dotenv import load_dotenv
 import os
@@ -16,7 +16,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
+def generate_comment(title: str, selftext: str, instructions: str = "") -> str:
     llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0.3)
 
     # Set up a parser + inject instructions into the prompt template.
@@ -45,12 +45,12 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
     # Generate a comment
     result = chain.invoke(
         {
-            "title": submission.submission.title,
-            "selftext": submission.submission.selftext,
+            "title": title,
+            "selftext": selftext,
         }
     )
 
-    return RedditComment(**result)
+    return RedditComment(**result).comment
 
 
 def publish_comment(
@@ -67,6 +67,6 @@ def publish_comment(
     submission.reply(text)
     # If a comment was published, it means the submission is relevant.
     # So update the human answer to TRUE. Just a shortcut to avoid double work.
-    db.update_human_review(id, human_answer=True)
+    db.update_human_review_for_submission(id, human_answer=True)
 
     return db.update_lead(lead.id, status="subscriber", last_event="comment_posted")

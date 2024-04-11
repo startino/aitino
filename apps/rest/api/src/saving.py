@@ -1,13 +1,9 @@
-import pandas as pd
 import os
 
-from pandas.core.dtypes.dtypes import re
-
-import comment_bot
-from models import Lead
-from interfaces import db
-from models import EvaluatedSubmission
-from models import SavedSubmission
+from . import comment_bot
+from .models import Lead
+from .interfaces import db
+from .models import EvaluatedSubmission, SavedSubmission
 
 # Get the current file's directory
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -23,7 +19,7 @@ def update_db_with_submission(evalutated_submission: EvaluatedSubmission):
     # title and body from the submission property.
     saved_submission = SavedSubmission(
         reddit_id=evalutated_submission.submission.id,
-        title=evalutated_submission.submission.selftext,
+        title=evalutated_submission.submission.title,
         body=evalutated_submission.submission.selftext,
         url=evalutated_submission.submission.url,
         is_relevant=evalutated_submission.is_relevant,
@@ -47,6 +43,9 @@ def update_db_with_submission(evalutated_submission: EvaluatedSubmission):
                 "url": submission.url,
             },
             reddit_id=submission.id,
-            comment=comment_bot.generate_comment(evalutated_submission).comment,
+            comment=comment_bot.generate_comment(
+                title=evalutated_submission.submission.title,
+                selftext=evalutated_submission.submission.selftext,
+            ),
         )
         db.post_lead(lead)

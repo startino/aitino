@@ -8,11 +8,10 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 from supabase import Client, create_client
 
-from models import Lead, PublishCommentResponse
+from src.models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
-from models import EvaluatedSubmission
-from models import SavedSubmission
+from src.models import SavedSubmission
 
 load_dotenv()
 
@@ -99,7 +98,9 @@ def get_all_leads() -> list[PublishCommentResponse]:
     return [PublishCommentResponse(**data) for data in response.data]
 
 
-def update_human_review_for_submission(id: UUID, human_answer: bool) -> None:
+def update_human_review_for_submission(
+    id: UUID, human_answer: bool, correct_reason: str = ""
+) -> None:
     """
     Update the human review for a submission.
     Just a shortcut to avoid double work as posts with published comments are
@@ -107,7 +108,14 @@ def update_human_review_for_submission(id: UUID, human_answer: bool) -> None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Updating human review for submission: {id}")
-    supabase.table("evaluated_submissions").update({"human_answer": human_answer}).eq
+    submission = (
+        supabase.table("evaluated_submissions")
+        .update({"human_answer": human_answer, "correct_reason": correct_reason})
+        .eq("id", str(id))
+        .execute()
+    )
+    if submission is None:
+        logger.error(f"Submission with id {id} not found")
 
 
 def post_evaluated_submission(saved_submission: SavedSubmission) -> None:

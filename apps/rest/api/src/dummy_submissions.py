@@ -1,5 +1,4 @@
-from ast import Sub
-from models import DummySubmission
+from .models import DummySubmission
 
 relevant_submissions = [
     DummySubmission(
@@ -98,4 +97,3 @@ irrelevant_submissions = [
                 """,
     ),
 ]
-

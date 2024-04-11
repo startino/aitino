@@ -2,11 +2,13 @@ from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel
 
+
 class PublishCommentRequest(BaseModel):
     lead_id: UUID
     comment: str
     reddit_username: str
     reddit_password: str
+
 
 class PublishCommentDataObject(BaseModel):
     url: str
@@ -26,3 +28,4 @@ class PublishCommentResponse(BaseModel):
     last_event: str
     status: str
     comment: str | None = None
+

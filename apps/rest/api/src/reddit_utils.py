@@ -1,11 +1,10 @@
 from praw import Reddit
 from praw.models import Subreddits
-import os
 from dotenv import load_dotenv
-from urllib.parse import quote_plus
-
+import os
 
 load_dotenv()
+
 REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
 REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
 REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
@@ -29,8 +28,3 @@ def get_subreddits(subreddit_names: str, username: str, password: str):
     subreddits: Subreddits = reddit.subreddit(subreddit_names)
 
     return subreddits
-
-
-if __name__ == "__main__":
-    subreddits = get_subreddits("all", REDDIT_USERNAME, REDDIT_PASSWORD)
-    print(subreddits)
