@@ -27,7 +27,7 @@ def insert_profile(profile: ProfileRequestModel) -> ProfileResponseModel:
 
 
 @router.get("/{profile_id}")
-def get_profile(profile_id: UUID) -> ProfileResponseModel:
+def get_profile_by_id(profile_id: UUID) -> ProfileResponseModel:
     profile = db.get_profile_from_id(profile_id)
     if not profile:
         raise HTTPException(404, "profile not found")

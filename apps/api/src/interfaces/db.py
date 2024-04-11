@@ -157,6 +157,13 @@ def get_messages(session_id: UUID) -> list[Message]:
     return messages
 
 
+def get_message_by_id(message_id: UUID) -> MessageResponseModel:
+    """Get a message by its id"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("messages").select("*").eq("id", message_id).single().execute()
+    return MessageResponseModel(**response.data)
+    
+# TODO: combine this function with the insert_message one, or use this post_message for both the endpoint and internal operations
 def post_message(message: Message) -> None:
     """Post a message to the database."""
     supabase: Client = create_client(url, key)

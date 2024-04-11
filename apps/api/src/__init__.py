@@ -26,8 +26,8 @@ logger = logging.getLogger("root")
 
 app = FastAPI()
 
-sessions.router.include_router(messages.router)
 app.include_router(sessions.router)
+app.include_router(messages.router)
 app.include_router(crews.router)
 app.include_router(agents.router)
 app.include_router(profiles.router)

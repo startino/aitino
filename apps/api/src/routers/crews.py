@@ -41,5 +41,5 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
 
 
 @router.get("/{crew_id}")
-def get_crew(crew_id: UUID) -> CrewResponseModel:
+def get_crew_by_id(crew_id: UUID) -> CrewResponseModel:
     return db.get_crew_from_id(crew_id)

@@ -3,7 +3,7 @@ import os
 from uuid import UUID
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from gotrue import (
     AuthResponse,
     OAuthResponse,
@@ -13,8 +13,6 @@ from gotrue import (
     errors,
 )
 from supabase import Client, create_client
-
-from src.interfaces import db
 
 router = APIRouter(
     prefix="/auth",
