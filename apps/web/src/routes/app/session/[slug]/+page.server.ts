@@ -4,7 +4,6 @@ import {
 	MessagesService,
 	SessionsService
 } from '$lib/client/index.js';
-import * as db from '$lib/server/db';
 import { error, redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { getSession } }) => {
