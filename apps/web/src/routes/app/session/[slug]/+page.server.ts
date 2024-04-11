@@ -1,10 +1,8 @@
 import * as db from '$lib/server/db';
-import type { SessionLoad } from '$lib/types/loads';
 import * as models from '$lib/types/models';
-import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, locals: { getSession } }) => {
+export const load = async ({ params, locals: { getSession } }) => {
 	const userSession = await getSession();
 	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
@@ -22,7 +20,7 @@ export const load: PageServerLoad = async ({ params, locals: { getSession } }) =
 			'The crew for this session does not exist. Please report this incident. Contact support if the output of this session was important.'
 		);
 
-	const data: SessionLoad = {
+	const data = {
 		profileId: userSession.user.id,
 		session: session,
 		sessions: await db.getSessions(userSession.user.id),
