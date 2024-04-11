@@ -1,8 +1,7 @@
 import type Stripe from 'stripe';
 import { error } from '@sveltejs/kit';
-import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals: { supabase, stripe, getSession } }) => {
+export const load = async ({ locals: { supabase, stripe, getSession } }) => {
 	const userSession = await getSession();
 	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 

@@ -9,7 +9,6 @@
 	import { type SuperValidated } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
 	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
-	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 	import type { Agent } from '$lib/types/models';
 
 	export let data: SuperValidated<AgentFormSchema>;
@@ -20,7 +19,7 @@
 		validators: createNewAgents
 	});
 
-	export let form: ActionData;
+	export let form;
 
 	const dispatch = createEventDispatcher();
 
@@ -38,7 +37,7 @@
 	</div> -->
 	<Dialog.Trigger
 		on:click={handleTrigger}
-		class="to-primary-800 bg-background transition-hover from-primary-950 group relative flex  flex-col overflow-hidden rounded-lg shadow-lg duration-1000 hover:scale-105 hover:bg-gradient-to-br hover:shadow-xl"
+		class="transition-hover group relative flex flex-col overflow-hidden rounded-lg  bg-background from-primary-950 to-primary-800 shadow-lg duration-1000 hover:scale-105 hover:bg-gradient-to-br hover:shadow-xl"
 	>
 		<Plus
 			class=" absolute left-[50%] top-[50%] z-10 flex-shrink-0 translate-x-[-50%] translate-y-[-50%] transition-all duration-300 "

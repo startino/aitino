@@ -1,15 +1,13 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Github } from 'lucide-svelte';
 	import * as Alert from '$lib/components/ui/alert';
-	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
 
-	export let form: ActionData;
+	export let form;
 
 	function clearForm() {
 		form.error = null;

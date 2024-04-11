@@ -1,20 +1,17 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Github } from 'lucide-svelte';
 	import * as Alert from '$lib/components/ui/alert';
-	import * as Form from '$lib/components/ui/form';
 	import { formSchema, type FormSchema } from '$lib/schema';
-	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
 
-	export let form: ActionData;
-	export let data: PageData;
+	export let form;
+	export let data;
 
 	let isSubmittedSuccessfully = false;
 

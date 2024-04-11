@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { MoveRight } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { getContext } from '$lib/utils';
 
-	export let data: PageData;
+	export let data;
 	const subStore = getContext('subscriptionStore');
 	onMount(() => {
 		$subStore.sub = data.newSub;
