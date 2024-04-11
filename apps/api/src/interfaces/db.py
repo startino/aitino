@@ -74,20 +74,11 @@ def get_session(session_id: UUID) -> Session | None:
     return Session(**response.data[0])
 
 
-def get_sessions(
-    profile_id: UUID | None = None, session_id: UUID | None = None
-) -> list[Session]:
+def get_sessions_by_profile(profile_id: UUID) -> list[Session]:
     """Gets all sessions for given profile id."""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting all sessions from profile_id: {profile_id}")
-    query = supabase.table("sessions").select("*")
-    if profile_id:
-        query = query.eq("profile_id", profile_id)
-
-    if session_id:
-        query = query.eq("id", session_id)
-
-    response = query.execute()
+    response = supabase.table("sessions").select("*").eq("profile_id", profile_id).execute()
 
     sessions = []
     if len(response.data) == 0:
@@ -99,6 +90,16 @@ def get_sessions(
         logger.error(f"Error validating session: {e}")
 
     return sessions
+
+
+def get_session_by_id(session_id: UUID) -> Session | None:
+    """Gets all sessions for given session id."""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("sessions").select("*").eq("id", session_id).single().execute()
+    try:
+        return Session(**response.data)
+    except ValidationError as e:
+        logger.error(f"Error validating session: {e}")
 
 
 def insert_session(content: SessionRequest) -> SessionResponse:
@@ -157,6 +158,13 @@ def get_messages(session_id: UUID) -> list[Message]:
     return messages
 
 
+def get_message_by_id(message_id: UUID) -> MessageResponseModel:
+    """Get a message by its id"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("messages").select("*").eq("id", message_id).single().execute()
+    return MessageResponseModel(**response.data)
+    
+# TODO: combine this function with the insert_message one, or use this post_message for both the endpoint and internal operations
 def post_message(message: Message) -> None:
     """Post a message to the database."""
     supabase: Client = create_client(url, key)
