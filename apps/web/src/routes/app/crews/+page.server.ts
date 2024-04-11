@@ -10,7 +10,9 @@ export const load = async ({ locals: { getSession } }) => {
 	const session = await getSession();
 	const form = await superValidate(zod(editCrewSchema));
 
-	const crews = await CrewsService.getCrewsOfUserCrewsGet(session?.user.id as string);
+	const crews = await CrewsService.getCrewsOfUserCrewsGet(session?.user.id as string).catch((e) => {
+		console.log({ error: e });
+	});
 
 	return {
 		crews,

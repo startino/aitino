@@ -31,8 +31,8 @@ class SessionRequest(SessionBase):
     pass
 
 
-class SessionResponse(Session):
-    pass
+#class Session(Session):
+#    pass
 
 
 class SessionUpdate(SessionBase):
@@ -50,6 +50,6 @@ class RunRequestModel(BaseModel):
     reply: str | None = None
 
 
-class RunResponseModel(BaseModel):
+class RunResponse(BaseModel):
     status: Literal["success"] | Literal["failure"]
     session: Session

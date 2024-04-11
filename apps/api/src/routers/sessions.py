@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 from src import mock as mocks
 from src.crew import Crew
@@ -13,12 +13,12 @@ from src.dependencies import (
 )
 from src.interfaces import db
 from src.models import (
-    CrewModel,
+    CrewProcessed,
     Message,
     RunRequestModel,
-    RunResponseModel,
+    RunResponse,
     Session,
-    SessionResponse,
+    Session,
     SessionUpdate,
 )
 from src.models.session import SessionRequest
@@ -33,37 +33,47 @@ logger = logging.getLogger("root")
 
 
 @router.get("/", response_model=list[Session])
-def get_sessions(
-    profile_id: UUID | None = None, session_id: UUID | None = None
-) -> list[Session]:
-    return db.get_sessions(profile_id, session_id)
+def get_sessions_by_profile(by_profile: UUID) -> list[Session]:
+    return db.get_sessions_by_profile(profile_id=by_profile)
 
 
-@router.patch("/{session_id}", response_model=SessionResponse)
-def update_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
+@router.get("/{session_id}")
+def get_session_by_id(session_id: UUID) -> Session:
+    response = db.get_session_by_id(session_id=session_id)
+
+    if response is None:
+        raise HTTPException(500, "failed validation")
+        # not sure if 500 is correct, but this is failed validation on the returned data, so 
+        # it makes sense in my mind to call that a server error
+    
+    return response
+
+
+@router.patch("/{session_id}", response_model=Session)
+def update_session(session_id: UUID, content: SessionUpdate) -> Session:
     return db.update_session(session_id, content)
 
 
-@router.post("/", response_model=SessionResponse)
-def insert_session(content: SessionRequest) -> SessionResponse:
+@router.post("/", response_model=Session)
+def insert_session(content: SessionRequest) -> Session:
     return db.insert_session(content)
 
-
-@router.delete("/{session_id}", status_code=204)
-def delete_session(session_id: UUID) -> None:
-    if not get_sessions(session_id=session_id):
+# apparently status code 204 doesnt allow response bodies, so i'll have to look into that
+@router.delete("/{session_id}")
+def delete_session(session_id: UUID) -> Session:
+    if not get_session_by_id(session_id):
         raise HTTPException(404, "session not found")
 
-    db.delete_session(session_id)
+    return db.delete_session(session_id)
 
 
-@router.post("/run", response_model=RunResponseModel)
+@router.post("/run", response_model=RunResponse)
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     run_request: RunRequestModel,
     background_tasks: BackgroundTasks,
     mock: bool = False,
-) -> RunResponseModel:
+) -> RunResponse:
     if run_request.reply and not run_request.session_id:
         raise HTTPException(
             status_code=400,
@@ -136,4 +146,4 @@ async def run_crew(
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
-    return RunResponseModel(status="success", session=session)
+    return RunResponse(status="success", session=session)

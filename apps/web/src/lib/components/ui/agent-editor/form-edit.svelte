@@ -7,12 +7,11 @@
 	import { invalidateAll } from '$app/navigation';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { ActionData } from '../../../../routes/app/editor/agent/$types';
 	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
 
 	export let apiKeyTypes: string[] | null;
 	export let user_api_keys: string[] | null;
-	export let form: ActionData;
+	export let form;
 
 	let state: 'loading' | 'error' | 'idle' = 'idle';
 

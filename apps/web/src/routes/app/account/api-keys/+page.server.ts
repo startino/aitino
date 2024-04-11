@@ -20,7 +20,7 @@ export const load = async ({ locals }) => {
 };
 
 export const actions = {
-	add: async ({ request, locals }) => {
+	create: async ({ request, locals }) => {
 		const form = await superValidate(request, zod(apiKeySchema));
 
 		if (!form.valid) {
@@ -37,29 +37,19 @@ export const actions = {
 			return setError(form, 'Something went wrong', { status: 500 });
 		});
 
-		console.log(data);
-
 		return message(form, 'API Key added!');
 	},
 
-	removeAPI: async ({ locals, url }) => {
+	delete: async ({ url }) => {
 		const id = url.searchParams.get('id');
-		const session = await locals.getSession();
 
 		if (!id) {
-			return fail(400, {
-				message: 'Missing required fields'
-			});
+			return fail(400, { message: 'No id provided' });
 		}
-		const { data, error } = await supabase
-			.from('users_api_keys')
-			.delete()
-			.match({ api_key_type_id: id, profile_id: session?.user.id });
 
-		if (error) {
-			console.log(error);
-			return { status: 500, body: { error: 'Internal Server Error' } };
-		}
+		await ProfilesService.deleteApiKeyProfilesApiKeysApiKeyIdDelete(id).catch(() => {
+			fail(500);
+		});
 
 		return { message: 'API Key deleted successfully' };
 	}

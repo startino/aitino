@@ -12,8 +12,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import CrewModel, Message, Session
-from src.parser import parse_input_v0_2 as parse_input
+from src.models import Message, MessageRequestModel, Message, MessageUpdateModel
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -21,5 +20,33 @@ logger = logging.getLogger("root")
 
 
 @router.get("/")
-def get_messages(session_id: UUID) -> list[Message]:
-    return db.get_messages(session_id)
+def get_messages_by_session(by_session: UUID) -> list[Message]:
+    return db.get_messages(by_session)
+
+
+@router.post("/")
+def insert_message(message: MessageRequestModel) -> Message:
+    return db.insert_message(message)
+
+
+@router.delete("/{message_id}")
+def delete_message(message_id: UUID) -> Message:
+    response = db.delete_message(message_id)
+    if not response:
+        raise HTTPException(404, "message not found")
+    
+    return response
+
+
+@router.patch("/{message_id}")
+def update_message(message_id: UUID, content: MessageUpdateModel) -> Message:
+    response = db.update_message(message_id, content)
+    if not response:
+        raise HTTPException(404, "message not found")
+
+    return response
+
+
+@router.get("/{message_id}")
+def get_message_by_id(message_id: UUID) -> Message:
+    return db.get_message_by_id(message_id)

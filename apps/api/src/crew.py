@@ -9,7 +9,7 @@ from autogen.cache import Cache
 from src.models.session import SessionStatus
 
 from .interfaces import db
-from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
+from .models import Agent, CodeExecutionConfig, CrewProcessed, Message, Session
 from .tools import (
     generate_llm_config,
     generate_tool_from_uuid,
@@ -24,7 +24,7 @@ class Crew:
         self,
         profile_id: UUID,
         session: Session,
-        crew_model: CrewModel,
+        crew_model: CrewProcessed,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo-preview",
         seed: int = 41,
@@ -138,7 +138,7 @@ class Crew:
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
 
-    def _validate_crew_model(self, crew_model: CrewModel) -> bool:
+    def _validate_crew_model(self, crew_model: CrewProcessed) -> bool:
         if len(crew_model.agents) == 0:
             return False
 
@@ -168,7 +168,7 @@ class Crew:
                 new_dict[key] = value
         return new_dict
 
-    def _format_agent_name(self, agent: AgentModel) -> str:
+    def _format_agent_name(self, agent: Agent) -> str:
         return re.sub(
             r"[^a-zA-Z0-9-]",
             "",
@@ -176,18 +176,19 @@ class Crew:
         )[:64]
 
     def _create_agents(
-        self, crew_model: CrewModel
+        self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
         descriptions = db.get_descriptions([agent.id for agent in crew_model.agents])
         if not descriptions:
             raise ValueError("at least one agent id is invalid")
 
-        formatted_descriptions = self._extract_uuid(
-            descriptions
-        )  # idk why this is the only way i got it working, but will hopefully simplify later...
+        formatted_descriptions = self._extract_uuid(descriptions)
+        # idk why this is the only way i got it working, but will hopefully simplify later...
         # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
-        # logger.warn(f"formatted descriptions: {formatted_descriptions}")
+
+        profile_api_keys = db.get_tool_api_keys(self.profile_id)
+
         for agent in crew_model.agents:
             valid_agent_tools = []
             tool_schemas = {}
@@ -198,9 +199,17 @@ class Crew:
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
+            api_key_types = db.get_api_key_type_ids(tool_ids)
+
+            # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
             if len(tool_ids):
                 for tool in tool_ids:
-                    generated_tool = generate_tool_from_uuid(tool)
+                    try:
+                        generated_tool = generate_tool_from_uuid(
+                            tool, api_key_types, profile_api_keys
+                        )
+                    except TypeError as e:
+                        raise e
                     (
                         (
                             self.valid_tools.append(generated_tool),
@@ -210,16 +219,12 @@ class Crew:
                         else None
                     )
 
-                logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
                     generate_llm_config(valid_agent_tools)
                     if valid_agent_tools
                     else None
                 )
 
-            logger.warn(
-                f"agent tools: {agent.tools}, valid agent tools: {valid_agent_tools=}, valid tools: {self.valid_tools}"
-            )
             config = {
                 "seed": self.seed,
                 "temperature": 0,

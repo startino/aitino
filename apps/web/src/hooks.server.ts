@@ -1,12 +1,11 @@
 import Stripe from 'stripe';
-import { authenticateUser } from '$lib/utils';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { STRIPE_SECRET_KEY } from '$env/static/private';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
-export const handle: Handle = async ({ event, resolve }) => {
+export const handle = async ({ event, resolve }) => {
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
