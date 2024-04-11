@@ -13,7 +13,7 @@ REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 
 def get_reddit_instance(username, password):
     return Reddit(
-        client_id="N8d22rDKxw06lEVozaiDKA",
+        client_id="xCs8EA8-_cIY6ZsPod5EIw",
         client_secret=REDDIT_CLIENT_ID,
         password=password,
         user_agent="testscript by u/antopia_hk",
@@ -29,3 +29,8 @@ def get_subreddits(subreddit_names: str, username: str, password: str):
     subreddits: Subreddits = reddit.subreddit(subreddit_names)
 
     return subreddits
+
+
+if __name__ == "__main__":
+    subreddits = get_subreddits("all", REDDIT_USERNAME, REDDIT_PASSWORD)
+    print(subreddits)
