@@ -33,10 +33,20 @@ logger = logging.getLogger("root")
 
 
 @router.get("/", response_model=list[Session])
-def get_sessions(
-    profile_id: UUID | None = None, session_id: UUID | None = None
-) -> list[Session]:
-    return db.get_sessions(profile_id, session_id)
+def get_sessions_by_profile(by_profile: UUID) -> list[Session]:
+    return db.get_sessions_by_profile(profile_id=by_profile)
+
+
+@router.get("/{session_id}")
+def get_session_by_id(session_id: UUID) -> Session:
+    response = db.get_session_by_id(session_id=session_id)
+
+    if response is None:
+        raise HTTPException(500, "failed validation")
+        # not sure if 500 is correct, but this is failed validation on the returned data, so 
+        # it makes sense in my mind to call that a server error
+    
+    return response
 
 
 @router.patch("/{session_id}", response_model=SessionResponse)
@@ -51,7 +61,7 @@ def insert_session(content: SessionRequest) -> SessionResponse:
 
 @router.delete("/{session_id}", status_code=204)
 def delete_session(session_id: UUID) -> None:
-    if not get_sessions(session_id=session_id):
+    if not get_session_by_id(session_id):
         raise HTTPException(404, "session not found")
 
     db.delete_session(session_id)

@@ -74,20 +74,11 @@ def get_session(session_id: UUID) -> Session | None:
     return Session(**response.data[0])
 
 
-def get_sessions(
-    profile_id: UUID | None = None, session_id: UUID | None = None
-) -> list[Session]:
+def get_sessions_by_profile(profile_id: UUID) -> list[Session]:
     """Gets all sessions for given profile id."""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting all sessions from profile_id: {profile_id}")
-    query = supabase.table("sessions").select("*")
-    if profile_id:
-        query = query.eq("profile_id", profile_id)
-
-    if session_id:
-        query = query.eq("id", session_id)
-
-    response = query.execute()
+    response = supabase.table("sessions").select("*").eq("profile_id", profile_id).execute()
 
     sessions = []
     if len(response.data) == 0:
@@ -99,6 +90,16 @@ def get_sessions(
         logger.error(f"Error validating session: {e}")
 
     return sessions
+
+
+def get_session_by_id(session_id: UUID) -> Session | None:
+    """Gets all sessions for given session id."""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("sessions").select("*").eq("id", session_id).single().execute()
+    try:
+        return Session(**response.data)
+    except ValidationError as e:
+        logger.error(f"Error validating session: {e}")
 
 
 def insert_session(content: SessionRequest) -> SessionResponse:
