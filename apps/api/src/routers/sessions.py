@@ -16,9 +16,9 @@ from src.models import (
     CrewModel,
     Message,
     RunRequestModel,
-    RunResponseModel,
+    RunResponse,
     Session,
-    SessionResponse,
+    Session,
     SessionUpdate,
 )
 from src.models.session import SessionRequest
@@ -49,13 +49,13 @@ def get_session_by_id(session_id: UUID) -> Session:
     return response
 
 
-@router.patch("/{session_id}", response_model=SessionResponse)
-def update_session(session_id: UUID, content: SessionUpdate) -> SessionResponse:
+@router.patch("/{session_id}", response_model=Session)
+def update_session(session_id: UUID, content: SessionUpdate) -> Session:
     return db.update_session(session_id, content)
 
 
-@router.post("/", response_model=SessionResponse)
-def insert_session(content: SessionRequest) -> SessionResponse:
+@router.post("/", response_model=Session)
+def insert_session(content: SessionRequest) -> Session:
     return db.insert_session(content)
 
 
@@ -67,13 +67,13 @@ def delete_session(session_id: UUID) -> None:
     db.delete_session(session_id)
 
 
-@router.post("/run", response_model=RunResponseModel)
+@router.post("/run", response_model=RunResponse)
 # change to tiered rate limiter later, its annoying for testing so its currently using profile rate limiter
 async def run_crew(
     run_request: RunRequestModel,
     background_tasks: BackgroundTasks,
     mock: bool = False,
-) -> RunResponseModel:
+) -> RunResponse:
     if run_request.reply and not run_request.session_id:
         raise HTTPException(
             status_code=400,
@@ -146,4 +146,4 @@ async def run_crew(
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
-    return RunResponseModel(status="success", session=session)
+    return RunResponse(status="success", session=session)

@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from src.interfaces import db
 from src.models import (
-    APIKeyTypeResponseModel,
+    APIKeyType,
 )
 
 router = APIRouter(prefix="/api_key_types", tags=["api key types"])
@@ -14,5 +14,5 @@ logger = logging.getLogger("root")
 
 
 @router.get("/")
-def get_all_api_key_types() -> list[APIKeyTypeResponseModel]:
+def get_all_api_key_types() -> list[APIKeyType]:
     return db.get_api_key_types()

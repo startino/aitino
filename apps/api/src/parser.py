@@ -3,7 +3,7 @@ import logging
 from typing import Literal
 from uuid import UUID, uuid4
 
-from src.models import AgentModel, CrewModel
+from src.models import AgentModel, CrewResponseModel, CrewModel
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)

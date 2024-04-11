@@ -20,7 +20,7 @@ class ProfileUpdateModel(BaseModel):
     stripe_customer_id: str | None = None
 
 
-class ProfileResponseModel(BaseModel):
+class Profile(BaseModel):
     id: UUID
     tier_id: UUID
     created_at: datetime

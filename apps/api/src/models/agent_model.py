@@ -13,8 +13,8 @@ class AgentBaseModel(BaseModel):
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
 
 
-class AgentModel(AgentBaseModel):
-    id: UUID
+#class AgentModel(AgentBaseModel):
+#    id: UUID
 
 
 class AgentRequestModel(AgentBaseModel):
@@ -24,7 +24,7 @@ class AgentRequestModel(AgentBaseModel):
     avatar: str
 
 
-class AgentResponseModel(AgentRequestModel):
+class AgentModel(AgentRequestModel):
     id: UUID
     created_at: datetime
     published: bool

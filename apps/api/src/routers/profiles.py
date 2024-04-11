@@ -5,29 +5,29 @@ from fastapi import APIRouter, HTTPException
 
 from src.interfaces import db
 from src.models import (
-    ProfileResponseModel,
+    Profile,
     ProfileUpdateModel,
     ProfileRequestModel,
-    APIKeyResponseModel,
+    APIKey,
     APIKeyRequestModel,
     APIKeyUpdateModel,
-    APIKeyTypeResponseModel,
+    APIKeyType,
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
 
 @router.get("/")
-def get_profiles() -> list[ProfileResponseModel]:
+def get_profiles() -> list[Profile]:
     return db.get_profiles()
 
 
 @router.post("/", status_code=201)
-def insert_profile(profile: ProfileRequestModel) -> ProfileResponseModel:
+def insert_profile(profile: ProfileRequestModel) -> Profile:
     return db.insert_profile(profile)
 
 
 @router.get("/{profile_id}")
-def get_profile_by_id(profile_id: UUID) -> ProfileResponseModel:
+def get_profile_by_id(profile_id: UUID) -> Profile:
     profile = db.get_profile_from_id(profile_id)
     if not profile:
         raise HTTPException(404, "profile not found")
@@ -36,7 +36,7 @@ def get_profile_by_id(profile_id: UUID) -> ProfileResponseModel:
     
 
 @router.get("/{profile_id}/api_keys")
-def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
+def get_api_keys(profile_id: UUID) -> list[APIKey]:
     """Returns api keys with the api key type as an object with the id, name, description etc."""
     if not db.get_profile_from_id(profile_id):
         raise HTTPException(404, "profile not found")
@@ -47,7 +47,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
 @router.patch("/{profile_id}")
 def update_profile(
     profile_id: UUID, profile_update_request: ProfileUpdateModel
-) -> ProfileResponseModel:
+) -> Profile:
     if not db.get_profile_from_id(profile_id):
         raise HTTPException(404, "profile not found")
 
@@ -55,12 +55,12 @@ def update_profile(
 
 
 @router.post("/api_keys", status_code=201)
-def insert_api_key(api_key_request: APIKeyRequestModel) -> APIKeyResponseModel:
+def insert_api_key(api_key_request: APIKeyRequestModel) -> APIKey:
     return db.insert_api_key(api_key_request)
 
 
 @router.delete("/api_keys/{api_key_id}")
-def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel:
+def delete_api_key(api_key_id: UUID) -> APIKey:
     deleted_key = db.delete_api_key(api_key_id)
     if not deleted_key:
         raise HTTPException(404, "api key id not found")
@@ -69,5 +69,5 @@ def delete_api_key(api_key_id: UUID) -> APIKeyResponseModel:
 
 
 @router.patch("/api_keys/{api_key_id}")
-def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKeyResponseModel:
+def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKey:
     return db.update_api_key(api_key_id, api_key_update)

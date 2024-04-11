@@ -2,7 +2,6 @@ from .agent_config import AgentConfig
 from .agent_model import (
     AgentModel,
     AgentRequestModel,
-    AgentResponseModel,
     AgentUpdateModel,
 )
 from .code_execution_config import CodeExecutionConfig
@@ -16,29 +15,29 @@ from .llm_config import LLMConfig
 from .message import (
     Message, 
     MessageRequestModel, 
-    MessageResponseModel,
+    Message,
     MessageUpdateModel,
 )
 from .profile import (
     ProfileRequestModel,
-    ProfileResponseModel,
+    Profile,
     ProfileUpdateModel,
 )
 from .session import (
     RunRequestModel,
-    RunResponseModel,
+    RunResponse,
     Session,
     SessionRequest,
-    SessionResponse,
+    Session,
     SessionStatus,
     SessionUpdate,
 )
 from .api_key import(
     APIKeyRequestModel,
-    APIKeyResponseModel,
-    APIKeyTypeModel,
+    APIKey,
+    APIKeyType,
     APIKeyUpdateModel,
-    APIKeyTypeResponseModel,
+    APIKeyType,
 )
 from .user import User
 __all__ = [
@@ -54,22 +53,21 @@ __all__ = [
     "SessionUpdate",
     "CrewRequestModel",
     "CrewUpdateModel",
-    "SessionResponse",
+    "Session",
     "SessionRequest",
-    "RunResponseModel",
+    "RunResponse",
     "CrewResponseModel",
-    "AgentResponseModel",
     "AgentRequestModel",
     "AgentUpdateModel",
-    "ProfileResponseModel",
+    "Profile",
     "ProfileUpdateModel",
     "ProfileRequestModel",
     "APIKeyRequestModel",
-    "APIKeyResponseModel",
-    "APIKeyTypeModel",
+    "APIKey",
+    "APIKeyType",
     "APIKeyUpdateModel",
-    "APIKeyTypeResponseModel",
+    "APIKeyType",
     "User",
     "MessageRequestModel",
-    "MessageResponseModel",
+    "Message",
 ]
