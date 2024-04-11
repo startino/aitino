@@ -1,17 +1,25 @@
 <script lang="ts">
-	import { Plus, XCircle, Loader2 } from 'lucide-svelte';
+	import { Plus, Loader2, Trash } from 'lucide-svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
+	import { fly, slide } from 'svelte/transition';
 
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Select from '$lib/components/ui/select';
+	import { enhance } from '$app/forms';
 
 	export let data;
 
-	const { form, enhance, errors, constraints, submitting } = superForm(data.form, {
+	const {
+		form,
+		enhance: enhanceCreate,
+		errors,
+		constraints,
+		submitting: creating
+	} = superForm(data.form, {
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
 				toast.success(f.message);
@@ -19,23 +27,21 @@
 		}
 	});
 
-	function removeApi(index: number) {
-		data.userApiKeys = data.userApiKeys?.filter((_, i) => i !== index);
-	}
+	let deleting: string[] = [];
 
 	$: selectedType = $form.typeId
 		? {
 				label: data.apiKeyTypes.find((a) => $form.typeId === a.id)?.name as string,
 				value: $form.typeId
 			}
-		: undefined;
+		: { label: 'API Prodiver', value: undefined };
 </script>
 
 <Tabs.Content value="/app/account/api-keys">
 	<Card.Root>
 		<Card.Header class="text-xl font-semibold">Your API Keys</Card.Header>
 		<Card.Content>
-			<form class="mb-6" action="?/add" method="POST" use:enhance>
+			<form class="mb-6" action="?/create" method="POST" use:enhanceCreate>
 				{#if $errors._errors}
 					<p class="text-red-500">{$errors._errors[0]}</p>
 				{/if}
@@ -43,11 +49,11 @@
 					<Select.Root
 						selected={selectedType}
 						onSelectedChange={(v) => {
-							v && ($form.typeId = v.value);
+							v?.value && ($form.typeId = v.value);
 						}}
 					>
-						<Select.Trigger>
-							<Select.Value placeholder="API Prodiver" />
+						<Select.Trigger class="max-w-xs">
+							<Select.Value />
 						</Select.Trigger>
 						<Select.Content>
 							{#each data.apiKeyTypes as apiType}
@@ -60,11 +66,10 @@
 						placeholder="API Value"
 						bind:value={$form.value}
 						name="value"
-						class="focus-visible:ring-1 focus-visible:ring-offset-0"
 						{...$constraints.value}
 					/>
-					<Button type="submit" aria-label="Add API">
-						{#if $submitting}
+					<Button disabled={$creating} type="submit" aria-label="Add API">
+						{#if $creating}
 							<Loader2 class="animate-spin" />
 						{:else}
 							<Plus />
@@ -72,40 +77,50 @@
 					</Button>
 				</div>
 				{#if $errors.typeId}
-					<p class="text-red-500">{$errors.typeId[0]}</p>
+					<p class="text-destructive">{$errors.typeId[0]}</p>
 				{/if}
 				{#if $errors.value}
-					<p class="text-red-500">{$errors.value[0]}</p>
+					<p class="text-destructive">{$errors.value[0]}</p>
 				{/if}
 			</form>
 
-			{#if data.userApiKeys.length === 0}
-				<p class="text-primary">No API keys added yet.</p>
+			{#if data.userApiKeys.filter((api) => !deleting.includes(api.id)).length === 0}
+				<p>No API keys</p>
 			{/if}
 
-			<div class="space-y-4">
-				{#each data.userApiKeys as api, index (api.id)}
-					<form
-						action="?/removeAPI&id={api.id}"
-						method="POST"
-						class="bg-background flex items-center rounded-lg p-4 transition-all duration-300 hover:scale-[99%] hover:shadow-xl"
+			<ul class="space-y-4">
+				{#each data.userApiKeys.filter((api) => !deleting.includes(api.id)) as api (api.id)}
+					<li
+						in:fly={{ y: 20 }}
+						out:slide
+						class="bg-background flex items-center justify-between rounded-lg p-4"
 					>
 						<div class="flex">
 							<h3 class="mr-1 text-lg font-semibold">{api.api_key_type?.name}</h3>
 						</div>
-						<Button
-							variant="destructive"
-							type="submit"
-							on:click={() => {
-								removeApi(index);
+						<form
+							action="?/delete&id={api.id}"
+							method="post"
+							use:enhance={() => {
+								deleting = [...deleting, api.id];
+								return async ({ update, result }) => {
+									deleting = deleting.filter((id) => id !== api.id);
+
+									if ((result.type = 'failure')) {
+										toast.error('Unable to delete the API key...');
+										return;
+									}
+									await update();
+								};
 							}}
-							class="ml-auto bg-transparent hover:scale-105 hover:bg-transparent"
 						>
-							<XCircle class="text-destructive hover:scale-105" size="18" />
-						</Button>
-					</form>
+							<button type="submit" disabled={deleting.includes(api.id)}>
+								<Trash size={18} />
+							</button>
+						</form>
+					</li>
 				{/each}
-			</div>
+			</ul>
 		</Card.Content>
 	</Card.Root>
 </Tabs.Content>

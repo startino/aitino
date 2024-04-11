@@ -64,7 +64,7 @@ export const actions = {
 		};
 	},
 	contactUs: async ({ request }) => {
-		const form = await superValidate(request, formSchema);
+		const form = await superValidate(request, zod(formSchema));
 
 		console.log(form, 'from backend');
 
