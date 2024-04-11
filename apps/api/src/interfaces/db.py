@@ -134,9 +134,10 @@ def post_session(session: Session) -> None:
     ).execute()
 
 
-def delete_session(session_id: UUID) -> None:
+def delete_session(session_id: UUID) -> Session:
     supabase: Client = create_client(url, key)
-    supabase.table("sessions").delete().eq("id", session_id).execute()
+    response = supabase.table("sessions").delete().eq("id", session_id).execute()
+    return Session(**response.data[0])
 
 
 def get_messages(session_id: UUID) -> list[Message]:
@@ -284,6 +285,12 @@ def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[Crew]:
         .execute()
     )
     return [Crew(**data) for data in response.data]
+
+
+def delete_crew(crew_id: UUID) -> Crew:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("crews").delete().eq("id", crew_id).execute()
+    return Crew(**response.data[0])
 
 
 def get_tool_api_keys(

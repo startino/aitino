@@ -43,3 +43,8 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> Crew:
 @router.get("/{crew_id}")
 def get_crew_by_id(crew_id: UUID) -> Crew:
     return db.get_crew_from_id(crew_id)
+
+
+@router.delete("/{crew_id}")
+def delete_crew(crew_id: UUID) -> Crew:
+    return db.delete_crew(crew_id)
