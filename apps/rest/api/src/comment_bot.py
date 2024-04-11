@@ -65,4 +65,8 @@ def publish_comment(
     reddit = get_reddit_instance(username, password)
     submission = reddit.submission(submission_id)
     submission.reply(text)
+    # If a comment was published, it means the submission is relevant.
+    # So update the human answer to TRUE. Just a shortcut to avoid double work.
+    db.update_human_review(id, human_answer=True)
+
     return db.update_lead(lead.id, status="subscriber", last_event="comment_posted")

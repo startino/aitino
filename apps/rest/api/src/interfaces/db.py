@@ -11,7 +11,8 @@ from supabase import Client, create_client
 from models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
-from models.evaluated_submission import EvaluatedSubmission
+from models import EvaluatedSubmission
+from models import SavedSubmission
 
 load_dotenv()
 
@@ -98,12 +99,24 @@ def get_all_leads() -> list[PublishCommentResponse]:
     return [PublishCommentResponse(**data) for data in response.data]
 
 
-def post_evaluated_submission(evaluated_submission: EvaluatedSubmission) -> None:
+def update_human_review_for_submission(id: UUID, human_answer: bool) -> None:
+    """
+    Update the human review for a submission.
+    Just a shortcut to avoid double work as posts with published comments are
+    already human reviewed.
+    """
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Updating human review for submission: {id}")
+    supabase.table("evaluated_submissions").update({"human_answer": human_answer}).eq
+
+
+def post_evaluated_submission(saved_submission: SavedSubmission) -> None:
     """
     Post a submission to the database.
     """
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting submission: {evaluated_submission}")
+    logger.debug(f"Posting submission: {saved_submission}")
+
     supabase.table("evaluated_submissions").insert(
-        json.loads(json.dumps(evaluated_submission.model_dump(), default=str))
+        json.loads(json.dumps(saved_submission.model_dump(), default=str))
     ).execute()

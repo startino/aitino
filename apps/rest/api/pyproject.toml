@@ -33,6 +33,7 @@ selenium = "^4.19.0"
 mail = "^2.1.0"
 python-dotenv = "^1.0.1"
 diskcache = "^5.6.3"
+pydantic = "^2.6.4"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"

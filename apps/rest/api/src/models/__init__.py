@@ -6,6 +6,7 @@ from .evaluated_submission import EvaluatedSubmission
 from .lead import Lead
 from .reddit_comment import RedditComment
 from .publish_comment import PublishCommentRequest, PublishCommentResponse
+from .saved_submission import SavedSubmission
 
 __all__ = [
     "RelevanceResult",
@@ -17,4 +18,5 @@ __all__ = [
     "RedditComment",
     "PublishCommentRequest",
     "PublishCommentResponse",
+    "SavedSubmission",
 ]
