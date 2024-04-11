@@ -37,6 +37,8 @@ pandas = "^2.2.1"
 reddit-chatbot-python = "^1.4.9"
 selenium = "^4.19.0"
 mail = "^2.1.0"
+duckduckgo-search = "^5.2.2"
+langchain-exa = "^0.0.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"

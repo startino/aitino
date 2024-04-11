@@ -219,7 +219,20 @@ def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
     if len(response.data) < len(agent_ids):
         return None
 
-    return {d["id"]: d["description"] for d in response.data}
+    return {data["id"]: data["description"] for data in response.data}
+
+
+# typed as list[str] even though its technically UUID,
+# since its typed this way in the get_tool_ids_from_agents
+def get_api_key_type_ids(tool_ids: list[str]) -> dict[str, str]:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tools")
+        .select("id", "api_key_type_id")
+        .in_("id", tool_ids)
+        .execute()
+    )
+    return {data["id"]: data["api_key_type_id"] for data in response.data}
 
 
 def post_agents(agents: list[AgentModel]) -> None:
@@ -251,8 +264,9 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
 
 def get_crew_from_id(crew_id: UUID) -> CrewResponseModel:
     supabase: Client = create_client(url, key)
-    response = supabase.table("crews").select("*").eq("id", crew_id).execute()
-    return CrewResponseModel(**response.data[0])
+    response = supabase.table("crews").select("*").eq("id", str(crew_id)).single().execute()
+    
+    return CrewResponseModel(**response.data)
 
 
 def get_published_crews() -> list[CrewResponseModel]:
@@ -273,17 +287,23 @@ def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[CrewRespon
     return [CrewResponseModel(**data) for data in response.data]
 
 
-def get_tool_api_key(profile_id: UUID, api_key_type_id: UUID) -> str:
-    """Gets an api key given a profile id and the type of api key."""
+def get_tool_api_keys(
+    profile_id: UUID, api_key_type_ids: list[str] | None = None
+) -> dict[str, str]:
+    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
     supabase: Client = create_client(url, key)
-    response = (
+    # casted_ids = [str(api_key_type_id) for api_key_type_id in api_key_type_ids]
+    query = (
         supabase.table("users_api_keys")
-        .select("api_key")
-        .filter("profile_id", "eq", str(profile_id))
-        .filter("api_key_type_id", "eq", str(api_key_type_id))
-        .execute()
+        .select("api_key", "api_key_type_id")
+        .eq("profile_id", profile_id)
     )
-    return response.data[0]["api_key"]
+
+    if api_key_type_ids:
+        query = query.in_("api_key_type_id", api_key_type_ids)
+
+    response = query.execute()
+    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
 
 
 def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
@@ -294,7 +314,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKeyResponseModel]:
         api_key_type = APIKeyTypeModel(**data["api_key_types"])
         api_keys.append(APIKeyResponseModel(**data, api_key_type=api_key_type))
         
-    return api_keys #{data["api_key_type_id"]: data["api_key"] for data in response.data}
+    return api_keys 
 
 
 def insert_api_key(api_key: APIKeyRequestModel) -> APIKeyResponseModel:
@@ -322,6 +342,7 @@ def get_api_key_types() -> list[APIKeyTypeResponseModel]:
     logger.debug("Getting all api key types")
     response = supabase.table("api_key_types").select("*").execute()
     return  [APIKeyTypeResponseModel(**data) for data in response.data]
+
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
@@ -419,6 +440,10 @@ def insert_profile(profile: ProfileRequestModel) -> ProfileResponseModel:
     return ProfileResponseModel(**response.data[0])
 
 
+# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]:
+#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id)
+# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]:
+#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id)
 if __name__ == "__main__":
     from src.models import Session
 
@@ -432,8 +457,8 @@ if __name__ == "__main__":
 #        )
 #    )
 #
-    
-    #print(insert_message(MessageRequestModel(
+    print(get_crew_from_id(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
+    ##print(insert_message(MessageRequestModel(
     #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
     #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
     #    content="hello test message",
