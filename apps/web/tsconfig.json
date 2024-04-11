@@ -26,6 +26,13 @@
         To have warnings/errors of the Svelte compiler at the correct position,
         enable source maps by default.
         */
-		"sourceMap": true
+		"sourceMap": true,
+		"plugins": [
+			{
+				"name": "typescript-svelte-plugin",
+				"enabled": true,
+				"assumeIsSvelteProject": false // if true, skip detection and always assume it's a Svelte project
+			}
+		]
 	}
 }
