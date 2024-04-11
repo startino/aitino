@@ -58,13 +58,13 @@ def update_session(session_id: UUID, content: SessionUpdate) -> Session:
 def insert_session(content: SessionRequest) -> Session:
     return db.insert_session(content)
 
-
-@router.delete("/{session_id}", status_code=204)
-def delete_session(session_id: UUID) -> None:
+# apparently status code 204 doesnt allow response bodies, so i'll have to look into that
+@router.delete("/{session_id}")
+def delete_session(session_id: UUID) -> Session:
     if not get_session_by_id(session_id):
         raise HTTPException(404, "session not found")
 
-    db.delete_session(session_id)
+    return db.delete_session(session_id)
 
 
 @router.post("/run", response_model=RunResponse)
