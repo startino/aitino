@@ -6,38 +6,53 @@ export const load = async ({ url, locals: { getSession } }) => {
 
 	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
-	const sessions = await api.GET('/sessions/', {
-		params: {
-			query: {
-				by_profile: userSession.user.id
+	const sessions = await api
+		.GET('/sessions/', {
+			params: {
+				query: {
+					by_profile: userSession.user.id
+				}
 			}
-		}
-	});
-	// const sessions: SessionResponse[] = await SessionsService.getSessionsSessionsGet(
-	// 	userSession.user.id,
-	// 	null
-	// ).catch((e: unknown) => {
-	// 	console.error(`Error retrieving sessions: ${e}`);
-	// 	return [];
-	// });
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving sessions: ${e}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from sessions`);
+				return [];
+			}
+			return d;
+		});
 
-	if (sessions.length > 0 && !url.searchParams.has('debug')) {
+	if (sessions[0] && !url.searchParams.has('debug')) {
 		console.log(`Redirecting to session ${sessions[0].id}`);
 		redirect(303, `/app/session/${sessions[0].id}`);
 	}
 
-	// const crews: CrewResponseModel[] = await CrewsService.getCrewsOfUserCrewsGet(
-	// 	userSession.user.id,
-	// 	false
-	// ).catch((e: unknown) => {
-	// 	console.error(`Error retrieving crews: ${e}`);
-	// 	return [];
-	// });
+	const crews = await api
+		.GET('/crews/', {
+			params: {
+				query: {
+					by_profile: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return [];
+			}
+			return d;
+		});
 
-	const data = {
+	return {
 		profileId: userSession.user.id,
 		crews: crews
 	};
-
-	return data;
 };

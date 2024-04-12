@@ -1,31 +1,29 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { NoSessionLoad } from '$lib/types/loads';
-	import {
-		SessionsService,
-		type CrewResponseModel,
-		type RunResponseModel,
-		type RunRequestModel
-	} from '$lib/client';
+	import api from '$lib/api';
 
 	export let data: NoSessionLoad;
 
-	let profileId: string = data.profileId;
-	let crews: CrewResponseModel[] = data.crews;
+	let profileId = data.profileId;
+	let crews = data.crews;
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
-		const runRequest: RunRequestModel = {
-			id: crewId,
-			profile_id: profileId,
-			session_title: title
-		};
-
-		const runResponse: RunResponseModel | null = await SessionsService.runCrewSessionsRunPost(
-			runRequest
-		).catch((e) => {
-			console.error('Failed to start new session', e);
-			return null;
-		});
+		const runResponse = await api
+			.POST('/sessions/run', {
+				body: {
+					id: crewId,
+					profile_id: profileId,
+					session_title: title
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error running crew: ${e}`);
+					return null;
+				}
+				return d;
+			});
 
 		if (!runResponse) {
 			return;
