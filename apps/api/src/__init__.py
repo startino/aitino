@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 from . import mock as mocks
 from .auth import get_current_user
 from .autobuilder import build_agents
-from .crew import Crew
+from .crew import AutogenCrew
 from .dependencies import (
     RateLimitResponse,
     rate_limit,

@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
 from src.interfaces import db
-from src.models import CrewRequestModel, Crew, CrewUpdateModel
+from src.models import CrewInsertRequest, Crew, CrewUpdateRequest, CrewGetRequest
 
 router = APIRouter(
     prefix="/crews",
@@ -15,15 +15,15 @@ logger = logging.getLogger("root")
 
 
 @router.post("/", status_code=201)
-def insert_crew(crew: CrewRequestModel) -> Crew:
+def insert_crew(crew: CrewInsertRequest) -> Crew:
     if not db.get_profile_from_id(crew.profile_id):
         raise HTTPException(404, "profile not found")
     return db.insert_crew(crew)
 
 
-@router.get("/")  # /crews/?by_profile=profile_id
-def get_crews_of_user(by_profile: UUID, ascending: bool = False) -> list[Crew]:
-    return db.get_user_crews(by_profile, ascending)
+@router.get("/")
+def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
+    return db.get_crews(q.profile_id, q.receiver_id, q.title, q.published)
 
 
 @router.get("/published")
@@ -32,7 +32,7 @@ def get_published_crews() -> list[Crew]:
 
 
 @router.patch("/{crew_id}")
-def update_crew(crew_id: UUID, content: CrewUpdateModel) -> Crew:
+def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
     logger.debug(content.model_dump())
     if not db.get_crew_from_id(crew_id):
         raise HTTPException(404, "crew not found")

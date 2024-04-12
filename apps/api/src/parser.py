@@ -1,8 +1,11 @@
 import json
 import logging
-from typing import Literal
+from typing import Literal, cast
 from uuid import UUID, uuid4
 
+from fastapi import HTTPException
+
+from src.interfaces import db
 from src.models import Agent, Crew, CrewProcessed
 
 logger = logging.getLogger("root")
@@ -43,19 +46,29 @@ def get_agents(agent_ids: list[UUID]) -> list[Agent]:
     response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
     return [Agent(**agent) for agent in response.data]
 
-
-def parse_input_v0_2(input_data: dict) -> tuple[str, CrewProcessed]:
-    logger.debug("Parsing input v0.2")
-
-    agent_ids: list[UUID] = input_data["nodes"]
-    receiver_id: UUID = input_data["receiver_id"]
+def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
+    logger.debug("Processing crew")
+    agent_ids: list[UUID] = crew.nodes
+    if not crew.receiver_id:
+        raise HTTPException(400, "got no receiver id")
+    
+    receiver_id: UUID = crew.receiver_id
 
     crew_model = CrewProcessed(
         receiver_id=receiver_id,
         agents=get_agents(agent_ids),
     )
-    message: str = input_data["prompt"]["content"]
+    if not crew.prompt:
+        raise HTTPException(400, "got no prompt")
+
+    message: str = crew.prompt["content"]
     return message, crew_model
+
+
+def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
+    logger.debug("Getting processed crew by id")
+    crew = db.get_crew_from_id(crew_id)
+    return process_crew(crew)
 
 
 def parse_autobuild(
