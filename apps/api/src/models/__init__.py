@@ -24,6 +24,7 @@ from .profile import (
     ProfileInsertRequest,
     Profile,
     ProfileUpdateRequest,
+    ProfileGetRequest,
 )
 from .session import (
     SessionRunRequest,
@@ -72,5 +73,6 @@ __all__ = [
     "SessionGetRequest",
     "MessageGetRequest",
     "CrewGetRequest",
-    "AgentGetRequest"
+    "AgentGetRequest",
+    "ProfileGetRequest",
 ]

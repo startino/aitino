@@ -25,3 +25,9 @@ class ProfileUpdateRequest(BaseModel):
     tier_id: UUID | None = None
     display_name: str | None = None
     stripe_customer_id: str | None = None
+
+
+class ProfileGetRequest(BaseModel):
+    tier_id: UUID | None = None
+    display_name: str | None = None
+    stripe_customer_id: str | None = None

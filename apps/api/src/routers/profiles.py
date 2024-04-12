@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
 from src.models import (
@@ -12,13 +12,14 @@ from src.models import (
     APIKeyInsertRequest,
     APIKeyUpdateRequest,
     APIKeyType,
+    ProfileGetRequest
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
 
 @router.get("/")
-def get_profiles() -> list[Profile]:
-    return db.get_profiles()
+def get_profiles(q: ProfileGetRequest = Depends()) -> list[Profile]:
+    return db.get_profiles(q.tier_id, q.display_name, q.stripe_customer_id)
 
 
 @router.post("/", status_code=201)
@@ -28,17 +29,21 @@ def insert_profile(profile: ProfileInsertRequest) -> Profile:
 
 @router.get("/{profile_id}")
 def get_profile_by_id(profile_id: UUID) -> Profile:
-    profile = db.get_profile_from_id(profile_id)
+    profile = db.get_profile(profile_id)
     if not profile:
         raise HTTPException(404, "profile not found")
 
     return profile
     
+@router.delete("/{profile_id}")
+def delete_profile(profile_id: UUID) -> Profile:
+    return db.delete_profile(profile_id)
+
 
 @router.get("/{profile_id}/api_keys")
 def get_api_keys(profile_id: UUID) -> list[APIKey]:
     """Returns api keys with the api key type as an object with the id, name, description etc."""
-    if not db.get_profile_from_id(profile_id):
+    if not db.get_profile(profile_id):
         raise HTTPException(404, "profile not found")
 
     return db.get_api_keys(profile_id)
@@ -48,7 +53,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKey]:
 def update_profile(
     profile_id: UUID, profile_update_request: ProfileUpdateRequest
 ) -> Profile:
-    if not db.get_profile_from_id(profile_id):
+    if not db.get_profile(profile_id):
         raise HTTPException(404, "profile not found")
 
     return db.update_profile(profile_id, profile_update_request)

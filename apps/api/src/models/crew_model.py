@@ -32,7 +32,7 @@ class Crew(BaseModel):
 
 
 class CrewInsertRequest(BaseModel):
-    receiver_id: str
+    receiver_id: UUID
     prompt: dict
     profile_id: UUID
     edges: list[dict]

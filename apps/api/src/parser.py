@@ -68,6 +68,9 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
     logger.debug("Getting processed crew by id")
     crew = db.get_crew(crew_id)
+    if not crew:
+        raise HTTPException(404, "Crew not found")
+        # TODO: remove this raise here, should be further up (so in the endpoints where this function is called) -Leon
     return process_crew(crew)
 
 

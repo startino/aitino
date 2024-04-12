@@ -45,14 +45,13 @@ def get_sessions(
 
 @router.get("/{session_id}")
 def get_session(session_id: UUID) -> Session:
-    response = db.get_sessions(session_id)
-
+    response = db.get_session(session_id)
     if response is None:
         raise HTTPException(500, "failed validation")
         # not sure if 500 is correct, but this is failed validation on the returned data, so 
         # it makes sense in my mind to raise a server error for that
     
-    return cast(Session, response)
+    return response
     # pretty sure this response object will always be a session, so casting it to stop typing errors
     
     

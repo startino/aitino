@@ -39,7 +39,7 @@ def get_agent_by_id(agent_id: UUID) -> Agent:
 
 @router.post("/")
 def insert_agent(agent_request: AgentInsertRequest) -> Agent:
-    if not db.get_profile_from_id(agent_request.profile_id):
+    if not db.get_profile(agent_request.profile_id):
         raise HTTPException(404, "profile not found")
 
     return db.insert_agent(agent_request)
@@ -52,12 +52,12 @@ def patch_agent(
     if not db.get_agent(agent_id):
         raise HTTPException(404, "agent not found")
 
-    if agent_update_request.profile_id and not db.get_profile_from_id(
+    if agent_update_request.profile_id and not db.get_profile(
         agent_update_request.profile_id
     ):
         raise HTTPException(404, "profile not found")
 
-    return db.update_agents(agent_update_request)
+    return db.update_agents(agent_id, agent_update_request)
 
 
 @router.delete("/{agent_id}")
