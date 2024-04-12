@@ -3,6 +3,7 @@ from .agent_model import (
     Agent,
     AgentInsertRequest,
     AgentUpdateModel,
+    AgentGetRequest,
 )
 from .code_execution_config import CodeExecutionConfig
 from .crew_model import (
@@ -23,6 +24,7 @@ from .profile import (
     ProfileInsertRequest,
     Profile,
     ProfileUpdateRequest,
+    ProfileGetRequest,
 )
 from .session import (
     SessionRunRequest,
@@ -71,4 +73,6 @@ __all__ = [
     "SessionGetRequest",
     "MessageGetRequest",
     "CrewGetRequest",
+    "AgentGetRequest",
+    "ProfileGetRequest",
 ]

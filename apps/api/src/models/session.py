@@ -14,11 +14,13 @@ class SessionStatus(StrEnum):
 
 
 class Session(BaseModel):
-    crew_id: UUID
-    profile_id: UUID
-    title: str
     id: UUID = Field(default_factory=lambda: uuid4())
     created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
+    profile_id: UUID
+    reply: str = ""
+    crew_id: UUID
+    title: str = "Untitled"
+    last_opened_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
     status: SessionStatus = SessionStatus.RUNNING
 
 
@@ -27,12 +29,10 @@ class SessionInsertRequest(BaseModel):
     profile_id: UUID
     title: str | None
 
-#class Session(Session):
-#    pass
-
 
 class SessionUpdateRequest(BaseModel):
     crew_id: UUID | None = None
+    reply: str | None = None
     profile_id: UUID | None = None
     title: str | None = None
     status: SessionStatus | None = None
