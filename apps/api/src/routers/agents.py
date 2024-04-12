@@ -5,11 +5,11 @@ from fastapi import APIRouter, HTTPException
 
 from src.interfaces import db
 from src.models import (
-    AgentRequestModel,
+    AgentInsertRequest,
     AgentUpdateModel,
-    CrewRequestModel,
+    CrewInsertRequest,
     Crew,
-    CrewUpdateModel,
+    CrewUpdateRequest,
     Agent
 )
 
@@ -46,7 +46,7 @@ def get_agent_by_id(agent_id: UUID) -> Agent:
 
 
 @router.post("/")
-def insert_agent(agent_request: AgentRequestModel) -> Agent:
+def insert_agent(agent_request: AgentInsertRequest) -> Agent:
     if not db.get_profile_from_id(agent_request.profile_id):
         raise HTTPException(404, "profile not found")
 

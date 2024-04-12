@@ -12,37 +12,33 @@ class SessionStatus(StrEnum):
     IDLE = auto()
 
 
-class SessionBase(BaseModel):
+
+class Session(BaseModel):
     crew_id: UUID
     profile_id: UUID
-    title: str | None
-
-    class Config:
-        mode = "json"
-
-
-class Session(SessionBase):
+    title: str
     id: UUID = Field(default_factory=lambda: uuid4())
     created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
     status: SessionStatus = SessionStatus.RUNNING
 
 
-class SessionRequest(SessionBase):
-    pass
-
+class SessionInsertRequest(BaseModel):
+    crew_id: UUID
+    profile_id: UUID
+    title: str | None
 
 #class Session(Session):
 #    pass
 
 
-class SessionUpdate(SessionBase):
+class SessionUpdateRequest(BaseModel):
     crew_id: UUID | None = None
     profile_id: UUID | None = None
     title: str | None = None
     status: SessionStatus | None = None
 
 
-class RunRequestModel(BaseModel):
+class SessionRunRequest(BaseModel):
     id: UUID
     profile_id: UUID
     session_title: str = "Untitled"
@@ -50,6 +46,13 @@ class RunRequestModel(BaseModel):
     reply: str | None = None
 
 
-class RunResponse(BaseModel):
+class SessionRunResponse(BaseModel):
     status: Literal["success"] | Literal["failure"]
-    session: Session
+    session: Session | None = None
+
+
+class SessionGetRequest(BaseModel):
+    profile_id: UUID | None = None
+    crew_id: UUID | None = None
+    title: str | None = None
+    status: SessionStatus | None = None

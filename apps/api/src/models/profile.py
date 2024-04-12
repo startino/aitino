@@ -13,7 +13,7 @@ class Profile(BaseModel):
     stripe_customer_id: str | None
 
 
-class ProfileRequestModel(BaseModel):
+class ProfileInsertRequest(BaseModel):
     # user id needs to be passed since its created from some "auth" table in the db 
     user_id: UUID
     tier_id: UUID
@@ -21,7 +21,7 @@ class ProfileRequestModel(BaseModel):
     stripe_customer_id: str | None = None
 
 
-class ProfileUpdateModel(BaseModel):
+class ProfileUpdateRequest(BaseModel):
     tier_id: UUID | None = None
     display_name: str | None = None
     stripe_customer_id: str | None = None

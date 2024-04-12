@@ -6,11 +6,11 @@ from fastapi import APIRouter, HTTPException
 from src.interfaces import db
 from src.models import (
     Profile,
-    ProfileUpdateModel,
-    ProfileRequestModel,
+    ProfileUpdateRequest,
+    ProfileInsertRequest,
     APIKey,
-    APIKeyRequestModel,
-    APIKeyUpdateModel,
+    APIKeyInsertRequest,
+    APIKeyUpdateRequest,
     APIKeyType,
 )
 
@@ -22,7 +22,7 @@ def get_profiles() -> list[Profile]:
 
 
 @router.post("/", status_code=201)
-def insert_profile(profile: ProfileRequestModel) -> Profile:
+def insert_profile(profile: ProfileInsertRequest) -> Profile:
     return db.insert_profile(profile)
 
 
@@ -46,7 +46,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKey]:
 
 @router.patch("/{profile_id}")
 def update_profile(
-    profile_id: UUID, profile_update_request: ProfileUpdateModel
+    profile_id: UUID, profile_update_request: ProfileUpdateRequest
 ) -> Profile:
     if not db.get_profile_from_id(profile_id):
         raise HTTPException(404, "profile not found")
@@ -55,7 +55,7 @@ def update_profile(
 
 
 @router.post("/api_keys", status_code=201)
-def insert_api_key(api_key_request: APIKeyRequestModel) -> APIKey:
+def insert_api_key(api_key_request: APIKeyInsertRequest) -> APIKey:
     return db.insert_api_key(api_key_request)
 
 
@@ -69,5 +69,5 @@ def delete_api_key(api_key_id: UUID) -> APIKey:
 
 
 @router.patch("/api_keys/{api_key_id}")
-def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKey:
+def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> APIKey:
     return db.update_api_key(api_key_id, api_key_update)

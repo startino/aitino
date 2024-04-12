@@ -12,13 +12,13 @@ class APIKey(BaseModel):
     api_key: str
 
 
-class APIKeyRequestModel(BaseModel):
+class APIKeyInsertRequest(BaseModel):
     profile_id: UUID
     api_key_type_id: UUID
     api_key: str
 
 
-class APIKeyUpdateModel(BaseModel):
+class APIKeyUpdateRequest(BaseModel):
     api_key: str
 
 

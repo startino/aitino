@@ -5,39 +5,38 @@ from typing import Any, Literal
 from uuid import UUID
 
 from dotenv import load_dotenv
+from fastapi import HTTPException
 from pydantic import ValidationError
 from supabase import Client, create_client
 
 from src.models import (
     Agent,
-    AgentRequestModel,
+    AgentInsertRequest,
     AgentUpdateModel,
     CrewProcessed,
-    CrewRequestModel,
+    CrewInsertRequest,
     Crew,
-    CrewUpdateModel,
+    CrewUpdateRequest,
     Message,
     Profile,
-    ProfileUpdateModel,
+    ProfileUpdateRequest,
     Session,
-    SessionRequest,
+    SessionInsertRequest,
     Session,
     SessionStatus,
-    SessionUpdate,
-    ProfileRequestModel,
-    APIKeyRequestModel,
+    SessionUpdateRequest,
+    ProfileInsertRequest,
+    APIKeyInsertRequest,
     APIKey,
     APIKeyType,
-    APIKeyUpdateModel,
+    APIKeyUpdateRequest,
     APIKeyType,
-    MessageRequestModel,
+    MessageInsertRequest,
     Message,
-    MessageUpdateModel,
+    MessageUpdateRequest,
 )
-from src.parser import parse_input_v0_2 as parse_input
 
 load_dotenv()
-
 url: str | None = os.environ.get("SUPABASE_URL")
 key: str | None = os.environ.get("SUPABASE_ANON_KEY")
 
@@ -48,21 +47,8 @@ if url is None or key is None:
 logger = logging.getLogger("root")
 
 
-def get_compiled(
-    crew_id: UUID,
-) -> tuple[str, CrewProcessed] | tuple[Literal[False], Literal[False]]:
-    """Get the compiled message and crew model for a given Crew ID."""
-    supabase: Client = create_client(url, key)
-    logger.debug(f"Getting compiled message and crew model for {crew_id}")
-    response = supabase.table("crews").select("*").eq("id", crew_id).execute()
-
-    if len(response.data) == 0:
-        logger.error(f"No compiled message and composition for {crew_id}")
-        return False, False
-
-    return parse_input(input_data=response.data[0])
-
-
+# keeping this function for now, since typing gets crazy with the sessions/run endpoint 
+# if it uses the "get_session_by_param" function
 def get_session(session_id: UUID) -> Session | None:
     """Get a session from the database."""
     supabase: Client = create_client(url, key)
@@ -73,35 +59,34 @@ def get_session(session_id: UUID) -> Session | None:
     return Session(**response.data[0])
 
 
-def get_sessions_by_profile(profile_id: UUID) -> list[Session]:
-    """Gets all sessions for given profile id."""
+def get_sessions(
+    profile_id: UUID | None = None, 
+    crew_id: UUID | None = None,
+    title: str | None = None,
+    status: str | None = None
+) -> list[Session]:
+    """Gets session(s), filtered by what optional parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting all sessions from profile_id: {profile_id}")
-    response = supabase.table("sessions").select("*").eq("profile_id", profile_id).execute()
+    query = supabase.table("sessions").select("*")
 
-    sessions = []
-    if len(response.data) == 0:
-        return sessions
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
 
-    try:
-        sessions = [Session(**session) for session in response.data]
-    except ValidationError as e:
-        logger.error(f"Error validating session: {e}")
+    if crew_id:
+        query = query.eq("crew_id", crew_id)
 
-    return sessions
+    if title:
+        query = query.eq("title", title)
 
+    if status:
+        query = query.eq("status", status)
 
-def get_session_by_id(session_id: UUID) -> Session | None:
-    """Gets all sessions for given session id."""
-    supabase: Client = create_client(url, key)
-    response = supabase.table("sessions").select("*").eq("id", session_id).single().execute()
-    try:
-        return Session(**response.data)
-    except ValidationError as e:
-        logger.error(f"Error validating session: {e}")
+    response = query.execute()
+
+    return [Session(**data) for data in response.data]
 
 
-def insert_session(content: SessionRequest) -> Session:
+def insert_session(content: SessionInsertRequest) -> Session:
     supabase: Client = create_client(url, key)
     logger.info(f"inserting session")
     response = (
@@ -112,7 +97,7 @@ def insert_session(content: SessionRequest) -> Session:
     return Session(**response.data[0])
 
 
-def update_session(session_id: UUID, content: SessionUpdate) -> Session:
+def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
     supabase: Client = create_client(url, key)
     logger.info(f"updating session with id: {session_id}")
     response = (
@@ -124,7 +109,6 @@ def update_session(session_id: UUID, content: SessionUpdate) -> Session:
     return Session(**response.data[0])
 
 
-# TODO: refactor this thing, maybe session protocol so session can be both the internal session object and the response/request object
 def post_session(session: Session) -> None:
     """Post a session to the database."""
     supabase: Client = create_client(url, key)
@@ -174,7 +158,7 @@ def post_message(message: Message) -> None:
     ).execute()
 
 
-def insert_message(message: MessageRequestModel) -> Message:
+def insert_message(message: MessageInsertRequest) -> Message:
     """Posts a message like the post_message function, but uses a request model"""
     supabase: Client = create_client(url, key)
     response = supabase.table("messages").insert(json.loads(message.model_dump_json(exclude_none=True))).execute()
@@ -191,7 +175,7 @@ def delete_message(message_id: UUID) -> Message | None:
     return Message(**response.data[0])
 
 
-def update_message(message_id: UUID, content: MessageUpdateModel) -> Message | None:
+def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message | None:
     """Updates a message by an id"""
     supabase: Client = create_client(url, key)
     response = (
@@ -242,7 +226,7 @@ def post_agents(agents: list[Agent]) -> None:
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
-def insert_crew(crew: CrewRequestModel) -> Crew:
+def insert_crew(crew: CrewInsertRequest) -> Crew:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
@@ -251,7 +235,7 @@ def insert_crew(crew: CrewRequestModel) -> Crew:
     # supabase.table("crews").upsert(crew.model_dump())
 
 
-def update_crew(crew_id: UUID, content: CrewUpdateModel) -> Crew:
+def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("crews")
@@ -264,7 +248,7 @@ def update_crew(crew_id: UUID, content: CrewUpdateModel) -> Crew:
 
 def get_crew_from_id(crew_id: UUID) -> Crew:
     supabase: Client = create_client(url, key)
-    response = supabase.table("crews").select("*").eq("id", str(crew_id)).single().execute()
+    response = supabase.table("crews").select("*").eq("id", crew_id).single().execute()
     
     return Crew(**response.data)
 
@@ -323,7 +307,7 @@ def get_api_keys(profile_id: UUID) -> list[APIKey]:
     return api_keys 
 
 
-def insert_api_key(api_key: APIKeyRequestModel) -> APIKey:
+def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey:
     supabase: Client = create_client(url, key)
     response = supabase.table("users_api_keys").insert(json.loads(api_key.model_dump_json())).execute()
     return APIKey(**response.data[0])
@@ -337,7 +321,7 @@ def delete_api_key(api_key_id: UUID) -> APIKey | None:
     return APIKey(**response.data[0])
 
 
-def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateModel) -> APIKey:
+def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> APIKey:
     supabase: Client = create_client(url, key)
     response = supabase.table("users_api_keys").update(json.loads(api_key_update.model_dump_json())).eq("id", api_key_id).execute()
     return APIKey(**response.data[0])
@@ -389,7 +373,7 @@ def get_agents_from_crew(crew_id: UUID) -> list[Agent]:
     return [Agent(**data) for data in response.data]
 
 
-def insert_agent(content: AgentRequestModel) -> Agent:
+def insert_agent(content: AgentInsertRequest) -> Agent:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("agents").insert(json.loads(content.model_dump_json())).execute()
@@ -428,7 +412,7 @@ def get_profile_from_id(profile_id: UUID) -> Profile | None:
 
 
 def update_profile(
-    profile_id: UUID, content: ProfileUpdateModel
+    profile_id: UUID, content: ProfileUpdateRequest
 ) -> Profile:
     supabase: Client = create_client(url, key)
     response = (
@@ -440,22 +424,21 @@ def update_profile(
     return Profile(**response.data[0])
 
 
-def insert_profile(profile: ProfileRequestModel) -> Profile:
+def insert_profile(profile: ProfileInsertRequest) -> Profile:
     supabase: Client = create_client(url, key)
     response = supabase.table("profiles").insert(json.loads(profile.model_dump_json(exclude_none=True))).execute()
     return Profile(**response.data[0])
 
 
-# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]:
-#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id)
-# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]:
-#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id)
-if __name__ == "__main__":
+# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]: 
+#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id) 
+# def get_keys_from_profile(profile_id: UUID) -> dict[str, str]: 
+#   supabase.table("users_api_keys").select("api_key", "api_key_type_id").eq("profile_id", profile_id) 
+if __name__ == "__main__": 
     from src.models import Session
-
 #    print(
-#        insert_session(
-#            SessionRequest(
+#        insert_session( 
+#            SessionRequest( 
 #                crew_id=UUID("1c11a9bf-748f-482b-9746-6196f136401a"),
 #                profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
 #                title="hello",
@@ -472,4 +455,4 @@ if __name__ == "__main__":
     #)))
 
     print(delete_message(UUID('0e30e657-2ee1-482f-ab07-1952dc4d20fb')))
-    print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateModel(content="wowzer")))
+    print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))

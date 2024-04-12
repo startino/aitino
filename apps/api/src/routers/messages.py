@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
 from src import mock as mocks
-from src.crew import Crew
+from src.crew import AutogenCrew
 from src.dependencies import (
     RateLimitResponse,
     rate_limit,
@@ -12,7 +12,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import Message, MessageRequestModel, Message, MessageUpdateModel
+from src.models import Message, MessageInsertRequest, Message, MessageUpdateRequest
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -25,7 +25,7 @@ def get_messages_by_session(by_session: UUID) -> list[Message]:
 
 
 @router.post("/")
-def insert_message(message: MessageRequestModel) -> Message:
+def insert_message(message: MessageInsertRequest) -> Message:
     return db.insert_message(message)
 
 
@@ -39,7 +39,7 @@ def delete_message(message_id: UUID) -> Message:
 
 
 @router.patch("/{message_id}")
-def update_message(message_id: UUID, content: MessageUpdateModel) -> Message:
+def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message:
     response = db.update_message(message_id, content)
     if not response:
         raise HTTPException(404, "message not found")

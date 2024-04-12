@@ -8,11 +8,8 @@ from pydantic import BaseModel
 from .agent_model import Agent
 
 
-class CrewBaseModel(BaseModel):
+class CrewProcessed(BaseModel):
     receiver_id: UUID
-
-
-class CrewProcessed(CrewBaseModel):
     delegator_id: UUID | None = None 
     # None means admin again, so its the original crew (has no parent crew)
     agents: list[Agent]
@@ -28,13 +25,14 @@ class Crew(BaseModel):
     title: str
     description: str
     updated_at: datetime
-    nodes: list[str]
+    nodes: list[UUID]
     receiver_id: UUID | None = None
     avatar: str | None = None
     prompt: dict | None = None
 
 
-class CrewRequestModel(CrewBaseModel):
+class CrewInsertRequest(BaseModel):
+    receiver_id: str
     prompt: dict
     profile_id: UUID
     edges: list[dict]
@@ -44,7 +42,7 @@ class CrewRequestModel(CrewBaseModel):
     nodes: list[str]
 
 
-class CrewUpdateModel(BaseModel):
+class CrewUpdateRequest(BaseModel):
     receiver_id: UUID | None = None
     prompt: dict | None = None
     profile_id: UUID | None = None
@@ -53,7 +51,4 @@ class CrewUpdateModel(BaseModel):
     title: str | None = None
     description: str | None = None
     nodes: list[str] | None = None
-
-    class Config:
-        exclude_none = True
 
