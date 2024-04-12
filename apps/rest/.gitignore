@@ -2,6 +2,11 @@
 OAI_CONFIG_LIST
 tasks
 
+# For caches
+cache.db
+cache.db-shm
+cache.db-wal
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
