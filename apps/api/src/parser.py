@@ -67,7 +67,7 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
 
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
     logger.debug("Getting processed crew by id")
-    crew = db.get_crew_from_id(crew_id)
+    crew = db.get_crew(crew_id)
     return process_crew(crew)
 
 

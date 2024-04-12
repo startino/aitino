@@ -130,7 +130,7 @@ def get_messages(
     recipient_id: UUID | None = None,
     sender_id: UUID | None = None
 ) -> list[Message]:
-    """Get all messages for a given parameter"""
+    """Gets messages, filtered by given optional parameters"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting messages")
     query = supabase.table("messages").select("*")
@@ -256,10 +256,12 @@ def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
     return Crew(**response.data[0])
 
 
-def get_crew_from_id(crew_id: UUID) -> Crew:
+def get_crew(crew_id: UUID) -> Crew | None:
     supabase: Client = create_client(url, key)
     response = supabase.table("crews").select("*").eq("id", crew_id).single().execute()
-    
+    if not response.data:
+        return None
+
     return Crew(**response.data)
 
 
@@ -286,6 +288,7 @@ def get_crews(
     title: str | None = None,
     published: bool | None = None,
 ) -> list[Crew]:
+    """Gets crews, filtered by given optional parameters"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting crews")
     query = supabase.table("crews").select("*")
@@ -391,6 +394,35 @@ def get_users_agents(profile_id: UUID) -> list[Agent]:
     return [Agent(**data) for data in response.data]
 
 
+def get_agents(
+    profile_id: UUID | None = None,
+    crew_id: UUID | None = None,
+    published: bool | None = None
+) -> list[Agent] | None:
+    """Gets agents, filtered by what optional parameters are given"""
+    supabase: Client = create_client(url, key)
+    query = supabase.table("agents").select("*")
+
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    # scuffed solution since agents dont have a crew id
+    # prob gonna rework or remove this completely
+    if crew_id:
+        response = get_agents_from_crew(crew_id)
+        if not response:
+            return None
+        
+        return response
+        
+    if published:
+        query = query.eq("published", published)
+
+    response = query.execute()
+
+    return [Agent(**data) for data in response.data]
+
+
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
     response = supabase.table("agents").select("*").eq("id", agent_id).execute()
@@ -400,9 +432,12 @@ def get_agent(agent_id: UUID) -> Agent | None:
     return Agent(**response.data[0])
 
 
-def get_agents_from_crew(crew_id: UUID) -> list[Agent]:
+def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
     supabase: Client = create_client(url, key)
     nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
+    if len(nodes.data) == 0:
+        return None
+
     response = (
         supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
     )
@@ -482,7 +517,7 @@ if __name__ == "__main__":
 #        )
 #    )
 #
-    print(get_crew_from_id(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
+    print(get_crew(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
     ##print(insert_message(MessageRequestModel(
     #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
     #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),

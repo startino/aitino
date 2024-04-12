@@ -26,15 +26,10 @@ def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
     return db.get_crews(q.profile_id, q.receiver_id, q.title, q.published)
 
 
-@router.get("/published")
-def get_published_crews() -> list[Crew]:
-    return db.get_published_crews()
-
-
 @router.patch("/{crew_id}")
 def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
     logger.debug(content.model_dump())
-    if not db.get_crew_from_id(crew_id):
+    if not db.get_crew(crew_id):
         raise HTTPException(404, "crew not found")
 
     return db.update_crew(crew_id, content)
@@ -42,8 +37,11 @@ def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
 
 @router.get("/{crew_id}")
 def get_crew_by_id(crew_id: UUID) -> Crew:
-    return db.get_crew_from_id(crew_id)
+    response = db.get_crew(crew_id)
+    if not response:
+        raise HTTPException(404, "Crew not found")
 
+    return response
 
 @router.delete("/{crew_id}")
 def delete_crew(crew_id: UUID) -> Crew:
