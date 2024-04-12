@@ -15,7 +15,7 @@ class Message(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 
 
-class MessageRequestModel(BaseModel):
+class MessageInsertRequest(BaseModel):
     session_id: UUID
     content: str
     role: str = "user"
@@ -24,7 +24,7 @@ class MessageRequestModel(BaseModel):
     profile_id: UUID
 
 
-class MessageUpdateModel(BaseModel):
+class MessageUpdateRequest(BaseModel):
     session_id: UUID | None = None
     content: str | None = None
     role: str | None = None
@@ -32,3 +32,9 @@ class MessageUpdateModel(BaseModel):
     sender_id: UUID | None = None 
     profile_id: UUID | None = None
 
+
+class MessageGetRequest(BaseModel):
+    session_id: UUID | None = None
+    profile_id: UUID | None = None
+    recipient_id: UUID | None = None 
+    sender_id: UUID | None = None 
