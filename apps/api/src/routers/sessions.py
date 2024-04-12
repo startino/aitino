@@ -95,7 +95,7 @@ async def run_crew(
     if mock:
         message, crew_model = process_crew(Crew(**mocks.crew_model))
     else:
-        message, crew_model = get_processed_crew_by_id(request.id)
+        message, crew_model = get_processed_crew_by_id(request.crew_id)
 
     if request.reply:
         message = request.reply
@@ -122,7 +122,7 @@ async def run_crew(
 
     if session is None:
         session = Session(
-            crew_id=request.id,
+            crew_id=request.crew_id,
             profile_id=request.profile_id,
             title=request.session_title,
         )

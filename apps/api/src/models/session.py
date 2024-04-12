@@ -39,7 +39,7 @@ class SessionUpdateRequest(BaseModel):
 
 
 class SessionRunRequest(BaseModel):
-    id: UUID
+    crew_id: UUID
     profile_id: UUID
     session_title: str = "Untitled"
     session_id: UUID | None = None
