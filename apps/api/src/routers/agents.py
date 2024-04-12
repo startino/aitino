@@ -1,16 +1,14 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
 from src.models import (
     AgentInsertRequest,
     AgentUpdateModel,
-    CrewInsertRequest,
-    Crew,
-    CrewUpdateRequest,
-    Agent
+    Agent,
+    AgentGetRequest,
 )
 
 router = APIRouter(
@@ -21,19 +19,13 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 
-@router.get("/published")
-def get_published_agents() -> list[Agent]:
-    return db.get_published_agents()
-
-
-@router.get("/by_profile")
-def get_users_agents(profile_id: UUID) -> list[Agent]:
-    return db.get_users_agents(profile_id)
-
-
-@router.get("/by_crew")
-def get_agents_from_crew(crew_id: UUID) -> list[Agent]:
-    return db.get_agents_from_crew(crew_id)
+@router.get("/")
+def get_agents(q: AgentGetRequest = Depends()) -> list[Agent]:
+    response = db.get_agents(q.profile_id, q.crew_id, q.published)
+    if not response:
+        raise HTTPException(404, "crew not found or crew has no agents")
+    
+    return response
 
 
 @router.get("/{agent_id}")
@@ -47,7 +39,7 @@ def get_agent_by_id(agent_id: UUID) -> Agent:
 
 @router.post("/")
 def insert_agent(agent_request: AgentInsertRequest) -> Agent:
-    if not db.get_profile_from_id(agent_request.profile_id):
+    if not db.get_profile(agent_request.profile_id):
         raise HTTPException(404, "profile not found")
 
     return db.insert_agent(agent_request)
@@ -60,12 +52,12 @@ def patch_agent(
     if not db.get_agent(agent_id):
         raise HTTPException(404, "agent not found")
 
-    if agent_update_request.profile_id and not db.get_profile_from_id(
+    if agent_update_request.profile_id and not db.get_profile(
         agent_update_request.profile_id
     ):
         raise HTTPException(404, "profile not found")
 
-    return db.update_agents(agent_update_request)
+    return db.update_agents(agent_id, agent_update_request)
 
 
 @router.delete("/{agent_id}")

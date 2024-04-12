@@ -1,7 +1,5 @@
 import logging
 import os
-from datetime import datetime, timedelta, timezone
-from typing import Annotated
 from uuid import UUID
 
 import jwt
@@ -12,7 +10,6 @@ from fastapi.security import (
     HTTPBearer,
 
 )
-from pydantic import BaseModel
 
 from src.interfaces import db
 
@@ -33,7 +30,7 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBea
 
     # authorises with test profile
     if token.credentials == "xdd":
-        profile = db.get_profile_from_id(UUID("eebb6aaf-0412-41ff-ade9-547dbbc6d9f1"))
+        profile = db.get_profile(UUID("eebb6aaf-0412-41ff-ade9-547dbbc6d9f1"))
         assert profile
         return profile
 
@@ -41,7 +38,7 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBea
         token.credentials, JWT_SECRET, algorithms=[ALGORITHM], audience="authenticated"
     )
     user_id: str = payload.get("sub")
-    profile = db.get_profile_from_id(UUID(user_id))
+    profile = db.get_profile(UUID(user_id))
 
     if not user_id or not profile:
         raise credentials_exception
