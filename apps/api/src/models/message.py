@@ -32,3 +32,9 @@ class MessageUpdateRequest(BaseModel):
     sender_id: UUID | None = None 
     profile_id: UUID | None = None
 
+
+class MessageGetRequest(BaseModel):
+    session_id: UUID | None = None
+    profile_id: UUID | None = None
+    recipient_id: UUID | None = None 
+    sender_id: UUID | None = None 

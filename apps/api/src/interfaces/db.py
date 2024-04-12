@@ -124,25 +124,35 @@ def delete_session(session_id: UUID) -> Session:
     return Session(**response.data[0])
 
 
-def get_messages(session_id: UUID) -> list[Message]:
-    """Get all messages for a given session."""
+def get_messages(
+    session_id: UUID | None = None,
+    profile_id: UUID | None = None,
+    recipient_id: UUID | None = None,
+    sender_id: UUID | None = None
+) -> list[Message]:
+    """Get all messages for a given parameter"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting messages for session {session_id}")
-    response = (
-        supabase.table("messages").select("*").eq("session_id", session_id).execute()
-    )
+    logger.debug(f"Getting messages")
+    query = supabase.table("messages").select("*")
 
-    messages = []
+    if session_id:
+        query = query.eq("session_id", session_id)
 
-    try:
-        messages = [Message(**msg) for msg in response.data]
-    except ValidationError as e:
-        logger.error(f"Error validating message: {e}")
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
 
-    return messages
+    if recipient_id:
+        query = query.eq("recipient_id", recipient_id)
+
+    if sender_id:
+        query = query.eq("sender_id", sender_id)
 
 
-def get_message_by_id(message_id: UUID) -> Message:
+    response = query.execute()
+
+    return [Message(**data) for data in response.data]
+
+def get_message(message_id: UUID) -> Message:
     """Get a message by its id"""
     supabase: Client = create_client(url, key)
     response = supabase.table("messages").select("*").eq("id", message_id).single().execute()
@@ -355,7 +365,7 @@ def get_users_agents(profile_id: UUID) -> list[Agent]:
     return [Agent(**data) for data in response.data]
 
 
-def get_agent_by_id(agent_id: UUID) -> Agent | None:
+def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
     response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if not response.data:

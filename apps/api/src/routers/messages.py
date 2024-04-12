@@ -3,8 +3,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
-from src import mock as mocks
-from src.crew import AutogenCrew
 from src.dependencies import (
     RateLimitResponse,
     rate_limit,
@@ -12,7 +10,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import Message, MessageInsertRequest, Message, MessageUpdateRequest
+from src.models import Message, MessageInsertRequest, Message, MessageUpdateRequest, MessageGetRequest
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -20,8 +18,8 @@ logger = logging.getLogger("root")
 
 
 @router.get("/")
-def get_messages_by_session(by_session: UUID) -> list[Message]:
-    return db.get_messages(by_session)
+def get_messages(q: MessageGetRequest = Depends()) -> list[Message]:
+    return db.get_messages(q.session_id, q.profile_id, q.recipient_id, q.sender_id)
 
 
 @router.post("/")
@@ -48,5 +46,5 @@ def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message:
 
 
 @router.get("/{message_id}")
-def get_message_by_id(message_id: UUID) -> Message:
-    return db.get_message_by_id(message_id)
+def get_message(message_id: UUID) -> Message:
+    return db.get_message(message_id)

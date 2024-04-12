@@ -16,6 +16,7 @@ from .message import (
     Message, 
     MessageInsertRequest, 
     MessageUpdateRequest,
+    MessageGetRequest,
 )
 from .profile import (
     ProfileInsertRequest,
@@ -67,4 +68,5 @@ __all__ = [
     "MessageInsertRequest",
     "MessageUpdateRequest",
     "SessionGetRequest",
+    "MessageGetRequest",
 ]
