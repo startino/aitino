@@ -3,17 +3,16 @@
 	import Chat from './Chat.svelte';
 	import SessionNavigator from './SessionNavigator.svelte';
 	import { Loader2 } from 'lucide-svelte';
-	import * as models from '$lib/types/models';
 
 	export let data: SessionLoad;
 
-	let profileId: string = data.profileId;
-	let crew: models.Crew = data.crew;
-	let crews: models.Crew[] = data.crews;
-	let session: models.Session = data.session;
-	let sessions: models.Session[] = data.sessions;
-	let messages: models.Message[] = data.messages;
-	let agents: models.Agent[] = data.agents;
+	let profileId = data.profileId;
+	let crew = data.crew;
+	let crews = data.crews;
+	let session = data.session;
+	let sessions = data.sessions;
+	let messages = data.messages;
+	let agents = data.agents;
 </script>
 
 <h1 class="fixed top-4 pl-4 text-2xl font-bold">{session.title}</h1>
