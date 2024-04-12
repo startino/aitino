@@ -10,6 +10,7 @@ from .crew_model import (
     CrewInsertRequest,
     Crew,
     CrewUpdateRequest,
+    CrewGetRequest,
 )
 from .llm_config import LLMConfig
 from .message import (
@@ -69,4 +70,5 @@ __all__ = [
     "MessageUpdateRequest",
     "SessionGetRequest",
     "MessageGetRequest",
+    "CrewGetRequest",
 ]

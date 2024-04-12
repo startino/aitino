@@ -52,3 +52,9 @@ class CrewUpdateRequest(BaseModel):
     description: str | None = None
     nodes: list[str] | None = None
 
+
+class CrewGetRequest(BaseModel):
+    profile_id: UUID | None = None
+    receiver_id: UUID | None = None
+    title: str | None = None
+    published: bool | None = None

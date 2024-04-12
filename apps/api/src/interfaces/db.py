@@ -280,6 +280,32 @@ def get_user_crews(profile_id: UUID, ascending: bool = False) -> list[Crew]:
     )
     return [Crew(**data) for data in response.data]
 
+def get_crews(
+    profile_id: UUID | None = None,
+    receiver_id: UUID | None = None,
+    title: str | None = None,
+    published: bool | None = None,
+) -> list[Crew]:
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Getting crews")
+    query = supabase.table("crews").select("*")
+
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    if receiver_id:
+        query = query.eq("receiver_id", receiver_id)
+
+    if title:
+        query = query.eq("title", title)
+
+    if published:
+        query = query.eq("published", published)
+
+    response = query.execute()
+
+    return [Crew(**data) for data in response.data]
+
 
 def delete_crew(crew_id: UUID) -> Crew:
     supabase: Client = create_client(url, key)

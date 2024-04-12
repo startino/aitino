@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 
 from src.interfaces import db
-from src.models import CrewInsertRequest, Crew, CrewUpdateRequest
+from src.models import CrewInsertRequest, Crew, CrewUpdateRequest, CrewGetRequest
 
 router = APIRouter(
     prefix="/crews",
@@ -21,9 +21,9 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
     return db.insert_crew(crew)
 
 
-@router.get("/")  # /crews/?by_profile=profile_id
-def get_crews_of_user(by_profile: UUID, ascending: bool = False) -> list[Crew]:
-    return db.get_user_crews(by_profile, ascending)
+@router.get("/")
+def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
+    return db.get_crews(q.profile_id, q.receiver_id, q.title, q.published)
 
 
 @router.get("/published")
