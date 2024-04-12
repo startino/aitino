@@ -19,7 +19,7 @@ from .tools import (
 logger = logging.getLogger("root")
 
 
-class Crew:
+class AutogenCrew:
     def __init__(
         self,
         profile_id: UUID,

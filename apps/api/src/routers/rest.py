@@ -3,7 +3,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
 from src.models import Crew, Message, Session
-from src.parser import parse_input_v0_2 as parse_input
 from src.rest import comment_bot
 from src.rest.interfaces import db
 from src.rest.models import PublishCommentRequest, PublishCommentResponse

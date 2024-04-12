@@ -1,40 +1,43 @@
 from .agent_config import AgentConfig
 from .agent_model import (
     Agent,
-    AgentRequestModel,
+    AgentInsertRequest,
     AgentUpdateModel,
 )
 from .code_execution_config import CodeExecutionConfig
 from .crew_model import (
     CrewProcessed,
-    CrewRequestModel,
+    CrewInsertRequest,
     Crew,
-    CrewUpdateModel,
+    CrewUpdateRequest,
+    CrewGetRequest,
 )
 from .llm_config import LLMConfig
 from .message import (
     Message, 
-    MessageRequestModel, 
-    MessageUpdateModel,
+    MessageInsertRequest, 
+    MessageUpdateRequest,
+    MessageGetRequest,
 )
 from .profile import (
-    ProfileRequestModel,
+    ProfileInsertRequest,
     Profile,
-    ProfileUpdateModel,
+    ProfileUpdateRequest,
 )
 from .session import (
-    RunRequestModel,
-    RunResponse,
+    SessionRunRequest,
+    SessionRunResponse,
     Session,
-    SessionRequest,
+    SessionInsertRequest,
     SessionStatus,
-    SessionUpdate,
+    SessionUpdateRequest,
+    SessionGetRequest,
 )
 from .api_key import(
-    APIKeyRequestModel,
+    APIKeyInsertRequest,
     APIKey,
     APIKeyType,
-    APIKeyUpdateModel,
+    APIKeyUpdateRequest,
 )
 from .user import User
 __all__ = [
@@ -46,22 +49,26 @@ __all__ = [
     "CrewProcessed",
     "Agent",
     "SessionStatus",
-    "RunRequestModel",
-    "SessionUpdate",
-    "CrewRequestModel",
-    "CrewUpdateModel",
-    "SessionRequest",
-    "RunResponse",
+    "SessionRunRequest",
+    "SessionUpdateRequest",
+    "CrewInsertRequest",
+    "CrewUpdateRequest",
+    "SessionInsertRequest",
+    "SessionRunResponse",
     "Crew",
-    "AgentRequestModel",
+    "AgentInsertRequest",
     "AgentUpdateModel",
     "Profile",
-    "ProfileUpdateModel",
-    "ProfileRequestModel",
-    "APIKeyRequestModel",
+    "ProfileUpdateRequest",
+    "ProfileInsertRequest",
+    "APIKeyInsertRequest",
     "APIKey",
     "APIKeyType",
-    "APIKeyUpdateModel",
+    "APIKeyUpdateRequest",
     "User",
-    "MessageRequestModel",
+    "MessageInsertRequest",
+    "MessageUpdateRequest",
+    "SessionGetRequest",
+    "MessageGetRequest",
+    "CrewGetRequest",
 ]
