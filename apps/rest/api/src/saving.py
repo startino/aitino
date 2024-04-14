@@ -33,6 +33,7 @@ def update_db_with_submission(evalutated_submission: EvaluatedSubmission):
         submission = evalutated_submission.submission
         # Convert the submission to a Lead
         lead = Lead(
+            submission_id=saved_submission.id,
             prospect_username=submission.author.name,
             source="their_post",
             last_event="discovered",

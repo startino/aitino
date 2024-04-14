@@ -54,7 +54,7 @@ class RedditStreamWorker:
                 # Use LLMs to see if submission is relevant (expensive part)
                 evaluated_submission = evaluate_relevance(submission, filter=True)
 
-                # Save to local file and cache
+                # Save to db and cache
                 update_db_with_submission(evaluated_submission)
                 cache.set(submission.id, submission.id)
 

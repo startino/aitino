@@ -115,7 +115,7 @@ def generate_comment(generate_request: GenerateCommentRequest):
     return comment
 
 
-@app.post("/update-lead-to-irrelevant")
+@app.post("/mark-lead-as-irrelevant")
 def mark_lead_as_irrelevant(false_lead: FalseLead):
     # Mark the lead as irrelevant in 'leads' table
     lead = db.update_lead(id=false_lead.lead_id, status="rejected")
