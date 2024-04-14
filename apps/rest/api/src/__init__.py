@@ -96,7 +96,7 @@ def stop_stream(worker_id: str):
     thread.join(timeout=10)  # Waits 10 seconds for the thread to finish
 
     if thread.is_alive():
-        logger.error(f"Thread for worker {worker_id} didn't stop in time")
+        logger.error(f"Thread for Reddit worker didn't stop in time")
 
     del workers[worker_id]  # Cleanup
 

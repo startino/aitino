@@ -1,9 +1,11 @@
 from .models import DummySubmission
 
+url = "https://aiti.no"
+
 relevant_submissions = [
     DummySubmission(
         id="1",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="I need a simple front end to fetch my headless CMS data. Maybe nocode? ",
         selftext="""
@@ -18,7 +20,7 @@ relevant_submissions = [
     ),
     DummySubmission(
         id="2",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="I have an interesting for an App, but I have no coding experience. Looking for someone with coding experience.",
         selftext="""
@@ -29,7 +31,7 @@ relevant_submissions = [
     ),
     DummySubmission(
         id="3",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="Help with an APP",
         selftext="""
@@ -40,7 +42,7 @@ relevant_submissions = [
     ),
     DummySubmission(
         id="4",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="Cloud Based Software Engineer?",
         selftext="""
@@ -51,7 +53,7 @@ relevant_submissions = [
     ),
     DummySubmission(
         id="5",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="Using freelance websites for MVP!!",
         selftext="""
@@ -67,7 +69,7 @@ relevant_submissions = [
 irrelevant_submissions = [
     DummySubmission(
         id="100",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="I need a simple front end to fetch my headless CMS data. Maybe nocode? ",
         selftext="""
@@ -85,7 +87,7 @@ irrelevant_submissions = [
     ),
     DummySubmission(
         id="101",
-        url="https://aiti.no",
+        url=url,
         created_utc=00000,
         title="Seeking Advice on Finding an Investor for Scaling Up My Garden Business",
         selftext="""

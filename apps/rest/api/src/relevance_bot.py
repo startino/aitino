@@ -76,9 +76,9 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
             print(f"An error occurred while invoke_chain: {e}")
             time.sleep(10)  # Wait for 10 seconds before trying again
 
-    raise Exception(
-        "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
-    )
+    raise RuntimeError(
+    "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
+)
 
 
 def summarize_submission(submission: Submission) -> Submission:
