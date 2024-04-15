@@ -319,9 +319,7 @@ export interface components {
        */
       profile_id: string;
       /** Edges */
-      edges: {
-          [key: string]: string;
-        }[];
+      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
       /** Title */
@@ -403,6 +401,52 @@ export interface components {
       /** Nodes */
       nodes?: string[] | null;
     };
+    /** Edge */
+    Edge: {
+      /** Id */
+      id: string;
+      /** Type */
+      type?: string | null;
+      /** Source */
+      source: string;
+      /** Target */
+      target: string;
+      /** Sourcehandle */
+      sourceHandle?: string | null;
+      /** Targethandle */
+      targetHandle?: string | null;
+      /** Animated */
+      animated?: boolean | null;
+      /** Hidden */
+      hidden?: boolean | null;
+      /** Deletable */
+      deletable?: boolean | null;
+      /** Selectable */
+      selectable?: boolean | null;
+      /** Data */
+      data?: unknown;
+      /** Selected */
+      selected?: boolean | null;
+      /** Markerstart */
+      markerStart?: string | components["schemas"]["Marker"] | null;
+      /** Markerend */
+      markerEnd?: string | components["schemas"]["Marker"] | null;
+      /** Zindex */
+      zIndex?: number | null;
+      /** Arialabel */
+      ariaLabel?: string | null;
+      /** Interactionwidth */
+      interactionWidth?: number | null;
+      /** Label */
+      label?: string | null;
+      /** Labelstyle */
+      labelStyle?: string | null;
+      /** Style */
+      style?: string | null;
+      /** Class */
+      class?: string | null;
+      pathOptions?: components["schemas"]["PathOptions"] | null;
+    };
     /** FalseLead */
     FalseLead: {
       /**
@@ -429,6 +473,23 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** Marker */
+    Marker: {
+      /** Type */
+      type: string;
+      /** Color */
+      color?: string | null;
+      /** Width */
+      width?: number | null;
+      /** Height */
+      height?: number | null;
+      /** Markerunits */
+      markerUnits?: string | null;
+      /** Orient */
+      orient?: string | null;
+      /** Strokewidth */
+      strokeWidth?: number | null;
     };
     /** Message */
     Message: {
@@ -512,6 +573,15 @@ export interface components {
       provider: "apple" | "azure" | "bitbucket" | "discord" | "facebook" | "figma" | "github" | "gitlab" | "google" | "kakao" | "keycloak" | "linkedin" | "notion" | "slack" | "spotify" | "twitch" | "twitter" | "workos" | "zoom";
       /** Url */
       url: string;
+    };
+    /** PathOptions */
+    PathOptions: {
+      /** Offset */
+      offset?: number | null;
+      /** Borderradius */
+      borderRadius?: number | null;
+      /** Curvature */
+      curvature?: number | null;
     };
     /** Profile */
     Profile: {
