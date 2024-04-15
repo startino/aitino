@@ -71,9 +71,16 @@ def post_lead(lead: Lead) -> None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Posting lead: {lead}")
+
+    # Check if lead already exists (temporary until supabase-py supports onConflict)
+    existing_lead = supabase.table("leads").select("*").eq("prospect_username", lead.prospect_username).execute()
+
+    if existing_lead:
+        return
+    
     supabase.table("leads").insert(
-        json.loads(json.dumps(lead.model_dump(), default=str))
-    ).execute()
+    json.loads(json.dumps(lead.dict(), default=str))
+        ).execute()
 
 
 def update_lead(
@@ -124,6 +131,12 @@ def post_evaluated_submission(saved_submission: SavedSubmission) -> None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Posting submission: {saved_submission}")
+
+    # Check if submission already exists (temporary until supabase-py supports onConflict)
+    existing_submission = supabase.table("evaluated_submissions").select("*").eq("body", saved_submission.body).execute()
+
+    if existing_submission:
+        return
 
     supabase.table("evaluated_submissions").insert(
         json.loads(json.dumps(saved_submission.model_dump(), default=str))

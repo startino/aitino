@@ -15,6 +15,7 @@ from .models import (
     PublishCommentRequest,
     GenerateCommentRequest,
     FalseLead,
+    Lead
 )
 from .reddit_worker import RedditStreamWorker
 
@@ -75,6 +76,7 @@ def redirect_to_docs() -> RedirectResponse:
 @app.get("/test")
 def test():
     print("TEST")
+    db.post_lead(Lead(id=uuid4(), submission_id=uuid4(), reddit_id="test", prospect_username="test", source="test", last_event="test", status="test", data={"test": "test"}))
 
 
 @app.post("/start")
