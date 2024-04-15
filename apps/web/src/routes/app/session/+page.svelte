@@ -12,7 +12,7 @@
 		const runResponse = await api
 			.POST('/sessions/run', {
 				body: {
-					id: crewId,
+					crew_id: crewId,
 					profile_id: profileId,
 					session_title: title
 				}
@@ -22,6 +22,10 @@
 					console.error(`Error running crew: ${e}`);
 					return null;
 				}
+				if (!d) {
+					console.error('Failed to start session');
+					return null;
+				}
 				return d;
 			});
 
@@ -29,7 +33,7 @@
 			return;
 		}
 
-		window.location.href = '/app/session/' + runResponse.session.id; // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + runResponse.id; // Can this be done better without full page reload?
 	}
 </script>
 

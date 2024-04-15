@@ -64,7 +64,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 			.GET('/sessions/', {
 				params: {
 					query: {
-						by_profile: userSession.user.id
+						profile_id: userSession.user.id
 					}
 				}
 			})
@@ -84,7 +84,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 			.GET('/crews/', {
 				params: {
 					query: {
-						by_profile: userSession.user.id
+						profile_id: userSession.user.id
 					}
 				}
 			})
@@ -102,7 +102,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 		// TODO: Why can id be null here? Verify if we can ensure it's always set in the api's return.
 		messages: session.id ? [] : [],
 		agents: await api
-			.GET('/agents/by_crew', {
+			.GET('/agents/', {
 				params: {
 					query: {
 						crew_id: userSession.user.id

@@ -7,14 +7,13 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
-	import type { Crew, Session } from '$lib/types/models';
-	import * as models from '$lib/types/models';
+	import type { schemas } from '$lib/api';
 	import api from '$lib/api';
 
-	export let profileId;
-	export let sessions;
-	export let crew;
-	export let session;
+	export let profileId: string;
+	export let sessions: schemas['Session'][];
+	export let crew: schemas['Crew'][];
+	export let session: schemas['Session'];
 
 	let newSessionName: string = '';
 
@@ -71,7 +70,7 @@
 			if (session.id === sessionId) {
 				session.title = renamingValue;
 			}
-			return session as Session;
+			return session as schemas['Session'];
 		});
 
 		// Reset the renaming variables
@@ -89,7 +88,7 @@
 			})
 			.then(({ error: e }) => {
 				if (e) {
-					console.error(`Error deleting session: ${e}`);
+					console.error(`Error deleting session: ${e.toString()}`);
 					return false;
 				}
 				return true;
@@ -110,7 +109,7 @@
 		}
 	}
 
-	async function loadSession(session: models.Session) {
+	async function loadSession(session: schemas['Session']) {
 		console.log('Loading session', JSON.stringify(session));
 		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
@@ -120,7 +119,7 @@
 			.POST('/sessions/run', {
 				body: {
 					profile_id: profileId,
-					id: crewId,
+					crew_id: crewId,
 					title: title
 				}
 			})
@@ -129,7 +128,7 @@
 					console.error(`Error running crew: ${e}`);
 					return null;
 				}
-				return d.session;
+				return d;
 			});
 
 		// const session = await api.startSession(profileId as UUID, crewId as UUID, title);
@@ -189,7 +188,7 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{crew.title}
+											{crew[0]?.title}
 										</Button>
 									</div>
 								</div>

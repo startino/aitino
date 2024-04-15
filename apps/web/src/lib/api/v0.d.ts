@@ -6,14 +6,14 @@
 
 export interface paths {
   "/sessions/": {
-    /** Get Sessions By Profile */
-    get: operations["get_sessions_by_profile_sessions__get"];
+    /** Get Sessions */
+    get: operations["get_sessions_sessions__get"];
     /** Insert Session */
     post: operations["insert_session_sessions__post"];
   };
   "/sessions/{session_id}": {
-    /** Get Session By Id */
-    get: operations["get_session_by_id_sessions__session_id__get"];
+    /** Get Session */
+    get: operations["get_session_sessions__session_id__get"];
     /** Delete Session */
     delete: operations["delete_session_sessions__session_id__delete"];
     /** Update Session */
@@ -24,28 +24,24 @@ export interface paths {
     post: operations["run_crew_sessions_run_post"];
   };
   "/messages/": {
-    /** Get Messages By Session */
-    get: operations["get_messages_by_session_messages__get"];
+    /** Get Messages */
+    get: operations["get_messages_messages__get"];
     /** Insert Message */
     post: operations["insert_message_messages__post"];
   };
   "/messages/{message_id}": {
-    /** Get Message By Id */
-    get: operations["get_message_by_id_messages__message_id__get"];
+    /** Get Message */
+    get: operations["get_message_messages__message_id__get"];
     /** Delete Message */
     delete: operations["delete_message_messages__message_id__delete"];
     /** Update Message */
     patch: operations["update_message_messages__message_id__patch"];
   };
   "/crews/": {
-    /** Get Crews Of User */
-    get: operations["get_crews_of_user_crews__get"];
+    /** Get Crews */
+    get: operations["get_crews_crews__get"];
     /** Insert Crew */
     post: operations["insert_crew_crews__post"];
-  };
-  "/crews/published": {
-    /** Get Published Crews */
-    get: operations["get_published_crews_crews_published_get"];
   };
   "/crews/{crew_id}": {
     /** Get Crew By Id */
@@ -55,17 +51,11 @@ export interface paths {
     /** Update Crew */
     patch: operations["update_crew_crews__crew_id__patch"];
   };
-  "/agents/published": {
-    /** Get Published Agents */
-    get: operations["get_published_agents_agents_published_get"];
-  };
-  "/agents/by_profile": {
-    /** Get Users Agents */
-    get: operations["get_users_agents_agents_by_profile_get"];
-  };
-  "/agents/by_crew": {
-    /** Get Agents From Crew */
-    get: operations["get_agents_from_crew_agents_by_crew_get"];
+  "/agents/": {
+    /** Get Agents */
+    get: operations["get_agents_agents__get"];
+    /** Insert Agent */
+    post: operations["insert_agent_agents__post"];
   };
   "/agents/{agent_id}": {
     /** Get Agent By Id */
@@ -74,10 +64,6 @@ export interface paths {
     delete: operations["delete_agent_agents__agent_id__delete"];
     /** Patch Agent */
     patch: operations["patch_agent_agents__agent_id__patch"];
-  };
-  "/agents/": {
-    /** Insert Agent */
-    post: operations["insert_agent_agents__post"];
   };
   "/profiles/": {
     /** Get Profiles */
@@ -88,6 +74,8 @@ export interface paths {
   "/profiles/{profile_id}": {
     /** Get Profile By Id */
     get: operations["get_profile_by_id_profiles__profile_id__get"];
+    /** Delete Profile */
+    delete: operations["delete_profile_profiles__profile_id__delete"];
     /** Update Profile */
     patch: operations["update_profile_profiles__profile_id__patch"];
   };
@@ -108,17 +96,6 @@ export interface paths {
     /** Update Api Key */
     patch: operations["update_api_key_profiles_api_keys__api_key_id__patch"];
   };
-  "/auth/sign_up": {
-    /**
-     * Email Sign Up
-     * @description format for passing display name: 'options': {'data':{'display_name': 'name'}}
-     */
-    post: operations["email_sign_up_auth_sign_up_post"];
-  };
-  "/auth/sign_in": {
-    /** Email Sign In */
-    post: operations["email_sign_in_auth_sign_in_post"];
-  };
   "/auth/sign_in/provider": {
     /** Provider Sign In */
     post: operations["provider_sign_in_auth_sign_in_provider_post"];
@@ -128,10 +105,28 @@ export interface paths {
     get: operations["get_all_api_key_types_api_key_types__get"];
   };
   "/rest/": {
-    /** Get Leads */
-    get: operations["get_leads_rest__get"];
+    /** Redirect To Docs */
+    get: operations["redirect_to_docs_rest__get"];
+  };
+  "/rest/test": {
+    /** Test */
+    get: operations["test_rest_test_get"];
+  };
+  "/rest/stop/{worker_id}": {
+    /** Stop Stream */
+    post: operations["stop_stream_rest_stop__worker_id__post"];
+  };
+  "/rest/generate-comment": {
+    /** Generate Comment */
+    post: operations["generate_comment_rest_generate_comment_post"];
+  };
+  "/rest/mark-lead-as-irrelevant": {
+    /** Mark Lead As Irrelevant */
+    post: operations["mark_lead_as_irrelevant_rest_mark_lead_as_irrelevant_post"];
+  };
+  "/rest/publish-comment": {
     /** Publish Comment */
-    post: operations["publish_comment_rest__post"];
+    post: operations["publish_comment_rest_publish_comment_post"];
   };
   "/": {
     /** Redirect To Docs */
@@ -180,8 +175,8 @@ export interface components {
       /** Api Key */
       api_key: string;
     };
-    /** APIKeyRequestModel */
-    APIKeyRequestModel: {
+    /** APIKeyInsertRequest */
+    APIKeyInsertRequest: {
       /**
        * Profile Id
        * Format: uuid
@@ -212,37 +207,13 @@ export interface components {
       /** Description */
       description?: string | null;
     };
-    /** APIKeyUpdateModel */
-    APIKeyUpdateModel: {
+    /** APIKeyUpdateRequest */
+    APIKeyUpdateRequest: {
       /** Api Key */
       api_key: string;
     };
     /** Agent */
     Agent: {
-      /** Title */
-      title: string;
-      /** Role */
-      role: string;
-      /** System Message */
-      system_message: string;
-      /** Tools */
-      tools: Record<string, never>[];
-      /**
-       * Model
-       * @enum {string}
-       */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
-      /** Description */
-      description?: string | null;
-      /**
-       * Profile Id
-       * Format: uuid
-       */
-      profile_id: string;
-      /** Version */
-      version?: string | null;
-      /** Avatar */
-      avatar: string;
       /**
        * Id
        * Format: uuid
@@ -253,61 +224,82 @@ export interface components {
        * Format: date-time
        */
       created_at: string;
-      /** Published */
-      published: boolean;
-    };
-    /** AgentRequestModel */
-    AgentRequestModel: {
       /** Title */
       title: string;
-      /** Role */
-      role: string;
-      /** System Message */
-      system_message: string;
-      /** Tools */
-      tools: Record<string, never>[];
-      /**
-       * Model
-       * @enum {string}
-       */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
-      /** Description */
-      description?: string | null;
+      /** Published */
+      published: boolean;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /** Version */
-      version?: string | null;
       /** Avatar */
       avatar: string;
+      /** System Message */
+      system_message: string;
+      /**
+       * Model
+       * @enum {string}
+       */
+      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      /** Tools */
+      tools: Record<string, never>[];
+      /** Description */
+      description?: string | null;
+      /** Role */
+      role: string;
+      /** Version */
+      version?: string | null;
+    };
+    /** AgentInsertRequest */
+    AgentInsertRequest: {
+      /** Title */
+      title: string;
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Avatar */
+      avatar: string;
+      /** System Message */
+      system_message: string;
+      /**
+       * Model
+       * @enum {string}
+       */
+      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      /** Tools */
+      tools: Record<string, never>[];
+      /** Description */
+      description?: string | null;
+      /** Role */
+      role: string;
+      /** Version */
+      version?: string | null;
     };
     /** AgentUpdateModel */
     AgentUpdateModel: {
       /** Title */
       title?: string | null;
-      /** Role */
-      role?: string | null;
-      /** System Message */
-      system_message?: string | null;
-      /** Tools */
-      tools?: Record<string, never>[] | null;
-      /** Model */
-      model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
-      /** Description */
-      description?: string | null;
+      /** Published */
+      published?: boolean | null;
       /** Profile Id */
       profile_id?: string | null;
-      /** Version */
-      version?: string | null;
       /** Avatar */
       avatar?: string | null;
-    };
-    /** AuthResponse */
-    AuthResponse: {
-      user?: components["schemas"]["User"] | null;
-      session?: components["schemas"]["gotrue__types__Session"] | null;
+      /** System Message */
+      system_message?: string | null;
+      /** Model */
+      model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
+      /** Tools */
+      tools?: Record<string, never>[] | null;
+      /** Version */
+      version?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Role */
+      role?: string | null;
     };
     /** Crew */
     Crew: {
@@ -348,25 +340,8 @@ export interface components {
       /** Prompt */
       prompt?: Record<string, never> | null;
     };
-    /** CrewProcessed */
-    CrewProcessed: {
-      /**
-       * Receiver Id
-       * Format: uuid
-       */
-      receiver_id: string;
-      /** Delegator Id */
-      delegator_id?: string | null;
-      /** Agents */
-      agents: components["schemas"]["Agent"][];
-      /**
-       * Sub Crews
-       * @default []
-       */
-      sub_crews?: components["schemas"]["Crew"][];
-    };
-    /** CrewRequestModel */
-    CrewRequestModel: {
+    /** CrewInsertRequest */
+    CrewInsertRequest: {
       /**
        * Receiver Id
        * Format: uuid
@@ -390,8 +365,25 @@ export interface components {
       /** Nodes */
       nodes: string[];
     };
-    /** CrewUpdateModel */
-    CrewUpdateModel: {
+    /** CrewProcessed */
+    CrewProcessed: {
+      /**
+       * Receiver Id
+       * Format: uuid
+       */
+      receiver_id: string;
+      /** Delegator Id */
+      delegator_id?: string | null;
+      /** Agents */
+      agents: components["schemas"]["Agent"][];
+      /**
+       * Sub Crews
+       * @default []
+       */
+      sub_crews?: components["schemas"]["Crew"][];
+    };
+    /** CrewUpdateRequest */
+    CrewUpdateRequest: {
       /** Receiver Id */
       receiver_id?: string | null;
       /** Prompt */
@@ -409,32 +401,27 @@ export interface components {
       /** Nodes */
       nodes?: string[] | null;
     };
-    /**
-     * Factor
-     * @description A MFA factor.
-     */
-    Factor: {
-      /** Id */
-      id: string;
-      /** Friendly Name */
-      friendly_name?: string | null;
-      /** Factor Type */
-      factor_type: "totp" | string;
+    /** FalseLead */
+    FalseLead: {
       /**
-       * Status
-       * @enum {string}
+       * Lead Id
+       * Format: uuid
        */
-      status: "verified" | "unverified";
+      lead_id: string;
       /**
-       * Created At
-       * Format: date-time
+       * Submission Id
+       * Format: uuid
        */
-      created_at: string;
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string;
+      submission_id: string;
+      /** Correct Reason */
+      correct_reason: string;
+    };
+    /** GenerateCommentRequest */
+    GenerateCommentRequest: {
+      /** Title */
+      title: string;
+      /** Selftext */
+      selftext: string;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -475,8 +462,8 @@ export interface components {
        */
       created_at?: string;
     };
-    /** MessageRequestModel */
-    MessageRequestModel: {
+    /** MessageInsertRequest */
+    MessageInsertRequest: {
       /**
        * Session Id
        * Format: uuid
@@ -499,8 +486,8 @@ export interface components {
        */
       profile_id: string;
     };
-    /** MessageUpdateModel */
-    MessageUpdateModel: {
+    /** MessageUpdateRequest */
+    MessageUpdateRequest: {
       /** Session Id */
       session_id?: string | null;
       /** Content */
@@ -546,8 +533,8 @@ export interface components {
       /** Stripe Customer Id */
       stripe_customer_id: string | null;
     };
-    /** ProfileRequestModel */
-    ProfileRequestModel: {
+    /** ProfileInsertRequest */
+    ProfileInsertRequest: {
       /**
        * User Id
        * Format: uuid
@@ -563,23 +550,14 @@ export interface components {
       /** Stripe Customer Id */
       stripe_customer_id?: string | null;
     };
-    /** ProfileUpdateModel */
-    ProfileUpdateModel: {
+    /** ProfileUpdateRequest */
+    ProfileUpdateRequest: {
       /** Tier Id */
       tier_id?: string | null;
       /** Display Name */
       display_name?: string | null;
       /** Stripe Customer Id */
       stripe_customer_id?: string | null;
-    };
-    /** PublishCommentDataObject */
-    PublishCommentDataObject: {
-      /** Url */
-      url: string;
-      /** Body */
-      body: string;
-      /** Title */
-      title: string;
     };
     /** PublishCommentRequest */
     PublishCommentRequest: {
@@ -595,43 +573,68 @@ export interface components {
       /** Reddit Password */
       reddit_password: string;
     };
-    /** PublishCommentResponse */
-    PublishCommentResponse: {
+    /** Session */
+    Session: {
       /**
        * Id
        * Format: uuid
        */
-      id: string;
+      id?: string;
       /**
-       * Discovered At
+       * Created At
        * Format: date-time
        */
-      discovered_at: string;
-      /** Last Contacted At */
-      last_contacted_at?: string | null;
-      /** Reddit Id */
-      reddit_id?: string | null;
-      /** Prospect Username */
-      prospect_username: string;
-      /** Prospect Name */
-      prospect_name?: string | null;
-      /** Source */
-      source: string;
-      data?: components["schemas"]["PublishCommentDataObject"] | null;
-      /** Last Event */
-      last_event: string;
-      /** Status */
-      status: string;
-      /** Comment */
-      comment?: string | null;
-    };
-    /** RunRequestModel */
-    RunRequestModel: {
+      created_at?: string;
       /**
-       * Id
+       * Profile Id
        * Format: uuid
        */
-      id: string;
+      profile_id: string;
+      /**
+       * Reply
+       * @default
+       */
+      reply?: string;
+      /**
+       * Crew Id
+       * Format: uuid
+       */
+      crew_id: string;
+      /**
+       * Title
+       * @default Untitled
+       */
+      title?: string;
+      /**
+       * Last Opened At
+       * Format: date-time
+       */
+      last_opened_at?: string;
+      /** @default running */
+      status?: components["schemas"]["SessionStatus"];
+    };
+    /** SessionInsertRequest */
+    SessionInsertRequest: {
+      /**
+       * Crew Id
+       * Format: uuid
+       */
+      crew_id: string;
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Title */
+      title: string | null;
+    };
+    /** SessionRunRequest */
+    SessionRunRequest: {
+      /**
+       * Crew Id
+       * Format: uuid
+       */
+      crew_id: string;
       /**
        * Profile Id
        * Format: uuid
@@ -647,49 +650,22 @@ export interface components {
       /** Reply */
       reply?: string | null;
     };
-    /** RunResponse */
-    RunResponse: {
-      /** Status */
-      status: "success" | "failure";
-      session: components["schemas"]["src__models__session__Session"];
-    };
-    /** SessionRequest */
-    SessionRequest: {
-      /**
-       * Crew Id
-       * Format: uuid
-       */
-      crew_id: string;
-      /**
-       * Profile Id
-       * Format: uuid
-       */
-      profile_id: string;
-      /** Title */
-      title: string | null;
-    };
     /**
      * SessionStatus
      * @enum {string}
      */
     SessionStatus: "running" | "finished" | "idle";
-    /** SessionUpdate */
-    SessionUpdate: {
+    /** SessionUpdateRequest */
+    SessionUpdateRequest: {
       /** Crew Id */
       crew_id?: string | null;
+      /** Reply */
+      reply?: string | null;
       /** Profile Id */
       profile_id?: string | null;
       /** Title */
       title?: string | null;
       status?: components["schemas"]["SessionStatus"] | null;
-    };
-    /** SignInWithEmailAndPasswordCredentials */
-    SignInWithEmailAndPasswordCredentials: {
-      /** Email */
-      email: string;
-      /** Password */
-      password: string;
-      options?: components["schemas"]["SignInWithPasswordCredentialsOptions"];
     };
     /** SignInWithOAuthCredentials */
     SignInWithOAuthCredentials: {
@@ -711,98 +687,6 @@ export interface components {
         [key: string]: string;
       };
     };
-    /** SignInWithPasswordCredentialsOptions */
-    SignInWithPasswordCredentialsOptions: {
-      /** Data */
-      data?: unknown;
-      /** Captcha Token */
-      captcha_token?: string;
-    };
-    /** SignUpWithEmailAndPasswordCredentials */
-    SignUpWithEmailAndPasswordCredentials: {
-      /** Email */
-      email: string;
-      /** Password */
-      password: string;
-      options?: components["schemas"]["SignUpWithEmailAndPasswordCredentialsOptions"];
-    };
-    /** SignUpWithEmailAndPasswordCredentialsOptions */
-    SignUpWithEmailAndPasswordCredentialsOptions: {
-      /** Email Redirect To */
-      email_redirect_to?: string;
-      /** Data */
-      data?: unknown;
-      /** Captcha Token */
-      captcha_token?: string;
-    };
-    /** User */
-    User: {
-      /** Id */
-      id: string;
-      /** App Metadata */
-      app_metadata: Record<string, never>;
-      /** User Metadata */
-      user_metadata: Record<string, never>;
-      /** Aud */
-      aud: string;
-      /** Confirmation Sent At */
-      confirmation_sent_at?: string | null;
-      /** Recovery Sent At */
-      recovery_sent_at?: string | null;
-      /** Email Change Sent At */
-      email_change_sent_at?: string | null;
-      /** New Email */
-      new_email?: string | null;
-      /** Invited At */
-      invited_at?: string | null;
-      /** Action Link */
-      action_link?: string | null;
-      /** Email */
-      email?: string | null;
-      /** Phone */
-      phone?: string | null;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /** Confirmed At */
-      confirmed_at?: string | null;
-      /** Email Confirmed At */
-      email_confirmed_at?: string | null;
-      /** Phone Confirmed At */
-      phone_confirmed_at?: string | null;
-      /** Last Sign In At */
-      last_sign_in_at?: string | null;
-      /** Role */
-      role?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /** Identities */
-      identities?: components["schemas"]["UserIdentity"][] | null;
-      /** Factors */
-      factors?: components["schemas"]["Factor"][] | null;
-    };
-    /** UserIdentity */
-    UserIdentity: {
-      /** Id */
-      id: string;
-      /** User Id */
-      user_id: string;
-      /** Identity Data */
-      identity_data: Record<string, never>;
-      /** Provider */
-      provider: string;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /** Last Sign In At */
-      last_sign_in_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-    };
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -811,51 +695,6 @@ export interface components {
       msg: string;
       /** Error Type */
       type: string;
-    };
-    /** Session */
-    gotrue__types__Session: {
-      /** Provider Token */
-      provider_token?: string | null;
-      /** Provider Refresh Token */
-      provider_refresh_token?: string | null;
-      /** Access Token */
-      access_token: string;
-      /** Refresh Token */
-      refresh_token: string;
-      /** Expires In */
-      expires_in: number;
-      /** Expires At */
-      expires_at?: number | null;
-      /** Token Type */
-      token_type: string;
-      user: components["schemas"]["User"];
-    };
-    /** Session */
-    src__models__session__Session: {
-      /**
-       * Crew Id
-       * Format: uuid
-       */
-      crew_id: string;
-      /**
-       * Profile Id
-       * Format: uuid
-       */
-      profile_id: string;
-      /** Title */
-      title: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id?: string;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at?: string;
-      /** @default running */
-      status?: components["schemas"]["SessionStatus"];
     };
   };
   responses: never;
@@ -871,18 +710,21 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  /** Get Sessions By Profile */
-  get_sessions_by_profile_sessions__get: {
+  /** Get Sessions */
+  get_sessions_sessions__get: {
     parameters: {
-      query: {
-        by_profile: string;
+      query?: {
+        profile_id?: string | null;
+        crew_id?: string | null;
+        title?: string | null;
+        status?: components["schemas"]["SessionStatus"] | null;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["src__models__session__Session"][];
+          "application/json": components["schemas"]["Session"][];
         };
       };
       /** @description Validation Error */
@@ -897,14 +739,14 @@ export interface operations {
   insert_session_sessions__post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SessionRequest"];
+        "application/json": components["schemas"]["SessionInsertRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["src__models__session__Session"];
+          "application/json": components["schemas"]["Session"];
         };
       };
       /** @description Validation Error */
@@ -915,8 +757,8 @@ export interface operations {
       };
     };
   };
-  /** Get Session By Id */
-  get_session_by_id_sessions__session_id__get: {
+  /** Get Session */
+  get_session_sessions__session_id__get: {
     parameters: {
       path: {
         session_id: string;
@@ -926,7 +768,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["src__models__session__Session"];
+          "application/json": components["schemas"]["Session"];
         };
       };
       /** @description Validation Error */
@@ -948,7 +790,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["src__models__session__Session"];
+          "application/json": components["schemas"]["Session"];
         };
       };
       /** @description Validation Error */
@@ -968,14 +810,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SessionUpdate"];
+        "application/json": components["schemas"]["SessionUpdateRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["src__models__session__Session"];
+          "application/json": components["schemas"]["Session"];
         };
       };
       /** @description Validation Error */
@@ -995,14 +837,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["RunRequestModel"];
+        "application/json": components["schemas"]["SessionRunRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["RunResponse"];
+          "application/json": components["schemas"]["Session"];
         };
       };
       /** @description Validation Error */
@@ -1013,11 +855,14 @@ export interface operations {
       };
     };
   };
-  /** Get Messages By Session */
-  get_messages_by_session_messages__get: {
+  /** Get Messages */
+  get_messages_messages__get: {
     parameters: {
-      query: {
-        by_session: string;
+      query?: {
+        session_id?: string | null;
+        profile_id?: string | null;
+        recipient_id?: string | null;
+        sender_id?: string | null;
       };
     };
     responses: {
@@ -1039,7 +884,7 @@ export interface operations {
   insert_message_messages__post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MessageRequestModel"];
+        "application/json": components["schemas"]["MessageInsertRequest"];
       };
     };
     responses: {
@@ -1057,8 +902,8 @@ export interface operations {
       };
     };
   };
-  /** Get Message By Id */
-  get_message_by_id_messages__message_id__get: {
+  /** Get Message */
+  get_message_messages__message_id__get: {
     parameters: {
       path: {
         message_id: string;
@@ -1110,7 +955,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MessageUpdateModel"];
+        "application/json": components["schemas"]["MessageUpdateRequest"];
       };
     };
     responses: {
@@ -1128,12 +973,14 @@ export interface operations {
       };
     };
   };
-  /** Get Crews Of User */
-  get_crews_of_user_crews__get: {
+  /** Get Crews */
+  get_crews_crews__get: {
     parameters: {
-      query: {
-        by_profile: string;
-        ascending?: boolean;
+      query?: {
+        profile_id?: string | null;
+        receiver_id?: string | null;
+        title?: string | null;
+        published?: boolean | null;
       };
     };
     responses: {
@@ -1155,7 +1002,7 @@ export interface operations {
   insert_crew_crews__post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CrewRequestModel"];
+        "application/json": components["schemas"]["CrewInsertRequest"];
       };
     };
     responses: {
@@ -1169,17 +1016,6 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Published Crews */
-  get_published_crews_crews_published_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Crew"][];
         };
       };
     };
@@ -1237,7 +1073,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CrewUpdateModel"];
+        "application/json": components["schemas"]["CrewUpdateRequest"];
       };
     };
     responses: {
@@ -1255,22 +1091,13 @@ export interface operations {
       };
     };
   };
-  /** Get Published Agents */
-  get_published_agents_agents_published_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Agent"][];
-        };
-      };
-    };
-  };
-  /** Get Users Agents */
-  get_users_agents_agents_by_profile_get: {
+  /** Get Agents */
+  get_agents_agents__get: {
     parameters: {
-      query: {
-        profile_id: string;
+      query?: {
+        profile_id?: string | null;
+        crew_id?: string | null;
+        published?: boolean | null;
       };
     };
     responses: {
@@ -1288,18 +1115,18 @@ export interface operations {
       };
     };
   };
-  /** Get Agents From Crew */
-  get_agents_from_crew_agents_by_crew_get: {
-    parameters: {
-      query: {
-        crew_id: string;
+  /** Insert Agent */
+  insert_agent_agents__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AgentInsertRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Agent"][];
+          "application/json": components["schemas"]["Agent"];
         };
       };
       /** @description Validation Error */
@@ -1381,18 +1208,20 @@ export interface operations {
       };
     };
   };
-  /** Insert Agent */
-  insert_agent_agents__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AgentRequestModel"];
+  /** Get Profiles */
+  get_profiles_profiles__get: {
+    parameters: {
+      query?: {
+        tier_id?: string | null;
+        display_name?: string | null;
+        stripe_customer_id?: string | null;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Agent"];
+          "application/json": components["schemas"]["Profile"][];
         };
       };
       /** @description Validation Error */
@@ -1403,22 +1232,11 @@ export interface operations {
       };
     };
   };
-  /** Get Profiles */
-  get_profiles_profiles__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Profile"][];
-        };
-      };
-    };
-  };
   /** Insert Profile */
   insert_profile_profiles__post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ProfileRequestModel"];
+        "application/json": components["schemas"]["ProfileInsertRequest"];
       };
     };
     responses: {
@@ -1458,6 +1276,28 @@ export interface operations {
       };
     };
   };
+  /** Delete Profile */
+  delete_profile_profiles__profile_id__delete: {
+    parameters: {
+      path: {
+        profile_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Profile"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Update Profile */
   update_profile_profiles__profile_id__patch: {
     parameters: {
@@ -1467,7 +1307,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ProfileUpdateModel"];
+        "application/json": components["schemas"]["ProfileUpdateRequest"];
       };
     };
     responses: {
@@ -1514,7 +1354,7 @@ export interface operations {
   insert_api_key_profiles_api_keys_post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["APIKeyRequestModel"];
+        "application/json": components["schemas"]["APIKeyInsertRequest"];
       };
     };
     responses: {
@@ -1563,7 +1403,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["APIKeyUpdateModel"];
+        "application/json": components["schemas"]["APIKeyUpdateRequest"];
       };
     };
     responses: {
@@ -1571,53 +1411,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["APIKey"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Email Sign Up
-   * @description format for passing display name: 'options': {'data':{'display_name': 'name'}}
-   */
-  email_sign_up_auth_sign_up_post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SignUpWithEmailAndPasswordCredentials"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthResponse"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Email Sign In */
-  email_sign_in_auth_sign_in_post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SignInWithEmailAndPasswordCredentials"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthResponse"];
         };
       };
       /** @description Validation Error */
@@ -1661,19 +1454,96 @@ export interface operations {
       };
     };
   };
-  /** Get Leads */
-  get_leads_rest__get: {
+  /** Redirect To Docs */
+  redirect_to_docs_rest__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PublishCommentResponse"][];
+          "application/json": unknown;
+        };
+      };
+    };
+  };
+  /** Test */
+  test_rest_test_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+    };
+  };
+  /** Stop Stream */
+  stop_stream_rest_stop__worker_id__post: {
+    parameters: {
+      path: {
+        worker_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Generate Comment */
+  generate_comment_rest_generate_comment_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GenerateCommentRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Mark Lead As Irrelevant */
+  mark_lead_as_irrelevant_rest_mark_lead_as_irrelevant_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FalseLead"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
   };
   /** Publish Comment */
-  publish_comment_rest__post: {
+  publish_comment_rest_publish_comment_post: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["PublishCommentRequest"];

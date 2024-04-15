@@ -10,7 +10,7 @@ export const load = async ({ url, locals: { getSession } }) => {
 		.GET('/sessions/', {
 			params: {
 				query: {
-					by_profile: userSession.user.id
+					profile_id: userSession.user.id
 				}
 			}
 		})
@@ -35,7 +35,7 @@ export const load = async ({ url, locals: { getSession } }) => {
 		.GET('/crews/', {
 			params: {
 				query: {
-					by_profile: userSession.user.id
+					profile_id: userSession.user.id
 				}
 			}
 		})

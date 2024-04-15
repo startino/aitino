@@ -1,16 +1,12 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import type { Writable } from 'svelte/store';
 
-import type { CrewResponseModel } from '$lib/client';
 import type { Variant } from '$lib/components/ui/button';
-import type { Tables } from '$lib/types/supabase';
 import type Stripe from 'stripe';
 
-export type CrewWithNodesData = Omit<CrewResponseModel, 'nodes'> & { nodes: Node[]; edges: Edge[] };
+import type { schemas } from '$lib/api';
 
-export type UUID = `${string}-${string}-4${string}-${'89ab'}${string}-${string}`;
-
-export type Crew = Tables<'crews'>;
+export type CrewWithNodesData = Omit<schemas['Crew'], 'nodes'> & { nodes: Node[]; edges: Edge[] };
 
 export type SvelteEvent<E extends Event = Event, T extends EventTarget = Element> = E & {
 	currentTarget: EventTarget & T;
