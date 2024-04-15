@@ -29,6 +29,8 @@ guidance = """
 - Keep the comment concise and to the point.
 - Don't mention about cost effectiveness of Futino.
 - Mention how we gaurantee our dedication through our services for equity model.
+- Do not mention how much equity we are willing to take.
+- You may mention that we sometimes take equity if the post is a startup.
 - Do not use more than 50 words.
 """
 
