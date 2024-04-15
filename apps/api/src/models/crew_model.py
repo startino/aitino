@@ -20,7 +20,7 @@ class Crew(BaseModel):
     id: UUID
     created_at: datetime
     profile_id: UUID
-    edges: list[dict]
+    edges: list[dict[str, str]]
     published: bool
     title: str
     description: str
