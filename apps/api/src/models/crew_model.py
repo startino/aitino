@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from .agent_model import Agent
+from .edge import Edge
 
 
 class CrewProcessed(BaseModel):
@@ -20,7 +21,7 @@ class Crew(BaseModel):
     id: UUID
     created_at: datetime
     profile_id: UUID
-    edges: list[dict[str, str]]
+    edges: list[Edge]
     published: bool
     title: str
     description: str
