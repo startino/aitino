@@ -1,16 +1,32 @@
 import type { CrewWithNodesData } from '$lib/types';
-import { CrewsService, AgentsService } from '$lib/client';
 import { error } from '@sveltejs/kit';
 import type { Edge } from '@xyflow/svelte';
+import api from '$lib/api';
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
 
-	const crew = await CrewsService.getCrewCrewsCrewIdGet(id).catch(() => {
-		error(404, 'Crew not found!');
-	});
+	const crew = await api
+		.GET('/crews/{crew_id}', {
+			params: {
+				path: {
+					crew_id: id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return [];
+			}
+			return d;
+		});
 
 	let crewWithAgents: CrewWithNodesData = { ...crew, nodes: [], edges: crew.edges as Edge[] };
 
