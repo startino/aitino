@@ -22,13 +22,19 @@ third_dm = """
 """
 
 # create authentication with username and pass
-reddit_authentication = RedditAuthentication.PasswordAuth(reddit_username="antopia_hk", reddit_password=REDDIT_PASSWORD,
-                                                          )  # 2FA supported, default'd to None
+reddit_authentication = RedditAuthentication.PasswordAuth(
+    reddit_username="antopia_hk",
+    reddit_password=REDDIT_PASSWORD,
+)  # 2FA supported, default'd to None
 
 
 # instantiate the chatbot
-chatbot = ChatBot(print_chat=True, store_session=True, log_websocket_frames=False,  # some parameters u might wanna know
-                  authentication=reddit_authentication)
+chatbot = ChatBot(
+    print_chat=True,
+    store_session=True,
+    log_websocket_frames=False,  # some parameters u might wanna know
+    authentication=reddit_authentication,
+)
 
 
 # starting a direct chat
@@ -36,5 +42,6 @@ chatbot = ChatBot(print_chat=True, store_session=True, log_websocket_frames=Fals
 def dm_chat(_):
     dm_channel = chatbot.create_direct_channel("eksno")
     chatbot.send_message("Hey what's up?", dm_channel.channel_url)
+
 
 chatbot.run_4ever(auto_reconnect=True)

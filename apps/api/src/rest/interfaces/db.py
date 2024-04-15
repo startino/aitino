@@ -11,6 +11,8 @@ from supabase import Client, create_client
 from src.rest.models import Lead, PublishCommentResponse
 from datetime import datetime, timedelta
 
+from src.rest.models import SavedSubmission
+
 load_dotenv()
 
 url: str | None = os.environ.get("REST_SUPABASE_URL")
@@ -29,8 +31,7 @@ def get_lead(lead_id: UUID) -> Lead | None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting lead: {lead_id}")
-    response = supabase.table("leads").select(
-        "*").eq("id", str(lead_id)).execute()
+    response = supabase.table("leads").select("*").eq("id", str(lead_id)).execute()
 
     if len(response.data) == 0:
         return None
@@ -75,14 +76,15 @@ def post_lead(lead: Lead) -> None:
     ).execute()
 
 
-def update_lead(id: UUID, status: str = "", last_event: str = "") -> PublishCommentResponse:
+def update_lead(
+    id: UUID, status: str = "", last_event: str = ""
+) -> PublishCommentResponse:
     """
     Update a lead in the database.
     """
     supabase: Client = create_client(url, key)
     # Create a dictionary with only non-empty values
-    data = {k: v for k, v in {"status": status,
-                              "last_event": last_event}.items() if v}
+    data = {k: v for k, v in {"status": status, "last_event": last_event}.items() if v}
 
     logger.debug(f"Updating lead with data: {data}")
     response = supabase.table("leads").update(data).eq("id", str(id)).execute()
@@ -96,14 +98,33 @@ def get_all_leads() -> list[PublishCommentResponse]:
     return [PublishCommentResponse(**data) for data in response.data]
 
 
-if __name__ == "__main__":
-    lead = Lead(
-        redditor="u/antopia_hk",
-        source="Reddit",
-        last_event="Contacted",
-        title="Hello",
-        body="Hello, I am interested in your product.",
+def update_human_review_for_submission(
+    id: UUID, human_answer: bool, correct_reason: str = ""
+) -> None:
+    """
+    Update the human review for a submission.
+    Just a shortcut to avoid double work as posts with published comments are
+    already human reviewed.
+    """
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Updating human review for submission: {id}")
+    submission = (
+        supabase.table("evaluated_submissions")
+        .update({"human_answer": human_answer, "correct_reason": correct_reason})
+        .eq("id", str(id))
+        .execute()
     )
-    post_lead(lead)
-    lead = get_lead(lead.id)
-    print(lead)
+    if submission is None:
+        logger.error(f"Submission with id {id} not found")
+
+
+def post_evaluated_submission(saved_submission: SavedSubmission) -> None:
+    """
+    Post a submission to the database.
+    """
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Posting submission: {saved_submission}")
+
+    supabase.table("evaluated_submissions").insert(
+        json.loads(json.dumps(saved_submission.model_dump(), default=str))
+    ).execute()
