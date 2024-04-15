@@ -16,7 +16,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
+def generate_comment(title: str, selftext: str, instructions: str = "") -> str:
     llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0.3)
 
     # Set up a parser + inject instructions into the prompt template.
@@ -37,8 +37,7 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
     prompt = PromptTemplate(
         template=template,
         input_variables=["title", "selftext"],
-        partial_variables={
-            "format_instructions": parser.get_format_instructions()},
+        partial_variables={"format_instructions": parser.get_format_instructions()},
     )
 
     chain = prompt | llm | parser
@@ -46,15 +45,17 @@ def generate_comment(submission: EvaluatedSubmission) -> RedditComment:
     # Generate a comment
     result = chain.invoke(
         {
-            "title": submission.submission.title,
-            "selftext": submission.submission.selftext,
+            "title": title,
+            "selftext": selftext,
         }
     )
 
-    return RedditComment(**result)
+    return RedditComment(**result).comment
 
 
-def publish_comment(id, text: str, username: str, password: str) -> PublishCommentResponse | None:
+def publish_comment(
+    id, text: str, username: str, password: str
+) -> PublishCommentResponse | None:
     lead = db.get_lead(id)
     if lead is None:
         logging.error(f"Lead with id {id} not found")
@@ -64,4 +65,8 @@ def publish_comment(id, text: str, username: str, password: str) -> PublishComme
     reddit = get_reddit_instance(username, password)
     submission = reddit.submission(submission_id)
     submission.reply(text)
+    # If a comment was published, it means the submission is relevant.
+    # So update the human answer to TRUE. Just a shortcut to avoid double work.
+    db.update_human_review_for_submission(id, human_answer=True)
+
     return db.update_lead(lead.id, status="subscriber", last_event="comment_posted")
