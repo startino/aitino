@@ -1,17 +1,52 @@
-from .models import EvaluatedSubmission
-import csv
-import pandas as pd
+import os
 
-posts_filepath = "./reddit_posts.csv"
+from . import comment_bot
+from .models import Lead
+from .interfaces import db
+from .models import EvaluatedSubmission, SavedSubmission
 
-def save_submission(submission: EvaluatedSubmission):
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(posts_filepath, sep=",")
+# Get the current file's directory
+current_dir = os.path.dirname(os.path.realpath(__file__))
 
-    # Append the new row to the DataFrame
-    new_row = {'id': submission.submission.id, 'timestamp': submission.submission.created_utc, 'url': submission.submission.url, 'title': submission.submission.title, 'body': submission.submission.selftext, 'is_relevant': submission.is_relevant, 'cost' : submission.cost, 'reason': submission.reason}
-    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+# Get the sibling file's path
+posts_filepath = os.path.join(current_dir, "./reddit_posts.csv")
 
 
-    # Write the DataFrame back to the CSV file
-    df.to_csv(posts_filepath, index=False)
+def update_db_with_submission(evalutated_submission: EvaluatedSubmission):
+    # Convert the EvaluatedSubmission to a SavedSubmission
+    # TODO: I don't know if using a separate model for this is necessary
+    # or if we can just save the EvaluatedSubmission directly and extract the
+    # title and body from the submission property.
+    saved_submission = SavedSubmission(
+        reddit_id=evalutated_submission.submission.id,
+        title=evalutated_submission.submission.title,
+        body=evalutated_submission.submission.selftext,
+        url=evalutated_submission.submission.url,
+        is_relevant=evalutated_submission.is_relevant,
+        reason=evalutated_submission.reason,
+        cost=evalutated_submission.cost,
+        qualifying_question=evalutated_submission.qualifying_question,
+    )
+    db.post_evaluated_submission(saved_submission)
+    if evalutated_submission.is_relevant:
+        # Get the reddit submission from the EvaluatedSubmission
+        submission = evalutated_submission.submission
+        # Convert the submission to a Lead
+        lead = Lead(
+            submission_id=saved_submission.id,
+            prospect_username=submission.author.name,
+            source="their_post",
+            last_event="discovered",
+            status="under_review",
+            data={
+                "title": submission.title,
+                "body": submission.selftext,
+                "url": submission.url,
+            },
+            reddit_id=submission.id,
+            comment=comment_bot.generate_comment(
+                title=evalutated_submission.submission.title,
+                selftext=evalutated_submission.submission.selftext,
+            ),
+        )
+        db.post_lead(lead)
