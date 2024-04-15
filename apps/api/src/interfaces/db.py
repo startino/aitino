@@ -424,6 +424,7 @@ def insert_agent(content: AgentInsertRequest) -> Agent:
 
 def update_agents(agent_id: UUID, content: AgentUpdateModel) -> Agent:
     supabase: Client = create_client(url, key)
+
     response = (
         supabase.table("agents")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
@@ -431,6 +432,58 @@ def update_agents(agent_id: UUID, content: AgentUpdateModel) -> Agent:
         .execute()
     )
     return Agent(**response.data[0])
+
+def add_crew_to_agent(agent_id: UUID, crew_id: UUID) -> Agent | None:
+    supabase: Client = create_client(url, key)
+    # TODO: fix error handling here, also validate given crew_id before adding it
+    response = supabase.table("agents").select("crew_ids").eq("id", agent_id).execute()
+    
+    if len(response.data) == 0:
+        return None
+
+    agent_crew_array_dict = response.data[0]
+
+    if str(crew_id) in agent_crew_array_dict["crew_ids"]:
+        return None
+
+    agent_crew_array_dict["crew_ids"].append(str(crew_id))
+    agent_update = supabase.table("agents").update(agent_crew_array_dict).eq("id", agent_id).execute()
+    return Agent(**agent_update.data[0])
+
+
+def add_agent_to_crew(crew_id: UUID, agent_id: UUID):
+    supabase: Client = create_client(url, key)
+    response = supabase.table("crews").select("nodes", "id").eq("id", crew_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    crew_agent_array_dict = response.data[0]
+
+    # idk if it will be ok to have multiple of the same agent in the crew or not
+    # but i assume that's not allowed until we have agent_instances implemented
+    # so im gonna do this check to see if an agent is already in the crew
+    if str(agent_id) in crew_agent_array_dict["nodes"]:
+        return None
+    
+    crew_agent_array_dict["nodes"].append(str(agent_id))
+    crew_update = supabase.table("crews").update(crew_agent_array_dict).eq("id", crew_id).execute()
+
+    return Crew(**crew_update.data[0])
+
+
+def add_agent_to_crews(crew_ids: list[UUID], agent_id: UUID):
+    supabase: Client = create_client(url, key)
+    response = supabase.table("crews").select("nodes", "id").in_("id", crew_ids).execute()
+    if len(response.data) == 0:
+        return None
+    for nodes in response.data:
+        for agent in nodes["nodes"]:
+            if str(agent_id) == agent:
+                print(nodes["id"])
+                continue
+            nodes["nodes"].append(agent_id)
+            #crew_update = supabase.table("crews").update(nodes).eq("id", nodes["id"]).execute()
+    # WIP function 
 
 
 def delete_agent(agent_id: UUID) -> Agent:
@@ -507,13 +560,5 @@ if __name__ == "__main__":
 #        )
 #    )
 #
-    print(get_crew(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
-    ##print(insert_message(MessageRequestModel(
-    #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
-    #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
-    #    content="hello test message",
-    #    recipient_id=UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"),
-    #)))
-
-    print(delete_message(UUID('0e30e657-2ee1-482f-ab07-1952dc4d20fb')))
-    print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))
+    #print(add_crew_to_agent(UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"), UUID("4cf4de3c-30cd-4ac1-bfd6-a26aeb0fec8c")))
+    print(add_agent_to_crew(UUID("3ccccb64-7bcb-4902-a07d-5df65bbd601b"), UUID("80602167-d883-40b7-86e1-ed08f5e748b1")))

@@ -42,7 +42,16 @@ def insert_agent(agent_request: AgentInsertRequest) -> Agent:
     if not db.get_profile(agent_request.profile_id):
         raise HTTPException(404, "profile not found")
 
-    return db.insert_agent(agent_request)
+    inserted_agent = db.insert_agent(agent_request)
+    if agent_request.crew_ids:
+        for crew_id in agent_request.crew_ids:
+            updated_crew = db.add_agent_to_crew(crew_id, inserted_agent.id)
+            if not updated_crew:
+                logger.error("agent was already in crew or the crew was not found, not adding agent")
+            else:
+                logger.info(f"Added agent with id: {inserted_agent.id} to the crew: {crew_id}")
+
+    return inserted_agent
 
 
 @router.patch("/{agent_id}")
@@ -56,6 +65,14 @@ def patch_agent(
         agent_update_request.profile_id
     ):
         raise HTTPException(404, "profile not found")
+
+    if agent_update_request.crew_ids:
+        for crew_id in agent_update_request.crew_ids:
+            updated_crew = db.add_agent_to_crew(crew_id, agent_id)
+            if not updated_crew:
+                logger.error("agent was already in crew or the crew was not found, not adding agent")
+            else:
+                logger.info(f"Added agent with id: {agent_id} to the crew: {crew_id}")
 
     return db.update_agents(agent_id, agent_update_request)
 
