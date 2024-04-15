@@ -319,7 +319,9 @@ export interface components {
        */
       profile_id: string;
       /** Edges */
-      edges: Record<string, never>[];
+      edges: {
+          [key: string]: string;
+        }[];
       /** Published */
       published: boolean;
       /** Title */
