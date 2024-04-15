@@ -4,10 +4,6 @@ import type { Writable } from 'svelte/store';
 import type { Variant } from '$lib/components/ui/button';
 import type Stripe from 'stripe';
 
-import type { schemas } from '$lib/api';
-
-export type CrewWithNodesData = Omit<schemas['Crew'], 'nodes'> & { nodes: Node[]; edges: Edge[] };
-
 export type SvelteEvent<E extends Event = Event, T extends EventTarget = Element> = E & {
 	currentTarget: EventTarget & T;
 };

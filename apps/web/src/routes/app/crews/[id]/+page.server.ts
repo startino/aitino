@@ -1,7 +1,5 @@
-import type { CrewWithNodesData } from '$lib/types';
-import { error } from '@sveltejs/kit';
-import type { Edge } from '@xyflow/svelte';
-import api from '$lib/api';
+import { error, redirect } from '@sveltejs/kit';
+import api, { type schemas } from '$lib/api';
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
@@ -19,42 +17,95 @@ export const load = async ({ locals: { getSession }, params }) => {
 		.then(({ data: d, error: e }) => {
 			if (e) {
 				console.error(`Error retrieving crews: ${e}`);
-				return [];
+				return null;
 			}
 			if (!d) {
 				console.error(`No data returned from crews`);
-				return [];
+				return null;
 			}
 			return d;
 		});
 
-	let crewWithAgents: CrewWithNodesData = { ...crew, nodes: [], edges: crew.edges as Edge[] };
+	if (!crew) {
+		console.error(`Redirecting to '/crews': No crew found with id ${id}`);
+		redirect(303, '/crews');
+	}
 
 	try {
-		const userAgents = await AgentsService.getUsersAgentsAgentsByProfileGet(profileId);
-		const publishedAgents = await AgentsService.getPublishedAgentsAgentsPublishedGet();
-		const crewAgents = await AgentsService.getAgentsFromCrewAgentsByCrewGet(id);
-
-		// maps agents data to svelte flow nodes
-		crewWithAgents.nodes = crewAgents.map((a) => ({
-			id: a.id,
-			type: 'agent',
-			position: { x: 0, y: 0 },
-			selectable: false,
-			data: { ...a }
-		}));
-
-		crewWithAgents.prompt &&
-			crewWithAgents.nodes.push({
-				id: crewWithAgents.prompt.id,
-				type: 'prompt',
-				position: { x: 0, y: 0 },
-				data: { ...crew.prompt }
+		const userAgents = await api
+			.GET('/agents/', {
+				params: {
+					query: {
+						profile_id: profileId
+					}
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error retrieving agents: ${e}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from agents`);
+					return null;
+				}
+				return d;
 			});
+
+		const publishedAgents = await api
+			.GET('/agents/', {
+				params: {
+					query: {
+						published: true
+					}
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error retrieving agents: ${e}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from agents`);
+					return null;
+				}
+				return d;
+			});
+
+		const crewAgents = await api
+			.GET('/agents/', {
+				params: {
+					query: {
+						crew_id: id
+					}
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error retrieving agents: ${e}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from agents`);
+					return null;
+				}
+				return d;
+			});
+
+		// null check
+		if (!userAgents) {
+			throw error(500, 'Failed to load user agents');
+		}
+		if (!publishedAgents) {
+			throw error(500, 'Failed to load published agents');
+		}
+		if (!crewAgents) {
+			throw error(500, 'Failed to load crew agents');
+		}
 
 		return {
 			profileId: profileId,
-			crew: crewWithAgents,
+			crew: crew,
 			myAgents: userAgents,
 			publishedAgents: publishedAgents
 		};
@@ -68,12 +119,22 @@ export const actions = {
 		const data = await request.json();
 		const prompt = data.nodes.find((n: any) => n.type === 'prompt');
 		const agents = data.nodes.filter((n: any) => n.type === 'agent');
-		await CrewsService.updateCrewCrewsCrewIdPatch(data.id, {
-			...data,
-			prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
-			nodes: agents.map((n: any) => n.id)
-		}).catch(() => {
-			error(500, 'Failed saving the Crew...');
-		});
+
+		await api
+			.PATCH('/crews/{crew_id}', {
+				params: {
+					path: {
+						crew_id: data.id
+					}
+				},
+				body: {
+					...data,
+					prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
+					nodes: agents.map((n: any) => n.id)
+				}
+			})
+			.catch((e) => {
+				error(500, `Failed saving the Crew: ${e.toString()}`);
+			});
 	}
 };
