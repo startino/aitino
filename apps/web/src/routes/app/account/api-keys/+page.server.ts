@@ -2,9 +2,9 @@ import { fail } from '@sveltejs/kit';
 import { message, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { supabase } from '$lib/supabase';
 import { apiKeySchema } from '$lib/schema';
-import { ProfilesService, ApiKeyTypesService } from '$lib/client';
+
+// TODO: Implement api client instead of these legacy ones
 
 export const load = async ({ locals }) => {
 	const form = await superValidate(zod(apiKeySchema));
