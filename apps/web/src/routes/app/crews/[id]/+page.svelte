@@ -138,11 +138,11 @@
 		return { nodes, edges };
 	}
 
-	const nodes = writable<Node[]>(getWritablePrompt(data.crew.nodes));
-	const edges = writable<Edge[]>(data.crew.edges);
+	const nodes = writable<Node[]>(getWritablePrompt(data.nodes));
+	const edges = writable<Edge[]>(data.edges);
 
-	$: data.crew.nodes = getCleanNodes($nodes);
-	$: data.crew.edges = $edges;
+	$: data.nodes = getCleanNodes($nodes);
+	$: data.edges = $edges;
 
 	layout();
 
@@ -242,7 +242,7 @@
 		oninit={() => {
 			setReceiver(data.crew.receiver_id);
 			initialized = true;
-			data.crew.nodes.forEach((n) => {
+			data.nodes.forEach((n) => {
 				if (n.type === 'agent') {
 					$count.agents++;
 				} else {
