@@ -85,16 +85,6 @@ def test():
     print("TEST")
 
 
-@router.post("/start")
-def start_stream():
-    worker_id = str(uuid4())
-    worker = RedditStreamWorker(SUBREDDIT_NAMES, REDDIT_USERNAME, REDDIT_PASSWORD)
-    thread = threading.Thread(target=worker.start)
-    workers[worker_id] = (worker, thread)
-    thread.start()
-    return {"worker_id": worker_id}
-
-
 @router.post("/stop/{worker_id}")
 def stop_stream(worker_id: str):
     worker, thread = workers.get(worker_id, (None, None))
