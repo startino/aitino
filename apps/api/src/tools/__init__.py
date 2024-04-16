@@ -27,6 +27,8 @@ from src.tools.google_serper import RUN_ID as GOOGLE_SERPER_RUN_TOOL_ID
 from src.tools.google_serper import GoogleSerperRunTool
 from src.tools.google_serper import RESULTS_ID as GOOGLE_SERPER_RESULTS_TOOL_ID
 from src.tools.google_serper import GoogleSerperResultsTool
+from src.tools.brave_search import ID as BRAVE_TOOL_ID
+from src.tools.brave_search import BraveSearchTool
 
 tools: dict = {
     ARXIV_TOOL_ID: ArxivTool,
@@ -39,10 +41,12 @@ tools: dict = {
     DDGS_TOOL_ID: DuckDuckGoSearchTool,
     GOOGLE_SERPER_RUN_TOOL_ID: GoogleSerperRunTool,
     GOOGLE_SERPER_RESULTS_TOOL_ID: GoogleSerperResultsTool,
+    BRAVE_TOOL_ID: BraveSearchTool,
 }
 
 logger = logging.getLogger("root")
 load_dotenv()
+
 
 def get_file_path_of_example():
     current_dir = os.getcwd()
@@ -118,15 +122,17 @@ if __name__ == "__main__":
     bing_key = os.environ.get("BING_SUBSCRIPTION_KEY")
     alphavantage_key = os.environ.get("ALPHAVANTAGE_API_KEY")
     google_search_key = os.environ.get("GOOGLE_SEARCH_API_KEY")
+    brave_search_key = os.environ.get("BRAVE_API_KEY")
     print(serpapi_key, bing_key, alphavantage_key, google_search_key)
     if not all([serpapi_key, bing_key, alphavantage_key, google_search_key]):
         raise TypeError("a key was not found in env variables")
 
     api_keys = {
-        '3b64fe26-20b9-4064-907e-f2708b5f1656': serpapi_key,  
-        "5281bbc4-45ea-4f4b-b790-e92c62bbc019": bing_key, 
-        "8a29840f-4748-4ce4-88e6-44e1ef5b7637": alphavantage_key, 
-        "4d950712-8b4c-4cc0-a24d-7599638119f2": google_search_key, 
+        "3b64fe26-20b9-4064-907e-f2708b5f1656": serpapi_key,
+        "5281bbc4-45ea-4f4b-b790-e92c62bbc019": bing_key,
+        "8a29840f-4748-4ce4-88e6-44e1ef5b7637": alphavantage_key,
+        "4d950712-8b4c-4cc0-a24d-7599638119f2": google_search_key,
+        "58dc6249-3a0c-496b-91f3-27cf0054bfb0": brave_search_key,
     }
     api_key_types = {
         "fa4c2568-00d9-4e3c-9ab7-44f76f3a0e3f": "8a29840f-4748-4ce4-88e6-44e1ef5b7637",  # alpha vantage
@@ -134,6 +140,7 @@ if __name__ == "__main__":
         "71e4ddcc-4475-46f2-9816-894173b1292e": "5281bbc4-45ea-4f4b-b790-e92c62bbc019",  # bing search
         "3e2665a8-6d73-42ee-a64f-50ddcc0621c6": "4d950712-8b4c-4cc0-a24d-7599638119f2",  # google search (run)
         "1046fefb-a540-498f-8b96-7292523559e0": "4d950712-8b4c-4cc0-a24d-7599638119f2",  # google search (results)
+        "3c0d3635-80f4-4286-aab6-c359795e1ac4": "58dc6249-3a0c-496b-91f3-27cf0054bfb0",  # brave search
     }
     agents_tools = [
         "f57d47fd-5783-4aac-be34-17ba36bb6242",  # Move File Tool
@@ -145,10 +152,11 @@ if __name__ == "__main__":
         "7dc53d81-cdac-4320-8077-1a7ab9497551",  # DuckDuckGoSearch Tool
         "3e2665a8-6d73-42ee-a64f-50ddcc0621c6",  # Google Serper Run
         "1046fefb-a540-498f-8b96-7292523559e0",  # Google Serper Results
+        "3c0d3635-80f4-4286-aab6-c359795e1ac4",  # Brave search
     ]
     generated_tools = []
     for tool in agents_tools:
-        tool = generate_tool_from_uuid(tool, api_key_types, api_keys) # type: ignore
+        tool = generate_tool_from_uuid(tool, api_key_types, api_keys)  # type: ignore
         if tool is None:
             print("fail")
         else:
