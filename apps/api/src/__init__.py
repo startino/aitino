@@ -20,7 +20,7 @@ from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewProcessed
 from .routers import auth as auth_router
-from .routers import agents, crews, messages, sessions, profiles, api_key_types, rest
+from .routers import agents, crews, messages, sessions, profiles, api_key_types, rest, api_keys
 
 logger = logging.getLogger("root")
 
@@ -31,6 +31,7 @@ app.include_router(messages.router)
 app.include_router(crews.router)
 app.include_router(agents.router)
 app.include_router(profiles.router)
+app.include_router(api_keys.router)
 app.include_router(auth_router.router)
 app.include_router(api_key_types.router)
 app.include_router(rest.router)
@@ -62,16 +63,6 @@ app.add_middleware(
 @app.get("/")
 def redirect_to_docs() -> RedirectResponse:
     return RedirectResponse(url="/docs")
-
-
-@app.get("/compile", dependencies=[Depends(rate_limit(3, 30, "compile"))])
-def compile(id: UUID) -> dict[str, str | CrewProcessed]:
-    message, composition = db.get_compiled(id)
-
-    return {
-        "prompt": message if message else "Not Found",
-        "composition": composition if composition else "Not Found",
-    }
 
 
 @app.get(
