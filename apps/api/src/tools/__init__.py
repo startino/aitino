@@ -29,6 +29,8 @@ from src.tools.google_serper import RESULTS_ID as GOOGLE_SERPER_RESULTS_TOOL_ID
 from src.tools.google_serper import GoogleSerperResultsTool
 from src.tools.brave_search import ID as BRAVE_TOOL_ID
 from src.tools.brave_search import BraveSearchTool
+from src.tools.stackapi_tool import ID as STACKAPI_ID
+from src.tools.stackapi_tool import StackAPISearchTool
 
 tools: dict = {
     ARXIV_TOOL_ID: ArxivTool,
@@ -42,6 +44,7 @@ tools: dict = {
     GOOGLE_SERPER_RUN_TOOL_ID: GoogleSerperRunTool,
     GOOGLE_SERPER_RESULTS_TOOL_ID: GoogleSerperResultsTool,
     BRAVE_TOOL_ID: BraveSearchTool,
+    STACKAPI_ID: StackAPISearchTool,
 }
 
 logger = logging.getLogger("root")
@@ -96,10 +99,9 @@ def generate_tool_from_uuid(
             if tool in api_key_types.keys():
                 # set the api_key_type to the current tools api_key_type (the api_key_types dict has key "tool_id" and value "api_key_type_id")
                 tool_key_type = api_key_types[tool]
-
-            if tool_key_type in api_keys.keys():
-                # set current api key that will be given to current tool (the api_keys dict has key "api_key_type_íd" and value "api_key")
-                api_key = api_keys[tool_key_type]
+                if tool_key_type in api_keys.keys():
+                    # set current api key that will be given to current tool (the api_keys dict has key "api_key_type_íd" and value "api_key")
+                    api_key = api_keys[tool_key_type]
 
             if has_param(tool_cls, "api_key"):
                 logger.info(f"has parameter 'api_key'")
@@ -153,6 +155,7 @@ if __name__ == "__main__":
         "3e2665a8-6d73-42ee-a64f-50ddcc0621c6",  # Google Serper Run
         "1046fefb-a540-498f-8b96-7292523559e0",  # Google Serper Results
         "3c0d3635-80f4-4286-aab6-c359795e1ac4",  # Brave search
+        "612ddae6-ecdd-4900-9314-1a2c9de6003d",  # StackAPI
     ]
     generated_tools = []
     for tool in agents_tools:
