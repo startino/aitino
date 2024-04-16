@@ -13,7 +13,6 @@ from src.models import (
     Agent,
     AgentInsertRequest,
     AgentUpdateModel,
-    CrewProcessed,
     CrewInsertRequest,
     Crew,
     CrewUpdateRequest,
@@ -152,11 +151,14 @@ def get_messages(
 
     return [Message(**data) for data in response.data]
 
-def get_message(message_id: UUID) -> Message:
+def get_message(message_id: UUID) -> Message | None:
     """Get a message by its id"""
     supabase: Client = create_client(url, key)
-    response = supabase.table("messages").select("*").eq("id", message_id).single().execute()
-    return Message(**response.data)
+    response = supabase.table("messages").select("*").eq("id", message_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return Message(**response.data[0])
     
 # TODO: combine this function with the insert_message one, or use this post_message for both the endpoint and internal operations
 def post_message(message: Message) -> None:
@@ -258,11 +260,11 @@ def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
 
 def get_crew(crew_id: UUID) -> Crew | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("crews").select("*").eq("id", crew_id).single().execute()
-    if not response.data:
+    response = supabase.table("crews").select("*").eq("id", crew_id).execute()
+    if len(response.data) == 0:
         return None
 
-    return Crew(**response.data)
+    return Crew(**response.data[0])
 
 
 def get_crews(
@@ -318,21 +320,58 @@ def get_tool_api_keys(
     return {data["api_key_type_id"]: data["api_key"] for data in response.data}
 
 
-def get_api_keys(profile_id: UUID) -> list[APIKey]:
+def get_api_key(api_key_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("users_api_keys").select("*, api_key_types(*)").eq("profile_id", profile_id).execute()
+    response = (
+        supabase.table("users_api_keys")
+        .select("*, api_key_types(*)")
+        .eq("id", api_key_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    api_key_type = APIKeyType(**response.data[0]["api_key_types"])
+    return APIKey(**response.data[0], api_key_type=api_key_type)
+
+
+def get_api_keys(
+    profile_id: UUID | None = None,
+    api_key_type_id: UUID | None = None,
+    api_key: str | None = None,
+) -> list[APIKey]:
+    supabase: Client = create_client(url, key)
+    query = supabase.table("users_api_keys").select("*, api_key_types(*)")
+
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    if api_key_type_id:
+        query = query.eq("api_key_type_id", api_key_type_id)
+
+    if api_key:
+        query = query.eq("api_key", api_key)
+
+    response = query.execute()
+
     api_keys = []
     for data in response.data:
         api_key_type = APIKeyType(**data["api_key_types"])
         api_keys.append(APIKey(**data, api_key_type=api_key_type))
         
-    return api_keys 
+    return api_keys
 
 
-def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey:
+def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
     supabase: Client = create_client(url, key)
+    type_response = supabase.table("api_key_types").select("*").eq("id", api_key.api_key_type_id).execute()
+    if len(type_response.data) == 0:
+        return None
+
     response = supabase.table("users_api_keys").insert(json.loads(api_key.model_dump_json())).execute()
-    return APIKey(**response.data[0])
+
+    api_key_type = APIKeyType(**type_response.data[0])
+    return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
 def delete_api_key(api_key_id: UUID) -> APIKey | None:
@@ -340,13 +379,19 @@ def delete_api_key(api_key_id: UUID) -> APIKey | None:
     response = supabase.table("users_api_keys").delete().eq("id", api_key_id).execute()
     if not len(response.data):
         return None
-    return APIKey(**response.data[0])
+
+    type_response = supabase.table("api_key_types").select("*").eq("id", response.data[0]["api_key_type_id"]).execute()
+    api_key_type = APIKeyType(**type_response.data[0])
+    return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
 def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> APIKey:
     supabase: Client = create_client(url, key)
     response = supabase.table("users_api_keys").update(json.loads(api_key_update.model_dump_json())).eq("id", api_key_id).execute()
-    return APIKey(**response.data[0])
+    type_response = supabase.table("api_key_types").select("*").eq("id", response.data[0]["api_key_type_id"]).execute()
+
+    api_key_type = APIKeyType(**type_response.data[0])
+    return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
 def get_api_key_types() -> list[APIKeyType]:
@@ -507,7 +552,7 @@ if __name__ == "__main__":
 #        )
 #    )
 #
-    print(get_crew(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
+    #print(get_crew(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
     ##print(insert_message(MessageRequestModel(
     #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
     #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
@@ -515,5 +560,6 @@ if __name__ == "__main__":
     #    recipient_id=UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"),
     #)))
 
-    print(delete_message(UUID('0e30e657-2ee1-482f-ab07-1952dc4d20fb')))
-    print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))
+    #print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))
+    #print(get_api_keys(api_key_type_id=UUID("3b64fe26-20b9-4064-907e-f2708b5f1656")))
+    print(get_api_key_type_ids(["612ddae6-ecdd-4900-9314-1a2c9de6003d"]))

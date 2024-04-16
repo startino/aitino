@@ -43,6 +43,7 @@ def get_crew_by_id(crew_id: UUID) -> Crew:
 
     return response
 
+
 @router.delete("/{crew_id}")
 def delete_crew(crew_id: UUID) -> Crew:
     return db.delete_crew(crew_id)
