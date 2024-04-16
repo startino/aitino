@@ -57,27 +57,28 @@ export const actions = {
 		}
 
 		// TODO: Tomorrow
-		// const data = await api
-		// 	.PATCH('/profiles/api_keys/{api_key_id}', {
-		// 		params: {
-		// 			path: {
-		// 				api_key_id: form.data.value
-		// 			},
-		// 		},
-		//               body: {
-		//                   api_key: form.data.value,
-		//               }
-		// 	})
-		// 	.then(({ data: d, error: e }) => {
-		// 		if (e) {
-		// 			console.error(`Error creating api key: ${e}`);
-		// 			return [];
-		// 		}
-		// 		if (!d) {
-		// 			console.error(`No data returned from api key creation`);
-		// 			return [];
-		// 		}
-		// 	});
+
+		const data = await api
+			.PATCH('/profiles/api_keys/{api_key_id}', {
+				params: {
+					path: {
+						api_key_id: form.data.value
+					}
+				},
+				body: {
+					api_key: form.data.value
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating api key: ${e}`);
+					return [];
+				}
+				if (!d) {
+					console.error(`No data returned from api key creation`);
+					return [];
+				}
+			});
 
 		// const data = await ProfilesService.insertApiKeyProfilesApiKeysPost({
 		// 	profile_id: session?.user.id as string,
