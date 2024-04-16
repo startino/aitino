@@ -42,7 +42,6 @@ def get_sessions(
     return db.get_sessions(q.profile_id, q.crew_id, q.title, q.status)
 
 
-
 @router.get("/{session_id}")
 def get_session(session_id: UUID) -> Session:
     response = db.get_session(session_id)
@@ -55,14 +54,15 @@ def get_session(session_id: UUID) -> Session:
     # pretty sure this response object will always be a session, so casting it to stop typing errors
     
     
-@router.patch("/{session_id}", response_model=Session)
+@router.patch("/{session_id}")
 def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
     return db.update_session(session_id, content)
 
 
-@router.post("/", response_model=Session)
+@router.post("/", status_code=201)
 def insert_session(content: SessionInsertRequest) -> Session:
     return db.insert_session(content)
+
 
 # apparently status code 204 doesnt allow response bodies, so i'll have to look into that
 @router.delete("/{session_id}")

@@ -11,6 +11,7 @@ from src.dependencies import (
 )
 from src.interfaces import db
 from src.models import Message, MessageInsertRequest, Message, MessageUpdateRequest, MessageGetRequest
+from postgrest.exceptions import APIError
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -22,7 +23,7 @@ def get_messages(q: MessageGetRequest = Depends()) -> list[Message]:
     return db.get_messages(q.session_id, q.profile_id, q.recipient_id, q.sender_id)
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 def insert_message(message: MessageInsertRequest) -> Message:
     return db.insert_message(message)
 
@@ -47,4 +48,8 @@ def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message:
 
 @router.get("/{message_id}")
 def get_message(message_id: UUID) -> Message:
-    return db.get_message(message_id)
+    response = db.get_message(message_id)
+    if not response:
+        raise HTTPException(404, "message not found")
+    
+    return response
