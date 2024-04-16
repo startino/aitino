@@ -16,7 +16,7 @@ export const load = async ({ url, locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving sessions: ${e}`);
+				console.error(`Error retrieving sessions: ${e.detail}`);
 				return [];
 			}
 			if (!d) {
@@ -41,7 +41,7 @@ export const load = async ({ url, locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving crews: ${e}`);
+				console.error(`Error retrieving crews: ${e.detail}`);
 				return [];
 			}
 			if (!d) {

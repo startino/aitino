@@ -19,7 +19,7 @@
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error running crew: ${e}`);
+					console.error(`Error running crew: ${e.detail}`);
 					return null;
 				}
 				if (!d) {

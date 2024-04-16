@@ -88,7 +88,7 @@
 			})
 			.then(({ error: e }) => {
 				if (e) {
-					console.error(`Error deleting session: ${e.toString()}`);
+					console.error(`Error deleting session: ${e.detail}`);
 					return false;
 				}
 				return true;
@@ -125,7 +125,7 @@
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error running crew: ${e}`);
+					console.error(`Error running crew: ${e.detail}`);
 					return null;
 				}
 				return d;

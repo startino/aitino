@@ -22,7 +22,7 @@ export const load = async ({ locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving crews: ${e}`);
+				console.error(`Error retrieving crews: ${e.detail}`);
 				return [];
 			}
 			if (!d) {

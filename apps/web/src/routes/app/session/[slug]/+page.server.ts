@@ -15,7 +15,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving sessions: ${e}`);
+				console.error(`Error retrieving sessions: ${e.detail}`);
 				throw redirect(303, '/app/session');
 			}
 			if (!d) {
@@ -41,10 +41,10 @@ export const load = async ({ params, locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving crew: ${e}`);
+				console.error(`Error retrieving crew: ${e.detail}`);
 				throw error(
 					500,
-					`Error Retrieving Crew. Contact support if the output of this session was important. Please report this incident to the dev team with the following information: ${e}`
+					`Error Retrieving Crew. Contact support if the output of this session was important. Please report this incident to the dev team with the following information: ${e.detail}`
 				);
 			}
 			if (!d) {
@@ -70,7 +70,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error retrieving sessions: ${e}`);
+					console.error(`Error retrieving sessions: ${e.detail}`);
 					return [];
 				}
 				if (!d) {
@@ -90,7 +90,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error retrieving crews: ${e}`);
+					console.error(`Error retrieving crews: ${e.detail}`);
 					return [];
 				}
 				if (!d) {
@@ -111,7 +111,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error retrieving agents: ${e}`);
+					console.error(`Error retrieving agents: ${e.detail}`);
 					return [];
 				}
 				if (!d) {

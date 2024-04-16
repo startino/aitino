@@ -29,7 +29,7 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e}`);
+				console.error(`Error retrieving agents: ${e.detail}`);
 				return null;
 			}
 			if (!d) {
@@ -72,7 +72,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving crews: ${e}`);
+				console.error(`Error retrieving crews: ${e.detail}`);
 				return null;
 			}
 			if (!d) {
@@ -97,7 +97,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e}`);
+				console.error(`Error retrieving agents: ${e.detail}`);
 				return null;
 			}
 			if (!d) {
@@ -117,7 +117,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e}`);
+				console.error(`Error retrieving agents: ${e.detail}`);
 				return null;
 			}
 			if (!d) {
@@ -165,7 +165,7 @@ export const actions = {
 				}
 			})
 			.catch((e) => {
-				error(500, `Failed saving the Crew: ${e.toString()}`);
+				error(500, `Failed saving the Crew: ${e.detail}`);
 			});
 	}
 };

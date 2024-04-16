@@ -19,7 +19,7 @@ export const load = async ({ locals: { getSession } }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving api keys: ${e}`);
+				console.error(`Error retrieving api keys: ${e.detail}`);
 				return [];
 			}
 			if (!d) {
@@ -31,7 +31,7 @@ export const load = async ({ locals: { getSession } }) => {
 
 	const apiKeyTypes = await api.GET('/api_key_types/').then(({ data: d, error: e }) => {
 		if (e) {
-			console.error(`Error retrieving api key types: ${e}`);
+			console.error(`Error retrieving api key types: ${e.detail}`);
 			return [];
 		}
 		if (!d) {
@@ -56,37 +56,20 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Tomorrow
-
-		const data = await api
-			.PATCH('/profiles/api_keys/{api_key_id}', {
-				params: {
-					path: {
-						api_key_id: form.data.value
-					}
-				},
+		await api
+			.POST('/profiles/api_keys', {
 				body: {
-					api_key: form.data.value
+					profile_id: userSession.user.id,
+					api_key: form.data.value,
+					api_key_type_id: form.data.typeId
 				}
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
-					console.error(`Error creating api key: ${e}`);
-					return [];
+					console.error(`Error creating api key: ${e.detail}`);
 				}
-				if (!d) {
-					console.error(`No data returned from api key creation`);
-					return [];
-				}
+				return d;
 			});
-
-		// const data = await ProfilesService.insertApiKeyProfilesApiKeysPost({
-		// 	profile_id: session?.user.id as string,
-		// 	api_key: form.data.value,
-		// 	api_key_type_id: form.data.typeId
-		// }).catch((e) => {
-		// 	return setError(form, 'Something went wrong', { status: 500 });
-		// });
 
 		return message(form, 'API Key added!');
 	},
@@ -98,10 +81,17 @@ export const actions = {
 			return fail(400, { message: 'No id provided' });
 		}
 
-		// await ProfilesService.deleteApiKeyProfilesApiKeysApiKeyIdDelete(id).catch(() => {
-		// 	fail(500);
-		// });
-		//
+		await api
+			.DELETE(`/profiles/api_keys/{api_key_id}`, {
+				params: { path: { api_key_id: id } }
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error deleting api key: ${e.detail}`);
+				}
+				return d;
+			});
+
 		return { message: 'API Key deleted successfully' };
 	}
 };
