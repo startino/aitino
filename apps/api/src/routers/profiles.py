@@ -8,14 +8,11 @@ from src.models import (
     Profile,
     ProfileUpdateRequest,
     ProfileInsertRequest,
-    APIKey,
-    APIKeyInsertRequest,
-    APIKeyUpdateRequest,
-    APIKeyType,
     ProfileGetRequest
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
+
 
 @router.get("/")
 def get_profiles(q: ProfileGetRequest = Depends()) -> list[Profile]:
@@ -35,18 +32,10 @@ def get_profile_by_id(profile_id: UUID) -> Profile:
 
     return profile
     
+
 @router.delete("/{profile_id}")
 def delete_profile(profile_id: UUID) -> Profile:
     return db.delete_profile(profile_id)
-
-
-@router.get("/{profile_id}/api_keys")
-def get_api_keys(profile_id: UUID) -> list[APIKey]:
-    """Returns api keys with the api key type as an object with the id, name, description etc."""
-    if not db.get_profile(profile_id):
-        raise HTTPException(404, "profile not found")
-
-    return db.get_api_keys(profile_id)
 
 
 @router.patch("/{profile_id}")
@@ -58,21 +47,3 @@ def update_profile(
 
     return db.update_profile(profile_id, profile_update_request)
 
-
-@router.post("/api_keys", status_code=201)
-def insert_api_key(api_key_request: APIKeyInsertRequest) -> APIKey:
-    return db.insert_api_key(api_key_request)
-
-
-@router.delete("/api_keys/{api_key_id}")
-def delete_api_key(api_key_id: UUID) -> APIKey:
-    deleted_key = db.delete_api_key(api_key_id)
-    if not deleted_key:
-        raise HTTPException(404, "api key id not found")
-
-    return deleted_key
-
-
-@router.patch("/api_keys/{api_key_id}")
-def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> APIKey:
-    return db.update_api_key(api_key_id, api_key_update)

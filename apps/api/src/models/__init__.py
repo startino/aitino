@@ -40,6 +40,7 @@ from .api_key import(
     APIKey,
     APIKeyType,
     APIKeyUpdateRequest,
+    APIKeyGetRequest,
 )
 from .user import User
 __all__ = [
@@ -75,4 +76,5 @@ __all__ = [
     "CrewGetRequest",
     "AgentGetRequest",
     "ProfileGetRequest",
+    "APIKeyGetRequest",
 ]

@@ -37,7 +37,7 @@ def get_agent_by_id(agent_id: UUID) -> Agent:
     return agent
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 def insert_agent(agent_request: AgentInsertRequest) -> Agent:
     if not db.get_profile(agent_request.profile_id):
         raise HTTPException(404, "profile not found")

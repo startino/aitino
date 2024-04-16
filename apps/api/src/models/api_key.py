@@ -22,6 +22,12 @@ class APIKeyUpdateRequest(BaseModel):
     api_key: str
 
 
+class APIKeyGetRequest(BaseModel):
+    profile_id: UUID | None = None
+    api_key_type_id: UUID | None = None
+    api_key: str | None = None
+
+
 class APIKeyType(BaseModel):
     id: UUID
     created_at: datetime
