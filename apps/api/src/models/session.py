@@ -12,12 +12,6 @@ class SessionStatus(StrEnum):
     IDLE = auto()
 
 
-#= Field(default_factory=lambda: uuid4())
-#= Field(default_factory=lambda: datetime.now(tz=UTC))
-#= ""
-#= "Untitled"
-#= Field(default_factory=lambda: datetime.now(tz=UTC))
-#= SessionStatus.RUNNING
 class Session(BaseModel):
     id: UUID 
     created_at: datetime
