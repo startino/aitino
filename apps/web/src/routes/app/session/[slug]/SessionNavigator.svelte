@@ -195,7 +195,7 @@
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(profileId, crews.id, newSessionName)}
+										on:click={() => startNewSession(profileId, crews[0]?.id, newSessionName)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>

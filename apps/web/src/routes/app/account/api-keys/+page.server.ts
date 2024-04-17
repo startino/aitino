@@ -57,7 +57,7 @@ export const actions = {
 		}
 
 		await api
-			.POST('/profiles/api_keys', {
+			.POST('/api_keys/', {
 				body: {
 					profile_id: userSession.user.id,
 					api_key: form.data.value,
@@ -82,7 +82,7 @@ export const actions = {
 		}
 
 		await api
-			.DELETE(`/profiles/api_keys/{api_key_id}`, {
+			.DELETE(`/api_keys/{api_key_id}`, {
 				params: { path: { api_key_id: id } }
 			})
 			.then(({ data: d, error: e }) => {
