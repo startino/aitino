@@ -3691,6 +3691,21 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "stackapi"
+version = "0.3.0"
+description = "Library for interacting with the Stack Exchange API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "StackAPI-0.3.0-py3-none-any.whl", hash = "sha256:217f494aae3b4f267a0e4f8565e1761c4e55ec30f0c5a50a205632a52ca28481"},
+    {file = "StackAPI-0.3.0.tar.gz", hash = "sha256:4147c9587f1c719d1ff9e01a70216290766821f9f7c1401e47b60ee89c329288"},
+]
+
+[package.dependencies]
+requests = "*"
+six = "*"
+
+[[package]]
 name = "starlette"
 version = "0.37.2"
 description = "The little ASGI library that shines."
@@ -4621,4 +4636,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "dfa697f06d9fd1971d71249073d3aa33a62d44eac25a4840697c375f6dc1bfef"
+content-hash = "0162a9621b5487162b64103aeb609b65901aecb2ee79b06d6f824b5a49c3cd62"
