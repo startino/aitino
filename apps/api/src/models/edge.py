@@ -1,7 +1,9 @@
-from typing import Optional, Union, Generic, TypeVar
+from typing import Generic, Optional, TypeVar, Union
+
 from pydantic import BaseModel, Field
 
 T = TypeVar("T")
+
 
 class Marker(BaseModel):
     type: str
@@ -12,10 +14,12 @@ class Marker(BaseModel):
     orient: Optional[str] = None
     strokeWidth: Optional[float] = None
 
+
 class PathOptions(BaseModel):
     offset: Optional[float] = None
     borderRadius: Optional[float] = None
     curvature: Optional[float] = None
+
 
 class Edge(BaseModel, Generic[T]):
     id: str

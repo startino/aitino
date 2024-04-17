@@ -17,6 +17,7 @@ router = APIRouter(
     tags=["tools"],
 )
 
+
 @router.get("/")
 def get_tools(q: ToolGetRequest = Depends()) -> list[Tool]:
     return db.get_tools(q.name, q.api_key_type_id)
@@ -27,7 +28,7 @@ def get_tool(tool_id: UUID) -> Tool:
     response = db.get_tool(tool_id)
     if not response:
         raise HTTPException(404, "tool not found")
-    
+
     return response
 
 
@@ -41,14 +42,12 @@ def delete_tool(tool_id: UUID) -> Tool:
     response = db.delete_tool(tool_id)
     if not response:
         raise HTTPException(404, "could not find tool")
-    
+
     return response
 
 
 @router.patch("/{tool_id}")
-def update_profile(
-    tool_id: UUID, tool_update_request: ToolUpdateRequest
-) -> Tool:
+def update_profile(tool_id: UUID, tool_update_request: ToolUpdateRequest) -> Tool:
     if not db.get_tool(tool_id):
         raise HTTPException(404, "tool not found")
 

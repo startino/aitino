@@ -1,8 +1,14 @@
-from reddit_utils import REDDIT_PASSWORD, get_subreddits, reply
-from Reddit_ChatBot_Python import ChatBot, RedditAuthentication
-from Reddit_ChatBot_Python import CustomType, Snoo, Reaction
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
+from Reddit_ChatBot_Python import (
+    ChatBot,
+    CustomType,
+    Reaction,
+    RedditAuthentication,
+    Snoo,
+)
+from reddit_utils import REDDIT_PASSWORD, get_subreddits, reply
 
 load_dotenv()
 

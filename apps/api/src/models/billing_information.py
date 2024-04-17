@@ -20,4 +20,3 @@ class BillingInsertRequest(BaseModel):
 class BillingUpdateRequest(BaseModel):
     stripe_payment_method: str | None = None
     description: str | None = None
-

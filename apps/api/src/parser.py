@@ -46,12 +46,13 @@ def get_agents(agent_ids: list[UUID]) -> list[Agent]:
     response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
     return [Agent(**agent) for agent in response.data]
 
+
 def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
     logger.debug("Processing crew")
     agent_ids: list[UUID] = crew.nodes
     if not crew.receiver_id:
         raise HTTPException(400, "got no receiver id")
-    
+
     receiver_id: UUID = crew.receiver_id
 
     crew_model = CrewProcessed(

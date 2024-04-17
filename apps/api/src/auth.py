@@ -5,13 +5,10 @@ from uuid import UUID
 import jwt
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import (
-    HTTPAuthorizationCredentials,
-    HTTPBearer,
-
-)
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.interfaces import db
+from src.models import Profile
 
 load_dotenv()
 
@@ -21,7 +18,7 @@ ALGORITHM = "HS256"
 logger = logging.getLogger("root")
 
 
-async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> Profile:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

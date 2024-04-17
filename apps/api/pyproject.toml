@@ -40,6 +40,7 @@ mail = "^2.1.0"
 duckduckgo-search = "^5.2.2"
 langchain-exa = "^0.0.1"
 stackapi = "^0.3.0"
+mypy = "^1.9.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"

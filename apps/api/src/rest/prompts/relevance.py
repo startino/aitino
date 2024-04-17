@@ -1,16 +1,19 @@
-from gptrim import trim
 import os
+
+from gptrim import trim
 
 # Get the directory of the current script file
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
-with open(os.path.join(script_dir, "startino_business_plan.md"), "r", encoding='utf-8') as file:
+with open(
+    os.path.join(script_dir, "startino_business_plan.md"), "r", encoding="utf-8"
+) as file:
     company_context = file.read()
 
-with open(os.path.join(script_dir, "good_examples.md"), "r", encoding='utf-8') as file:
+with open(os.path.join(script_dir, "good_examples.md"), "r", encoding="utf-8") as file:
     good_examples = file.read()
 
-with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding='utf-8') as file:
+with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding="utf-8") as file:
     bad_examples = file.read()
 
 purpose = """
@@ -70,7 +73,8 @@ You have the duty of going through social media posts and determining if they ar
 relevant to look into for your boss.
 """
 
-calculate_relevance_prompt = trim(f"""
+calculate_relevance_prompt = trim(
+    f"""
                                   # INSTRUCTIONS
                                   {roleplay}
                                   # PURPOSE
@@ -85,5 +89,5 @@ calculate_relevance_prompt = trim(f"""
                                   {examples}
 
                                                                 
-""")
-
+"""
+)

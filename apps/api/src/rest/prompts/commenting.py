@@ -1,16 +1,21 @@
-from gptrim import trim
 import os
+
+from gptrim import trim
 
 # Get the directory of the current script file
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
-with open(os.path.join(script_dir, "startino_business_plan.md"), "r", encoding='utf-8') as file:
+with open(
+    os.path.join(script_dir, "startino_business_plan.md"), "r", encoding="utf-8"
+) as file:
     company_context = file.read()
 
-with open(os.path.join(script_dir, "good_comment_examples.md"), "r", encoding='utf-8') as file:
+with open(
+    os.path.join(script_dir, "good_comment_examples.md"), "r", encoding="utf-8"
+) as file:
     good_examples = file.read()
 
-with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding='utf-8') as file:
+with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding="utf-8") as file:
     bad_examples = file.read()
 
 purpose = """
@@ -53,7 +58,8 @@ You have the duty of going through Reddit posts and
 writing comments that fulfill the purpose.
 """
 
-generate_comment_prompt = trim(f"""
+generate_comment_prompt = trim(
+    f"""
                                   # INSTRUCTIONS
                                   {roleplay}
                                   # PURPOSE
@@ -64,5 +70,5 @@ generate_comment_prompt = trim(f"""
                                   {context}
                                   # EXAMPLES
                                   {examples}                                                                
-""")
-
+"""
+)

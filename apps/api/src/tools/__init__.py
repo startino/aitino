@@ -3,8 +3,8 @@ import logging
 import os
 import random
 from typing import Any
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from langchain_core.tools import BaseTool
 
 from src.tools.alpha_vantage import ID as ALPHA_VANTAGE_TOOL_ID
@@ -13,24 +13,23 @@ from src.tools.arxiv_tool import ID as ARXIV_TOOL_ID
 from src.tools.arxiv_tool import ArxivTool
 from src.tools.bing import ID as BING_SEARCH_TOOL_ID
 from src.tools.bing import BingTool
+from src.tools.brave_search import ID as BRAVE_TOOL_ID
+from src.tools.brave_search import BraveSearchTool
+from src.tools.duckduckgo_tool import ID as DDGS_TOOL_ID
+from src.tools.duckduckgo_tool import DuckDuckGoSearchTool
+from src.tools.google_serper import RESULTS_ID as GOOGLE_SERPER_RESULTS_TOOL_ID
+from src.tools.google_serper import RUN_ID as GOOGLE_SERPER_RUN_TOOL_ID
+from src.tools.google_serper import GoogleSerperResultsTool, GoogleSerperRunTool
 from src.tools.move_file import ID as MOVE_TOOL_ID
 from src.tools.move_file import MoveFileTool
 from src.tools.read_file import ID as READ_TOOL_ID
 from src.tools.read_file import ReadFileTool
 from src.tools.scraper import ID as SCRAPER_TOOL_ID
 from src.tools.scraper import ScraperTool
-from src.tools.wikipedia_tool import ID as WIKIPEDIA_TOOL_ID
-from src.tools.wikipedia_tool import WikipediaTool
-from src.tools.duckduckgo_tool import ID as DDGS_TOOL_ID
-from src.tools.duckduckgo_tool import DuckDuckGoSearchTool
-from src.tools.google_serper import RUN_ID as GOOGLE_SERPER_RUN_TOOL_ID
-from src.tools.google_serper import GoogleSerperRunTool
-from src.tools.google_serper import RESULTS_ID as GOOGLE_SERPER_RESULTS_TOOL_ID
-from src.tools.google_serper import GoogleSerperResultsTool
-from src.tools.brave_search import ID as BRAVE_TOOL_ID
-from src.tools.brave_search import BraveSearchTool
 from src.tools.stackapi_tool import ID as STACKAPI_ID
 from src.tools.stackapi_tool import StackAPISearchTool
+from src.tools.wikipedia_tool import ID as WIKIPEDIA_TOOL_ID
+from src.tools.wikipedia_tool import WikipediaTool
 
 tools: dict = {
     ARXIV_TOOL_ID: ArxivTool,
@@ -51,7 +50,7 @@ logger = logging.getLogger("root")
 load_dotenv()
 
 
-def get_file_path_of_example():
+def get_file_path_of_example() -> str:
     current_dir = os.getcwd()
     target_folder = os.path.join(current_dir, "src/tools/test_files")
 
@@ -83,14 +82,14 @@ def get_tool_ids_from_agent(tools: list[dict[str, Any]]) -> list[str]:
     return [tool["id"] for tool in tools]
 
 
-def has_param(cls, param_name):
+def has_param(cls, param_name) -> bool:
     init_signature = inspect.signature(cls.__init__)
     return param_name in init_signature.parameters
 
 
 def generate_tool_from_uuid(
     tool: str, api_key_types: dict[str, str], api_keys: dict[str, str]
-):
+) -> BaseTool | None:
     for tool_id in tools:
         if tool_id == tool:
             tool_key_type = ""

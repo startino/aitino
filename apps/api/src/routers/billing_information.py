@@ -10,11 +10,7 @@ from src.dependencies import (
     rate_limit_tiered,
 )
 from src.interfaces import db
-from src.models import (
-    Billing,
-    BillingInsertRequest,
-    BillingUpdateRequest,
-)
+from src.models import Billing, BillingInsertRequest, BillingUpdateRequest
 
 router = APIRouter(prefix="/billing", tags=["billings"])
 
@@ -51,4 +47,3 @@ def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing:
         raise HTTPException(404, "message not found")
 
     return response
-
