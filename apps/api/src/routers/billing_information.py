@@ -52,9 +52,3 @@ def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing:
 
     return response
 
-
-#
-#
-# @router.get("/{message_id}")
-# def get_message(message_id: UUID) -> Message:
-#     return db.get_message(message_id)

@@ -129,7 +129,7 @@ class AutogenCrew:
             ]
         ):
             logger.error(
-                f"on_reply: both ids are none, sender is not admin and recipient is not chat manager"
+                "on_reply: both ids are none, sender is not admin and recipient is not chat manager"
             )
 
         await self.on_reply(recipient_id, sender_id, content, role)
@@ -192,6 +192,7 @@ class AutogenCrew:
                             tool, api_key_types, profile_api_keys
                         )
                     except TypeError as e:
+                        logger.error(f"tried to generate tool, got error: {e}")
                         raise e
                     (
                         (

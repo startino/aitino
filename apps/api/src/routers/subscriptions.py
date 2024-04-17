@@ -51,9 +51,3 @@ def update_subscription(
 
     return response
 
-
-#
-#
-# @router.get("/{message_id}")
-# def get_message(message_id: UUID) -> Message:
-#     return db.get_message(message_id)
