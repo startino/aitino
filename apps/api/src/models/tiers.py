@@ -17,9 +17,8 @@ class Tier(BaseModel):
 
 
 class TierInsertRequest(BaseModel):
-    id: UUID
-    period: int
-    limit: int
+    period: int | None = None
+    limit: int | None = None
     stripe_price_id: str | None = None
     name: str | None = None
     description: str | None = None
@@ -39,8 +38,8 @@ class TierUpdateRequest(BaseModel):
 
 class TierGetRequest(BaseModel):
     profile_id: UUID | None = None
-    period: int
-    limit: int
+    period: int | None = None
+    limit: int | None = None
     stripe_price_id: str | None = None
     name: str | None = None
     description: str | None = None

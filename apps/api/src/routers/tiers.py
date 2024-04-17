@@ -24,7 +24,7 @@ logger = logging.getLogger("root")
 
 @router.get("/")
 def get_tier(q: TierGetRequest = Depends()) -> list[Tier]:
-    return db.get_tiers(q.profile_id, q.stripe_tier_id)
+    return db.get_tier(q.profile_id, q.stripe_price_id)
 
 
 @router.post("/")

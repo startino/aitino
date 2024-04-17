@@ -303,23 +303,23 @@ def insert_tier(tier: TierInsertRequest) -> Tier:
     return Tier(**response.data[0])
 
 
-def delete_tier(profile_id: UUID) -> Tier | None:
+def delete_tier(id: UUID) -> Tier | None:
     """Deletes a tier by an id (the primary key)"""
     supabase: Client = create_client(url, key)
-    response = supabase.table("tiers").delete().eq("profile_id", profile_id).execute()
+    response = supabase.table("tiers").delete().eq("id", id).execute()
     if len(response.data) == 0:
         return None
 
     return Tier(**response.data[0])
 
 
-def update_tier(profile_id: UUID, content: TierUpdateRequest) -> Tier | None:
+def update_tier(id: UUID, content: TierUpdateRequest) -> Tier | None:
     """Updates a tier by an id"""
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("tiers")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
-        .eq("profile_id", profile_id)
+        .eq("id", id)
         .execute()
     )
     if len(response.data) == 0:
