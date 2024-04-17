@@ -17,7 +17,7 @@ class PathOptions(BaseModel):
     borderRadius: Optional[float] = None
     curvature: Optional[float] = None
 
-class Edge(Generic[T], BaseModel):
+class Edge(BaseModel, Generic[T]):
     id: str
     type: Optional[str] = None
     source: str
