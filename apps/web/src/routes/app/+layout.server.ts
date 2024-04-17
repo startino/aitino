@@ -5,6 +5,8 @@ export const load = async ({ locals: { supabase, stripe, getSession } }) => {
 	const userSession = await getSession();
 	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
+	// TODO: convert to using api
+
 	const data: {
 		stripeSub: Stripe.Response<Stripe.Subscription> | null;
 		paymentMethod: Stripe.Response<Stripe.PaymentMethod> | null;

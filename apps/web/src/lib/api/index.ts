@@ -1,8 +1,8 @@
 import createClient from 'openapi-fetch';
 import type { paths, components } from '$lib/api/v0.d.ts';
 
-const client = createClient<paths>({ baseUrl: 'https://api.aiti.no/' });
-export default client;
+const api = createClient<paths>({ baseUrl: 'https://api.aiti.no/' });
+export default api;
 
 type schemas = components['schemas'];
 type headers = components['headers'];

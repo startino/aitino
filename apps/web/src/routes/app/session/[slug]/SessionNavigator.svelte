@@ -12,7 +12,7 @@
 
 	export let profileId: string;
 	export let sessions: schemas['Session'][];
-	export let crew: schemas['Crew'][];
+	export let crews: schemas['Crew'][];
 	export let session: schemas['Session'];
 
 	let newSessionName: string = '';
@@ -162,7 +162,7 @@
 		<Sheet.Footer class="mt-2">
 			<Sheet.Close asChild let:builder>
 				<div class="flex h-full w-full flex-col gap-2">
-					{#if crew}
+					{#if crews}
 						<Dialog.Root>
 							<Dialog.Trigger let:builder>
 								<Button class="mb-2 w-full" builders={[builder]}>Start New Session</Button>
@@ -188,14 +188,14 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{crew[0]?.title}
+											{crews[0]?.title}
 										</Button>
 									</div>
 								</div>
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(profileId, crew.id, newSessionName)}
+										on:click={() => startNewSession(profileId, crews.id, newSessionName)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>
