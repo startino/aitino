@@ -39,7 +39,15 @@ from src.models import (
     Tool,
     ToolInsertRequest,
     ToolUpdateRequest,
+    SubscriptionGetRequest,
+    Tier,
+    TierInsertRequest,
+    TierUpdateRequest,
+    Billing,
+    BillingInsertRequest,
+    BillingUpdateRequest,
 )
+from src.models.tiers import TierGetRequest
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")
@@ -137,7 +145,7 @@ def get_messages(
 ) -> list[Message]:
     """Gets messages, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting messages")
+    logger.debug("Getting messages")
     query = supabase.table("messages").select("*")
 
     if session_id:
@@ -216,9 +224,9 @@ def get_subscriptions(
     profile_id: UUID | None = None,
     stripe_subscription_id: str | None = None,
 ) -> list[Subscription]:
-    """Gets messages, filtered by what parameters are given"""
+    """Gets subscriptions, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting subscriptions")
+    logger.debug("Getting subscriptions")
     query = supabase.table("subscriptions").select("*")
 
     if profile_id:
@@ -233,7 +241,7 @@ def get_subscriptions(
 
 
 def insert_subscription(subscription: SubscriptionInsertRequest) -> Subscription:
-    """Posts a Subscription to the db"""
+    """Posts a subscription to the db"""
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("subscriptions")
@@ -270,6 +278,112 @@ def update_subscription(
         return None
 
     return Subscription(**response.data[0])
+
+
+
+def get_tier(id: UUID) -> Tier | None:
+    """Gets tiers, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("tiers").select("*").eq("id", id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return Tier(**response.data[0])
+
+
+def insert_tier(tier: TierInsertRequest) -> Tier:
+    """Posts a tier to the db"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tiers")
+        .insert(json.loads(tier.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+    return Tier(**response.data[0])
+
+
+def delete_tier(id: UUID) -> Tier | None:
+    """Deletes a tier by an id (the primary key)"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("tiers").delete().eq("id", id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return Tier(**response.data[0])
+
+
+def update_tier(id: UUID, content: TierUpdateRequest) -> Tier | None:
+    """Updates a tier by an id"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tiers")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("id", id)
+        .execute()
+    )
+    return Tier(**response.data[0])
+
+
+def get_billing(
+    profile_id: UUID,
+) -> Billing | None:
+    """Gets billings, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    logger.debug("Getting billings")
+    response = (
+        supabase.table("billing_information")
+        .select("*")
+        .eq("profile_id", profile_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    return Billing(**response.data[0])
+
+
+def insert_billing(billing: BillingInsertRequest) -> Billing:
+    """Posts a billing to the db"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .insert(json.loads(billing.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+      
+    return Billing(**response.data[0])
+
+
+def delete_billing(profile_id: UUID) -> Billing | None:
+    """Deletes a billing by an id (the primary key)"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .delete()
+        .eq("profile_id", profile_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    return Billing(**response.data[0])
+
+
+def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing | None:
+    """Updates a billing by an id"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("profile_id", profile_id)
+
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+      
+    return Billing(**response.data[0])
+
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
@@ -345,7 +459,7 @@ def get_crews(
 ) -> list[Crew]:
     """Gets crews, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting crews")
+    logger.debug("Getting crews")
     query = supabase.table("crews").select("*")
 
     if profile_id:
@@ -709,24 +823,4 @@ def delete_profile(profile_id: UUID) -> Profile:
 if __name__ == "__main__":
     from src.models import Session
 
-    #    print(
-    #        insert_session(
-    #            SessionRequest(
-    #                crew_id=UUID("1c11a9bf-748f-482b-9746-6196f136401a"),
-    #                profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
-    #                title="hello",
-    #            )
-    #        )
-    #    )
-    #
-    # print(get_crew(UUID("bf9f1cdc-fb63-45e1-b1ff-9a1989373ce3")))
-    ##print(insert_message(MessageRequestModel(
-    #    session_id=UUID("ec4a9ae1-f4de-46cf-946d-956b3081c432"),
-    #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
-    #    content="hello test message",
-    #    recipient_id=UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"),
-    # )))
-
-    # print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))
-    # print(get_api_keys(api_key_type_id=UUID("3b64fe26-20b9-4064-907e-f2708b5f1656")))
     print(get_api_key_type_ids(["612ddae6-ecdd-4900-9314-1a2c9de6003d"]))
