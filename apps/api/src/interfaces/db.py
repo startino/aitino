@@ -40,6 +40,7 @@ from src.models import (
     TierInsertRequest,
     TierUpdateRequest,
 )
+from src.models.tiers import TierGetRequest
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")
@@ -272,34 +273,24 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
-def get_tiers(
-    id: UUID | None = None,
-) -> list[Tier]:
+def get_tiers(id: UUID) -> list[Tier]:
     """Gets tiers, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting tiers")
-    query = supabase.table("tiers").select("*")
+    response = supabase.table("tiers").select("*")
 
-    if id:
-        query = query.eq("id", id)
-
-    response = query.execute()
+    response = response.execute()
 
     return [Tier(**data) for data in response.data]
 
 
-def get_tier(
-    id: UUID | None = None,
-) -> list[Tier]:
+def get_tier(id: UUID) -> list[Tier]:
     """Gets tier, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting tiers")
-    query = supabase.table("tiers").select("*")
+    logger.debug(f"Getting tier")
+    response = supabase.table("tiers").select("*")
 
-    if id:
-        query = query.eq("id", id)
-
-    response = query.execute()
+    response = response.execute()
 
     return [Tier(**data) for data in response.data]
 
