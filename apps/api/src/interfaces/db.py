@@ -101,7 +101,7 @@ def get_sessions(
 
 def insert_session(content: SessionInsertRequest) -> Session:
     supabase: Client = create_client(url, key)
-    logger.info(f"inserting session")
+    logger.info("inserting session")
     response = (
         supabase.table("sessions")
         .insert(json.loads(content.model_dump_json()))
@@ -751,7 +751,6 @@ def get_tool_api_keys(
 ) -> dict[str, str]:
     """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
     supabase: Client = create_client(url, key)
-    # casted_ids = [str(api_key_type_id) for api_key_type_id in api_key_type_ids]
     query = (
         supabase.table("users_api_keys")
         .select("api_key", "api_key_type_id")
