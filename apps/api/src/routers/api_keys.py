@@ -11,7 +11,7 @@ from src.models import (
     APIKeyGetRequest,
 )
 
-router = APIRouter(prefix="/api_keys", tags=["api keys"])
+router = APIRouter(prefix="/api-keys", tags=["api keys"])
 
 
 @router.get("/")
