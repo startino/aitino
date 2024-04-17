@@ -95,6 +95,8 @@ async def run_crew(
 
     if mock:
         message, crew_model = process_crew(Crew(**mocks.crew_model))
+        request.crew_id = UUID("1c11a9bf-748f-482b-9746-6196f136401a")
+        request.profile_id = UUID("070c1d2e-9d72-4854-a55e-52ade5a42071")
     else:
         message, crew_model = get_processed_crew_by_id(request.crew_id)
 
@@ -120,7 +122,6 @@ async def run_crew(
             status_code=400,
             detail=f"Session with id {request.session_id} found, but has no messages",
         )
-
     if session is None:
         session = Session(
             id=uuid4(),
@@ -156,8 +157,10 @@ async def run_crew(
     try:
         crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
     except ValueError as e:
+        db.delete_session(session.id)
         logger.error(e)
-        raise HTTPException(400, f"crew model bad input: {e}")
+        raise HTTPException(400, f": {e}")
+
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
