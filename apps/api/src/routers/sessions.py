@@ -141,12 +141,14 @@ async def run_crew(
         role: str,
     ) -> None:
         message = Message(
+            id=uuid4(),
             session_id=session.id,
             profile_id=session.profile_id,
             recipient_id=recipient_id,
             sender_id=sender_id,
             content=content,
             role=role,
+            created_at=datetime.now(tz=UTC)
         )
         logger.debug(f"on_reply: {message}")
         db.post_message(message)
