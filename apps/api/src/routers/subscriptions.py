@@ -27,7 +27,7 @@ def get_subscriptions(q: SubscriptionGetRequest = Depends()) -> list[Subscriptio
     return db.get_subscriptions(q.profile_id, q.stripe_subscription_id)
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 def insert_subscription(subscription: SubscriptionInsertRequest) -> Subscription:
     return db.insert_subscription(subscription)
 

@@ -22,4 +22,3 @@ class SubscriptionUpdateRequest(BaseModel):
 class SubscriptionGetRequest(BaseModel):
     profile_id: UUID | None = None
     stripe_subscription_id: str | None = None
-    created_at: datetime
