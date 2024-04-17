@@ -32,6 +32,11 @@ from .tiers import (
     TierUpdateRequest,
     TierGetRequest,
 )
+from .billing_information import (
+    Billing,
+    BillingInsertRequest,
+    BillingUpdateRequest,
+)
 from .profile import (
     ProfileInsertRequest,
     Profile,
@@ -98,4 +103,7 @@ __all__ = [
     "TierInsertRequest",
     "TierUpdateRequest",
     "TierGetRequest",
+    "Billing",
+    "BillingInsertRequest",
+    "BillingUpdateRequest",
 ]

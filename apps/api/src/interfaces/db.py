@@ -36,9 +36,14 @@ from src.models import (
     Subscription,
     SubscriptionInsertRequest,
     SubscriptionUpdateRequest,
+    SubscriptionGetRequest,
     Tier,
     TierInsertRequest,
     TierUpdateRequest,
+    Billing,
+    BillingInsertRequest,
+    BillingUpdateRequest,
+
 )
 from src.models.tiers import TierGetRequest
 
@@ -273,6 +278,7 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
+
 def get_tier(id: UUID) -> Tier | None:
     """Gets tiers, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
@@ -312,11 +318,68 @@ def update_tier(id: UUID, content: TierUpdateRequest) -> Tier | None:
         .update(json.loads(content.model_dump_json(exclude_none=True)))
         .eq("id", id)
         .execute()
+
+      return Tier(**response.data[0])
+def get_billing(
+    profile_id: UUID,
+) -> Billing | None:
+    """Gets billings, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Getting billings")
+    response = (
+        supabase.table("billing_information")
+        .select("*")
+        .eq("profile_id", profile_id)
+        .execute()
     )
     if len(response.data) == 0:
         return None
 
-    return Tier(**response.data[0])
+    return Billing(**response.data[0])
+
+
+def insert_billing(billing: BillingInsertRequest) -> Billing:
+    """Posts a billing to the db"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .insert(json.loads(billing.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+      
+    return Billing(**response.data[0])
+
+
+def delete_billing(profile_id: UUID) -> Billing | None:
+    """Deletes a billing by an id (the primary key)"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .delete()
+        .eq("profile_id", profile_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    return Billing(**response.data[0])
+
+
+def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing | None:
+    """Updates a billing by an id"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("billing_information")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("profile_id", profile_id)
+
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+      
+    return Billing(**response.data[0])
+
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
