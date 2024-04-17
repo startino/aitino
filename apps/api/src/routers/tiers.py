@@ -17,14 +17,19 @@ from src.models import (
     TierGetRequest,
 )
 
-router = APIRouter(prefix="/tier", tags=["tier"])
+router = APIRouter(prefix="/tiers", tags=["tiers"])
 
 logger = logging.getLogger("root")
 
 
-@router.get("/")
+@router.get("/{id)")
+def get_tiers(q: TierGetRequest = Depends()) -> list[Tier]:
+    return db.get_tier(q.profile_id)
+
+
+@router.get("/{id}")
 def get_tier(q: TierGetRequest = Depends()) -> list[Tier]:
-    return db.get_tier(q.profile_id, q.stripe_price_id)
+    return db.get_tier(q.profile_id)
 
 
 @router.post("/")
@@ -32,18 +37,18 @@ def insert_tier(tier: TierInsertRequest) -> Tier:
     return db.insert_tier(tier)
 
 
-@router.delete("/{profile_id}")
-def delete_tier(profile_id: UUID) -> Tier:
-    response = db.delete_tier(profile_id)
+@router.delete("/{id}")
+def delete_tier(id: UUID) -> Tier:
+    response = db.delete_tier(id)
     if not response:
         raise HTTPException(404, "stripe tier id not found")
 
     return response
 
 
-@router.patch("/{profile_id}")
-def update_tier(profile_id: UUID, content: TierUpdateRequest) -> Tier:
-    response = db.update_tier(profile_id, content)
+@router.patch("/{id}")
+def update_tier(id: UUID, content: TierUpdateRequest) -> Tier:
+    response = db.update_tier(id, content)
     if not response:
         raise HTTPException(404, "message not found")
 

@@ -272,20 +272,32 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
-def get_tier(
-    profile_id: UUID | None = None,
-    stripe_price_id: str | None = None,
+def get_tiers(
+    id: UUID | None = None,
 ) -> list[Tier]:
     """Gets tiers, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting tiers")
     query = supabase.table("tiers").select("*")
 
-    if profile_id:
-        query = query.eq("profile_id", profile_id)
+    if id:
+        query = query.eq("id", id)
 
-    if stripe_price_id:
-        query = query.eq("stripe_price_id", stripe_price_id)
+    response = query.execute()
+
+    return [Tier(**data) for data in response.data]
+
+
+def get_tier(
+    id: UUID | None = None,
+) -> list[Tier]:
+    """Gets tier, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Getting tiers")
+    query = supabase.table("tiers").select("*")
+
+    if id:
+        query = query.eq("id", id)
 
     response = query.execute()
 
