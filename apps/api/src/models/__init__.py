@@ -15,10 +15,16 @@ from .crew_model import (
 )
 from .llm_config import LLMConfig
 from .message import (
-    Message, 
-    MessageInsertRequest, 
+    Message,
+    MessageInsertRequest,
     MessageUpdateRequest,
     MessageGetRequest,
+)
+from .subscription import (
+    Subscription,
+    SubscriptionInsertRequest,
+    SubscriptionUpdateRequest,
+    SubscriptionGetRequest,
 )
 from .profile import (
     ProfileInsertRequest,
@@ -35,7 +41,7 @@ from .session import (
     SessionUpdateRequest,
     SessionGetRequest,
 )
-from .api_key import(
+from .api_key import (
     APIKeyInsertRequest,
     APIKey,
     APIKeyType,
@@ -43,6 +49,7 @@ from .api_key import(
     APIKeyGetRequest,
 )
 from .user import User
+
 __all__ = [
     "AgentConfig",
     "CodeExecutionConfig",
@@ -77,4 +84,8 @@ __all__ = [
     "AgentGetRequest",
     "ProfileGetRequest",
     "APIKeyGetRequest",
+    "Subscription",
+    "SubscriptionInsertRequest",
+    "SubscriptionUpdateRequest",
+    "SubscriptionGetRequest",
 ]
