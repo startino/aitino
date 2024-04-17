@@ -5,6 +5,7 @@ from uuid import UUID
 
 import autogen
 from autogen.cache import Cache
+from langchain.tools import BaseTool
 
 from src.models.session import SessionStatus
 
@@ -34,7 +35,7 @@ class AutogenCrew:
         self.session = session
         self.on_reply = on_message
         self.crew_model = crew_model
-        self.valid_tools = []
+        self.valid_tools: list[BaseTool] = []
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
@@ -175,7 +176,7 @@ class AutogenCrew:
 
         for agent in crew_model.agents:
             valid_agent_tools = []
-            tool_schemas = {}
+            tool_schemas: list[dict] | None
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={

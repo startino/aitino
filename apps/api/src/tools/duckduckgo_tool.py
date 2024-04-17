@@ -31,7 +31,7 @@ class DuckDuckGoSearchToolInput(BaseModel):
 class DuckDuckGoSearchTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = DuckDuckGoSearchToolInput
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             name="duck_duck_go_search",
             func=self._run,
@@ -40,7 +40,7 @@ class DuckDuckGoSearchTool(Tool, BaseTool):
 
     def _run(
         self, tool_input: str, region: str = "wt-wt", source: str = "text"
-    ) -> Callable:
+    ) -> str:
         """Method passed to agent so the agent can initialize the wrapper with additional args"""
         logger.debug("Creating DuckDuckGo wrapper")
         ddgs_tool = DuckDuckGoSearchRun(

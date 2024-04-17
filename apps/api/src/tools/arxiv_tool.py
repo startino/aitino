@@ -18,7 +18,7 @@ class ArxivToolInput(BaseModel):
 class ArxivTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = ArxivToolInput
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             name="arxiv_tool",
             func=arxiv.run,

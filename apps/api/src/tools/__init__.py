@@ -50,7 +50,7 @@ logger = logging.getLogger("root")
 load_dotenv()
 
 
-def get_file_path_of_example():
+def get_file_path_of_example() -> str:
     current_dir = os.getcwd()
     target_folder = os.path.join(current_dir, "src/tools/test_files")
 
@@ -82,14 +82,14 @@ def get_tool_ids_from_agent(tools: list[dict[str, Any]]) -> list[str]:
     return [tool["id"] for tool in tools]
 
 
-def has_param(cls, param_name):
+def has_param(cls, param_name) -> bool:
     init_signature = inspect.signature(cls.__init__)
     return param_name in init_signature.parameters
 
 
 def generate_tool_from_uuid(
     tool: str, api_key_types: dict[str, str], api_keys: dict[str, str]
-):
+) -> BaseTool | None:
     for tool_id in tools:
         if tool_id == tool:
             tool_key_type = ""

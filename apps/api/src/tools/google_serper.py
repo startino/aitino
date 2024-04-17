@@ -56,7 +56,7 @@ class GoogleSerperResultsToolInput(BaseModel):
 class GoogleSerperRunTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = GoogleSerperRunToolInput
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         search = GoogleSerperAPIWrapper(serper_api_key=api_key)
         super().__init__(
             name="google_serper_run_tool",
@@ -69,7 +69,7 @@ class GoogleSerperResultsTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = GoogleSerperResultsToolInput
     api_key: str = ""
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         super().__init__(
             name="google_serper_results_tool",
             func=self._run,
@@ -85,7 +85,7 @@ class GoogleSerperResultsTool(Tool, BaseTool):
         language: str = "en",
         search_type: Literal["news", "search", "places", "images"] = "search",
         time_based_search: str | None = None,
-    ):
+    ) -> dict:
         """Method passed to the agent to allow it to pass additional optional parameters, similar to the DDG search tool"""
 
         search = GoogleSerperAPIWrapper(

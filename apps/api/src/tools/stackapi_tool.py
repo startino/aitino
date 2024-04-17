@@ -21,7 +21,7 @@ class StackAPIToolInput(BaseModel):
 class StackAPISearchTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = StackAPIToolInput
 
-    def __init__(self):
+    def __init__(self) -> None:
         tool = StackExchangeTool(api_wrapper=StackExchangeAPIWrapper())
         super().__init__(
             name="stack_api_tool",

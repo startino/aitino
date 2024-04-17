@@ -34,7 +34,7 @@ class BingTool(Tool, BaseTool):
     api_key: str = ""
     # needs to be empty string or it throws validation errors
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         super().__init__(
             name="bing_search",
             func=self._run,
@@ -44,7 +44,7 @@ class BingTool(Tool, BaseTool):
         )
         self.api_key = api_key
 
-    def _run(self, tool_input: str, nr_of_results: int = 5):
+    def _run(self, tool_input: str, nr_of_results: int = 5) -> str:
         wrapper = BingSearchAPIWrapper(
             bing_subscription_key=self.api_key,
             bing_search_url=BING_SEARCH_URL,
