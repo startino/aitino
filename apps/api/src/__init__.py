@@ -31,6 +31,7 @@ from .routers import (
     api_keys,
     tools,
     subscriptions,
+    tiers,
     billing_information,
 )
 
@@ -49,6 +50,7 @@ app.include_router(api_key_types.router)
 app.include_router(rest.router)
 app.include_router(tools.router)
 app.include_router(subscriptions.router)
+app.include_router(tiers.router)
 app.include_router(billing_information.router)
 
 app.add_middleware(
