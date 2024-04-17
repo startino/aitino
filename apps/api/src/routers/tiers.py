@@ -23,17 +23,12 @@ logger = logging.getLogger("root")
 
 
 @router.get("/{id}")
-def get_tiers(id: UUID) -> list[Tier]:
+def get_tier(id: UUID) -> list[Tier]:
     response = db.get_tiers(id)
     if not response:
         raise HTTPException(404, "tiers information not found")
 
     return response
-
-
-@router.get("/")
-def get_tier(q: TierGetRequest = Depends()) -> list[Tier]:
-    return db.get_tier(q.id)
 
 
 @router.post("/")

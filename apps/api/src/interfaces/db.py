@@ -273,24 +273,11 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
-def get_tiers(id: UUID) -> list[Tier]:
+def get_tier(id: UUID) -> list[Tier]:
     """Gets tiers, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting tiers")
-    response = supabase.table("tiers").select("*")
-
-    response = response.execute()
-
-    return [Tier(**data) for data in response.data]
-
-
-def get_tier(id: UUID) -> list[Tier]:
-    """Gets tier, filtered by what parameters are given"""
-    supabase: Client = create_client(url, key)
     logger.debug(f"Getting tier")
-    response = supabase.table("tiers").select("*")
-
-    response = response.execute()
+    response = supabase.table("tiers").select("*").execute()
 
     return [Tier(**data) for data in response.data]
 
