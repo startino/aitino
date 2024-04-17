@@ -13,39 +13,36 @@ from src.models import (
     Agent,
     AgentInsertRequest,
     AgentUpdateModel,
-    CrewInsertRequest,
-    Crew,
-    CrewUpdateRequest,
-    Message,
-    Profile,
-    ProfileUpdateRequest,
-    Session,
-    SessionInsertRequest,
-    Session,
-    SessionStatus,
-    SessionUpdateRequest,
-    ProfileInsertRequest,
-    APIKeyInsertRequest,
     APIKey,
+    APIKeyInsertRequest,
     APIKeyType,
     APIKeyUpdateRequest,
-    APIKeyType,
-    MessageInsertRequest,
-    Message,
-    MessageUpdateRequest,
-    Subscription,
-    SubscriptionInsertRequest,
-    SubscriptionUpdateRequest,
-    Tool,
-    ToolInsertRequest,
-    ToolUpdateRequest,
-    SubscriptionGetRequest,
-    Tier,
-    TierInsertRequest,
-    TierUpdateRequest,
     Billing,
     BillingInsertRequest,
     BillingUpdateRequest,
+    Crew,
+    CrewInsertRequest,
+    CrewUpdateRequest,
+    Message,
+    MessageInsertRequest,
+    MessageUpdateRequest,
+    Profile,
+    ProfileInsertRequest,
+    ProfileUpdateRequest,
+    Session,
+    SessionInsertRequest,
+    SessionStatus,
+    SessionUpdateRequest,
+    Subscription,
+    SubscriptionGetRequest,
+    SubscriptionInsertRequest,
+    SubscriptionUpdateRequest,
+    Tier,
+    TierInsertRequest,
+    TierUpdateRequest,
+    Tool,
+    ToolInsertRequest,
+    ToolUpdateRequest,
 )
 from src.models.tiers import TierGetRequest
 
@@ -280,7 +277,6 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
-
 def get_tier(id: UUID) -> Tier | None:
     """Gets tiers, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
@@ -350,7 +346,7 @@ def insert_billing(billing: BillingInsertRequest) -> Billing:
         .insert(json.loads(billing.model_dump_json(exclude_none=True)))
         .execute()
     )
-      
+
     return Billing(**response.data[0])
 
 
@@ -376,14 +372,12 @@ def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing |
         supabase.table("billing_information")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
         .eq("profile_id", profile_id)
-
         .execute()
     )
     if len(response.data) == 0:
         return None
-      
-    return Billing(**response.data[0])
 
+    return Billing(**response.data[0])
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
@@ -679,7 +673,7 @@ def get_tool(tool_id: UUID) -> Tool | None:
     if len(response.data) == 0:
         return None
 
-    return Tool(**response.data[0])   
+    return Tool(**response.data[0])
 
 
 def get_tools(

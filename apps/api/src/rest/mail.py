@@ -1,12 +1,14 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import os
-from dotenv import load_dotenv
+import smtplib
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 import diskcache as dc
-from .models import EvaluatedSubmission
 import markdown
+from dotenv import load_dotenv
+
+from .models import EvaluatedSubmission
 
 load_dotenv()
 

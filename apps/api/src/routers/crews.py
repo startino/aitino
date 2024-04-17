@@ -4,7 +4,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
-from src.models import CrewInsertRequest, Crew, CrewUpdateRequest, CrewGetRequest
+from src.models import (
+    Crew,
+    CrewGetRequest,
+    CrewInsertRequest,
+    CrewUpdateRequest,
+)
 
 router = APIRouter(
     prefix="/crews",

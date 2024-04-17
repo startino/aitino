@@ -22,7 +22,7 @@ class ScraperToolInput(BaseModel):
 class ScraperTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = ScraperToolInput
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         web_scrape = SerpAPIWrapper(serpapi_api_key=api_key)
         super().__init__(
             name="scraper_tool",

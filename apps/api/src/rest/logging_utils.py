@@ -1,5 +1,6 @@
-from praw.models import Submission
 from datetime import datetime
+
+from praw.models import Submission
 
 
 def log_relevance_calculation(
@@ -18,4 +19,3 @@ def log_relevance_calculation(
     print(f"Is Relevant: {'Yes' if is_relevant else 'No'}")
     print(f"Reason: {reason}")
     print("\n\n")
-

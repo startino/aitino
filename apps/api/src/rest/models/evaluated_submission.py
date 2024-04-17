@@ -1,4 +1,5 @@
 from typing import Optional
+
 from praw.models import Submission
 from pydantic import BaseModel, ConfigDict
 

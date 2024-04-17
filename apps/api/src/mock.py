@@ -1,5 +1,6 @@
 from .tools import get_file_path_of_example
-DATE="2024-01-01T00:00:00.000Z"
+
+DATE = "2024-01-01T00:00:00.000Z"
 
 fizz_buzz: dict = {
     "id": "00000000-0000-0000-0000-000000000000",

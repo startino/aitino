@@ -1,26 +1,24 @@
-import os
-from dotenv import load_dotenv
 import logging
-import diskcache as dc
+import os
 import threading
 from uuid import uuid4
 
-from src.rest.saving import update_db_with_submission
-from src.rest import mail
-from src.rest.reddit_utils import get_subreddits
-from src.rest.relevance_bot import evaluate_relevance
-from src.rest.interfaces import db
-from src.rest import comment_bot
-from src.rest.models import (
-    PublishCommentRequest,
-    GenerateCommentRequest,
-    FalseLead,
-)
-from src.rest.reddit_worker import RedditStreamWorker
-
+import diskcache as dc
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 
+from src.rest import comment_bot, mail
+from src.rest.interfaces import db
+from src.rest.models import (
+    FalseLead,
+    GenerateCommentRequest,
+    PublishCommentRequest,
+)
+from src.rest.reddit_utils import get_subreddits
+from src.rest.reddit_worker import RedditStreamWorker
+from src.rest.relevance_bot import evaluate_relevance
+from src.rest.saving import update_db_with_submission
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES = (

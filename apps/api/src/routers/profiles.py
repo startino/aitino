@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.interfaces import db
 from src.models import (
     Profile,
-    ProfileUpdateRequest,
+    ProfileGetRequest,
     ProfileInsertRequest,
-    ProfileGetRequest
+    ProfileUpdateRequest,
 )
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
@@ -31,7 +31,7 @@ def get_profile_by_id(profile_id: UUID) -> Profile:
         raise HTTPException(404, "profile not found")
 
     return profile
-    
+
 
 @router.delete("/{profile_id}")
 def delete_profile(profile_id: UUID) -> Profile:
@@ -46,4 +46,3 @@ def update_profile(
         raise HTTPException(404, "profile not found")
 
     return db.update_profile(profile_id, profile_update_request)
-

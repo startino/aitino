@@ -20,7 +20,7 @@ class BraveSearchToolInput(BaseModel):
 class BraveSearchTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = BraveSearchToolInput
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         tool = BraveSearch.from_api_key(api_key=api_key, search_kwargs={"count": 3})
         super().__init__(
             name="brave_search",

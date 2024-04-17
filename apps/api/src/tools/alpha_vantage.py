@@ -21,7 +21,7 @@ class AlphaVantageToolInput(BaseModel):
 class AlphaVantageTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = AlphaVantageToolInput
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: str) -> None:
         alpha_vantage = AlphaVantageAPIWrapper(alphavantage_api_key=api_key)
         super().__init__(
             name="alpha_vantage_tool",

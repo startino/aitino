@@ -12,9 +12,9 @@ from src.dependencies import (
 from src.interfaces import db
 from src.models import (
     Tier,
+    TierGetRequest,
     TierInsertRequest,
     TierUpdateRequest,
-    TierGetRequest,
 )
 
 router = APIRouter(prefix="/tiers", tags=["tiers"])

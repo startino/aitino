@@ -5,13 +5,13 @@ from pydantic import BaseModel, Field
 
 
 class Message(BaseModel):
-    id: UUID 
+    id: UUID
     session_id: UUID
     profile_id: UUID
     sender_id: UUID | None = None  # None means admin here
     recipient_id: UUID | None = None  # None means admin here aswell
     content: str
-    role: str 
+    role: str
     created_at: datetime
 
 
@@ -28,13 +28,13 @@ class MessageUpdateRequest(BaseModel):
     session_id: UUID | None = None
     content: str | None = None
     role: str | None = None
-    recipient_id: UUID | None = None 
-    sender_id: UUID | None = None 
+    recipient_id: UUID | None = None
+    sender_id: UUID | None = None
     profile_id: UUID | None = None
 
 
 class MessageGetRequest(BaseModel):
     session_id: UUID | None = None
     profile_id: UUID | None = None
-    recipient_id: UUID | None = None 
+    recipient_id: UUID | None = None
     sender_id: UUID | None = None
