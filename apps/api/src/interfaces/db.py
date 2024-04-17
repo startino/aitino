@@ -36,7 +36,9 @@ from src.models import (
     Subscription,
     SubscriptionInsertRequest,
     SubscriptionUpdateRequest,
-    SubscriptionGetRequest,
+    Tool,
+    ToolInsertRequest,
+    ToolUpdateRequest,
 )
 
 load_dotenv()
@@ -369,39 +371,6 @@ def delete_crew(crew_id: UUID) -> Crew:
     return Crew(**response.data[0])
 
 
-def get_api_key(api_key_id: UUID) -> APIKey:
-    supabase: Client = create_client(url, key)
-    response = (
-        supabase.table("users_api_keys")
-        .select("*, api_key_types(*)")
-        .eq("id", api_key_id)
-        .single()
-        .execute()
-    )
-
-    api_key_type = APIKeyType(**response.data["api_key_types"])
-    return APIKey(**response.data, api_key_type=api_key_type)
-
-
-def get_tool_api_keys(
-    profile_id: UUID, api_key_type_ids: list[str] | None = None
-) -> dict[str, str]:
-    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
-    supabase: Client = create_client(url, key)
-    # casted_ids = [str(api_key_type_id) for api_key_type_id in api_key_type_ids]
-    query = (
-        supabase.table("users_api_keys")
-        .select("api_key", "api_key_type_id")
-        .eq("profile_id", profile_id)
-    )
-
-    if api_key_type_ids:
-        query = query.in_("api_key_type_id", api_key_type_ids)
-
-    response = query.execute()
-    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
-
-
 def get_api_key(api_key_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
     response = (
@@ -513,6 +482,15 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
 
 
+def get_agent(agent_id: UUID) -> Agent | None:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+    if not response.data:
+        return None
+
+    return Agent(**response.data[0])
+
+
 def get_agents(
     profile_id: UUID | None = None,
     crew_id: UUID | None = None,
@@ -542,15 +520,6 @@ def get_agents(
     response = query.execute()
 
     return [Agent(**data) for data in response.data]
-
-
-def get_agent(agent_id: UUID) -> Agent | None:
-    supabase: Client = create_client(url, key)
-    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
-    if not response.data:
-        return None
-
-    return Agent(**response.data[0])
 
 
 def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
@@ -590,6 +559,60 @@ def delete_agent(agent_id: UUID) -> Agent:
     return Agent(**response.data[0])
 
 
+def get_tool(tool_id: UUID) -> Tool | None:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("tools").select("*").eq("id", tool_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return Tool(**response.data[0])   
+
+
+def get_tools(
+    name: str | None = None,
+    api_key_type_id: UUID | None = None,
+) -> list[Tool]:
+    supabase: Client = create_client(url, key)
+    query = supabase.table("tools").select("*")
+
+    if name:
+        query = query.eq("name", name)
+
+    if api_key_type_id:
+        query = query.eq("api_key_type_id", api_key_type_id)
+
+    response = query.execute()
+
+    return [Tool(**data) for data in response.data]
+
+
+def update_tool(tool_id: UUID, content: ToolUpdateRequest) -> Tool:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tools")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("id", tool_id)
+        .execute()
+    )
+    return Tool(**response.data[0])
+
+
+def insert_tool(tool: ToolInsertRequest) -> Tool:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tools")
+        .insert(json.loads(tool.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+    return Tool(**response.data[0])
+
+
+def delete_tool(tool_id: UUID) -> Tool:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("tools").delete().eq("id", tool_id).execute()
+    return Tool(**response.data[0])
+
+
 def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
     supabase: Client = create_client(url, key)
     agent_tools = supabase.table("agents").select("tools").eq("id", agent_id).execute()
@@ -604,6 +627,33 @@ def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
         .execute()
     )
     return Agent(**response.data[0])
+
+
+def get_tool_api_keys(
+    profile_id: UUID, api_key_type_ids: list[str] | None = None
+) -> dict[str, str]:
+    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
+    supabase: Client = create_client(url, key)
+    # casted_ids = [str(api_key_type_id) for api_key_type_id in api_key_type_ids]
+    query = (
+        supabase.table("users_api_keys")
+        .select("api_key", "api_key_type_id")
+        .eq("profile_id", profile_id)
+    )
+
+    if api_key_type_ids:
+        query = query.in_("api_key_type_id", api_key_type_ids)
+
+    response = query.execute()
+    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
+
+
+def get_profile(profile_id: UUID) -> Profile | None:
+    supabase: Client = create_client(url, key)
+    response = supabase.table("profiles").select("*").eq("id", profile_id).execute()
+    if len(response.data) == 0:
+        return None
+    return Profile(**response.data[0])
 
 
 def get_profiles(
@@ -627,14 +677,6 @@ def get_profiles(
     response = query.execute()
 
     return [Profile(**data) for data in response.data]
-
-
-def get_profile(profile_id: UUID) -> Profile | None:
-    supabase: Client = create_client(url, key)
-    response = supabase.table("profiles").select("*").eq("id", profile_id).execute()
-    if len(response.data) == 0:
-        return None
-    return Profile(**response.data[0])
 
 
 def update_profile(profile_id: UUID, content: ProfileUpdateRequest) -> Profile:

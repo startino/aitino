@@ -48,6 +48,12 @@ from .api_key import (
     APIKeyUpdateRequest,
     APIKeyGetRequest,
 )
+from .tool import (
+    Tool,
+    ToolInsertRequest,
+    ToolUpdateRequest,
+    ToolGetRequest,
+)
 from .user import User
 
 __all__ = [
@@ -88,4 +94,8 @@ __all__ = [
     "SubscriptionInsertRequest",
     "SubscriptionUpdateRequest",
     "SubscriptionGetRequest",
+    "Tool",
+    "ToolInsertRequest",
+    "ToolUpdateRequest",
+    "ToolGetRequest",
 ]

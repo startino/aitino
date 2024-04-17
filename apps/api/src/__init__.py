@@ -45,9 +45,9 @@ app.include_router(profiles.router)
 app.include_router(api_keys.router)
 app.include_router(auth_router.router)
 app.include_router(api_key_types.router)
-app.include_router(rest.router)
 app.include_router(tools.router)
 app.include_router(subscriptions.router)
+app.include_router(rest.router)
 
 app.add_middleware(
     CORSMiddleware,
