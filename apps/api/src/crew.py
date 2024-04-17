@@ -32,8 +32,6 @@ class AutogenCrew:
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self._validate_crew_model(crew_model):
-            raise ValueError("composition is invalid")
         self.crew_model = crew_model
         self.valid_tools = []
 
@@ -136,20 +134,6 @@ class AutogenCrew:
 
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
-
-    def _validate_crew_model(self, crew_model: CrewProcessed) -> bool:
-        if len(crew_model.agents) == 0:
-            return False
-
-        # Validate agents
-        for agent in crew_model.agents:
-            if agent.role == "":
-                return False
-            if agent.title == "":
-                return False
-            if agent.system_message == "":
-                return False
-        return True
 
     def _extract_uuid(self, dictionary: dict[UUID, list[str]]) -> dict[UUID, list[str]]:
         new_dict = {}
