@@ -6,19 +6,30 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-RUN_ID="3e2665a8-6d73-42ee-a64f-50ddcc0621c6"
+RUN_ID = "3e2665a8-6d73-42ee-a64f-50ddcc0621c6"
 
-RESULTS_ID="1046fefb-a540-498f-8b96-7292523559e0"
+RESULTS_ID = "1046fefb-a540-498f-8b96-7292523559e0"
 
 logger = logging.getLogger("root")
 
+
 class GoogleSerperRunToolInput(BaseModel):
-    query: str = Field(title="query", description="search query input, looks up on google search")
+    query: str = Field(
+        title="query", description="search query input, looks up on google search"
+    )
+
 
 class GoogleSerperResultsToolInput(BaseModel):
-    query: str = Field(title="query", description="search query input, looks up on google search and returns metadata")
+    query: str = Field(
+        title="query",
+        description="search query input, looks up on google search and returns metadata",
+    )
 
-    nr_of_results: int = Field(title="number of results", description="number of results shown per page", default=10)
+    nr_of_results: int = Field(
+        title="number of results",
+        description="number of results shown per page",
+        default=10,
+    )
 
     region: str = Field(
         title="region",
@@ -27,7 +38,7 @@ class GoogleSerperResultsToolInput(BaseModel):
     )
     language: str = Field(
         title="language",
-        description="sets the interface language of the search, given as a two letter code, for example English is 'en' and french is 'fr'", 
+        description="sets the interface language of the search, given as a two letter code, for example English is 'en' and french is 'fr'",
         default="en",
     )
     search_type: Literal["news", "search", "places", "images"] = Field(
@@ -44,7 +55,7 @@ class GoogleSerperResultsToolInput(BaseModel):
 
 class GoogleSerperRunTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = GoogleSerperRunToolInput
-    
+
     def __init__(self, api_key):
         search = GoogleSerperAPIWrapper(serper_api_key=api_key)
         super().__init__(
@@ -53,7 +64,7 @@ class GoogleSerperRunTool(Tool, BaseTool):
             description="""search the web with serper's google search api""",
         )
 
-        
+
 class GoogleSerperResultsTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = GoogleSerperResultsToolInput
     api_key: str = ""
@@ -69,22 +80,21 @@ class GoogleSerperResultsTool(Tool, BaseTool):
     def _run(
         self,
         query: str,
-        nr_of_results: int = 10, 
-        region: str = "us", 
+        nr_of_results: int = 10,
+        region: str = "us",
         language: str = "en",
-        search_type: Literal["news", "search", "places", "images"] = "search", 
+        search_type: Literal["news", "search", "places", "images"] = "search",
         time_based_search: str | None = None,
     ):
         """Method passed to the agent to allow it to pass additional optional parameters, similar to the DDG search tool"""
 
         search = GoogleSerperAPIWrapper(
             serper_api_key=self.api_key,
-            k=nr_of_results, 
-            gl=region, 
-            hl=language, 
-            type=search_type, 
-            tbs=time_based_search
+            k=nr_of_results,
+            gl=region,
+            hl=language,
+            type=search_type,
+            tbs=time_based_search,
         )
 
-        return search.results(query) 
-    
+        return search.results(query)

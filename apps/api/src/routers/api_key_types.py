@@ -4,9 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 
 from src.interfaces import db
-from src.models import (
-    APIKeyType,
-)
+from src.models import APIKeyType
 
 router = APIRouter(prefix="/api-key-types", tags=["api key types"])
 

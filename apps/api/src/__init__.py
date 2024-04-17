@@ -19,20 +19,18 @@ from .dependencies import (
 from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewProcessed
+from .routers import agents, api_key_types, api_keys
 from .routers import auth as auth_router
 from .routers import (
-    agents,
+    billing_information,
     crews,
     messages,
-    sessions,
     profiles,
-    api_key_types,
     rest,
-    api_keys,
-    tools,
+    sessions,
     subscriptions,
     tiers,
-    billing_information,
+    tools,
 )
 
 logger = logging.getLogger("root")

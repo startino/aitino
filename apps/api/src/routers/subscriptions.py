@@ -12,9 +12,9 @@ from src.dependencies import (
 from src.interfaces import db
 from src.models import (
     Subscription,
+    SubscriptionGetRequest,
     SubscriptionInsertRequest,
     SubscriptionUpdateRequest,
-    SubscriptionGetRequest,
 )
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
@@ -50,4 +50,3 @@ def update_subscription(
         raise HTTPException(404, "message not found")
 
     return response
-

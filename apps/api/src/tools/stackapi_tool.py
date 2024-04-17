@@ -4,8 +4,8 @@ from typing import Callable, Optional, Type
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
-from langchain_community.utilities import StackExchangeAPIWrapper
 from langchain_community.tools.stackexchange.tool import StackExchangeTool
+from langchain_community.utilities import StackExchangeAPIWrapper
 
 ID = "612ddae6-ecdd-4900-9314-1a2c9de6003d"
 

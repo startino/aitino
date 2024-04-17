@@ -5,11 +5,7 @@ from uuid import UUID
 import jwt
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import (
-    HTTPAuthorizationCredentials,
-    HTTPBearer,
-
-)
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.interfaces import db
 

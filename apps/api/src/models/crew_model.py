@@ -11,11 +11,12 @@ from .edge import Edge
 
 class CrewProcessed(BaseModel):
     receiver_id: UUID
-    delegator_id: UUID | None = None 
+    delegator_id: UUID | None = None
     # None means admin again, so its the original crew (has no parent crew)
     agents: list[Agent]
-    sub_crews: list[Crew] = []  
+    sub_crews: list[Crew] = []
     # Must set delegator_id for each sub_crew in sub_crews
+
 
 class Crew(BaseModel):
     id: UUID

@@ -13,14 +13,14 @@ class SessionStatus(StrEnum):
 
 
 class Session(BaseModel):
-    id: UUID 
+    id: UUID
     created_at: datetime
     profile_id: UUID
-    reply: str 
+    reply: str
     crew_id: UUID
-    title: str 
-    last_opened_at: datetime 
-    status: SessionStatus 
+    title: str
+    last_opened_at: datetime
+    status: SessionStatus
 
 
 class SessionInsertRequest(BaseModel):

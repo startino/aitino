@@ -18,6 +18,7 @@ from .tools import (
 
 logger = logging.getLogger("root")
 
+
 class AutogenCrew:
     def __init__(
         self,
@@ -56,7 +57,7 @@ class AutogenCrew:
             )
             if self.valid_tools
             else None
-        ) 
+        )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
 
         self.base_config_list = autogen.config_list_from_json(
