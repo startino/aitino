@@ -8,7 +8,7 @@ from src.models import (
     APIKeyType,
 )
 
-router = APIRouter(prefix="/api_key_types", tags=["api key types"])
+router = APIRouter(prefix="/api-key-types", tags=["api key types"])
 
 logger = logging.getLogger("root")
 
