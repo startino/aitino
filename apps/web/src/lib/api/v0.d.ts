@@ -79,7 +79,7 @@ export interface paths {
     /** Update Profile */
     patch: operations["update_profile_profiles__profile_id__patch"];
   };
-  "/api_keys/": {
+  "/api-keys/": {
     /**
      * Get Api Keys
      * @description Returns api keys with the api key type as an object with the id, name, description etc.
@@ -88,7 +88,7 @@ export interface paths {
     /** Insert Api Key */
     post: operations["insert_api_key_api_keys__post"];
   };
-  "/api_keys/{api_key_id}": {
+  "/api-keys/{api_key_id}": {
     /** Get Api Key */
     get: operations["get_api_key_api_keys__api_key_id__get"];
     /** Delete Api Key */
@@ -127,6 +127,22 @@ export interface paths {
   "/rest/publish-comment": {
     /** Publish Comment */
     post: operations["publish_comment_rest_publish_comment_post"];
+  };
+  "/tools/{agent_id}": {
+    /** Add Tool */
+    patch: operations["add_tool_tools__agent_id__patch"];
+  };
+  "/subscriptions/": {
+    /** Get Subscriptions */
+    get: operations["get_subscriptions_subscriptions__get"];
+    /** Insert Subscription */
+    post: operations["insert_subscription_subscriptions__post"];
+  };
+  "/subscriptions/{profile_id}": {
+    /** Delete Subscription */
+    delete: operations["delete_subscription_subscriptions__profile_id__delete"];
+    /** Update Subscription */
+    patch: operations["update_subscription_subscriptions__profile_id__patch"];
   };
   "/": {
     /** Redirect To Docs */
@@ -476,7 +492,7 @@ export interface components {
        * Id
        * Format: uuid
        */
-      id?: string;
+      id: string;
       /**
        * Session Id
        * Format: uuid
@@ -493,16 +509,13 @@ export interface components {
       recipient_id?: string | null;
       /** Content */
       content: string;
-      /**
-       * Role
-       * @default user
-       */
-      role?: string;
+      /** Role */
+      role: string;
       /**
        * Created At
        * Format: date-time
        */
-      created_at?: string;
+      created_at: string;
     };
     /** MessageInsertRequest */
     MessageInsertRequest: {
@@ -630,39 +643,32 @@ export interface components {
        * Id
        * Format: uuid
        */
-      id?: string;
+      id: string;
       /**
        * Created At
        * Format: date-time
        */
-      created_at?: string;
+      created_at: string;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /**
-       * Reply
-       * @default
-       */
-      reply?: string;
+      /** Reply */
+      reply: string;
       /**
        * Crew Id
        * Format: uuid
        */
       crew_id: string;
-      /**
-       * Title
-       * @default Untitled
-       */
-      title?: string;
+      /** Title */
+      title: string;
       /**
        * Last Opened At
        * Format: date-time
        */
-      last_opened_at?: string;
-      /** @default running */
-      status?: components["schemas"]["SessionStatus"];
+      last_opened_at: string;
+      status: components["schemas"]["SessionStatus"];
     };
     /** SessionInsertRequest */
     SessionInsertRequest: {
@@ -737,6 +743,36 @@ export interface components {
       query_params?: {
         [key: string]: string;
       };
+    };
+    /** Subscription */
+    Subscription: {
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Stripe Subscription Id */
+      stripe_subscription_id?: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** SubscriptionInsertRequest */
+    SubscriptionInsertRequest: {
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Stripe Subscription Id */
+      stripe_subscription_id?: string | null;
+    };
+    /** SubscriptionUpdateRequest */
+    SubscriptionUpdateRequest: {
+      /** Stripe Subscription Id */
+      stripe_subscription_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1629,6 +1665,126 @@ export interface operations {
       200: {
         content: {
           "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Add Tool */
+  add_tool_tools__agent_id__patch: {
+    parameters: {
+      query: {
+        tool_id: string;
+      };
+      path: {
+        agent_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Agent"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Subscriptions */
+  get_subscriptions_subscriptions__get: {
+    parameters: {
+      query: {
+        profile_id?: string | null;
+        stripe_subscription_id?: string | null;
+        created_at: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Subscription */
+  insert_subscription_subscriptions__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionInsertRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Subscription */
+  delete_subscription_subscriptions__profile_id__delete: {
+    parameters: {
+      path: {
+        profile_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Subscription */
+  update_subscription_subscriptions__profile_id__patch: {
+    parameters: {
+      path: {
+        profile_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
         };
       };
       /** @description Validation Error */
