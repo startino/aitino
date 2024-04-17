@@ -318,8 +318,10 @@ def update_tier(id: UUID, content: TierUpdateRequest) -> Tier | None:
         .update(json.loads(content.model_dump_json(exclude_none=True)))
         .eq("id", id)
         .execute()
+    )
+    return Tier(**response.data[0])
 
-      return Tier(**response.data[0])
+
 def get_billing(
     profile_id: UUID,
 ) -> Billing | None:
