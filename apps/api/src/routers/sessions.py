@@ -157,7 +157,7 @@ async def run_crew(
         crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
     except ValueError as e:
         logger.error(e)
-        raise HTTPException(400, "crew model bad input")
+        raise HTTPException(400, f"crew model bad input: {e}")
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
