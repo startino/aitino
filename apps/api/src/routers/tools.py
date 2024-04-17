@@ -38,7 +38,11 @@ def insert_tool(tool: ToolInsertRequest) -> Tool:
 
 @router.delete("/{tool_id}")
 def delete_tool(tool_id: UUID) -> Tool:
-    return db.delete_tool(tool_id)
+    response = db.delete_tool(tool_id)
+    if not response:
+        raise HTTPException(404, "could not find tool")
+    
+    return response
 
 
 @router.patch("/{tool_id}")

@@ -721,9 +721,12 @@ def insert_tool(tool: ToolInsertRequest) -> Tool:
     return Tool(**response.data[0])
 
 
-def delete_tool(tool_id: UUID) -> Tool:
+def delete_tool(tool_id: UUID) -> Tool | None:
     supabase: Client = create_client(url, key)
     response = supabase.table("tools").delete().eq("id", tool_id).execute()
+    if len(response.data) == 0:
+        return None
+
     return Tool(**response.data[0])
 
 
