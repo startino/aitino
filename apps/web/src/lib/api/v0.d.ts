@@ -79,22 +79,22 @@ export interface paths {
     /** Update Profile */
     patch: operations["update_profile_profiles__profile_id__patch"];
   };
-  "/profiles/{profile_id}/api_keys": {
+  "/api_keys/": {
     /**
      * Get Api Keys
      * @description Returns api keys with the api key type as an object with the id, name, description etc.
      */
-    get: operations["get_api_keys_profiles__profile_id__api_keys_get"];
-  };
-  "/profiles/api_keys": {
+    get: operations["get_api_keys_api_keys__get"];
     /** Insert Api Key */
-    post: operations["insert_api_key_profiles_api_keys_post"];
+    post: operations["insert_api_key_api_keys__post"];
   };
-  "/profiles/api_keys/{api_key_id}": {
+  "/api_keys/{api_key_id}": {
+    /** Get Api Key */
+    get: operations["get_api_key_api_keys__api_key_id__get"];
     /** Delete Api Key */
-    delete: operations["delete_api_key_profiles_api_keys__api_key_id__delete"];
+    delete: operations["delete_api_key_api_keys__api_key_id__delete"];
     /** Update Api Key */
-    patch: operations["update_api_key_profiles_api_keys__api_key_id__patch"];
+    patch: operations["update_api_key_api_keys__api_key_id__patch"];
   };
   "/auth/sign_in/provider": {
     /** Provider Sign In */
@@ -131,10 +131,6 @@ export interface paths {
   "/": {
     /** Redirect To Docs */
     get: operations["redirect_to_docs__get"];
-  };
-  "/compile": {
-    /** Compile */
-    get: operations["compile_compile_get"];
   };
   "/improve": {
     /** Improve */
@@ -364,23 +360,6 @@ export interface components {
       description: string;
       /** Nodes */
       nodes: string[];
-    };
-    /** CrewProcessed */
-    CrewProcessed: {
-      /**
-       * Receiver Id
-       * Format: uuid
-       */
-      receiver_id: string;
-      /** Delegator Id */
-      delegator_id?: string | null;
-      /** Agents */
-      agents: components["schemas"]["Agent"][];
-      /**
-       * Sub Crews
-       * @default []
-       */
-      sub_crews?: components["schemas"]["Crew"][];
     };
     /** CrewUpdateRequest */
     CrewUpdateRequest: {
@@ -816,7 +795,7 @@ export interface operations {
     };
     responses: {
       /** @description Successful Response */
-      200: {
+      201: {
         content: {
           "application/json": components["schemas"]["Session"];
         };
@@ -961,7 +940,7 @@ export interface operations {
     };
     responses: {
       /** @description Successful Response */
-      200: {
+      201: {
         content: {
           "application/json": components["schemas"]["Message"];
         };
@@ -1196,7 +1175,7 @@ export interface operations {
     };
     responses: {
       /** @description Successful Response */
-      200: {
+      201: {
         content: {
           "application/json": components["schemas"]["Agent"];
         };
@@ -1401,10 +1380,12 @@ export interface operations {
    * Get Api Keys
    * @description Returns api keys with the api key type as an object with the id, name, description etc.
    */
-  get_api_keys_profiles__profile_id__api_keys_get: {
+  get_api_keys_api_keys__get: {
     parameters: {
-      path: {
-        profile_id: string;
+      query?: {
+        profile_id?: string | null;
+        api_key_type_id?: string | null;
+        api_key?: string | null;
       };
     };
     responses: {
@@ -1423,7 +1404,7 @@ export interface operations {
     };
   };
   /** Insert Api Key */
-  insert_api_key_profiles_api_keys_post: {
+  insert_api_key_api_keys__post: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["APIKeyInsertRequest"];
@@ -1444,8 +1425,30 @@ export interface operations {
       };
     };
   };
+  /** Get Api Key */
+  get_api_key_api_keys__api_key_id__get: {
+    parameters: {
+      path: {
+        api_key_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["APIKey"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Delete Api Key */
-  delete_api_key_profiles_api_keys__api_key_id__delete: {
+  delete_api_key_api_keys__api_key_id__delete: {
     parameters: {
       path: {
         api_key_id: string;
@@ -1467,7 +1470,7 @@ export interface operations {
     };
   };
   /** Update Api Key */
-  update_api_key_profiles_api_keys__api_key_id__patch: {
+  update_api_key_api_keys__api_key_id__patch: {
     parameters: {
       path: {
         api_key_id: string;
@@ -1643,30 +1646,6 @@ export interface operations {
       200: {
         content: {
           "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Compile */
-  compile_compile_get: {
-    parameters: {
-      query: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string | components["schemas"]["CrewProcessed"];
-          };
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
