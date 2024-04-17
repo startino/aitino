@@ -26,6 +26,12 @@ from .subscription import (
     SubscriptionUpdateRequest,
     SubscriptionGetRequest,
 )
+from .tiers import (
+    Tier,
+    TierInsertRequest,
+    TierUpdateRequest,
+    TierGetRequest,
+)
 from .profile import (
     ProfileInsertRequest,
     Profile,
@@ -88,4 +94,8 @@ __all__ = [
     "SubscriptionInsertRequest",
     "SubscriptionUpdateRequest",
     "SubscriptionGetRequest",
+    "Tier",
+    "TierInsertRequest",
+    "TierUpdateRequest",
+    "TierGetRequest",
 ]

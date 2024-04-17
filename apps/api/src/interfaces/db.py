@@ -36,7 +36,9 @@ from src.models import (
     Subscription,
     SubscriptionInsertRequest,
     SubscriptionUpdateRequest,
-    SubscriptionGetRequest,
+    Tier,
+    TierInsertRequest,
+    TierUpdateRequest,
 )
 
 load_dotenv()
@@ -214,7 +216,7 @@ def get_subscriptions(
     profile_id: UUID | None = None,
     stripe_subscription_id: str | None = None,
 ) -> list[Subscription]:
-    """Gets messages, filtered by what parameters are given"""
+    """Gets subscriptions, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting subscriptions")
     query = supabase.table("subscriptions").select("*")
@@ -231,7 +233,7 @@ def get_subscriptions(
 
 
 def insert_subscription(subscription: SubscriptionInsertRequest) -> Subscription:
-    """Posts a Subscription to the db"""
+    """Posts a subscription to the db"""
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("subscriptions")
@@ -268,6 +270,62 @@ def update_subscription(
         return None
 
     return Subscription(**response.data[0])
+
+
+def get_tier(
+    profile_id: UUID | None = None,
+    stripe_price_id: str | None = None,
+) -> list[Tier]:
+    """Gets tiers, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Getting tiers")
+    query = supabase.table("tiers").select("*")
+
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    if stripe_price_id:
+        query = query.eq("stripe_price_id", stripe_price_id)
+
+    response = query.execute()
+
+    return [Tier(**data) for data in response.data]
+
+
+def insert_tier(tier: TierInsertRequest) -> Tier:
+    """Posts a tier to the db"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tiers")
+        .insert(json.loads(tier.model_dump_json(exclude_none=True)))
+        .execute()
+    )
+    return Tier(**response.data[0])
+
+
+def delete_tier(profile_id: UUID) -> Tier | None:
+    """Deletes a tier by an id (the primary key)"""
+    supabase: Client = create_client(url, key)
+    response = supabase.table("tiers").delete().eq("profile_id", profile_id).execute()
+    if len(response.data) == 0:
+        return None
+
+    return Tier(**response.data[0])
+
+
+def update_tier(profile_id: UUID, content: TierUpdateRequest) -> Tier | None:
+    """Updates a tier by an id"""
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("tiers")
+        .update(json.loads(content.model_dump_json(exclude_none=True)))
+        .eq("profile_id", profile_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
+
+    return Tier(**response.data[0])
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
