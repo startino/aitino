@@ -278,7 +278,7 @@ def get_billings(
     profile_id: UUID | None = None,
     stripe_payment_method: str | None = None,
 ) -> list[Billing]:
-    """Gets messages, filtered by what parameters are given"""
+    """Gets billings, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting billings")
     query = supabase.table("billing_information").select("*")
@@ -295,7 +295,7 @@ def get_billings(
 
 
 def insert_billing(billing: BillingInsertRequest) -> Billing:
-    """Posts a Billing to the db"""
+    """Posts a billing to the db"""
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("billing_information")
