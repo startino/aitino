@@ -6,6 +6,7 @@ from uuid import UUID
 
 from dotenv import load_dotenv
 from fastapi import HTTPException
+from gotrue import Subscription
 from pydantic import ValidationError
 from supabase import Client, create_client
 
@@ -46,7 +47,7 @@ if url is None or key is None:
 logger = logging.getLogger("root")
 
 
-# keeping this function for now, since typing gets crazy with the sessions/run endpoint 
+# keeping this function for now, since typing gets crazy with the sessions/run endpoint
 # if it uses the "get_session_by_param" function
 def get_session(session_id: UUID) -> Session | None:
     """Get a session from the database."""
@@ -59,10 +60,10 @@ def get_session(session_id: UUID) -> Session | None:
 
 
 def get_sessions(
-    profile_id: UUID | None = None, 
+    profile_id: UUID | None = None,
     crew_id: UUID | None = None,
     title: str | None = None,
-    status: str | None = None
+    status: str | None = None,
 ) -> list[Session]:
     """Gets session(s), filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
@@ -127,7 +128,7 @@ def get_messages(
     session_id: UUID | None = None,
     profile_id: UUID | None = None,
     recipient_id: UUID | None = None,
-    sender_id: UUID | None = None
+    sender_id: UUID | None = None,
 ) -> list[Message]:
     """Gets messages, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
@@ -146,20 +147,20 @@ def get_messages(
     if sender_id:
         query = query.eq("sender_id", sender_id)
 
-
     response = query.execute()
 
     return [Message(**data) for data in response.data]
 
-def get_message(message_id: UUID) -> Message | None:
+
+def get_message(message_id: UUID) -> Message:
     """Get a message by its id"""
     supabase: Client = create_client(url, key)
-    response = supabase.table("messages").select("*").eq("id", message_id).execute()
-    if len(response.data) == 0:
-        return None
+    response = (
+        supabase.table("messages").select("*").eq("id", message_id).single().execute()
+    )
+    return Message(**response.data)
 
-    return Message(**response.data[0])
-    
+
 # TODO: combine this function with the insert_message one, or use this post_message for both the endpoint and internal operations
 def post_message(message: Message) -> None:
     """Post a message to the database."""
@@ -173,7 +174,11 @@ def post_message(message: Message) -> None:
 def insert_message(message: MessageInsertRequest) -> Message:
     """Posts a message like the post_message function, but uses a request model"""
     supabase: Client = create_client(url, key)
-    response = supabase.table("messages").insert(json.loads(message.model_dump_json(exclude_none=True))).execute()
+    response = (
+        supabase.table("messages")
+        .insert(json.loads(message.model_dump_json(exclude_none=True)))
+        .execute()
+    )
     return Message(**response.data[0])
 
 
@@ -200,6 +205,26 @@ def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message |
         return None
 
     return Message(**response.data[0])
+
+
+def get_subscriptions(
+    profile_id: UUID | None = None,
+    stripe_payment_method: str | None = None,
+) -> list[Subscription]:
+    """Gets messages, filtered by what parameters are given"""
+    supabase: Client = create_client(url, key)
+    logger.debug(f"Getting subscriptions")
+    query = supabase.table("subscriptions").select("*")
+
+    if profile_id:
+        query = query.eq("profile_id", profile_id)
+
+    if stripe_payment_method:
+        query = query.eq("stripe_payment_method", stripe_payment_method)
+
+    response = query.execute()
+
+    return [Subscription(**data) for data in response.data]
 
 
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
@@ -301,6 +326,20 @@ def delete_crew(crew_id: UUID) -> Crew:
     return Crew(**response.data[0])
 
 
+def get_api_key(api_key_id: UUID) -> APIKey:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("users_api_keys")
+        .select("*, api_key_types(*)")
+        .eq("id", api_key_id)
+        .single()
+        .execute()
+    )
+
+    api_key_type = APIKeyType(**response.data["api_key_types"])
+    return APIKey(**response.data, api_key_type=api_key_type)
+
+
 def get_tool_api_keys(
     profile_id: UUID, api_key_type_ids: list[str] | None = None
 ) -> dict[str, str]:
@@ -398,7 +437,7 @@ def get_api_key_types() -> list[APIKeyType]:
     supabase: Client = create_client(url, key)
     logger.debug("Getting all api key types")
     response = supabase.table("api_key_types").select("*").execute()
-    return  [APIKeyType(**data) for data in response.data]
+    return [APIKeyType(**data) for data in response.data]
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
@@ -410,7 +449,7 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 def get_agents(
     profile_id: UUID | None = None,
     crew_id: UUID | None = None,
-    published: bool | None = None
+    published: bool | None = None,
 ) -> list[Agent] | None:
     """Gets agents, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
@@ -427,9 +466,9 @@ def get_agents(
         response = get_agents_from_crew(crew_id)
         if not response:
             return None
-        
+
         return response
-        
+
     if published is not None:
         query = query.eq("published", published)
 
@@ -484,18 +523,34 @@ def delete_agent(agent_id: UUID) -> Agent:
     return Agent(**response.data[0])
 
 
+def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
+    supabase: Client = create_client(url, key)
+    agent_tools = supabase.table("agents").select("tools").eq("id", agent_id).execute()
+    tool: dict = {"id": tool_id, "parameter": {}}
+
+    agent_tools.data[0]["tools"].append(tool)
+    formatted_tools = agent_tools.data[0]["tools"]
+    response = (
+        supabase.table("agents")
+        .update(json.loads(json.dumps(formatted_tools, default=str)))
+        .eq("id", agent_id)
+        .execute()
+    )
+    return Agent(**response.data[0])
+
+
 def get_profiles(
     tier_id: UUID | None = None,
     display_name: str | None = None,
-    stripe_customer_id: str | None = None
+    stripe_customer_id: str | None = None,
 ) -> list[Profile]:
-    """Gets profiles, filtered by what parameters are given""" 
+    """Gets profiles, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     query = supabase.table("profiles").select("*")
 
     if tier_id:
         query = query.eq("tier_id", tier_id)
-    
+
     if display_name:
         query = query.eq("display_name", display_name)
 
@@ -515,9 +570,7 @@ def get_profile(profile_id: UUID) -> Profile | None:
     return Profile(**response.data[0])
 
 
-def update_profile(
-    profile_id: UUID, content: ProfileUpdateRequest
-) -> Profile:
+def update_profile(profile_id: UUID, content: ProfileUpdateRequest) -> Profile:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("profiles")
@@ -530,7 +583,11 @@ def update_profile(
 
 def insert_profile(profile: ProfileInsertRequest) -> Profile:
     supabase: Client = create_client(url, key)
-    response = supabase.table("profiles").insert(json.loads(profile.model_dump_json(exclude_none=True))).execute()
+    response = (
+        supabase.table("profiles")
+        .insert(json.loads(profile.model_dump_json(exclude_none=True)))
+        .execute()
+    )
     return Profile(**response.data[0])
 
 
@@ -540,7 +597,7 @@ def delete_profile(profile_id: UUID) -> Profile:
     return Profile(**response.data[0])
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     from src.models import Session
 #    print(
 #        insert_session( 
@@ -558,7 +615,7 @@ if __name__ == "__main__":
     #    profile_id=UUID("070c1d2e-9d72-4854-a55e-52ade5a42071"),
     #    content="hello test message",
     #    recipient_id=UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"),
-    #)))
+    # )))
 
     #print(update_message(UUID("c3e4755b-141d-4f77-8ea8-924961ccf36d"), content=MessageUpdateRequest(content="wowzer")))
     #print(get_api_keys(api_key_type_id=UUID("3b64fe26-20b9-4064-907e-f2708b5f1656")))
