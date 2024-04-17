@@ -30,7 +30,6 @@ from .billing_information import (
     Billing,
     BillingInsertRequest,
     BillingUpdateRequest,
-    BillingGetRequest,
 )
 from .profile import (
     ProfileInsertRequest,
@@ -97,5 +96,4 @@ __all__ = [
     "Billing",
     "BillingInsertRequest",
     "BillingUpdateRequest",
-    "BillingGetRequest",
 ]

@@ -21,8 +21,3 @@ class BillingUpdateRequest(BaseModel):
     stripe_payment_method: str | None = None
     description: str | None = None
 
-
-class BillingGetRequest(BaseModel):
-    profile_id: UUID | None = None
-    stripe_payment_method: str | None = None
-    description: str | None = None

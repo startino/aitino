@@ -14,7 +14,6 @@ from src.models import (
     Billing,
     BillingInsertRequest,
     BillingUpdateRequest,
-    BillingGetRequest,
 )
 
 router = APIRouter(prefix="/billing", tags=["billings"])
@@ -22,9 +21,13 @@ router = APIRouter(prefix="/billing", tags=["billings"])
 logger = logging.getLogger("root")
 
 
-@router.get("/")
-def get_billings(q: BillingGetRequest = Depends()) -> list[Billing]:
-    return db.get_billings(q.profile_id, q.stripe_payment_method)
+@router.get("/{id}")
+def get_billings(id: UUID) -> Billing:
+    response = db.get_billing(id)
+    if not response:
+        raise HTTPException(404, "billing information not found")
+
+    return response
 
 
 @router.post("/")

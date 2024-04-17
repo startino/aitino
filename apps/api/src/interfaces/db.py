@@ -40,7 +40,6 @@ from src.models import (
     Billing,
     BillingInsertRequest,
     BillingUpdateRequest,
-    BillingGetRequest,
 )
 
 load_dotenv()
@@ -274,24 +273,22 @@ def update_subscription(
     return Subscription(**response.data[0])
 
 
-def get_billings(
-    profile_id: UUID | None = None,
-    stripe_payment_method: str | None = None,
-) -> list[Billing]:
+def get_billing(
+    profile_id: UUID,
+) -> Billing | None:
     """Gets billings, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
     logger.debug(f"Getting billings")
-    query = supabase.table("billing_information").select("*")
+    response = (
+        supabase.table("billing_information")
+        .select("*")
+        .eq("profile_id", profile_id)
+        .execute()
+    )
+    if len(response.data) == 0:
+        return None
 
-    if profile_id:
-        query = query.eq("profile_id", profile_id)
-
-    if stripe_payment_method:
-        query = query.eq("stripe_payment_method", stripe_payment_method)
-
-    response = query.execute()
-
-    return [Billing(**data) for data in response.data]
+    return Billing(**response.data[0])
 
 
 def insert_billing(billing: BillingInsertRequest) -> Billing:
