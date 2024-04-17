@@ -12,16 +12,21 @@ class SessionStatus(StrEnum):
     IDLE = auto()
 
 
-
+#= Field(default_factory=lambda: uuid4())
+#= Field(default_factory=lambda: datetime.now(tz=UTC))
+#= ""
+#= "Untitled"
+#= Field(default_factory=lambda: datetime.now(tz=UTC))
+#= SessionStatus.RUNNING
 class Session(BaseModel):
-    id: UUID = Field(default_factory=lambda: uuid4())
-    created_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
+    id: UUID 
+    created_at: datetime
     profile_id: UUID
-    reply: str = ""
+    reply: str 
     crew_id: UUID
-    title: str = "Untitled"
-    last_opened_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-    status: SessionStatus = SessionStatus.RUNNING
+    title: str 
+    last_opened_at: datetime 
+    status: SessionStatus 
 
 
 class SessionInsertRequest(BaseModel):

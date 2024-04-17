@@ -1,6 +1,7 @@
+from datetime import UTC, datetime
 import logging
 from typing import cast
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
@@ -23,6 +24,7 @@ from src.models import (
     Session,
     SessionUpdateRequest,
     SessionGetRequest,
+    SessionStatus,
 )
 from src.models.session import SessionInsertRequest
 from src.parser import process_crew, get_processed_crew_by_id
@@ -121,9 +123,14 @@ async def run_crew(
 
     if session is None:
         session = Session(
+            id=uuid4(),
+            created_at=datetime.now(tz=UTC),
             crew_id=request.crew_id,
             profile_id=request.profile_id,
             title=request.session_title,
+            reply="",
+            last_opened_at=datetime.now(tz=UTC),
+            status=SessionStatus.RUNNING
         )
         db.post_session(session)
 

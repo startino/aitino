@@ -81,7 +81,7 @@ markdown_table: dict = {
 #     "created_at": "2024-01-01T00:00:00.000Z",
 # }
 
-tool, prompt = "stack api tool", "what is openai?"
+tool, prompt = "brave search tool", "what is openai?"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
