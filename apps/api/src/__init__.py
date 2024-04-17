@@ -20,7 +20,18 @@ from .improver import PromptType, improve_prompt
 from .interfaces import db
 from .models import CrewProcessed
 from .routers import auth as auth_router
-from .routers import agents, crews, messages, sessions, profiles, api_key_types, rest, api_keys
+from .routers import (
+    agents,
+    crews,
+    messages,
+    sessions,
+    profiles,
+    api_key_types,
+    rest,
+    api_keys,
+    tools,
+    subscriptions,
+)
 
 logger = logging.getLogger("root")
 
@@ -36,6 +47,7 @@ app.include_router(auth_router.router)
 app.include_router(api_key_types.router)
 app.include_router(rest.router)
 app.include_router(tools.router)
+app.include_router(subscriptions.router)
 
 app.add_middleware(
     CORSMiddleware,
