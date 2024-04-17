@@ -159,8 +159,7 @@ async def run_crew(
     except ValueError as e:
         db.delete_session(session.id)
         logger.error(e)
-        raise HTTPException(400, f": {e}")
-
+        raise HTTPException(400, f"crew model bad input: {e}")
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 

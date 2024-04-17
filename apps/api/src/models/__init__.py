@@ -26,6 +26,11 @@ from .subscription import (
     SubscriptionUpdateRequest,
     SubscriptionGetRequest,
 )
+from .billing_information import (
+    Billing,
+    BillingInsertRequest,
+    BillingUpdateRequest,
+)
 from .profile import (
     ProfileInsertRequest,
     Profile,
@@ -88,4 +93,7 @@ __all__ = [
     "SubscriptionInsertRequest",
     "SubscriptionUpdateRequest",
     "SubscriptionGetRequest",
+    "Billing",
+    "BillingInsertRequest",
+    "BillingUpdateRequest",
 ]
