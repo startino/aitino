@@ -1,4 +1,5 @@
 from .tools import get_file_path_of_example
+DATE="2024-01-01T00:00:00.000Z"
 
 fizz_buzz: dict = {
     "id": "00000000-0000-0000-0000-000000000000",
@@ -16,7 +17,7 @@ fizz_buzz: dict = {
         "title": "",
         "content": "Write a program that prints the numbers from 1 to 100. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz”.",
     },
-    "created_at": "2024-01-01T00:00:00.000Z",
+    "created_at": DATE,
 }
 
 markdown_table: dict = {
@@ -35,7 +36,7 @@ markdown_table: dict = {
         "title": "",
         "content": "Create a markdown table of the top 10 large language models comparing their abilities by researching on the internet.",
     },
-    "created_at": "2024-01-01T00:00:00.000Z",
+    "created_at": DATE,
 }
 
 # read_file: dict = {
@@ -55,7 +56,7 @@ markdown_table: dict = {
 #         "title": "",
 #         "content": f"Get the file content of the file '{get_file_path_of_example()}', the 'agent python software' can call what function it has been",
 #     },
-#     "created_at": "2024-01-01T00:00:00.000Z",
+#     "created_at": DATE,
 # }
 # "6e541720-b4ac-4c47-abf3-f17147c9a32a", agent for code reviewing
 # "2ce0b7db-84f7-4d59-8c38-3fcc3fd7da98", agent for writing tables in markdown
@@ -78,7 +79,7 @@ markdown_table: dict = {
 #         "title": "",
 #         "content": f"Move the file: '{get_file_path_of_example()}' to the destination: {get_file_path_of_example().replace('.txt', '_2.txt')} the 'agent python software' can call what function it has been",
 #     },
-#     "created_at": "2024-01-01T00:00:00.000Z",
+#     "created_at": DATE,
 # }
 
 tool, prompt = "brave search tool", "what is openai?"
@@ -98,8 +99,8 @@ test_tool: dict = {
         "title": "",
         "content": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
     },
-    "created_at": "2024-01-01T00:00:00.000Z",
+    "created_at": DATE,
     "edges": [],
-    "updated_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": DATE,
 }
 crew_model = test_tool

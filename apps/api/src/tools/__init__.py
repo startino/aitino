@@ -104,13 +104,13 @@ def generate_tool_from_uuid(
                     api_key = api_keys[tool_key_type]
 
             if has_param(tool_cls, "api_key"):
-                logger.info(f"has parameter 'api_key'")
+                logger.info("has parameter 'api_key'")
                 if not api_key:
                     raise TypeError(
                         "api key should not be none when passed to tool that needs api key"
                     )
                 tool_object = tools[tool_id](api_key=api_key)
-                logger.info(f"creating tool")
+                logger.info("creating tool")
                 return tool_object
 
             logger.info("making tool without api_key")
