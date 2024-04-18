@@ -8,6 +8,10 @@ from pydantic import BaseModel
 from .agent_model import Agent
 from .edge import Edge
 
+class Prompt(BaseModel):
+    id: UUID
+    title: str
+    content: str
 
 class CrewProcessed(BaseModel):
     receiver_id: UUID
@@ -30,14 +34,14 @@ class Crew(BaseModel):
     nodes: list[UUID]
     receiver_id: UUID | None = None
     avatar: str | None = None
-    prompt: dict | None = None
+    prompt: Prompt | None = None
 
 
 class CrewInsertRequest(BaseModel):
     receiver_id: UUID
-    prompt: dict
+    prompt: Prompt
     profile_id: UUID
-    edges: list[dict]
+    edges: list[Edge]
     published: bool
     title: str
     description: str
@@ -46,9 +50,9 @@ class CrewInsertRequest(BaseModel):
 
 class CrewUpdateRequest(BaseModel):
     receiver_id: UUID | None = None
-    prompt: dict | None = None
+    prompt: Prompt | None = None
     profile_id: UUID | None = None
-    edges: list[dict] | None = None
+    edges: list[Edge] | None = None
     published: bool | None = None
     title: str | None = None
     description: str | None = None
