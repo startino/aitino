@@ -98,8 +98,7 @@ export const load = async ({ params, locals: { getSession } }) => {
 				}
 				return d;
 			}),
-		// TODO: Why can id be null here? Verify if we can ensure it's always set in the api's return.
-		messages: session.id ? [] : [],
+		messages: [],
 		agents: await api
 			.GET('/agents/', {
 				params: {
