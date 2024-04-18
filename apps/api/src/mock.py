@@ -96,8 +96,8 @@ test_tool: dict = {
         "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
     ],
     "prompt": {
-        "id": "",
-        "title": "",
+        "id": "54bea062-7612-4f3a-8125-485e6cd6175c",
+        "title": "tool testing",
         "content": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
     },
     "created_at": DATE,
