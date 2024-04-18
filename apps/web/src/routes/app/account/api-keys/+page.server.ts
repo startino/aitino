@@ -7,12 +7,11 @@ import { apiKeySchema } from '$lib/schema';
 
 export const load = async ({ locals: { getSession } }) => {
 	const userSession = await getSession();
-	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
 	const userApiKeys = await api
-		.GET('/profiles/{profile_id}/api_keys', {
+		.GET('/api-keys/', {
 			params: {
-				path: {
+				query: {
 					profile_id: userSession.user.id
 				}
 			}
@@ -31,7 +30,7 @@ export const load = async ({ locals: { getSession } }) => {
 
 	const apiKeyTypes = await api.GET('/api_key_types/').then(({ data: d, error: e }) => {
 		if (e) {
-			console.error(`Error retrieving api key types: ${e.detail}`);
+			console.error(`Error retrieving api key types: ${e}`);
 			return [];
 		}
 		if (!d) {
@@ -48,7 +47,6 @@ export const load = async ({ locals: { getSession } }) => {
 export const actions = {
 	create: async ({ request, locals }) => {
 		const userSession = await locals.getSession();
-		if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
 
 		const form = await superValidate(request, zod(apiKeySchema));
 
@@ -57,7 +55,7 @@ export const actions = {
 		}
 
 		await api
-			.POST('/api_keys/', {
+			.POST('/api-keys/', {
 				body: {
 					profile_id: userSession.user.id,
 					api_key: form.data.value,
@@ -82,7 +80,7 @@ export const actions = {
 		}
 
 		await api
-			.DELETE(`/api_keys/{api_key_id}`, {
+			.DELETE(`/api-keys/{api_key_id}`, {
 				params: { path: { api_key_id: id } }
 			})
 			.then(({ data: d, error: e }) => {

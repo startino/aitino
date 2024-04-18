@@ -1,11 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import api from '$lib/api';
+import type { Session } from '@supabase/supabase-js';
 
-export const load = async ({ url, locals: { getSession } }) => {
-	const userSession = await getSession();
-
-	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
-
+const redirectToSessions = async (userSession: Session) => {
 	const sessions = await api
 		.GET('/sessions/', {
 			params: {
@@ -26,9 +23,17 @@ export const load = async ({ url, locals: { getSession } }) => {
 			return d;
 		});
 
-	if (sessions[0] && !url.searchParams.has('debug')) {
+	if (sessions[0]) {
 		console.log(`Redirecting to session ${sessions[0].id}`);
 		redirect(303, `/app/session/${sessions[0].id}`);
+	}
+};
+
+export const load = async ({ url, locals: { getSession } }) => {
+	const userSession = await getSession();
+
+	if (!url.searchParams.has('debug')) {
+		await redirectToSessions(userSession);
 	}
 
 	const crews = await api
