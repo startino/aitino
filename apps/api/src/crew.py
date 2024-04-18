@@ -5,6 +5,7 @@ from uuid import UUID
 
 import autogen
 from autogen.cache import Cache
+from langchain.tools import BaseTool
 
 from src.models.session import SessionStatus
 
@@ -17,6 +18,7 @@ from .tools import (
 )
 
 logger = logging.getLogger("root")
+
 
 class AutogenCrew:
     def __init__(
@@ -32,10 +34,8 @@ class AutogenCrew:
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self._validate_crew_model(crew_model):
-            raise ValueError("composition is invalid")
         self.crew_model = crew_model
-        self.valid_tools = []
+        self.valid_tools: list[BaseTool] = []
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
@@ -58,7 +58,7 @@ class AutogenCrew:
             )
             if self.valid_tools
             else None
-        ) 
+        )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
 
         self.base_config_list = autogen.config_list_from_json(
@@ -131,25 +131,11 @@ class AutogenCrew:
             ]
         ):
             logger.error(
-                f"on_reply: both ids are none, sender is not admin and recipient is not chat manager"
+                "on_reply: both ids are none, sender is not admin and recipient is not chat manager"
             )
 
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
-
-    def _validate_crew_model(self, crew_model: CrewProcessed) -> bool:
-        if len(crew_model.agents) == 0:
-            return False
-
-        # Validate agents
-        for agent in crew_model.agents:
-            if agent.role == "":
-                return False
-            if agent.title == "":
-                return False
-            if agent.system_message == "":
-                return False
-        return True
 
     def _extract_uuid(self, dictionary: dict[UUID, list[str]]) -> dict[UUID, list[str]]:
         new_dict = {}
@@ -190,7 +176,7 @@ class AutogenCrew:
 
         for agent in crew_model.agents:
             valid_agent_tools = []
-            tool_schemas = {}
+            tool_schemas: list[dict] | None
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -208,6 +194,7 @@ class AutogenCrew:
                             tool, api_key_types, profile_api_keys
                         )
                     except TypeError as e:
+                        logger.error(f"tried to generate tool, got error: {e}")
                         raise e
                     (
                         (

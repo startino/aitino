@@ -1,21 +1,27 @@
+import os
 import time
 from typing import List
-import os
+
 from dotenv import load_dotenv
-
 from gptrim import trim
-from praw.models import Submission
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_community.callbacks import get_openai_callback
+from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from praw.models import Submission
 
-from .models import EvaluatedSubmission, RelevanceResult, FilterOutput, FilterQuestion
-from .prompts import calculate_relevance_prompt, context as company_context, purpose
-from .dummy_submissions import relevant_submissions, irrelevant_submissions
-from .utils import majority_vote, calculate_certainty_from_bools
+from .dummy_submissions import irrelevant_submissions, relevant_submissions
 from .logging_utils import log_relevance_calculation
-
+from .models import (
+    EvaluatedSubmission,
+    FilterOutput,
+    FilterQuestion,
+    RelevanceResult,
+)
+from .prompts import calculate_relevance_prompt
+from .prompts import context as company_context
+from .prompts import purpose
+from .utils import calculate_certainty_from_bools, majority_vote
 
 # Load Enviornment variables
 load_dotenv()
@@ -77,8 +83,8 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
             time.sleep(10)  # Wait for 10 seconds before trying again
 
     raise RuntimeError(
-    "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
-)
+        "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
+    )
 
 
 def summarize_submission(submission: Submission) -> Submission:

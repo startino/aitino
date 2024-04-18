@@ -1,9 +1,8 @@
 import os
 
 from . import comment_bot
-from .models import Lead
 from .interfaces import db
-from .models import EvaluatedSubmission, SavedSubmission
+from .models import EvaluatedSubmission, Lead, SavedSubmission
 
 # Get the current file's directory
 current_dir = os.path.dirname(os.path.realpath(__file__))

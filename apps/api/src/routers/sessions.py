@@ -1,6 +1,7 @@
 import logging
+from datetime import UTC, datetime
 from typing import cast
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
@@ -14,18 +15,18 @@ from src.dependencies import (
 )
 from src.interfaces import db
 from src.models import (
-    CrewProcessed,
     Crew,
+    CrewProcessed,
     Message,
+    Session,
+    SessionGetRequest,
     SessionRunRequest,
     SessionRunResponse,
-    Session,
-    Session,
+    SessionStatus,
     SessionUpdateRequest,
-    SessionGetRequest,
 )
 from src.models.session import SessionInsertRequest
-from src.parser import process_crew, get_processed_crew_by_id
+from src.parser import get_processed_crew_by_id, process_crew
 
 router = APIRouter(
     prefix="/sessions",
@@ -36,9 +37,7 @@ logger = logging.getLogger("root")
 
 
 @router.get("/")
-def get_sessions(
-    q: SessionGetRequest = Depends()
-) -> list[Session]:
+def get_sessions(q: SessionGetRequest = Depends()) -> list[Session]:
     return db.get_sessions(q.profile_id, q.crew_id, q.title, q.status)
 
 
@@ -47,13 +46,13 @@ def get_session(session_id: UUID) -> Session:
     response = db.get_session(session_id)
     if response is None:
         raise HTTPException(500, "failed validation")
-        # not sure if 500 is correct, but this is failed validation on the returned data, so 
+        # not sure if 500 is correct, but this is failed validation on the returned data, so
         # it makes sense in my mind to raise a server error for that
-    
+
     return response
     # pretty sure this response object will always be a session, so casting it to stop typing errors
-    
-    
+
+
 @router.patch("/{session_id}")
 def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
     return db.update_session(session_id, content)
@@ -93,6 +92,8 @@ async def run_crew(
 
     if mock:
         message, crew_model = process_crew(Crew(**mocks.crew_model))
+        request.crew_id = UUID("1c11a9bf-748f-482b-9746-6196f136401a")
+        request.profile_id = UUID("070c1d2e-9d72-4854-a55e-52ade5a42071")
     else:
         message, crew_model = get_processed_crew_by_id(request.crew_id)
 
@@ -118,12 +119,16 @@ async def run_crew(
             status_code=400,
             detail=f"Session with id {request.session_id} found, but has no messages",
         )
-
     if session is None:
         session = Session(
+            id=uuid4(),
+            created_at=datetime.now(tz=UTC),
             crew_id=request.crew_id,
             profile_id=request.profile_id,
             title=request.session_title,
+            reply="",
+            last_opened_at=datetime.now(tz=UTC),
+            status=SessionStatus.RUNNING,
         )
         db.post_session(session)
 
@@ -134,12 +139,14 @@ async def run_crew(
         role: str,
     ) -> None:
         message = Message(
+            id=uuid4(),
             session_id=session.id,
             profile_id=session.profile_id,
             recipient_id=recipient_id,
             sender_id=sender_id,
             content=content,
             role=role,
+            created_at=datetime.now(tz=UTC),
         )
         logger.debug(f"on_reply: {message}")
         db.post_message(message)
@@ -147,8 +154,9 @@ async def run_crew(
     try:
         crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
     except ValueError as e:
+        db.delete_session(session.id)
         logger.error(e)
-        raise HTTPException(400, "crew model bad input")
+        raise HTTPException(400, f"crew model bad input: {e}")
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 

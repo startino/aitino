@@ -2,7 +2,7 @@ import logging
 from uuid import UUID
 
 import autogen
-from fastapi import Depends, FastAPI 
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -18,9 +18,20 @@ from .dependencies import (
 )
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import CrewProcessed
+from .models import Profile
+from .routers import agents, api_key_types, api_keys
 from .routers import auth as auth_router
-from .routers import agents, crews, messages, sessions, profiles, api_key_types, rest, api_keys
+from .routers import (
+    billing_information,
+    crews,
+    messages,
+    profiles,
+    rest,
+    sessions,
+    subscriptions,
+    tiers,
+    tools,
+)
 
 logger = logging.getLogger("root")
 
@@ -34,7 +45,11 @@ app.include_router(profiles.router)
 app.include_router(api_keys.router)
 app.include_router(auth_router.router)
 app.include_router(api_key_types.router)
+app.include_router(tools.router)
+app.include_router(subscriptions.router)
 app.include_router(rest.router)
+app.include_router(tiers.router)
+app.include_router(billing_information.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -97,6 +112,5 @@ def auto_build_crew(general_task: str) -> str:
 
 
 @app.get("/me")
-def get_profile_from_header(current_user=Depends(get_current_user)):
+def get_profile_from_header(current_user=Depends(get_current_user)) -> Profile:
     return current_user
-

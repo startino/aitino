@@ -18,7 +18,7 @@ class Agent(BaseModel):
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
     tools: list[dict]
     description: str | None = None
-    role: str 
+    role: str
     version: str | None = None
 
 

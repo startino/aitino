@@ -1,57 +1,24 @@
-#import logging
-#from uuid import UUID
-#
-#from fastapi import APIRouter, HTTPException
-#from src.models import Crew, Message, Session
-#from src.rest import comment_bot
-#from src.rest.interfaces import db
-#from src.rest.models import PublishCommentRequest, PublishCommentResponse
-#
-#router = APIRouter(prefix="/rest", tags=["rest"])
-#
-#logger = logging.getLogger("root")
-#
-#
-#@router.post("/")
-#def publish_comment(publish_request: PublishCommentRequest):
-#    updated_content = comment_bot.publish_comment(
-#        publish_request.lead_id, 
-#        publish_request.comment, 
-#        publish_request.reddit_username, 
-#        publish_request.reddit_password,
-#    )
-#    if updated_content is None:
-#        raise HTTPException(404, "lead not found")
-#
-#    return updated_content
-#
-#@router.get("/")
-#def get_leads() -> list[PublishCommentResponse]:
-#    return db.get_all_leads()
-#
-import os
-from dotenv import load_dotenv
 import logging
-import diskcache as dc
+import os
 import threading
 from uuid import uuid4
 
-from src.rest.saving import update_db_with_submission
-from src.rest import mail
-from src.rest.reddit_utils import get_subreddits
-from src.rest.relevance_bot import evaluate_relevance
-from src.rest.interfaces import db
-from src.rest import comment_bot
-from src.rest.models import (
-    PublishCommentRequest,
-    GenerateCommentRequest,
-    FalseLead,
-)
-from src.rest.reddit_worker import RedditStreamWorker
-
+import diskcache as dc
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 
+from src.rest import comment_bot, mail
+from src.rest.interfaces import db
+from src.rest.models import (
+    FalseLead,
+    GenerateCommentRequest,
+    PublishCommentRequest,
+)
+from src.rest.reddit_utils import get_subreddits
+from src.rest.reddit_worker import RedditStreamWorker
+from src.rest.relevance_bot import evaluate_relevance
+from src.rest.saving import update_db_with_submission
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES = (

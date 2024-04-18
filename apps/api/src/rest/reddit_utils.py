@@ -1,7 +1,8 @@
+import os
+
+from dotenv import load_dotenv
 from praw import Reddit
 from praw.models import Subreddits
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
 

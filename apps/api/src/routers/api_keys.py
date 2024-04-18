@@ -6,21 +6,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.interfaces import db
 from src.models import (
     APIKey,
+    APIKeyGetRequest,
     APIKeyInsertRequest,
     APIKeyUpdateRequest,
-    APIKeyGetRequest,
 )
 
-router = APIRouter(prefix="/api_keys", tags=["api keys"])
+router = APIRouter(prefix="/api-keys", tags=["api keys"])
 
 
 @router.get("/")
 def get_api_keys(q: APIKeyGetRequest = Depends()) -> list[APIKey]:
     """Returns api keys with the api key type as an object with the id, name, description etc."""
-    if q.profile_id:
-        if not db.get_profile(q.profile_id):
-            raise HTTPException(404, "profile not found")
-    
+    if q.profile_id and not db.get_profile(q.profile_id):
+        raise HTTPException(404, "profile not found")
+
     return db.get_api_keys(q.profile_id, q.api_key_type_id, q.api_key)
 
 
@@ -40,6 +39,7 @@ def insert_api_key(api_key_request: APIKeyInsertRequest) -> APIKey:
         raise HTTPException(404, "could not find given type id")
 
     return response
+
 
 @router.delete("/{api_key_id}")
 def delete_api_key(api_key_id: UUID) -> APIKey:
