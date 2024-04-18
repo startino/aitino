@@ -11,10 +11,13 @@
 	import { writable } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import api from '$lib/api';
-	import { error } from '@sveltejs/kit';
 
 	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
 		getContext('crew');
+
+	let openAgentLibrary = false;
+
+	let status: 'saving' | 'running' | 'idle' = 'idle';
 
 	async function save() {
 		toast.message('Saving crew...');
@@ -77,6 +80,30 @@
 		]);
 
 		$count.prompts++;
+	}
+
+	function addAgent(data: any) {
+		if ($count.agents >= AGENT_LIMIT) return;
+
+		const existingNode = $nodes.find((node) => node.id === id);
+		if (existingNode) {
+			console.log(`Node with ID ${id} already exists.`);
+			return;
+		}
+
+		const position = { ...getViewport() };
+		nodes.update((v) => [
+			...v,
+			{
+				id: id,
+				type: 'agent',
+				position,
+				selectable: false,
+				data
+			}
+		]);
+
+		$count.agents++;
 	}
 
 	let panelActions: PanelAction[];
