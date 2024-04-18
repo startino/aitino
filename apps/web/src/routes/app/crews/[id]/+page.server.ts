@@ -62,8 +62,7 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
-	const session = await getSession();
-	const profileId = session?.user?.id as string;
+	const userSession = await getSession();
 
 	const crew = await api
 		.GET('/crews/{crew_id}', {
@@ -94,18 +93,18 @@ export const load = async ({ locals: { getSession }, params }) => {
 		.GET('/agents/', {
 			params: {
 				query: {
-					profile_id: profileId
+					profile_id: userSession.user.id
 				}
 			}
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
 				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				return [];
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
@@ -121,11 +120,11 @@ export const load = async ({ locals: { getSession }, params }) => {
 		.then(({ data: d, error: e }) => {
 			if (e) {
 				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				return [];
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
@@ -139,7 +138,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 	}
 
 	// TODO: get the prompt count and receiver agent if it exists
-	const count = { agents: userAgents.length, prompts: 0 };
+	const count = { agents: 0, prompts: 0 };
 	const receiver = null;
 	const nodes = getWritablePrompt(await getNodesByCrewId(crew.id));
 	const edges = processEdges(crew.edges);
@@ -147,7 +146,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 	return {
 		count: count,
 		receiver: receiver,
-		profileId: profileId,
+		profileId: userSession.user.id,
 		crew: crew,
 		agents: userAgents,
 		publishedAgents: publishedAgents,
