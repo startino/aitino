@@ -425,8 +425,7 @@ export interface components {
       receiver_id?: string | null;
       /** Avatar */
       avatar?: string | null;
-      /** Prompt */
-      prompt?: Record<string, never> | null;
+      prompt?: components["schemas"]["Prompt"] | null;
     };
     /** CrewInsertRequest */
     CrewInsertRequest: {
@@ -435,15 +434,14 @@ export interface components {
        * Format: uuid
        */
       receiver_id: string;
-      /** Prompt */
-      prompt: Record<string, never>;
+      prompt: components["schemas"]["Prompt"];
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
       /** Edges */
-      edges: Record<string, never>[];
+      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
       /** Title */
@@ -457,12 +455,11 @@ export interface components {
     CrewUpdateRequest: {
       /** Receiver Id */
       receiver_id?: string | null;
-      /** Prompt */
-      prompt?: Record<string, never> | null;
+      prompt?: components["schemas"]["Prompt"] | null;
       /** Profile Id */
       profile_id?: string | null;
       /** Edges */
-      edges?: Record<string, never>[] | null;
+      edges?: components["schemas"]["Edge"][] | null;
       /** Published */
       published?: boolean | null;
       /** Title */
@@ -698,6 +695,18 @@ export interface components {
       display_name?: string | null;
       /** Stripe Customer Id */
       stripe_customer_id?: string | null;
+    };
+    /** Prompt */
+    Prompt: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Title */
+      title: string;
+      /** Content */
+      content: string;
     };
     /** PublishCommentRequest */
     PublishCommentRequest: {
