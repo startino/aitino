@@ -100,9 +100,39 @@ export interface paths {
     /** Provider Sign In */
     post: operations["provider_sign_in_auth_sign_in_provider_post"];
   };
-  "/api_key_types/": {
+  "/api-key-types/": {
     /** Get All Api Key Types */
     get: operations["get_all_api_key_types_api_key_types__get"];
+  };
+  "/tools/": {
+    /** Get Tools */
+    get: operations["get_tools_tools__get"];
+    /** Insert Tool */
+    post: operations["insert_tool_tools__post"];
+  };
+  "/tools/{tool_id}": {
+    /** Get Tool */
+    get: operations["get_tool_tools__tool_id__get"];
+    /** Delete Tool */
+    delete: operations["delete_tool_tools__tool_id__delete"];
+    /** Update Profile */
+    patch: operations["update_profile_tools__tool_id__patch"];
+  };
+  "/tools/{agent_id}": {
+    /** Add Tool */
+    patch: operations["add_tool_tools__agent_id__patch"];
+  };
+  "/subscriptions/": {
+    /** Get Subscriptions */
+    get: operations["get_subscriptions_subscriptions__get"];
+    /** Insert Subscription */
+    post: operations["insert_subscription_subscriptions__post"];
+  };
+  "/subscriptions/{profile_id}": {
+    /** Delete Subscription */
+    delete: operations["delete_subscription_subscriptions__profile_id__delete"];
+    /** Update Subscription */
+    patch: operations["update_subscription_subscriptions__profile_id__patch"];
   };
   "/rest/": {
     /** Redirect To Docs */
@@ -128,21 +158,31 @@ export interface paths {
     /** Publish Comment */
     post: operations["publish_comment_rest_publish_comment_post"];
   };
-  "/tools/{agent_id}": {
-    /** Add Tool */
-    patch: operations["add_tool_tools__agent_id__patch"];
+  "/tiers/{id}": {
+    /** Get Tier */
+    get: operations["get_tier_tiers__id__get"];
+    /** Delete Tier */
+    delete: operations["delete_tier_tiers__id__delete"];
+    /** Update Tier */
+    patch: operations["update_tier_tiers__id__patch"];
   };
-  "/subscriptions/": {
-    /** Get Subscriptions */
-    get: operations["get_subscriptions_subscriptions__get"];
-    /** Insert Subscription */
-    post: operations["insert_subscription_subscriptions__post"];
+  "/tiers/": {
+    /** Insert Tier */
+    post: operations["insert_tier_tiers__post"];
   };
-  "/subscriptions/{profile_id}": {
-    /** Delete Subscription */
-    delete: operations["delete_subscription_subscriptions__profile_id__delete"];
-    /** Update Subscription */
-    patch: operations["update_subscription_subscriptions__profile_id__patch"];
+  "/billing/{id}": {
+    /** Get Billings */
+    get: operations["get_billings_billing__id__get"];
+  };
+  "/billing/": {
+    /** Insert Billing */
+    post: operations["insert_billing_billing__post"];
+  };
+  "/billing/{profile_id}": {
+    /** Delete Billing */
+    delete: operations["delete_billing_billing__profile_id__delete"];
+    /** Update Billing */
+    patch: operations["update_billing_billing__profile_id__patch"];
   };
   "/": {
     /** Redirect To Docs */
@@ -312,6 +352,42 @@ export interface components {
       description?: string | null;
       /** Role */
       role?: string | null;
+    };
+    /** Billing */
+    Billing: {
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Stripe Payment Method */
+      stripe_payment_method?: string | null;
+      /** Description */
+      description?: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** BillingInsertRequest */
+    BillingInsertRequest: {
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Stripe Payment Method */
+      stripe_payment_method?: string | null;
+      /** Description */
+      description?: string | null;
+    };
+    /** BillingUpdateRequest */
+    BillingUpdateRequest: {
+      /** Stripe Payment Method */
+      stripe_payment_method?: string | null;
+      /** Description */
+      description?: string | null;
     };
     /** Crew */
     Crew: {
@@ -773,6 +849,104 @@ export interface components {
     SubscriptionUpdateRequest: {
       /** Stripe Subscription Id */
       stripe_subscription_id?: string | null;
+    };
+    /** Tier */
+    Tier: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Period */
+      period: number;
+      /** Limit */
+      limit: number;
+      /** Stripe Price Id */
+      stripe_price_id?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Slug */
+      slug?: string | null;
+      /** Image */
+      image?: string | null;
+    };
+    /** TierInsertRequest */
+    TierInsertRequest: {
+      /** Period */
+      period?: number | null;
+      /** Limit */
+      limit?: number | null;
+      /** Stripe Price Id */
+      stripe_price_id?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Slug */
+      slug?: string | null;
+      /** Image */
+      image?: string | null;
+    };
+    /** TierUpdateRequest */
+    TierUpdateRequest: {
+      /** Period */
+      period?: number | null;
+      /** Limit */
+      limit?: number | null;
+      /** Stripe Price Id */
+      stripe_price_id?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Slug */
+      slug?: string | null;
+      /** Image */
+      image?: string | null;
+    };
+    /** Tool */
+    Tool: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+      /** Api Key Type Id */
+      api_key_type_id?: string | null;
+    };
+    /** ToolInsertRequest */
+    ToolInsertRequest: {
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+      /** Api Key Type Id */
+      api_key_type_id?: string | null;
+    };
+    /** ToolUpdateRequest */
+    ToolUpdateRequest: {
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Api Key Type Id */
+      api_key_type_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1565,6 +1739,241 @@ export interface operations {
       };
     };
   };
+  /** Get Tools */
+  get_tools_tools__get: {
+    parameters: {
+      query?: {
+        name?: string | null;
+        api_key_type_id?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Tool"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Tool */
+  insert_tool_tools__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ToolInsertRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Tool"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Tool */
+  get_tool_tools__tool_id__get: {
+    parameters: {
+      path: {
+        tool_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Tool"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Tool */
+  delete_tool_tools__tool_id__delete: {
+    parameters: {
+      path: {
+        tool_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Tool"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Profile */
+  update_profile_tools__tool_id__patch: {
+    parameters: {
+      path: {
+        tool_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ToolUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Tool"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Add Tool */
+  add_tool_tools__agent_id__patch: {
+    parameters: {
+      query: {
+        tool_id: string;
+      };
+      path: {
+        agent_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Agent"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Subscriptions */
+  get_subscriptions_subscriptions__get: {
+    parameters: {
+      query?: {
+        profile_id?: string | null;
+        stripe_subscription_id?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Subscription */
+  insert_subscription_subscriptions__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionInsertRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Subscription */
+  delete_subscription_subscriptions__profile_id__delete: {
+    parameters: {
+      path: {
+        profile_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Subscription */
+  update_subscription_subscriptions__profile_id__patch: {
+    parameters: {
+      path: {
+        profile_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Subscription"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Redirect To Docs */
   redirect_to_docs_rest__get: {
     responses: {
@@ -1675,21 +2084,18 @@ export interface operations {
       };
     };
   };
-  /** Add Tool */
-  add_tool_tools__agent_id__patch: {
+  /** Get Tier */
+  get_tier_tiers__id__get: {
     parameters: {
-      query: {
-        tool_id: string;
-      };
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Agent"];
+          "application/json": components["schemas"]["Tier"];
         };
       };
       /** @description Validation Error */
@@ -1700,20 +2106,18 @@ export interface operations {
       };
     };
   };
-  /** Get Subscriptions */
-  get_subscriptions_subscriptions__get: {
+  /** Delete Tier */
+  delete_tier_tiers__id__delete: {
     parameters: {
-      query: {
-        profile_id?: string | null;
-        stripe_subscription_id?: string | null;
-        created_at: string;
+      path: {
+        id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Subscription"][];
+          "application/json": components["schemas"]["Tier"];
         };
       };
       /** @description Validation Error */
@@ -1724,18 +2128,23 @@ export interface operations {
       };
     };
   };
-  /** Insert Subscription */
-  insert_subscription_subscriptions__post: {
+  /** Update Tier */
+  update_tier_tiers__id__patch: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SubscriptionInsertRequest"];
+        "application/json": components["schemas"]["TierUpdateRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Subscription"];
+          "application/json": components["schemas"]["Tier"];
         };
       };
       /** @description Validation Error */
@@ -1746,8 +2155,74 @@ export interface operations {
       };
     };
   };
-  /** Delete Subscription */
-  delete_subscription_subscriptions__profile_id__delete: {
+  /** Insert Tier */
+  insert_tier_tiers__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TierInsertRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Tier"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Billings */
+  get_billings_billing__id__get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Billing"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Billing */
+  insert_billing_billing__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BillingInsertRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Billing"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Billing */
+  delete_billing_billing__profile_id__delete: {
     parameters: {
       path: {
         profile_id: string;
@@ -1757,7 +2232,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Subscription"];
+          "application/json": components["schemas"]["Billing"];
         };
       };
       /** @description Validation Error */
@@ -1768,8 +2243,8 @@ export interface operations {
       };
     };
   };
-  /** Update Subscription */
-  update_subscription_subscriptions__profile_id__patch: {
+  /** Update Billing */
+  update_billing_billing__profile_id__patch: {
     parameters: {
       path: {
         profile_id: string;
@@ -1777,14 +2252,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SubscriptionUpdateRequest"];
+        "application/json": components["schemas"]["BillingUpdateRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Subscription"];
+          "application/json": components["schemas"]["Billing"];
         };
       };
       /** @description Validation Error */
@@ -1861,7 +2336,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["Profile"];
         };
       };
     };
