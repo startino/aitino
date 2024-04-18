@@ -63,15 +63,15 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
     if not crew.prompt:
         raise HTTPException(400, "got no prompt")
     if len(crew_model.agents) == 0:
-        raise ValueError("crew had no agents")
+        raise HTTPException(400, "crew had no agents")
     # Validate agents
     for agent in crew_model.agents:
         if agent.role == "":
-            raise ValueError(f"agent {agent.id} had no role")
+            raise HTTPException(400, f"agent {agent.id} had no role")
         if agent.title == "":
-            raise ValueError(f"agent {agent.id} had no title")
+            raise HTTPException(400, f"agent {agent.id} had no title")
         if agent.system_message == "":
-            raise ValueError(f"agent {agent.id} had no system message")
+            raise HTTPException(400, f"agent {agent.id} had no system message")
 
     message: str = crew.prompt.content
     return message, crew_model

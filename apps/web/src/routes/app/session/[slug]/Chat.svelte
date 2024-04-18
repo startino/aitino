@@ -3,16 +3,15 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
-	import * as models from '$lib/types/models';
 	import { afterUpdate } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import { toast } from 'svelte-sonner';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
+	import type { schemas } from '$lib/api';
 
-	export let session: models.Session;
-	export let messages: models.Message[];
-	export let agents: models.Agent[];
+	export let session: schemas['Session'];
+	export let messages: schemas['Message'][];
+	export let agents: schemas['Agent'][];
 
 	// Reactivity
 	export let waitingForUser = true;
@@ -32,7 +31,7 @@
 			},
 			async (payload) => {
 				console.log(payload);
-				const message = payload.new as models.Message;
+				const message = payload.new as schemas['Message'];
 				console.log(message);
 				messages = [...messages, message];
 			}
@@ -83,9 +82,10 @@
 		}
 
 		// 'Resume' the conversation to Crew API
-		await fetch(
-			`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
-		);
+		// TODO: implement openapi fetch
+		// await fetch(
+		// 	`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
+		// );
 
 		// Update local status
 		waitingForUser = true;
