@@ -1,10 +1,15 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
-from src.models import CrewRequestModel, CrewResponseModel, CrewUpdateModel
+from src.models import (
+    Crew,
+    CrewGetRequest,
+    CrewInsertRequest,
+    CrewUpdateRequest,
+)
 
 router = APIRouter(
     prefix="/crews",
@@ -14,32 +19,36 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 
+@router.get("/")
+def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
+    return db.get_crews(q.profile_id, q.receiver_id, q.title, q.published)
+
+
 @router.post("/", status_code=201)
-def insert_crew(crew: CrewRequestModel) -> CrewResponseModel:
-    if not db.get_profile_from_id(crew.profile_id):
+def insert_crew(crew: CrewInsertRequest) -> Crew:
+    if not db.get_profile(crew.profile_id):
         raise HTTPException(404, "profile not found")
     return db.insert_crew(crew)
 
 
-@router.get("/{crew_id}")
-def get_crew(crew_id: UUID) -> CrewResponseModel:
-    return db.get_crew_from_id(crew_id)
-
-
-@router.get("/")  # /crews/?by_profile=profile_id
-def get_crews_of_user(by_profile: UUID, ascending: bool = False) -> list[CrewResponseModel]:
-    return db.get_user_crews(by_profile, ascending)
-
-
-@router.get("/published")
-def get_published_crews() -> list[CrewResponseModel]:
-    return db.get_published_crews()
-
-
 @router.patch("/{crew_id}")
-def update_crew(crew_id: UUID, content: CrewUpdateModel) -> CrewResponseModel:
+def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
     logger.debug(content.model_dump())
-    if not db.get_crew_from_id(crew_id):
+    if not db.get_crew(crew_id):
         raise HTTPException(404, "crew not found")
 
     return db.update_crew(crew_id, content)
+
+
+@router.get("/{crew_id}")
+def get_crew_by_id(crew_id: UUID) -> Crew:
+    response = db.get_crew(crew_id)
+    if not response:
+        raise HTTPException(404, "Crew not found")
+
+    return response
+
+
+@router.delete("/{crew_id}")
+def delete_crew(crew_id: UUID) -> Crew:
+    return db.delete_crew(crew_id)

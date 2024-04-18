@@ -16,6 +16,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
+		"noUncheckedIndexedAccess": true,
 		"downlevelIteration": true,
 		/**
         Svelte Preprocess cannot figure out whether you have a value or a type, so tell TypeScript
@@ -26,6 +27,13 @@
         To have warnings/errors of the Svelte compiler at the correct position,
         enable source maps by default.
         */
-		"sourceMap": true
+		"sourceMap": true,
+		"plugins": [
+			{
+				"name": "typescript-svelte-plugin",
+				"enabled": true,
+				"assumeIsSvelteProject": true // if true, skip detection and always assume it's a Svelte project
+			}
+		]
 	}
 }

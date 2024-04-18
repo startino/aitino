@@ -12,9 +12,8 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { formSchema, waitlistSchema, type FormSchema } from '../../routes/schema';
-	import type { ActionData } from '../../routes/$types';
 
-	export let mainform: ActionData;
+	export let mainform;
 	export let notform: any;
 
 	console.log(mainform, 'mainform data');

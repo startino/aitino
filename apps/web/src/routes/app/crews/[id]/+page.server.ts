@@ -1,96 +1,182 @@
-import * as db from '$lib/server/db';
-import type { Crew } from '$lib/types/models';
-import type { CrewLoad } from '$lib/types/loads';
-import type { PageServerLoad, Actions } from '../editor/$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import api, { type schemas } from '$lib/api';
+import type { Edge, Node } from '@xyflow/svelte';
+import { writable } from 'svelte/store';
+import { getWritablePrompt } from '$lib/utils.js';
+import type { CrewContext } from '$lib/types/index.js';
 
-export const load: PageServerLoad = async ({
-	cookies,
-	locals: { getSession, supabase },
-	params
-}) => {
+const processEdges = (crewEdges: schemas['Crew']['edges']): Edge[] => {
+	let edges: Edge[] = [];
+
+	for (let edge of crewEdges) {
+		edges.push({
+			id: edge.id,
+			source: edge.source,
+			target: edge.target,
+			sourceHandle: edge.sourceHandle,
+			targetHandle: edge.targetHandle,
+			selected: false
+		});
+	}
+	return edges;
+};
+
+const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
+	const agents = await api
+		.GET('/agents/', {
+			params: {
+				query: {
+					crew_id: crew_id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving agents: ${e.detail}`);
+				return null;
+			}
+			if (!d) {
+				console.error(`No data returned from agents`);
+				return null;
+			}
+			return d;
+		});
+	if (!agents) {
+		return [];
+	}
+
+	let nodes: Node[] = [];
+
+	for (let agent of agents) {
+		nodes.push({
+			id: agent.id,
+			type: 'agent',
+			position: { x: 0, y: 0 },
+			selectable: false,
+			data: { ...agent }
+		});
+	}
+
+	return nodes;
+};
+
+export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
 
-	let crew: Crew = {
-		id: crypto.randomUUID(),
-		profile_id: profileId,
-		receiver_id: '',
-		title: 'Untitled Crew',
-		description: 'No description',
-		nodes: [],
-		edges: [],
-		created_at: '',
-		published: false,
-		avatar: '',
-		prompt: null
-	};
+	const crew = await api
+		.GET('/crews/{crew_id}', {
+			params: {
+				path: {
+					crew_id: id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e.detail}`);
+				return null;
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return null;
+			}
+			return d;
+		});
 
-	const userAgents = db.getAgents(profileId);
-	const publishedAgents = db.getPublishedAgents();
-
-	const userCrews = await db.getCrew(id);
-
-	console.log(userCrews, 'userCrews', id, 'crewId');
-
-	crew = userCrews ?? crew;
-
-	const { data: crewAgents, error } = await supabase.from('agents').select().in('id', crew.nodes);
-
-	if (!error) {
-		// maps agents data to svelte flow nodes
-		crew.nodes = crewAgents.map((a) => ({
-			id: a.id,
-			type: 'agent',
-			position: { x: 0, y: 0 },
-			selectable: false,
-			data: { ...a }
-		}));
-
-		crew.prompt &&
-			crew.nodes.push({
-				id: crew.prompt.id,
-				type: 'prompt',
-				position: { x: 0, y: 0 },
-				data: { ...crew.prompt }
-			});
+	if (!crew) {
+		console.error(`Redirecting to '/crews': No crew found with id ${id}`);
+		redirect(303, '/crews');
 	}
 
-	const publishedCrews = db.getPublishedCrews();
+	const userAgents = await api
+		.GET('/agents/', {
+			params: {
+				query: {
+					profile_id: profileId
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving agents: ${e.detail}`);
+				return null;
+			}
+			if (!d) {
+				console.error(`No data returned from agents`);
+				return null;
+			}
+			return d;
+		});
 
-	const data: CrewLoad = {
+	const publishedAgents = await api
+		.GET('/agents/', {
+			params: {
+				query: {
+					published: true
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving agents: ${e.detail}`);
+				return null;
+			}
+			if (!d) {
+				console.error(`No data returned from agents`);
+				return null;
+			}
+			return d;
+		});
+
+	// null check
+	if (!userAgents) {
+		throw error(500, 'Failed to load user agents');
+	}
+	if (!publishedAgents) {
+		throw error(500, 'Failed to load published agents');
+	}
+
+	// TODO: get the prompt count and receiver agent if it exists
+	const count = { agents: userAgents.length, prompts: 0 };
+	const receiver = null;
+	const nodes = getWritablePrompt(await getNodesByCrewId(crew.id));
+	const edges = processEdges(crew.edges);
+
+	return {
+		count: count,
+		receiver: receiver,
 		profileId: profileId,
-		crew,
-		myCrews: userCrews,
-		pulishedCrews: await publishedCrews,
-		myAgents: await userAgents,
-		publishedAgents: await publishedAgents
+		crew: crew,
+		agents: userAgents,
+		publishedAgents: publishedAgents,
+		nodes: nodes,
+		edges: edges
 	};
-
-	return data;
 };
 
-export const actions: Actions = {
-	save: async ({ cookies, request, locals }) => {
+export const actions = {
+	save: async ({ request }) => {
 		const data = await request.json();
 		const prompt = data.nodes.find((n: any) => n.type === 'prompt');
 		const agents = data.nodes.filter((n: any) => n.type === 'agent');
 
-		const { error: err } = await db.postCrew({
-			id: data.id,
-			profile_id: data.profile_id,
-			title: data.title,
-			description: data.description,
-			receiver_id: data.receiver_id,
-			prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
-			nodes: agents.map((n: any) => n.id),
-			edges: data.edges
-		});
-
-		if (err) {
-			console.log(err);
-			throw error(500, 'Failed attempt at saving Crew. Please try again.');
-		}
+		await api
+			.PATCH('/crews/{crew_id}', {
+				params: {
+					path: {
+						crew_id: data.id
+					}
+				},
+				body: {
+					...data,
+					prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
+					nodes: agents.map((n: any) => n.id)
+				}
+			})
+			.catch((e) => {
+				error(500, `Failed saving the Crew: ${e.detail}`);
+			});
 	}
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Loader2 } from 'lucide-svelte';
 	import { getContext } from '$lib/utils';
 	import type { PanelAction } from '$lib/types';
 	import { Button } from '$lib/components/ui/button';
@@ -36,8 +37,17 @@
 						{action.name}
 					</slot>
 				{:else}
-					<Button on:click={action.onclick} variant={action.buttonVariant} class="w-full">
-						{action.name}
+					<Button
+						on:click={action.onclick}
+						variant={action.buttonVariant ?? 'outline'}
+						class="w-full"
+					>
+						<span class="flex gap-2">
+							{#if action.loading}
+								<Loader2 class="animate-spin" />
+							{/if}
+							{action.name}
+						</span>
 					</Button>
 				{/if}
 			</li>

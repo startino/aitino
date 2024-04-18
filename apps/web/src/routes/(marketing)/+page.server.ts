@@ -1,14 +1,13 @@
 import { fail } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
-import { z } from 'zod';
+import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from '../schema';
-import type { PageServerLoad, Actions } from './$types';
 import { waitlistSchema } from '$lib/schema';
 
-export const load: PageServerLoad = async (event) => {
-	const contactForm = await superValidate(formSchema);
-	const waitlistForm = await superValidate(waitlistSchema);
+export const load = async (event) => {
+	const contactForm = await superValidate(zod(formSchema));
+	const waitlistForm = await superValidate(zod(waitlistSchema));
 
 	const session = await event.locals.getSession();
 
@@ -16,9 +15,9 @@ export const load: PageServerLoad = async (event) => {
 	return { contactForm, waitlistForm };
 };
 
-export const actions: Actions = {
+export const actions = {
 	register: async ({ request }) => {
-		const waitlistForm = await superValidate(request, waitlistSchema);
+		const waitlistForm = await superValidate(request, zod(waitlistSchema));
 
 		if (!waitlistForm.valid) {
 			return fail(400, {
@@ -65,7 +64,7 @@ export const actions: Actions = {
 		};
 	},
 	contactUs: async ({ request }) => {
-		const form = await superValidate(request, formSchema);
+		const form = await superValidate(request, zod(formSchema));
 
 		console.log(form, 'from backend');
 
@@ -94,4 +93,4 @@ export const actions: Actions = {
 			success: true
 		};
 	}
-} satisfies Actions;
+};

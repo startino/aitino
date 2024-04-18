@@ -1,3 +1,9 @@
+
+# Should always be applied
+.env
+build/
+public/
+
 #########
 # Linux #
 #########

@@ -1,46 +1,65 @@
-import * as db from '$lib/server/db';
-import { supabase } from '$lib/supabase';
-import { fail } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
+import { error, fail } from '@sveltejs/kit';
+import { message, setError } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
+import { editCrewSchema } from '$lib/schema';
 
-export const load: PageServerLoad = async () => {
-	const data = await db.getAllCrews();
+import api from '$lib/api';
+
+export const load = async ({ locals: { getSession } }) => {
+	const userSession = await getSession();
+
+	const form = await superValidate(zod(editCrewSchema));
+
+	const crews = await api
+		.GET('/crews/', {
+			params: {
+				query: {
+					profile_id: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e.detail}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return [];
+			}
+			return d;
+		});
+
 	return {
-		data
+		crews,
+		form
 	};
 };
 
-export const actions: Actions = {
-	editCrew: async ({ request, url }) => {
-		const id = url.searchParams.get('id');
-		const form = await request.formData();
+export const actions = {
+	editCrew: async ({ request }) => {
+		const form = await superValidate(request, zod(editCrewSchema));
 
-		const title = form.get('title');
-		const description = form.get('description');
-
-		if (!id) {
-			return;
+		if (!form.valid) {
+			return fail(400, { form });
 		}
 
-		console.log(form, 'form', id, 'id');
-
-		const { data, error } = await supabase
-			.from('crews')
-			.update({ title, description, published: form.get('published') === 'on' ? true : false })
-			.eq('id', id);
-
-		console.log(data, 'data', error, 'error');
-
-		if (error) {
-			return fail(400, {
-				success: false,
-				message: error.message
+		await api
+			.PATCH(`/crews/{crew_id}`, {
+				params: {
+					path: {
+						crew_id: form.data.id
+					}
+				},
+				body: {
+					...form.data
+				}
+			})
+			.catch((e) => {
+				setError(form, e.message, { status: 500 });
 			});
-		}
 
-		return {
-			success: true,
-			message: 'Updated Successfully'
-		};
+		return message(form, 'Changes saved successfully!');
 	}
 };

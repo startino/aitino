@@ -1,25 +1,32 @@
+import os
 import time
 from typing import List
-import os
+
 from dotenv import load_dotenv
-
 from gptrim import trim
-from praw.models import Submission
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_community.callbacks import get_openai_callback
+from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from praw.models import Submission
 
-from models import EvaluatedSubmission, RelevanceResult, FilterOutput, FilterQuestion
-from prompts import calculate_relevance_prompt, context as company_context, purpose
-from dummy_submissions import relevant_submissions, irrelevant_submissions
-from utils import majority_vote, calculate_certainty_from_bools
-from logging_utils import log_relevance_calculation
-
+from .dummy_submissions import irrelevant_submissions, relevant_submissions
+from .logging_utils import log_relevance_calculation
+from .models import (
+    EvaluatedSubmission,
+    FilterOutput,
+    FilterQuestion,
+    RelevanceResult,
+)
+from .prompts import calculate_relevance_prompt
+from .prompts import context as company_context
+from .prompts import purpose
+from .utils import calculate_certainty_from_bools, majority_vote
 
 # Load Enviornment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 
 def create_chain(model: str):
     """
@@ -33,7 +40,7 @@ def create_chain(model: str):
     Returns:
     - A processing chain configured to use the specified language model and to parse its output.
     """
-    
+
     llm = ChatOpenAI(model=model, temperature=0.1)
 
     # Set up a parser + inject instructions into the prompt template.
@@ -64,14 +71,20 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
     for _ in range(3):
         try:
             with get_openai_callback() as cb:
-                result = chain.invoke({"query": f"{calculate_relevance_prompt} \n\n #POST CONTENT:\n ```{submission.title}\n{submission.selftext}```"})
+                result = chain.invoke(
+                    {
+                        "query": f"{calculate_relevance_prompt} \n\n #POST CONTENT:\n ```{submission.title}\n{submission.selftext}```"
+                    }
+                )
                 # TODO: Do some cost analysis and saving (for long term insights)
                 return result, cb.total_cost
         except Exception as e:
             print(f"An error occurred while invoke_chain: {e}")
             time.sleep(10)  # Wait for 10 seconds before trying again
 
-    raise Exception("Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached.")
+    raise RuntimeError(
+        "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
+    )
 
 
 def summarize_submission(submission: Submission) -> Submission:
@@ -92,7 +105,7 @@ def summarize_submission(submission: Submission) -> Submission:
     selftext = trim(submission.selftext)
 
     # Short submissions are not summarized
-    if (llm.get_num_tokens(selftext) < 150):
+    if llm.get_num_tokens(selftext) < 150:
         return submission
 
     template = f"""
@@ -122,14 +135,13 @@ def summarize_submission(submission: Submission) -> Submission:
 
     """
 
-
     summary = llm.invoke(template)
     summarized_selftext = summary.content
 
     # Calculate token reduction
     pre_token_count = llm.get_num_tokens(selftext)
     post_token_count = llm.get_num_tokens(str(summarized_selftext))
-    reduction = ( pre_token_count - post_token_count ) / pre_token_count * 100
+    reduction = (pre_token_count - post_token_count) / pre_token_count * 100
 
     # Print the token reduction
     print(f"Token reduction : {reduction:.3f}%")
@@ -141,7 +153,9 @@ def summarize_submission(submission: Submission) -> Submission:
 
 
 # uses gpt-3.5-turbo to filter out irrelevant posts by using simple yes no questions
-def filter_with_questions(submission: Submission, questions: list[FilterQuestion]) -> tuple[bool, str, float]:
+def filter_with_questions(
+    submission: Submission, questions: list[FilterQuestion]
+) -> tuple[bool, str, float]:
     """
     Filters out irrelevant posts by asking simple yes/no questions to the LLM.
     The questions are generated using GPT-3.5-turbo.
@@ -150,7 +164,7 @@ def filter_with_questions(submission: Submission, questions: list[FilterQuestion
 
     Parameters:
     - submission (Submission): The submission object to be filtered.
-    - questions (list[str]): A list of yes-no questions to be asked to the LLM. 
+    - questions (list[str]): A list of yes-no questions to be asked to the LLM.
     YES answers mean the submission is kept (kept).
     NO answers mean the submission is discarded (irrelevant).
 
@@ -182,7 +196,7 @@ def filter_with_questions(submission: Submission, questions: list[FilterQuestion
     Title: {title}
     Content: {selftext}
     """
-    
+
     for question in questions:
 
         prompt = PromptTemplate(
@@ -197,29 +211,38 @@ def filter_with_questions(submission: Submission, questions: list[FilterQuestion
         for i in range(10):
             try:
                 with get_openai_callback() as cb:
-                        result = chain.invoke({"question": question.question, "title": submission.title, "selftext": submission.selftext})
-                        # TODO: Do some cost analysis and saving (for long term insights)
-                        cost += cb.total_cost
+                    result = chain.invoke(
+                        {
+                            "question": question.question,
+                            "title": submission.title,
+                            "selftext": submission.selftext,
+                        }
+                    )
+                    # TODO: Do some cost analysis and saving (for long term insights)
+                    cost += cb.total_cost
+                break
             except Exception as e:
                 print(f"An error occurred while filtering using questions: {e}")
                 time.sleep(2)  # Wait for 10 seconds before trying again
-                if i == 4:
+                if i == 10:
                     return True, "ERRORED", cost
 
         filter_output = FilterOutput.parse_obj(result)
-        
+
         if question.reject_on == filter_output.answer:
             # Remove the submission
             return False, filter_output.source, cost
-    
+
     return True, "SUCCESS", cost
 
 
-def calculate_relevance(model: str,iterations: int, submission: Submission) -> EvaluatedSubmission:
+def calculate_relevance(
+    model: str, iterations: int, submission: Submission
+) -> EvaluatedSubmission:
     """
     Calculates the relevance of a submission by iterating multiple times
     and also calculates the mean certainty of the repetitions.
-    
+
     Parameters:
     - model (str): The model name to use for relevance determination.
     - iterations (int): The number of times to run the calculation.
@@ -233,12 +256,12 @@ def calculate_relevance(model: str,iterations: int, submission: Submission) -> E
 
     cost = 0
     votes: list[bool] = []
-    
+
     total_llm_certainty = 0
     total_vote_certainty = 0
 
     mean_llm_certainty = 0
-    mean_vote_certainty= 0
+    mean_vote_certainty = 0
 
     # Setup the weights
     vote_weight = 0
@@ -248,7 +271,7 @@ def calculate_relevance(model: str,iterations: int, submission: Submission) -> E
     reasons: list[str] = []
 
     # Calculate mean relevance scores using 3.5-turbo
-    for _ in range(0,iterations):
+    for _ in range(0, iterations):
 
         # TODO: implement when summarization becomes more accurate
         # submission = summarize_submission(submission)
@@ -256,27 +279,29 @@ def calculate_relevance(model: str,iterations: int, submission: Submission) -> E
         chain = create_chain(model)
         result, run_cost = invoke_chain(chain, submission)
 
-        votes.append(result['is_relevant'])
+        votes.append(result["is_relevant"])
         cost += run_cost
 
-        total_llm_certainty += result['certainty']
+        total_llm_certainty += result["certainty"]
 
-        reasons.append(result['reason'])
+        reasons.append(result["reason"])
 
     mean_llm_certainty = total_llm_certainty / iterations
     mean_vote_certainty = calculate_certainty_from_bools(votes)
-    
+
     # Calculate final certainty
     certainty = mean_llm_certainty * llm_weight + mean_vote_certainty * vote_weight
 
-    evaluated_submission = EvaluatedSubmission(submission=submission, is_relevant=votes[0], cost=float(cost), reason=reasons[0])
+    evaluated_submission = EvaluatedSubmission(
+        submission=submission, is_relevant=votes[0], cost=float(cost), reason=reasons[0]
+    )
 
     return evaluated_submission
 
 
 def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmission:
     """
-    Determines the relevance of a submission using GPT-3.5-turbo, 
+    Determines the relevance of a submission using GPT-3.5-turbo,
     optionally escalating to GPT-4-turbo for higher accuracy.
 
     Parameters:
@@ -287,14 +312,25 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
     - total_cost (float): The total cost incurred from relevance calculations.
     """
 
-    if (filter):
+    if filter:
         questions = [
-            FilterQuestion(question="Is the author himself a technical person? is/was he a programmer? is/was he a software developer?", reject_on=True),
-            FilterQuestion(question="Has the project already started development?", reject_on=True),
-            FilterQuestion(question="Is the author currently engaged in job searching activities and promoting their technical expertise?", reject_on=True),
-            FilterQuestion(question="Is the author starting a non digital business? Like a bakery, garden business, salon, etc.", reject_on=True),
+            FilterQuestion(
+                question="Is the author himself a technical person? is/was he a programmer? is/was he a software developer?",
+                reject_on=True,
+            ),
+            FilterQuestion(
+                question="Has the project already started development?", reject_on=True
+            ),
+            FilterQuestion(
+                question="Is the author currently engaged in job searching activities and promoting their technical expertise?",
+                reject_on=True,
+            ),
+            FilterQuestion(
+                question="Is the author starting a non digital business? Like a bakery, garden business, salon, etc.",
+                reject_on=True,
+            ),
         ]
-        
+
         keep_submission, source, cost = filter_with_questions(submission, questions)
         if not keep_submission:
             print("Filtered out submission")
@@ -302,10 +338,18 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
             print("Title: ", submission.title)
             print("Selftext: ", submission.selftext)
             print("\n")
-            return EvaluatedSubmission(submission=submission, is_relevant=False, cost=cost, reason=source)
-    
-    evalualuated_submission = calculate_relevance('gpt-4-turbo-preview', 1, submission)
-    log_relevance_calculation('gpt-4-turbo-preview', submission, evalualuated_submission.is_relevant, evalualuated_submission.cost, evalualuated_submission.reason)
+            return EvaluatedSubmission(
+                submission=submission, is_relevant=False, cost=cost, reason=source
+            )
+
+    evalualuated_submission = calculate_relevance("gpt-4-turbo-preview", 1, submission)
+    log_relevance_calculation(
+        "gpt-4-turbo-preview",
+        submission,
+        evalualuated_submission.is_relevant,
+        evalualuated_submission.cost,
+        evalualuated_submission.reason,
+    )
 
     # I've come to conclude that GPT-3.5 sucks.
     # So I am temporarily removing the method of using certainty
@@ -320,12 +364,24 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
 if __name__ == "__main__":
     # Test the filter_submission_with_questions function
     submission = relevant_submissions[4]
-    questions = [FilterQuestion(question="Is the author himself a tech related person? i.e. a coder, programmer, software developer.", reject_on=True),
-                FilterQuestion(question="Has the project already started development?", reject_on=True),
-                FilterQuestion(question="Is the author currently engaged in job searching activities and promoting their technical expertise?", reject_on=True),
-                FilterQuestion(question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.", reject_on=True),
+    questions = [
+        FilterQuestion(
+            question="Is the author himself a tech related person? i.e. a coder, programmer, software developer.",
+            reject_on=True,
+        ),
+        FilterQuestion(
+            question="Has the project already started development?", reject_on=True
+        ),
+        FilterQuestion(
+            question="Is the author currently engaged in job searching activities and promoting their technical expertise?",
+            reject_on=True,
+        ),
+        FilterQuestion(
+            question="Is the author starting a non-tech business? Like a bakery, garden business, salon, etc.",
+            reject_on=True,
+        ),
     ]
     print(filter_with_questions(submission, questions))
 
     submission = relevant_submissions[0]
-    #print(summarize_submission(submission).selftext)
+    # print(summarize_submission(submission).selftext)

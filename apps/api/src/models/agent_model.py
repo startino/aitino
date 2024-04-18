@@ -1,42 +1,59 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel
 
-
-class AgentBaseModel(BaseModel):
-    title: str
-    role: str
-    system_message: str
-    tools: list[dict]
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
+class LLMModel(BaseModel):
+    id: int
+    name: str
 
 
-class AgentModel(AgentBaseModel):
-    id: UUID
-
-
-class AgentRequestModel(AgentBaseModel):
-    description: str | None = None
-    profile_id: UUID
-    version: str | None = None
-    avatar: str
-
-
-class AgentResponseModel(AgentRequestModel):
+class Agent(BaseModel):
     id: UUID
     created_at: datetime
+    title: str
     published: bool
-
-
-class AgentUpdateModel(AgentRequestModel):
-    title: str | None = None
-    role: str | None = None
-    system_message: str | None = None
-    tools: list[dict] | None = None
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"] | None = None
+    profile_id: UUID
+    avatar: str
+    system_message: str
+    #model_ is protected namespace, so changed attribute below to llm_model_
+    llm_model_id: int
+    models: LLMModel
+    tools: list[dict]
     description: str | None = None
-    profile_id: UUID | None = None
+    role: str
     version: str | None = None
+
+
+class AgentInsertRequest(BaseModel):
+    title: str
+    profile_id: UUID
+    avatar: str
+    system_message: str
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
+    tools: list[dict]
+    description: str | None = None
+    role: str
+    version: str | None = None
+
+
+class AgentUpdateModel(BaseModel):
+    title: str | None = None
+    published: bool | None = None
+    profile_id: UUID | None = None
     avatar: str | None = None
+    system_message: str | None = None
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"] | None = None
+    tools: list[dict] | None = None
+    version: str | None = None
+    description: str | None = None
+    role: str | None = None
+
+
+class AgentGetRequest(BaseModel):
+    profile_id: UUID | None = None
+    crew_id: UUID | None = None
+    published: bool | None = None

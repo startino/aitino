@@ -9,7 +9,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			supabase: SupabaseClient;
-			getSession(): Promise<Session | null>;
+			getSession(): Promise<Session>;
 			stripe: Stripe;
 		}
 		interface PageData {

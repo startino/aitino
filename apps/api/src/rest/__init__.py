@@ -1,63 +1,142 @@
-from typing import List
-from saving import save_submission
+import logging
+import os
+import threading
+from uuid import uuid4
+
 import diskcache as dc
-import mail
-from models import FilterQuestion, Lead
-import reddit_utils
-from relevance_bot import evaluate_relevance, invoke_chain, create_chain, summarize_submission, filter_with_questions
-from logging_utils import log_relevance_calculation
-from interfaces import db
-import comment_bot
-from praw.models import Submission
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+
+from . import comment_bot, mail
+from .interfaces import db
+from .models import FalseLead, GenerateCommentRequest, PublishCommentRequest
+from .reddit_utils import get_subreddits
+from .reddit_worker import RedditStreamWorker
+from .relevance_bot import evaluate_relevance
+from .saving import update_db_with_submission
 
 # Relevant subreddits to Startino
-SUBREDDIT_NAMES="SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
+SUBREDDIT_NAMES = (
+    "SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
+)
 
-def start_reddit_stream():
-    # Set up the cache directory
-    cache = dc.Cache('./cache')
+load_dotenv()
+REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
+REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 
-    subreddits = reddit_utils.get_subreddits(SUBREDDIT_NAMES)
+if REDDIT_PASSWORD is None:
+    raise ValueError("REDDIT_PASSWORD is not set")
 
-    for submission in subreddits.stream.submissions():
+if REDDIT_USERNAME is None:
+    raise ValueError("REDDIT_USERNAME is not set")
 
-        # Skip if not a submission (for typing)
-        if not isinstance(submission, Submission):
-            continue
+logger = logging.getLogger("root")
 
-        # TODO: filter by kewords
+app = FastAPI()
+workers = {}
 
-        # Avoid repeating posts using caching
-        is_cached = cache.get(submission.id)
-        if (is_cached):
-            continue
-
-        # Use LLMs to see if submission is relevant (expensive part)
-        evaluated_submission = evaluate_relevance(submission, filter=True)
-        
-        # If submission is relevant
-        if (evaluated_submission.is_relevant):
-
-            # Send email
-            mail.send_submission_via_email(evaluated_submission)
-
-            # Save to database
-            db.post_lead(Lead(
-                redditor=submission.author.name,
-                source="THEIRPOST",
-                last_event="comment_posted",
-                status="subscriber",
-                title=submission.title,
-                body=submission.selftext,
-                url= submission.url))
-            
-            # Comment on the post
-            comment_bot.send_comment(submission)
-
-        # Save to local file and cache
-        save_submission(evaluated_submission)
-        cache.set(submission.id, submission.id)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:8000",
+        "http://localhost:8001",
+        "http://localhost:8080",
+        "http://localhost:8081",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8001",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:8081",
+        "https://aiti.no",
+        "https://api.aiti.no",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-if __name__ == "__main__":
-    start_reddit_stream()
+@app.get("/")
+def redirect_to_docs() -> RedirectResponse:
+    return RedirectResponse(url="/docs")
+
+
+@app.get("/test")
+def test():
+    print("TEST")
+
+
+@app.post("/start")
+def start_stream():
+    worker_id = str(uuid4())
+    worker = RedditStreamWorker(SUBREDDIT_NAMES, REDDIT_USERNAME, REDDIT_PASSWORD)
+    thread = threading.Thread(target=worker.start)
+    workers[worker_id] = (worker, thread)
+    thread.start()
+    return {"worker_id": worker_id}
+
+
+@app.post("/stop/{worker_id}")
+def stop_stream(worker_id: str):
+    worker, thread = workers.get(worker_id, (None, None))
+    if worker is None:
+        raise HTTPException(status_code=404, detail="Worker not found")
+    worker.stop()
+    thread.join(timeout=10)  # Waits 10 seconds for the thread to finish
+
+    if thread.is_alive():
+        logger.error(f"Thread for Reddit worker didn't stop in time")
+
+    del workers[worker_id]  # Cleanup
+
+    return {"message": "Stream stopped"}
+
+
+@app.post("/generate-comment")
+def generate_comment(generate_request: GenerateCommentRequest):
+    comment: str = comment_bot.generate_comment(
+        generate_request.title,
+        generate_request.selftext,
+    )
+    if comment is None:
+        raise HTTPException(404, "comment not found")
+
+    return comment
+
+
+@app.post("/mark-lead-as-irrelevant")
+def mark_lead_as_irrelevant(false_lead: FalseLead):
+    # Mark the lead as irrelevant in 'leads' table
+    lead = db.update_lead(id=false_lead.lead_id, status="rejected")
+
+    if lead is None:
+        raise HTTPException(404, "lead not found")
+
+    # Mark the submission as irrelevant in 'evaluated_submissions' table as a
+    # human answer and review
+    db.update_human_review_for_submission(
+        id=false_lead.submission_id,
+        human_answer=False,
+        correct_reason=false_lead.correct_reason,
+    )
+
+    return {"status": "success"}
+
+
+@app.post("/publish-comment")
+def publish_comment(publish_request: PublishCommentRequest):
+    updated_content = comment_bot.publish_comment(
+        publish_request.lead_id,
+        publish_request.comment,
+        publish_request.reddit_username,
+        publish_request.reddit_password,
+    )
+    if updated_content is None:
+        raise HTTPException(404, "lead not found")
+
+    return updated_content

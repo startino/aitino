@@ -5,57 +5,62 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from .agent_model import AgentModel
+from .agent_model import Agent
+from .edge import Edge
 
+class Prompt(BaseModel):
+    id: UUID
+    title: str
+    content: str
 
-class CrewBaseModel(BaseModel):
+class CrewProcessed(BaseModel):
     receiver_id: UUID
+    delegator_id: UUID | None = None
+    # None means admin again, so its the original crew (has no parent crew)
+    agents: list[Agent]
+    sub_crews: list[Crew] = []
+    # Must set delegator_id for each sub_crew in sub_crews
 
 
-class CrewModel(CrewBaseModel):
-    delegator_id: UUID | None = (
-        None  # None means admin again, so its the original crew (has no parent crew)
-    )
-    agents: list[AgentModel]
-    sub_crews: list[CrewModel] = (
-        []
-    )  # Must set delegator_id for each sub_crew in sub_crews
-
-
-class CrewRequestModel(CrewBaseModel):
-    prompt: dict
+class Crew(BaseModel):
+    id: UUID
+    created_at: datetime
     profile_id: UUID
-    edges: list[dict]
+    edges: list[Edge]
+    published: bool
+    title: str
+    description: str
+    updated_at: datetime
+    nodes: list[UUID]
+    receiver_id: UUID | None = None
+    avatar: str | None = None
+    prompt: Prompt | None = None
+
+
+class CrewInsertRequest(BaseModel):
+    receiver_id: UUID
+    prompt: Prompt
+    profile_id: UUID
+    edges: list[Edge]
     published: bool
     title: str
     description: str
     nodes: list[str]
 
 
-class CrewUpdateModel(BaseModel):
+class CrewUpdateRequest(BaseModel):
     receiver_id: UUID | None = None
-    prompt: dict | None = None
+    prompt: Prompt | None = None
     profile_id: UUID | None = None
-    edges: list[dict] | None = None
+    edges: list[Edge] | None = None
     published: bool | None = None
     title: str | None = None
     description: str | None = None
     nodes: list[str] | None = None
 
-    class Config:
-        exclude_none = True
 
-
-class CrewResponseModel(BaseModel):
-    id: UUID
-    created_at: datetime
-    profile_id: UUID
-    edges: list[dict]
-    published: bool
-    title: str
-    description: str
-    updated_at: datetime
-    nodes: list[str]
+class CrewGetRequest(BaseModel):
+    profile_id: UUID | None = None
     receiver_id: UUID | None = None
-    avatar: str | None = None
-    prompt: dict | None = None
+    title: str | None = None
+    published: bool | None = None

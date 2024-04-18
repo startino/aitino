@@ -5,11 +5,12 @@ from uuid import UUID
 
 import autogen
 from autogen.cache import Cache
+from langchain.tools import BaseTool
 
 from src.models.session import SessionStatus
 
 from .interfaces import db
-from .models import AgentModel, CodeExecutionConfig, CrewModel, Message, Session
+from .models import Agent, CodeExecutionConfig, CrewProcessed, Message, Session
 from .tools import (
     generate_llm_config,
     generate_tool_from_uuid,
@@ -19,24 +20,22 @@ from .tools import (
 logger = logging.getLogger("root")
 
 
-class Crew:
+class AutogenCrew:
     def __init__(
         self,
         profile_id: UUID,
         session: Session,
-        crew_model: CrewModel,
+        crew_model: CrewProcessed,
         on_message: Any | None = None,
-        base_model: str = "gpt-4-turbo-preview",
+        base_model: str = "gpt-4-turbo",
         seed: int = 41,
     ):
         self.seed = seed
         self.profile_id = profile_id
         self.session = session
         self.on_reply = on_message
-        if not self._validate_crew_model(crew_model):
-            raise ValueError("composition is invalid")
         self.crew_model = crew_model
-        self.valid_tools = []
+        self.valid_tools: list[BaseTool] = []
 
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
@@ -131,26 +130,12 @@ class Crew:
                 recipient.name == "chat_manager",
             ]
         ):
-            logger.warn(
-                f"on_reply: both ids are none, sender is not admin and recipient is not chat manager"
+            logger.error(
+                "on_reply: both ids are none, sender is not admin and recipient is not chat manager"
             )
 
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
-
-    def _validate_crew_model(self, crew_model: CrewModel) -> bool:
-        if len(crew_model.agents) == 0:
-            return False
-
-        # Validate agents
-        for agent in crew_model.agents:
-            if agent.role == "":
-                return False
-            if agent.title == "":
-                return False
-            if agent.system_message == "":
-                return False
-        return True
 
     def _extract_uuid(self, dictionary: dict[UUID, list[str]]) -> dict[UUID, list[str]]:
         new_dict = {}
@@ -168,7 +153,7 @@ class Crew:
                 new_dict[key] = value
         return new_dict
 
-    def _format_agent_name(self, agent: AgentModel) -> str:
+    def _format_agent_name(self, agent: Agent) -> str:
         return re.sub(
             r"[^a-zA-Z0-9-]",
             "",
@@ -176,31 +161,42 @@ class Crew:
         )[:64]
 
     def _create_agents(
-        self, crew_model: CrewModel
+        self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
         descriptions = db.get_descriptions([agent.id for agent in crew_model.agents])
         if not descriptions:
             raise ValueError("at least one agent id is invalid")
 
-        formatted_descriptions = self._extract_uuid(
-            descriptions
-        )  # idk why this is the only way i got it working, but will hopefully simplify later...
+        formatted_descriptions = self._extract_uuid(descriptions)
+        # idk why this is the only way i got it working, but will hopefully simplify later...
         # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
-        # logger.warn(f"formatted descriptions: {formatted_descriptions}")
+
+        profile_api_keys = db.get_tool_api_keys(self.profile_id)
+
         for agent in crew_model.agents:
             valid_agent_tools = []
-            tool_schemas = {}
+            tool_schemas: list[dict] | None
+            logger.info(f"agent model name: {agent.models.name}")
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
-                    "model": [agent.model],
+                    "model": [agent.models.name],
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
+            api_key_types = db.get_api_key_type_ids(tool_ids)
+
+            # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
             if len(tool_ids):
                 for tool in tool_ids:
-                    generated_tool = generate_tool_from_uuid(tool)
+                    try:
+                        generated_tool = generate_tool_from_uuid(
+                            tool, api_key_types, profile_api_keys
+                        )
+                    except TypeError as e:
+                        logger.error(f"tried to generate tool, got error: {e}")
+                        raise e
                     (
                         (
                             self.valid_tools.append(generated_tool),
@@ -210,16 +206,12 @@ class Crew:
                         else None
                     )
 
-                logger.warn(f"{self.valid_tools=}")
                 tool_schemas = (
                     generate_llm_config(valid_agent_tools)
                     if valid_agent_tools
                     else None
                 )
 
-            logger.warn(
-                f"agent tools: {agent.tools}, valid agent tools: {valid_agent_tools=}, valid tools: {self.valid_tools}"
-            )
             config = {
                 "seed": self.seed,
                 "temperature": 0,

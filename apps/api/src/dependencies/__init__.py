@@ -1,14 +1,24 @@
 import logging
+import os
 import uuid
 from dataclasses import dataclass
 from typing import Callable, cast
 
+from dotenv import load_dotenv
 from fastapi import HTTPException
+from supabase import Client, create_client
 
-from src.interfaces.db import supabase
 from src.interfaces.redis_cache import get_redis
 
 logger = logging.getLogger("root")
+
+load_dotenv()
+
+url: str | None = os.environ.get("SUPABASE_URL")
+key: str | None = os.environ.get("SUPABASE_ANON_KEY")
+
+if url is None or key is None:
+    raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
 
 
 @dataclass
@@ -40,6 +50,7 @@ def _validate_profile_id(profile_id: str) -> str:
     raises:
         403: Profile id is invalid UUID, 401: If the profile was not found (or tier id is not on the profile)
     """
+    supabase: Client = create_client(url, key)
     try:
         uuid.UUID(profile_id)
     except ValueError:
@@ -90,9 +101,10 @@ def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
     raises:
         404: Invalid tier in given profile id, 429: Exceeded the rate limit
     """
+    supabase: Client = create_client(url, key)
     redis = get_redis()
-    key = f"rate_limit_tiered:{profile_id}"
-    current_requests = cast(int, redis.incr(key))
+    redis_key = f"rate_limit_tiered:{profile_id}"
+    current_requests = cast(int, redis.incr(redis_key))
 
     tier_id = _validate_profile_id(profile_id)
     tier = supabase.table("tiers").select("period", "limit").eq("id", tier_id).execute()
@@ -106,7 +118,7 @@ def rate_limit_tiered(profile_id: str) -> RateLimitResponse:
         raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
     if current_requests == 1:
-        redis.expire(key, period * 3600)
+        redis.expire(redis_key, period * 3600)
     return RateLimitResponse(limit, current_requests, cast(int, redis.ttl(key)))
 
 
