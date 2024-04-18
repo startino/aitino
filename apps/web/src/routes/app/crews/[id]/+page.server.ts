@@ -60,7 +60,7 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 	return nodes;
 };
 
-export const load = async ({ locals: { getSession }, params }): Promise<CrewContext> => {
+export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
@@ -145,14 +145,14 @@ export const load = async ({ locals: { getSession }, params }): Promise<CrewCont
 	const edges = processEdges(crew.edges);
 
 	return {
-		count: writable(count),
-		receiver: writable(receiver),
-		profileId: writable(profileId),
-		crew: writable(crew),
-		agents: writable(userAgents),
-		publishedAgents: writable(publishedAgents),
-		nodes: writable(nodes),
-		edges: writable(edges)
+		count: count,
+		receiver: receiver,
+		profileId: profileId,
+		crew: crew,
+		agents: userAgents,
+		publishedAgents: publishedAgents,
+		nodes: nodes,
+		edges: edges
 	};
 };
 

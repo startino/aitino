@@ -4,10 +4,24 @@
 	import * as CustomNode from '$lib/components/ui/custom-node';
 	import { setContext, getContext, getCleanNodes } from '$lib/utils';
 	import { toast } from 'svelte-sonner';
+	import type { CrewContext } from '$lib/types/index.js';
+	import { writable } from 'svelte/store';
+	import CrewPanel from './CrewPanel.svelte';
 
 	export let data;
 
-	setContext('crew', data);
+	let writableData: CrewContext = {
+		count: writable(data.count),
+		receiver: writable(data.receiver),
+		profileId: writable(data.profileId),
+		crew: writable(data.crew),
+		agents: writable(data.agents),
+		publishedAgents: writable(data.publishedAgents),
+		nodes: writable(data.nodes),
+		edges: writable(data.edges)
+	};
+
+	setContext('crew', writableData);
 	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
 		getContext('crew');
 
@@ -92,5 +106,6 @@
 		}}
 	>
 		<Background class="!bg-background" />
+		<CrewPanel />
 	</SvelteFlow>
 </div>

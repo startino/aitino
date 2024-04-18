@@ -1,14 +1,15 @@
 <script lang="ts">
-	import type { Agent } from '$lib/types/models';
 	import { timeSince } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { createEventDispatcher } from 'svelte';
+	import type { schemas } from '$lib/api';
 
-	const dispatch = createEventDispatcher();
+	const clickDispatch = createEventDispatcher<{ click: schemas['Agent'] }>();
+	const loadDispatch = createEventDispatcher<{ load: schemas['Agent'] }>();
 
-	export let agent: Agent;
+	export let agent: schemas['Agent'];
 </script>
 
 <div class="cursor-pointer hover:scale-[101%]" transition:fade={{ delay: 500, duration: 400 }}>
@@ -17,7 +18,7 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div
 			class="flex items-center justify-between px-6"
-			on:click={() => dispatch('click', { id: agent.id })}
+			on:click={() => clickDispatch('click', agent)}
 		>
 			<div class="flex gap-4 gap-y-4 p-4">
 				<div class="flex h-20 w-20 items-center justify-center rounded-full">
@@ -42,7 +43,7 @@
 				<button
 					class="inline-flex h-10 max-w-xs items-center justify-center whitespace-nowrap rounded-md bg-primary px-12 py-2 text-sm font-bold text-primary-foreground ring-offset-background transition-colors hover:scale-[98%] hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 					on:click|stopPropagation={() => {
-						dispatch('load', agent);
+						loadDispatch('load', agent);
 					}}
 				>
 					Load

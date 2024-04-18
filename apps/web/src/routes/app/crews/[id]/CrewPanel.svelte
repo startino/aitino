@@ -5,19 +5,18 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { AgentLibrary } from '$lib/components/ui/library';
 	import { goto } from '$app/navigation';
-	import { getContext } from '$lib/utils';
 	import type { PanelAction } from '$lib/types';
-	import { PROMPT_LIMIT } from '$lib/config';
+	import { PROMPT_LIMIT, AGENT_LIMIT } from '$lib/config';
 	import { writable } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
+
+	import { getContext, getCleanNodes } from '$lib/utils';
 	import api from '$lib/api';
 
 	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
 		getContext('crew');
 
 	let openAgentLibrary = false;
-
-	let status: 'saving' | 'running' | 'idle' = 'idle';
 
 	async function save() {
 		toast.message('Saving crew...');
@@ -85,9 +84,9 @@
 	function addAgent(data: any) {
 		if ($count.agents >= AGENT_LIMIT) return;
 
-		const existingNode = $nodes.find((node) => node.id === id);
+		const existingNode = $nodes.find((node) => node.id === data.id);
 		if (existingNode) {
-			console.log(`Node with ID ${id} already exists.`);
+			console.log(`Node with ID ${data.id} already exists.`);
 			return;
 		}
 
@@ -95,7 +94,7 @@
 		nodes.update((v) => [
 			...v,
 			{
-				id: id,
+				id: data.id,
 				type: 'agent',
 				position,
 				selectable: false,
@@ -110,7 +109,6 @@
 	$: panelActions = [
 		{
 			name: 'Run',
-			loading: status === 'running',
 			buttonVariant: 'default',
 			onclick: async () => {
 				goto('/app/session');
@@ -148,10 +146,8 @@
 		},
 		{
 			name: 'Save',
-			loading: status === 'saving',
 			onclick: save
-		},
-		{ name: 'Layout', onclick: layout }
+		}
 	];
 </script>
 
@@ -171,8 +167,8 @@
 				</Dialog.Trigger>
 				<Dialog.Content class="max-w-6xl">
 					<AgentLibrary
-						myAgents={agents}
-						{publishedAgents}
+						agents={$agents}
+						publishedAgents={$publishedAgents}
 						on:load-agent={({ detail }) => {
 							addAgent(detail);
 						}}
