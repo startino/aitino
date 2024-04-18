@@ -592,7 +592,7 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+    response = supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
     if not response.data:
         return None
 
@@ -606,7 +606,7 @@ def get_agents(
 ) -> list[Agent] | None:
     """Gets agents, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    query = supabase.table("agents").select("*")
+    query = supabase.table("agents").select("*, models(*)")
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
@@ -819,4 +819,4 @@ def delete_profile(profile_id: UUID) -> Profile:
 if __name__ == "__main__":
     from src.models import Session
 
-    print(get_api_key_type_ids(["612ddae6-ecdd-4900-9314-1a2c9de6003d"]))
+    #print(get_api_key_type_ids(["612ddae6-ecdd-4900-9314-1a2c9de6003d"]))
