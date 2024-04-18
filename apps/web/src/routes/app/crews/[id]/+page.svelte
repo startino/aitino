@@ -22,8 +22,7 @@
 	};
 
 	setContext('crew', writableData);
-	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
-		getContext('crew');
+	let { count, receiver, nodes, edges } = getContext('crew');
 
 	const nodeTypes = {
 		agent: CustomNode.Agent,
