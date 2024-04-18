@@ -18,30 +18,24 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { AgentLibrary } from '$lib/components/ui/library';
 	import * as CustomNode from '$lib/components/ui/custom-node';
-	import { getContext, getWritablePrompt, getCleanNodes } from '$lib/utils';
+	import { getContext, getCleanNodes } from '$lib/utils';
 	import type { PanelAction } from '$lib/types';
-	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config.js';
+	import { AGENT_LIMIT, PROMPT_LIMIT } from '$lib/config';
 	import { goto } from '$app/navigation';
+	import { setContext } from 'svelte';
 
 	export let data;
 
-	const { receiver, count } = getContext('crew');
-	let initialized = false;
-
-	$: if (initialized) {
-		data.crew.receiver_id = $receiver ? $receiver.node.id : null;
-	}
-	let title = data.crew.title;
-	$: data.crew.title = title;
-	let description = data.crew.description;
-	$: data.crew.description = description;
+	setContext('crew', data);
+	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
+		getContext('crew');
 
 	let openAgentLibrary = false;
 
 	let status: 'saving' | 'running' | 'idle' = 'idle';
 
-	let actions: PanelAction[];
-	$: actions = [
+	let panelActions: PanelAction[];
+	$: panelActions = [
 		{
 			name: 'Run',
 			loading: status === 'running',
@@ -67,8 +61,8 @@
 					{
 						nodes: getCleanNodes($nodes),
 						edges: $edges,
-						title,
-						description,
+						title: $crew.title,
+						description: $crew.description,
 						receiver_id: $receiver?.node.id ?? null
 					},
 					null,
@@ -138,21 +132,13 @@
 		return { nodes, edges };
 	}
 
-	const nodes = writable<Node[]>(getWritablePrompt(data.nodes));
-	const edges = writable<Edge[]>(data.edges);
-
-	$: data.nodes = getCleanNodes($nodes);
-	$: data.edges = $edges;
-
-	layout();
-
 	async function save() {
 		status = 'saving';
 
 		const response = await (
 			await fetch('?/save', {
 				method: 'POST',
-				body: JSON.stringify(data.crew)
+				body: JSON.stringify(crew)
 			})
 		).json();
 
@@ -187,9 +173,9 @@
 	function addAgent(data: any) {
 		if ($count.agents >= AGENT_LIMIT) return;
 
-		const existingNode = $nodes.find((node) => node.id === data.id);
+		const existingNode = $nodes.find((node) => node.id === id);
 		if (existingNode) {
-			console.log(`Node with ID ${data.id} already exists.`);
+			console.log(`Node with ID ${id} already exists.`);
 			return;
 		}
 
@@ -197,7 +183,7 @@
 		nodes.update((v) => [
 			...v,
 			{
-				id: data.id,
+				id: id,
 				type: 'agent',
 				position,
 				selectable: false,
@@ -230,6 +216,8 @@
 
 		$count.prompts++;
 	}
+
+	layout();
 </script>
 
 <div style="height:100vh;">
@@ -240,9 +228,8 @@
 		{nodeTypes}
 		fitView
 		oninit={() => {
-			setReceiver(data.crew.receiver_id);
-			initialized = true;
-			data.nodes.forEach((n) => {
+			setReceiver($receiver ? $receiver.node.id : null);
+			getCleanNodes($nodes).forEach((n) => {
 				if (n.type === 'agent') {
 					$count.agents++;
 				} else {
@@ -284,7 +271,12 @@
 		<Background class="!bg-background" />
 
 		<Panel position="top-right">
-			<RightEditorSidebar bind:description bind:title {actions} let:action>
+			<RightEditorSidebar
+				bind:description={$crew.description}
+				bind:title={$crew.title}
+				actions={panelActions}
+				let:action
+			>
 				{#if action.isCustom}
 					<Dialog.Root open={openAgentLibrary} onOpenChange={(o) => (openAgentLibrary = o)}>
 						<Dialog.Trigger>
@@ -294,8 +286,8 @@
 						</Dialog.Trigger>
 						<Dialog.Content class="max-w-6xl">
 							<AgentLibrary
-								myAgents={data.myAgents}
-								publishedAgents={data.publishedAgents}
+								myAgents={agents}
+								{publishedAgents}
 								on:load-agent={({ detail }) => {
 									addAgent(detail);
 								}}

@@ -1,6 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
 import type { Edge, Node } from '@xyflow/svelte';
+import { writable } from 'svelte/store';
+import { getWritablePrompt } from '$lib/utils.js';
+import type { CrewContext } from '$lib/types/index.js';
 
 const processEdges = (crewEdges: schemas['Crew']['edges']): Edge[] => {
 	let edges: Edge[] = [];
@@ -57,7 +60,7 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 	return nodes;
 };
 
-export const load = async ({ locals: { getSession }, params }) => {
+export const load = async ({ locals: { getSession }, params }): Promise<CrewContext> => {
 	const { id } = params;
 	const session = await getSession();
 	const profileId = session?.user?.id as string;
@@ -135,13 +138,21 @@ export const load = async ({ locals: { getSession }, params }) => {
 		throw error(500, 'Failed to load published agents');
 	}
 
+	// TODO: get the prompt count and receiver agent if it exists
+	const count = { agents: userAgents.length, prompts: 0 };
+	const receiver = null;
+	const nodes = getWritablePrompt(await getNodesByCrewId(crew.id));
+	const edges = processEdges(crew.edges);
+
 	return {
-		profileId: profileId,
-		crew: crew,
-		myAgents: userAgents,
-		publishedAgents: publishedAgents,
-		nodes: await getNodesByCrewId(crew.id),
-		edges: processEdges(crew.edges)
+		count: writable(count),
+		receiver: writable(receiver),
+		profileId: writable(profileId),
+		crew: writable(crew),
+		agents: writable(userAgents),
+		publishedAgents: writable(publishedAgents),
+		nodes: writable(nodes),
+		edges: writable(edges)
 	};
 };
 

@@ -6,7 +6,6 @@
 	import { afterUpdate } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import { toast } from 'svelte-sonner';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import type { schemas } from '$lib/api';
 
@@ -83,9 +82,10 @@
 		}
 
 		// 'Resume' the conversation to Crew API
-		await fetch(
-			`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
-		);
+		// TODO: implement openapi fetch
+		// await fetch(
+		// 	`${PUBLIC_API_URL}/crew?id=${session.crew_id}&profile_id=${session.profile_id}&session_id=${session.id}&reply=${newMessageContent}`
+		// );
 
 		// Update local status
 		waitingForUser = true;

@@ -3,6 +3,7 @@ import type { Writable } from 'svelte/store';
 
 import type { Variant } from '$lib/components/ui/button';
 import type Stripe from 'stripe';
+import type { schemas } from '$lib/api';
 
 export type SvelteEvent<E extends Event = Event, T extends EventTarget = Element> = E & {
 	currentTarget: EventTarget & T;
@@ -28,6 +29,12 @@ export interface ContextMap {
 export interface CrewContext {
 	receiver: Writable<{ node: Node; targetCount: number } | null>;
 	count: Writable<{ agents: number; prompts: number }>;
+	profileId: Writable<string>;
+	crew: Writable<schemas['Crew']>;
+	agents: Writable<schemas['Agent'][]>;
+	publishedAgents: Writable<schemas['Agent'][]>;
+	nodes: Writable<Node[]>;
+	edges: Writable<Edge[]>;
 }
 
 export type Categories =
