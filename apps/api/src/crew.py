@@ -27,7 +27,7 @@ class AutogenCrew:
         session: Session,
         crew_model: CrewProcessed,
         on_message: Any | None = None,
-        base_model: str = "gpt-4-turbo-preview",
+        base_model: str = "gpt-4-turbo",
         seed: int = 41,
     ):
         self.seed = seed
