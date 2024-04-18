@@ -1,23 +1,21 @@
 <script lang="ts">
 	import SvelteMarkdown from 'svelte-markdown';
-	import * as models from '$lib/types/models';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as utils from '$lib/utils';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
+	import type { schemas } from '$lib/api';
 
-	export let message: models.Message;
-	export let agents: models.Agent[];
+	export let message: schemas['Message'];
+	export let agents: schemas['Agent'][];
 
-	let agent: models.Agent = {
-		id: null,
+	let agent: schemas['Agent'] = {
+		id: '',
 		created_at: Date.now().toString(),
-		updated_at: Date.now().toString(),
 		title: 'Admin',
 		description: 'Acts as the user and admin of the conversation',
 		role: 'Admin',
-		author: 'Futino',
-		model: 'N/A',
+		model: 'gpt-4-turbo-preview',
 		published: false,
 		system_message: 'N/A',
 		profile_id: 'N/A',

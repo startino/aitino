@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 
 	const { status, error } = $page;
@@ -24,9 +24,9 @@
 			>
 				Go back home
 			</a>
-			<a href="/blog" class="text-sm font-semibold text-foreground/70">
-				Check out the blog <span aria-hidden="true">&rarr;</span>
-			</a>
+			<!-- <a href="/blog" class="text-sm font-semibold text-foreground/70"> -->
+			<!-- 	Check out the blog <span aria-hidden="true">&rarr;</span> -->
+			<!-- </a> -->
 		</div>
 	</div>
 </main>

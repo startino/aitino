@@ -94,7 +94,7 @@
 			<Button
 				variant="outline"
 				aria-label="add input"
-				class="border-border rounded-full border"
+				class="rounded-full border border-border"
 				on:click={addInput}
 			>
 				<Plus />

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Loader2 } from 'lucide-svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
 
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -24,27 +23,28 @@
 			const temperature = 0; // Default to 0 if not provided
 			const prompt_type = 'generic'; // Default to generic if not provided
 
-			const apiUrl = `${PUBLIC_API_URL}/improve?word_limit=${wordLimit}&prompt=${encodeURIComponent(value)}&temperature=${temperature}&prompt_type=${prompt_type}`;
-
-			try {
-				const response = await fetch(apiUrl);
-				if (!response.ok) {
-					state = 'error';
-					console.log(`request failed: ${response.status}, ${response.statusText}`);
-				}
-
-				let data = await response.json();
-				console.log(data);
-				state = 'idle';
-				if (data.startsWith('```markdown')) {
-					data = data.substring(11); // Remove the starting ```markdown
-					data = data.substring(0, data.lastIndexOf('```')); // Remove the closing ```
-				}
-				value = data;
-			} catch (error) {
-				state = 'error';
-				console.log(`HTTP error! status: ${error}`);
-			}
+			// TODO: implement openapi fetche
+			// 	const apiUrl = `${PUBLIC_API_URL}/improve?word_limit=${wordLimit}&prompt=${encodeURIComponent(value)}&temperature=${temperature}&prompt_type=${prompt_type}`;
+			//
+			// 	try {
+			// 		const response = await fetch(apiUrl);
+			// 		if (!response.ok) {
+			// 			state = 'error';
+			// 			console.log(`request failed: ${response.status}, ${response.statusText}`);
+			// 		}
+			//
+			// 		let data = await response.json();
+			// 		console.log(data);
+			// 		state = 'idle';
+			// 		if (data.startsWith('```markdown')) {
+			// 			data = data.substring(11); // Remove the starting ```markdown
+			// 			data = data.substring(0, data.lastIndexOf('```')); // Remove the closing ```
+			// 		}
+			// 		value = data;
+			// 	} catch (error) {
+			// 		state = 'error';
+			// 		console.log(`HTTP error! status: ${error}`);
+			// 	}
 		} catch (error) {
 			state = 'error';
 			console.error('Error fetching improved prompt:', error);

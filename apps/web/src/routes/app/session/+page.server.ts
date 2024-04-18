@@ -1,41 +1,63 @@
-import {
-	CrewsService,
-	SessionsService,
-	type CrewResponseModel,
-	type SessionResponse
-} from '$lib/client';
 import { error, redirect } from '@sveltejs/kit';
+import api from '$lib/api';
+import type { Session } from '@supabase/supabase-js';
+
+const redirectToSessions = async (userSession: Session) => {
+	const sessions = await api
+		.GET('/sessions/', {
+			params: {
+				query: {
+					profile_id: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving sessions: ${e.detail}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from sessions`);
+				return [];
+			}
+			return d;
+		});
+
+	if (sessions[0]) {
+		console.log(`Redirecting to session ${sessions[0].id}`);
+		redirect(303, `/app/session/${sessions[0].id}`);
+	}
+};
 
 export const load = async ({ url, locals: { getSession } }) => {
 	const userSession = await getSession();
 
-	if (!userSession) throw error(401, 'You are not logged in. Please log in and try again.');
-
-	const sessions: SessionResponse[] = await SessionsService.getSessionsSessionsGet(
-		userSession.user.id,
-		null
-	).catch((e: unknown) => {
-		console.error(`Error retrieving sessions: ${e}`);
-		return [];
-	});
-
-	if (sessions.length > 0 && !url.searchParams.has('debug')) {
-		console.log(`Redirecting to session ${sessions[0].id}`);
-		redirect(303, `/app/session/${sessions[0].id}`);
+	if (!url.searchParams.has('debug')) {
+		await redirectToSessions(userSession);
 	}
 
-	const crews: CrewResponseModel[] = await CrewsService.getCrewsOfUserCrewsGet(
-		userSession.user.id,
-		false
-	).catch((e: unknown) => {
-		console.error(`Error retrieving crews: ${e}`);
-		return [];
-	});
+	const crews = await api
+		.GET('/crews/', {
+			params: {
+				query: {
+					profile_id: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e.detail}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return [];
+			}
+			return d;
+		});
 
-	const data = {
+	return {
 		profileId: userSession.user.id,
 		crews: crews
 	};
-
-	return data;
 };

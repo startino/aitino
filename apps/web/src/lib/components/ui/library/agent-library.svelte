@@ -4,31 +4,31 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import type { Agent } from '$lib/types/models';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Library } from '$lib/components/ui/community-details';
 	import AgentRow from '../community-details/agent-row.svelte';
+	import type { schemas } from '$lib/api';
 
-	const dispatch = createEventDispatcher();
+	const loadAgentDispatch = createEventDispatcher<{ 'load-agent': schemas['Agent'] }>();
 
-	export let myAgents: Agent[];
-	export let publishedAgents: Agent[];
+	export let agents: schemas['Agent'][] = [];
+	export let publishedAgents: schemas['Agent'][] = [];
 
 	let searchQuery = '';
 	let filterPublished = false;
 	let filterModel = '';
 	let showDetails = false;
-	let displayedAgent: Agent;
+	let displayedAgent: schemas['Agent'];
 
 	// filter the agents based on the search query
-	$: filterAgents = (agents: Agent[]) => {
+	$: filterAgents = (agents: schemas['Agent'][]) => {
 		return agents.filter(
 			(agent) =>
 				(searchQuery === '' ||
 					agent.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 					agent.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					agent.description.some((desc) =>
+					agent.description.some((desc: string) =>
 						desc.toLowerCase().includes(searchQuery.toLowerCase())
 					)) &&
 				(!filterPublished || agent.published) &&
@@ -36,16 +36,11 @@
 		);
 	};
 
-	$: filteredMyAgents = filterAgents(myAgents);
+	$: filteredAgents = filterAgents(agents);
 
 	$: filteredPublishedAgents = filterAgents(publishedAgents);
-	$: showNoResults = filteredMyAgents.length === 0 && searchQuery !== '';
+	$: showNoResults = filteredAgents.length === 0 && searchQuery !== '';
 	$: showNoResultsForPublished = filteredPublishedAgents.length === 0 && searchQuery !== '';
-
-	// funtion to show details of the current agent
-	let showDetailInTheModal = async (id: string) => {
-		displayedAgent = myAgents.find((a) => a.id === id) || publishedAgents.find((a) => a.id === id);
-	};
 
 	// update the search query based on user input
 	function updateSearchQuery(event: Event) {
@@ -112,13 +107,16 @@
 			value="personal"
 			class="h-5/6 space-y-6 overflow-y-scroll [&::-webkit-scrollbar]:hidden"
 		>
-			{#each filteredMyAgents as agent, index (`personal-${agent.id}`)}
+			{#each filteredAgents as agent, index (`personal-${agent.id}`)}
 				<AgentRow
 					{agent}
-					on:click={({ detail }) => ((showDetails = true), showDetailInTheModal(detail.id))}
-					on:load={({ detail }) => {
-						toast.success(`Added a new agent ${detail.title}`);
-						dispatch('load-agent', detail);
+					on:click={({ detail: agent }) => {
+						showDetails = true;
+						displayedAgent = agent;
+					}}
+					on:load={({ detail: agent }) => {
+						toast.success(`Added a new agent ${agent.title}`);
+						loadAgentDispatch('load-agent', agent);
 					}}
 				/>
 			{/each}
@@ -134,10 +132,13 @@
 			{#each filteredPublishedAgents as agent, index (`community-${agent.id}`)}
 				<AgentRow
 					{agent}
-					on:click={() => ((showDetails = true), showDetailInTheModal(agent.id))}
-					on:load={({ detail }) => {
-						toast.success(`Added a new agent ${detail.title}`);
-						dispatch('load-agent', detail);
+					on:click={({ detail: agent }) => {
+						showDetails = true;
+						displayedAgent = agent;
+					}}
+					on:load={({ detail: agent }) => {
+						toast.success(`Added a new agent ${agent.title}`);
+						loadAgentDispatch('load-agent', agent);
 					}}
 				/>
 			{/each}
