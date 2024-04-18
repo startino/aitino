@@ -7,7 +7,7 @@ from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProx
 config_list = autogen.config_list_from_json(
     "OAI_CONFIG_LIST",
     filter_dict={
-        "model": ["gpt-3.5-turbo", "gpt-4-turbo-preview"],
+        "model": ["gpt-3.5-turbo", "gpt-4-turbo"],
     },
 )
 config = {
