@@ -1,18 +1,35 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { editCrewSchema } from '$lib/schema';
 
-import { CrewsService } from '$lib/client';
+import api from '$lib/api';
 
 export const load = async ({ locals: { getSession } }) => {
-	const session = await getSession();
+	const userSession = await getSession();
+
 	const form = await superValidate(zod(editCrewSchema));
 
-	const crews = await CrewsService.getCrewsOfUserCrewsGet(session?.user.id as string).catch((e) => {
-		console.log({ error: e });
-	});
+	const crews = await api
+		.GET('/crews/', {
+			params: {
+				query: {
+					profile_id: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving crews: ${e.detail}`);
+				return [];
+			}
+			if (!d) {
+				console.error(`No data returned from crews`);
+				return [];
+			}
+			return d;
+		});
 
 	return {
 		crews,
@@ -27,9 +44,21 @@ export const actions = {
 		if (!form.valid) {
 			return fail(400, { form });
 		}
-		await CrewsService.updateCrewCrewsCrewIdPatch(form.data.id, form.data).catch((e) => {
-			setError(form, e.message, { status: 500 });
-		});
+
+		await api
+			.PATCH(`/crews/{crew_id}`, {
+				params: {
+					path: {
+						crew_id: form.data.id
+					}
+				},
+				body: {
+					...form.data
+				}
+			})
+			.catch((e) => {
+				setError(form, e.message, { status: 500 });
+			});
 
 		return message(form, 'Changes saved successfully!');
 	}

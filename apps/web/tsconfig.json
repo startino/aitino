@@ -16,6 +16,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
+		"noUncheckedIndexedAccess": true,
 		"downlevelIteration": true,
 		/**
         Svelte Preprocess cannot figure out whether you have a value or a type, so tell TypeScript

@@ -29,7 +29,7 @@
 
 <div class="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-4 p-8">
 	{#each data.crews as crew (crew.id)}
-		<div class="bg-card rounded-lg">
+		<div class="rounded-lg bg-card">
 			<img src={crew.avatar} alt={`Avatar of ${crew.title}`} class="h-32 w-full object-cover" />
 			<div class="p-4">
 				<h3 title={crew.title} class="mb-2 line-clamp-1 text-ellipsis text-lg font-semibold">

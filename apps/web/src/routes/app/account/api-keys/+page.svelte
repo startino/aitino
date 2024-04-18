@@ -34,7 +34,7 @@
 				label: data.apiKeyTypes.find((a) => $form.typeId === a.id)?.name as string,
 				value: $form.typeId
 			}
-		: { label: 'API Prodiver', value: undefined };
+		: { label: 'Choose API Provider', value: undefined };
 </script>
 
 <Tabs.Content value="/app/account/api-keys">
@@ -93,7 +93,7 @@
 					<li
 						in:fly={{ y: 20 }}
 						out:slide
-						class="bg-background flex items-center justify-between rounded-lg p-4"
+						class="flex items-center justify-between rounded-lg bg-background p-4"
 					>
 						<div class="flex">
 							<h3 class="mr-1 text-lg font-semibold">{api.api_key_type?.name}</h3>
@@ -106,11 +106,11 @@
 								return async ({ update, result }) => {
 									deleting = deleting.filter((id) => id !== api.id);
 
-									if ((result.type = 'failure')) {
+									if (result.type !== 'success') {
 										toast.error('Unable to delete the API key...');
 										return;
 									}
-									await update();
+									await update(); // TODO: something is making it dissapear and come back before update is executed. make this be the thing that removes it not whatever else does
 								};
 							}}
 						>
