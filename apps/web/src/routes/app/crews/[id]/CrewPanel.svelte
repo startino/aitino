@@ -13,8 +13,7 @@
 	import { getContext, getCleanNodes } from '$lib/utils';
 	import api from '$lib/api';
 
-	let { count, receiver, profileId, crew, agents, publishedAgents, nodes, edges } =
-		getContext('crew');
+	let { count, receiver, crew, agents, publishedAgents, nodes, edges } = getContext('crew');
 
 	let openAgentLibrary = false;
 
