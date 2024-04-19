@@ -43,6 +43,7 @@ from src.models import (
     Tool,
     ToolInsertRequest,
     ToolUpdateRequest,
+    LLMModel
 )
 from src.models.tiers import TierGetRequest
 
@@ -867,6 +868,12 @@ def delete_profile(profile_id: UUID) -> Profile:
     supabase: Client = create_client(url, key)
     response = supabase.table("profiles").delete().eq("id", profile_id).execute()
     return Profile(**response.data[0])
+
+
+def get_models():
+    supabase: Client = create_client(url, key)
+    response = supabase.table("models").select("*").execute()
+    return [LLMModel(**data) for data in response.data]
 
 
 if __name__ == "__main__":
