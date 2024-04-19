@@ -28,9 +28,9 @@ def get_agents(q: AgentGetRequest = Depends()) -> list[Agent]:
     return response
 
 
-@router.get("/{agent_id}")
-def get_agent_by_id(agent_id: UUID) -> Agent:
-    agent = db.get_agent(agent_id)
+@router.get("/{id}")
+def get_agent_by_id(id: UUID) -> Agent:
+    agent = db.get_agent(id)
     if not agent:
         raise HTTPException(404, "agent not found")
 
@@ -54,9 +54,9 @@ def insert_agent(agent_request: AgentInsertRequest) -> Agent:
     return inserted_agent
 
 
-@router.patch("/{agent_id}")
-def patch_agent(agent_id: UUID, agent_update_request: AgentUpdateModel) -> Agent:
-    if not db.get_agent(agent_id):
+@router.patch("/{id}")
+def patch_agent(id: UUID, agent_update_request: AgentUpdateModel) -> Agent:
+    if not db.get_agent(id):
         raise HTTPException(404, "agent not found")
 
     if agent_update_request.profile_id and not db.get_profile(
@@ -66,18 +66,18 @@ def patch_agent(agent_id: UUID, agent_update_request: AgentUpdateModel) -> Agent
 
     if agent_update_request.crew_ids:
         for crew_id in agent_update_request.crew_ids:
-            updated_crew = db.add_agent_to_crew(crew_id, agent_id)
+            updated_crew = db.add_agent_to_crew(crew_id, id)
             if not updated_crew:
                 logger.error("agent was already in crew or the crew was not found, not adding agent")
             else:
-                logger.info(f"Added agent with id: {agent_id} to the crew: {crew_id}")
+                logger.info(f"Added agent with id: {id} to the crew: {crew_id}")
 
-    return db.update_agents(agent_id, agent_update_request)
+    return db.update_agents(id, agent_update_request)
 
 
-@router.delete("/{agent_id}")
-def delete_agent(agent_id: UUID) -> Agent:
-    if not db.get_agent(agent_id):
+@router.delete("/{id}")
+def delete_agent(id: UUID) -> Agent:
+    if not db.get_agent(id):
         raise HTTPException(404, "agent not found")
 
-    return db.delete_agent(agent_id)
+    return db.delete_agent(id)

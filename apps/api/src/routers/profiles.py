@@ -24,25 +24,25 @@ def insert_profile(profile: ProfileInsertRequest) -> Profile:
     return db.insert_profile(profile)
 
 
-@router.get("/{profile_id}")
-def get_profile_by_id(profile_id: UUID) -> Profile:
-    profile = db.get_profile(profile_id)
+@router.get("/{id}")
+def get_profile_by_id(id: UUID) -> Profile:
+    profile = db.get_profile(id)
     if not profile:
         raise HTTPException(404, "profile not found")
 
     return profile
 
 
-@router.delete("/{profile_id}")
-def delete_profile(profile_id: UUID) -> Profile:
-    return db.delete_profile(profile_id)
+@router.delete("/{id}")
+def delete_profile(id: UUID) -> Profile:
+    return db.delete_profile(id)
 
 
-@router.patch("/{profile_id}")
+@router.patch("/{id}")
 def update_profile(
-    profile_id: UUID, profile_update_request: ProfileUpdateRequest
+    id: UUID, profile_update_request: ProfileUpdateRequest
 ) -> Profile:
-    if not db.get_profile(profile_id):
+    if not db.get_profile(id):
         raise HTTPException(404, "profile not found")
 
-    return db.update_profile(profile_id, profile_update_request)
+    return db.update_profile(id, profile_update_request)

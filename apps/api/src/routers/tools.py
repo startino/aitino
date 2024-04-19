@@ -23,9 +23,9 @@ def get_tools(q: ToolGetRequest = Depends()) -> list[Tool]:
     return db.get_tools(q.name, q.api_key_type_id)
 
 
-@router.get("/{tool_id}")
-def get_tool(tool_id: UUID) -> Tool:
-    response = db.get_tool(tool_id)
+@router.get("/{id}")
+def get_tool(id: UUID) -> Tool:
+    response = db.get_tool(id)
     if not response:
         raise HTTPException(404, "tool not found")
 
@@ -37,21 +37,21 @@ def insert_tool(tool: ToolInsertRequest) -> Tool:
     return db.insert_tool(tool)
 
 
-@router.delete("/{tool_id}")
-def delete_tool(tool_id: UUID) -> Tool:
-    response = db.delete_tool(tool_id)
+@router.delete("/{id}")
+def delete_tool(id: UUID) -> Tool:
+    response = db.delete_tool(id)
     if not response:
         raise HTTPException(404, "could not find tool")
 
     return response
 
 
-@router.patch("/{tool_id}")
-def update_profile(tool_id: UUID, tool_update_request: ToolUpdateRequest) -> Tool:
-    if not db.get_tool(tool_id):
+@router.patch("/{id}")
+def update_profile(id: UUID, tool_update_request: ToolUpdateRequest) -> Tool:
+    if not db.get_tool(id):
         raise HTTPException(404, "tool not found")
 
-    return db.update_tool(tool_id, tool_update_request)
+    return db.update_tool(id, tool_update_request)
 
 
 @router.patch("/{agent_id}")
