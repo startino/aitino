@@ -870,7 +870,7 @@ def delete_profile(profile_id: UUID) -> Profile:
     return Profile(**response.data[0])
 
 
-def get_models():
+def get_models() -> list[LLMModel]:
     supabase: Client = create_client(url, key)
     response = supabase.table("models").select("*").execute()
     return [LLMModel(**data) for data in response.data]
