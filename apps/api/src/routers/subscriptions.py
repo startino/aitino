@@ -32,20 +32,20 @@ def insert_subscription(subscription: SubscriptionInsertRequest) -> Subscription
     return db.insert_subscription(subscription)
 
 
-@router.delete("/{profile_id}")
-def delete_subscription(profile_id: UUID) -> Subscription:
-    response = db.delete_subscription(profile_id)
+@router.delete("/{id}")
+def delete_subscription(id: UUID) -> Subscription:
+    response = db.delete_subscription(id)
     if not response:
         raise HTTPException(404, "stripe subscription id not found")
 
     return response
 
 
-@router.patch("/{profile_id}")
+@router.patch("/{id}")
 def update_subscription(
-    profile_id: UUID, content: SubscriptionUpdateRequest
+    id: UUID, content: SubscriptionUpdateRequest
 ) -> Subscription:
-    response = db.update_subscription(profile_id, content)
+    response = db.update_subscription(id, content)
     if not response:
         raise HTTPException(404, "message not found")
 

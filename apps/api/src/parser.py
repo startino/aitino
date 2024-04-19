@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException
 
 from src.interfaces import db
-from src.models import Agent, Crew, CrewProcessed
+from src.models import Agent, Crew, CrewProcessed, ValidCrew
 
 logger = logging.getLogger("root")
 logging.basicConfig(level=logging.DEBUG)
@@ -66,11 +66,11 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
         agents=get_agents(agent_ids),
     )
 
-    message = crew.prompt.content
+    message = _crew.prompt.content
     return message, crew_model
 
 
-def validate_crew(crew: Crew) -> tuple[Crew | None, str]:
+def validate_crew(crew: Crew) -> tuple[ValidCrew | None, str]:
     logger.debug("Validating crew")
 
     agent_ids: list[UUID] = crew.nodes
@@ -92,7 +92,7 @@ def validate_crew(crew: Crew) -> tuple[Crew | None, str]:
         if agent.system_message == "":
             return None, f'Agent "{agent.title}" has no system message'
 
-    return crew, ""
+    return ValidCrew(**crew.model_dump()), ""
 
 
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
