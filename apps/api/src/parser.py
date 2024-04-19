@@ -35,7 +35,9 @@ def get_agent(agent_id: UUID) -> Agent | None:
     Get an agent from the database.
     """
     logger.debug(f"Getting agent {agent_id}")
-    response = supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+    response = (
+        supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+    )
     if len(response.data) == 0:
         logger.error(f"No agent found for {agent_id}")
         return None
@@ -44,7 +46,9 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents(agent_ids: list[UUID]) -> list[Agent]:
     logger.debug(f"getting agents from agent_ids: {agent_ids}")
-    response = supabase.table("agents").select("*, models(*)").in_("id", agent_ids).execute()
+    response = (
+        supabase.table("agents").select("*, models(*)").in_("id", agent_ids).execute()
+    )
     return [Agent(**agent) for agent in response.data]
 
 
@@ -75,6 +79,31 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
 
     message: str = crew.prompt.content
     return message, crew_model
+
+
+def validate_crew(crew: Crew) -> tuple[bool, str]:
+    logger.debug("Validating crew")
+
+    agent_ids: list[UUID] = crew.nodes
+    agents = get_agents(agent_ids)
+
+    if not crew.receiver_id:
+        return False, "Crew has no receiver id"
+    if not crew.prompt or crew.prompt == "":
+        return False, "Crew has no prompt"
+    if len(agents) == 0:
+        return False, "Crew has no agents"
+
+    # Validate agents
+    for agent in agents:
+        if agent.title == "":
+            return False, "Agent has no title"
+        if agent.role == "":
+            return False, f'Agent "{agent.title}" has no role'
+        if agent.system_message == "":
+            return False, f'Agent "{agent.title}" has no system message'
+
+    return True, ""
 
 
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
@@ -110,7 +139,7 @@ def parse_autobuild(
 
 
 if __name__ == "__main__":
-    #message, composition = parse_autobuild(
+    # message, composition = parse_autobuild(
     #    '"composition": {"message": "create a website for designing your own lamps","agents":[{"role": "UI/UX Designer","system_message": "Design the user interface and user experience for the lamp designing website. This includes creating wireframes, mockups, and interactive prototypes to ensure a user-friendly and visually appealing design."},{"role": "React Developer","system_message": "Develop the front-end of the lamp designing website using React. This includes implementing the UI/UX designs into functional web pages, ensuring responsiveness, and integrating any necessary APIs for lamp design functionalities."},{"role": "Backend Developer","system_message": "Create and manage the server, database, and application logic for the lamp designing website. This includes setting up the server, creating database schemas, and developing APIs for user management, lamp design storage, and retrieval."},{"role": "Quality Assurance Engineer","system_message": "Test the lamp designing website for bugs, performance issues, and usability. This includes conducting both automated and manual tests to ensure the website is reliable, efficient, and user-friendly."}]}'
-    #)
+    # )
     print(get_agents([UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e")]))
