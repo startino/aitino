@@ -28,16 +28,13 @@ def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
 
 
 @router.post("/validate/{crew_id}", status_code=200)
-def validate_crew(crew_id: UUID) -> Literal[True] | str:
+def validate_crew(crew_id: UUID) -> str:
     crew: Crew | None = db.get_crew(crew_id)
     if not crew:
         return "Crew not found with ID"
-    validated: tuple[bool, str] = parser.validate_crew(crew)
+    _, error = parser.validate_crew(crew)
 
-    if not validated[0]:
-        return validated[1]
-
-    return validated[0]
+    return error
 
 
 @router.post("/", status_code=201)
