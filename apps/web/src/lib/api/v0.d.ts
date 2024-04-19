@@ -43,6 +43,10 @@ export interface paths {
     /** Insert Crew */
     post: operations["insert_crew_crews__post"];
   };
+  "/crews/validate/{crew_id}": {
+    /** Validate Crew */
+    post: operations["validate_crew_crews_validate__crew_id__post"];
+  };
   "/crews/{crew_id}": {
     /** Get Crew By Id */
     get: operations["get_crew_by_id_crews__crew_id__get"];
@@ -289,11 +293,9 @@ export interface components {
       avatar: string;
       /** System Message */
       system_message: string;
-      /**
-       * Model
-       * @enum {string}
-       */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      /** Llm Model Id */
+      llm_model_id: number;
+      models: components["schemas"]["LLMModel"];
       /** Tools */
       tools: Record<string, never>[];
       /** Description */
@@ -541,6 +543,13 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** LLMModel */
+    LLMModel: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
     };
     /** Marker */
     Marker: {
@@ -1280,6 +1289,28 @@ export interface operations {
       201: {
         content: {
           "application/json": components["schemas"]["Crew"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Validate Crew */
+  validate_crew_crews_validate__crew_id__post: {
+    parameters: {
+      path: {
+        crew_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": true | string;
         };
       };
       /** @description Validation Error */
