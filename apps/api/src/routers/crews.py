@@ -1,8 +1,11 @@
 import logging
+from typing import Literal
 from uuid import UUID
+
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from src import parser
 from src.interfaces import db
 from src.models import (
     Crew,
@@ -22,6 +25,19 @@ logger = logging.getLogger("root")
 @router.get("/")
 def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
     return db.get_crews(q.profile_id, q.receiver_id, q.title, q.published)
+
+
+@router.post("/validate/{crew_id}", status_code=200)
+def validate_crew(crew_id: UUID) -> Literal[True] | str:
+    crew: Crew | None = db.get_crew(crew_id)
+    if not crew:
+        return "Crew not found with ID"
+    validated: tuple[bool, str] = parser.validate_crew(crew)
+
+    if not validated[0]:
+        return validated[1]
+
+    return validated[0]
 
 
 @router.post("/", status_code=201)
