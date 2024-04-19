@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { CreateAgent, EditAgent } from '$lib/components/ui/agent-editor/';
-	import type { Agent } from '$lib/types/models';
+	import type { schemas } from '$lib/api';
+	import { CreateAgent, EditAgent } from './components/';
 	import { Button } from '$lib/components/ui/button';
 
 	export let data;
 	export let form;
 
-	$: myAgents = (data.currentUserAgents.data as Agent[]) || [];
-	$: myTools = (data.agentTools.data as Agent[]) || [];
+	$: agents = (data.currentUserAgents.data as schemas['Agent'] | null) ?? [];
+	$: tools = (data.agentTools.data as schemas['Tool'] | null) ?? [];
 	let open = false;
 
-	let selectedAgent: Agent;
+	let selectedAgent: schemas['Agent'] | null;
 
-	const editAgent = async (agent: Agent) => {
+	const editAgent = async (agent: schemas['Agent']) => {
 		selectedAgent = agent;
 		open = true;
 	};
@@ -28,11 +28,11 @@
 			on:close={() => (open = false)}
 			{form}
 			data={data.agentForm}
-			agentTools={myTools}
+			agentTools={tools}
 			apiKeyTypes={data.api_key_types}
 			user_api_keys={data.user_api_keys}
 		/>
-		{#each myAgents as agent}
+		{#each agents as agent}
 			<div
 				class="group relative flex flex-col overflow-hidden rounded-lg bg-surface shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
 			>
@@ -67,7 +67,7 @@
 	on:close={handleClose}
 	{open}
 	{form}
-	agentTools={myTools}
+	agentTools={tools}
 	apiKeyTypes={data.api_key_types}
 	user_api_keys={data.user_api_keys}
 />

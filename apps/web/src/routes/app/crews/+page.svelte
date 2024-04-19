@@ -69,7 +69,7 @@
 
 		<form
 			class="p-4"
-			action="?/editCrew"
+			action="?/edit"
 			method="POST"
 			on:submit={() => (state = 'loading')}
 			use:enhance

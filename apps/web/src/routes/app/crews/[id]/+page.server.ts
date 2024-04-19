@@ -33,17 +33,14 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 		.then(({ data: d, error: e }) => {
 			if (e) {
 				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				error(500, `Failed to load agents for crew ${crew_id}`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
-	if (!agents) {
-		return [];
-	}
 
 	let nodes: Node[] = [];
 
@@ -85,8 +82,8 @@ export const load = async ({ locals: { getSession }, params }) => {
 		});
 
 	if (!crew) {
-		console.error(`Redirecting to '/crews': No crew found with id ${id}`);
-		redirect(303, '/crews');
+		console.error(`Redirecting to '/app/crews': No crew found with id ${id}`);
+		redirect(303, '/app/crews');
 	}
 
 	const userAgents = await api

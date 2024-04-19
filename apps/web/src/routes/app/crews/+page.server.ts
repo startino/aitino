@@ -38,7 +38,7 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	editCrew: async ({ request }) => {
+	edit: async ({ request }) => {
 		const form = await superValidate(request, zod(editCrewSchema));
 
 		if (!form.valid) {
@@ -46,10 +46,10 @@ export const actions = {
 		}
 
 		await api
-			.PATCH(`/crews/{crew_id}`, {
+			.PATCH(`/crews/{id}`, {
 				params: {
 					path: {
-						crew_id: form.data.id
+						id: form.data.id
 					}
 				},
 				body: {

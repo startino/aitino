@@ -9,7 +9,6 @@
 	import { type SuperValidated } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
 	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
-	import type { Agent } from '$lib/types/models';
 
 	export let data: SuperValidated<AgentFormSchema>;
 	export let agentTools: string[] | null;

@@ -88,7 +88,7 @@
 	</Card.Header>
 	<Card.Content class="grid gap-2 text-center">
 		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
-		<Button href="/app/agents/editor">Edit Agent</Button>
+		<Button href="/app/agents">Edit Agent</Button>
 		<!-- <Handle type="target" id="top-{id}" position={Position.Top} /> -->
 		<!-- <Handle type="source" id="bottom-{id}" position={Position.Bottom} /> -->
 	</Card.Content>
