@@ -55,55 +55,44 @@ def get_agents(agent_ids: list[UUID]) -> list[Agent]:
 def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
     logger.debug("Processing crew")
     agent_ids: list[UUID] = crew.nodes
-    if not crew.receiver_id:
-        raise HTTPException(400, "got no receiver id")
 
-    receiver_id: UUID = crew.receiver_id
+    _crew, error = validate_crew(crew)
+
+    if error or not _crew:
+        raise HTTPException(400, error)
 
     crew_model = CrewProcessed(
-        receiver_id=receiver_id,
+        receiver_id=_crew.receiver_id,
         agents=get_agents(agent_ids),
     )
-    if not crew.prompt:
-        raise HTTPException(400, "got no prompt")
-    if len(crew_model.agents) == 0:
-        raise HTTPException(400, "crew had no agents")
-    # Validate agents
-    for agent in crew_model.agents:
-        if agent.role == "":
-            raise HTTPException(400, f"agent {agent.id} had no role")
-        if agent.title == "":
-            raise HTTPException(400, f"agent {agent.id} had no title")
-        if agent.system_message == "":
-            raise HTTPException(400, f"agent {agent.id} had no system message")
 
-    message: str = crew.prompt.content
+    message = crew.prompt.content
     return message, crew_model
 
 
-def validate_crew(crew: Crew) -> tuple[bool, str]:
+def validate_crew(crew: Crew) -> tuple[Crew | None, str]:
     logger.debug("Validating crew")
 
     agent_ids: list[UUID] = crew.nodes
     agents = get_agents(agent_ids)
 
     if not crew.receiver_id:
-        return False, "Crew has no receiver id"
-    if not crew.prompt or crew.prompt == "":
-        return False, "Crew has no prompt"
+        return None, "Crew has no receiver id"
+    if not crew.prompt or crew.prompt.content == "":
+        return None, "Crew has no prompt"
     if len(agents) == 0:
-        return False, "Crew has no agents"
+        return None, "Crew has no agents"
 
     # Validate agents
     for agent in agents:
         if agent.title == "":
-            return False, "Agent has no title"
+            return None, "Agent has no title"
         if agent.role == "":
-            return False, f'Agent "{agent.title}" has no role'
+            return None, f'Agent "{agent.title}" has no role'
         if agent.system_message == "":
-            return False, f'Agent "{agent.title}" has no system message'
+            return None, f'Agent "{agent.title}" has no system message'
 
-    return True, ""
+    return crew, ""
 
 
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
