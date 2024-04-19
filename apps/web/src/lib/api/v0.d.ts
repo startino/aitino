@@ -11,13 +11,13 @@ export interface paths {
     /** Insert Session */
     post: operations["insert_session_sessions__post"];
   };
-  "/sessions/{session_id}": {
+  "/sessions/{id}": {
     /** Get Session */
-    get: operations["get_session_sessions__session_id__get"];
+    get: operations["get_session_sessions__id__get"];
     /** Delete Session */
-    delete: operations["delete_session_sessions__session_id__delete"];
+    delete: operations["delete_session_sessions__id__delete"];
     /** Update Session */
-    patch: operations["update_session_sessions__session_id__patch"];
+    patch: operations["update_session_sessions__id__patch"];
   };
   "/sessions/run": {
     /** Run Crew */
@@ -29,13 +29,13 @@ export interface paths {
     /** Insert Message */
     post: operations["insert_message_messages__post"];
   };
-  "/messages/{message_id}": {
+  "/messages/{id}": {
     /** Get Message */
-    get: operations["get_message_messages__message_id__get"];
+    get: operations["get_message_messages__id__get"];
     /** Delete Message */
-    delete: operations["delete_message_messages__message_id__delete"];
+    delete: operations["delete_message_messages__id__delete"];
     /** Update Message */
-    patch: operations["update_message_messages__message_id__patch"];
+    patch: operations["update_message_messages__id__patch"];
   };
   "/crews/": {
     /** Get Crews */
@@ -47,13 +47,13 @@ export interface paths {
     /** Validate Crew */
     post: operations["validate_crew_crews_validate__crew_id__post"];
   };
-  "/crews/{crew_id}": {
+  "/crews/{id}": {
     /** Get Crew By Id */
-    get: operations["get_crew_by_id_crews__crew_id__get"];
+    get: operations["get_crew_by_id_crews__id__get"];
     /** Delete Crew */
-    delete: operations["delete_crew_crews__crew_id__delete"];
+    delete: operations["delete_crew_crews__id__delete"];
     /** Update Crew */
-    patch: operations["update_crew_crews__crew_id__patch"];
+    patch: operations["update_crew_crews__id__patch"];
   };
   "/agents/": {
     /** Get Agents */
@@ -61,13 +61,13 @@ export interface paths {
     /** Insert Agent */
     post: operations["insert_agent_agents__post"];
   };
-  "/agents/{agent_id}": {
+  "/agents/{id}": {
     /** Get Agent By Id */
-    get: operations["get_agent_by_id_agents__agent_id__get"];
+    get: operations["get_agent_by_id_agents__id__get"];
     /** Delete Agent */
-    delete: operations["delete_agent_agents__agent_id__delete"];
+    delete: operations["delete_agent_agents__id__delete"];
     /** Patch Agent */
-    patch: operations["patch_agent_agents__agent_id__patch"];
+    patch: operations["patch_agent_agents__id__patch"];
   };
   "/profiles/": {
     /** Get Profiles */
@@ -75,13 +75,13 @@ export interface paths {
     /** Insert Profile */
     post: operations["insert_profile_profiles__post"];
   };
-  "/profiles/{profile_id}": {
+  "/profiles/{id}": {
     /** Get Profile By Id */
-    get: operations["get_profile_by_id_profiles__profile_id__get"];
+    get: operations["get_profile_by_id_profiles__id__get"];
     /** Delete Profile */
-    delete: operations["delete_profile_profiles__profile_id__delete"];
+    delete: operations["delete_profile_profiles__id__delete"];
     /** Update Profile */
-    patch: operations["update_profile_profiles__profile_id__patch"];
+    patch: operations["update_profile_profiles__id__patch"];
   };
   "/api-keys/": {
     /**
@@ -92,13 +92,13 @@ export interface paths {
     /** Insert Api Key */
     post: operations["insert_api_key_api_keys__post"];
   };
-  "/api-keys/{api_key_id}": {
+  "/api-keys/{id}": {
     /** Get Api Key */
-    get: operations["get_api_key_api_keys__api_key_id__get"];
+    get: operations["get_api_key_api_keys__id__get"];
     /** Delete Api Key */
-    delete: operations["delete_api_key_api_keys__api_key_id__delete"];
+    delete: operations["delete_api_key_api_keys__id__delete"];
     /** Update Api Key */
-    patch: operations["update_api_key_api_keys__api_key_id__patch"];
+    patch: operations["update_api_key_api_keys__id__patch"];
   };
   "/auth/sign_in/provider": {
     /** Provider Sign In */
@@ -114,13 +114,13 @@ export interface paths {
     /** Insert Tool */
     post: operations["insert_tool_tools__post"];
   };
-  "/tools/{tool_id}": {
+  "/tools/{id}": {
     /** Get Tool */
-    get: operations["get_tool_tools__tool_id__get"];
+    get: operations["get_tool_tools__id__get"];
     /** Delete Tool */
-    delete: operations["delete_tool_tools__tool_id__delete"];
+    delete: operations["delete_tool_tools__id__delete"];
     /** Update Profile */
-    patch: operations["update_profile_tools__tool_id__patch"];
+    patch: operations["update_profile_tools__id__patch"];
   };
   "/tools/{agent_id}": {
     /** Add Tool */
@@ -132,11 +132,11 @@ export interface paths {
     /** Insert Subscription */
     post: operations["insert_subscription_subscriptions__post"];
   };
-  "/subscriptions/{profile_id}": {
+  "/subscriptions/{id}": {
     /** Delete Subscription */
-    delete: operations["delete_subscription_subscriptions__profile_id__delete"];
+    delete: operations["delete_subscription_subscriptions__id__delete"];
     /** Update Subscription */
-    patch: operations["update_subscription_subscriptions__profile_id__patch"];
+    patch: operations["update_subscription_subscriptions__id__patch"];
   };
   "/rest/": {
     /** Redirect To Docs */
@@ -177,16 +177,14 @@ export interface paths {
   "/billing/{id}": {
     /** Get Billings */
     get: operations["get_billings_billing__id__get"];
+    /** Delete Billing */
+    delete: operations["delete_billing_billing__id__delete"];
+    /** Update Billing */
+    patch: operations["update_billing_billing__id__patch"];
   };
   "/billing/": {
     /** Insert Billing */
     post: operations["insert_billing_billing__post"];
-  };
-  "/billing/{profile_id}": {
-    /** Delete Billing */
-    delete: operations["delete_billing_billing__profile_id__delete"];
-    /** Update Billing */
-    patch: operations["update_billing_billing__profile_id__patch"];
   };
   "/": {
     /** Redirect To Docs */
@@ -298,6 +296,8 @@ export interface components {
       models: components["schemas"]["LLMModel"];
       /** Tools */
       tools: Record<string, never>[];
+      /** Crew Ids */
+      crew_ids?: string[] | null;
       /** Description */
       description?: string | null;
       /** Role */
@@ -325,6 +325,8 @@ export interface components {
       model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
       /** Tools */
       tools: Record<string, never>[];
+      /** Crew Ids */
+      crew_ids?: string[] | null;
       /** Description */
       description?: string | null;
       /** Role */
@@ -348,6 +350,8 @@ export interface components {
       model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
       /** Tools */
       tools?: Record<string, never>[] | null;
+      /** Crew Ids */
+      crew_ids?: string[] | null;
       /** Version */
       version?: string | null;
       /** Description */
@@ -1037,10 +1041,10 @@ export interface operations {
     };
   };
   /** Get Session */
-  get_session_sessions__session_id__get: {
+  get_session_sessions__id__get: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1059,10 +1063,10 @@ export interface operations {
     };
   };
   /** Delete Session */
-  delete_session_sessions__session_id__delete: {
+  delete_session_sessions__id__delete: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1081,10 +1085,10 @@ export interface operations {
     };
   };
   /** Update Session */
-  update_session_sessions__session_id__patch: {
+  update_session_sessions__id__patch: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1182,10 +1186,10 @@ export interface operations {
     };
   };
   /** Get Message */
-  get_message_messages__message_id__get: {
+  get_message_messages__id__get: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1204,10 +1208,10 @@ export interface operations {
     };
   };
   /** Delete Message */
-  delete_message_messages__message_id__delete: {
+  delete_message_messages__id__delete: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1226,10 +1230,10 @@ export interface operations {
     };
   };
   /** Update Message */
-  update_message_messages__message_id__patch: {
+  update_message_messages__id__patch: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1310,7 +1314,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": true | string;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1322,10 +1326,10 @@ export interface operations {
     };
   };
   /** Get Crew By Id */
-  get_crew_by_id_crews__crew_id__get: {
+  get_crew_by_id_crews__id__get: {
     parameters: {
       path: {
-        crew_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1344,10 +1348,10 @@ export interface operations {
     };
   };
   /** Delete Crew */
-  delete_crew_crews__crew_id__delete: {
+  delete_crew_crews__id__delete: {
     parameters: {
       path: {
-        crew_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1366,10 +1370,10 @@ export interface operations {
     };
   };
   /** Update Crew */
-  update_crew_crews__crew_id__patch: {
+  update_crew_crews__id__patch: {
     parameters: {
       path: {
-        crew_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1439,10 +1443,10 @@ export interface operations {
     };
   };
   /** Get Agent By Id */
-  get_agent_by_id_agents__agent_id__get: {
+  get_agent_by_id_agents__id__get: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1461,10 +1465,10 @@ export interface operations {
     };
   };
   /** Delete Agent */
-  delete_agent_agents__agent_id__delete: {
+  delete_agent_agents__id__delete: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1483,10 +1487,10 @@ export interface operations {
     };
   };
   /** Patch Agent */
-  patch_agent_agents__agent_id__patch: {
+  patch_agent_agents__id__patch: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1556,10 +1560,10 @@ export interface operations {
     };
   };
   /** Get Profile By Id */
-  get_profile_by_id_profiles__profile_id__get: {
+  get_profile_by_id_profiles__id__get: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1578,10 +1582,10 @@ export interface operations {
     };
   };
   /** Delete Profile */
-  delete_profile_profiles__profile_id__delete: {
+  delete_profile_profiles__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1600,10 +1604,10 @@ export interface operations {
     };
   };
   /** Update Profile */
-  update_profile_profiles__profile_id__patch: {
+  update_profile_profiles__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1676,10 +1680,10 @@ export interface operations {
     };
   };
   /** Get Api Key */
-  get_api_key_api_keys__api_key_id__get: {
+  get_api_key_api_keys__id__get: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1698,10 +1702,10 @@ export interface operations {
     };
   };
   /** Delete Api Key */
-  delete_api_key_api_keys__api_key_id__delete: {
+  delete_api_key_api_keys__id__delete: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1720,10 +1724,10 @@ export interface operations {
     };
   };
   /** Update Api Key */
-  update_api_key_api_keys__api_key_id__patch: {
+  update_api_key_api_keys__id__patch: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1825,10 +1829,10 @@ export interface operations {
     };
   };
   /** Get Tool */
-  get_tool_tools__tool_id__get: {
+  get_tool_tools__id__get: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1847,10 +1851,10 @@ export interface operations {
     };
   };
   /** Delete Tool */
-  delete_tool_tools__tool_id__delete: {
+  delete_tool_tools__id__delete: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1869,10 +1873,10 @@ export interface operations {
     };
   };
   /** Update Profile */
-  update_profile_tools__tool_id__patch: {
+  update_profile_tools__id__patch: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1966,10 +1970,10 @@ export interface operations {
     };
   };
   /** Delete Subscription */
-  delete_subscription_subscriptions__profile_id__delete: {
+  delete_subscription_subscriptions__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1988,10 +1992,10 @@ export interface operations {
     };
   };
   /** Update Subscription */
-  update_subscription_subscriptions__profile_id__patch: {
+  update_subscription_subscriptions__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -2239,33 +2243,11 @@ export interface operations {
       };
     };
   };
-  /** Insert Billing */
-  insert_billing_billing__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["BillingInsertRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Billing"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /** Delete Billing */
-  delete_billing_billing__profile_id__delete: {
+  delete_billing_billing__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -2284,15 +2266,37 @@ export interface operations {
     };
   };
   /** Update Billing */
-  update_billing_billing__profile_id__patch: {
+  update_billing_billing__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
       content: {
         "application/json": components["schemas"]["BillingUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Billing"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Billing */
+  insert_billing_billing__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BillingInsertRequest"];
       };
     };
     responses: {
