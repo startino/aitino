@@ -20,6 +20,7 @@ from .billing_information import (
 from .code_execution_config import CodeExecutionConfig
 from .crew_model import (
     Crew,
+    ValidCrew,
     CrewGetRequest,
     CrewInsertRequest,
     CrewProcessed,
@@ -106,4 +107,5 @@ __all__ = [
     "Billing",
     "BillingInsertRequest",
     "BillingUpdateRequest",
+    "ValidCrew",
 ]

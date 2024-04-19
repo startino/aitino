@@ -36,6 +36,20 @@ class Crew(BaseModel):
     avatar: str | None = None
     prompt: Prompt | None = None
 
+class ValidCrew(BaseModel):
+    id: UUID
+    created_at: datetime
+    profile_id: UUID
+    edges: list[Edge]
+    published: bool
+    title: str
+    description: str
+    updated_at: datetime
+    nodes: list[UUID]
+    receiver_id: UUID
+    avatar: str 
+    prompt: Prompt 
+
 
 class CrewInsertRequest(BaseModel):
     receiver_id: UUID
