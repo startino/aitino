@@ -33,27 +33,27 @@ def insert_message(message: MessageInsertRequest) -> Message:
     return db.insert_message(message)
 
 
-@router.delete("/{message_id}")
-def delete_message(message_id: UUID) -> Message:
-    response = db.delete_message(message_id)
+@router.delete("/{id}")
+def delete_message(id: UUID) -> Message:
+    response = db.delete_message(id)
     if not response:
         raise HTTPException(404, "message not found")
 
     return response
 
 
-@router.patch("/{message_id}")
-def update_message(message_id: UUID, content: MessageUpdateRequest) -> Message:
-    response = db.update_message(message_id, content)
+@router.patch("/{id}")
+def update_message(id: UUID, content: MessageUpdateRequest) -> Message:
+    response = db.update_message(id, content)
     if not response:
         raise HTTPException(404, "message not found")
 
     return response
 
 
-@router.get("/{message_id}")
-def get_message(message_id: UUID) -> Message:
-    response = db.get_message(message_id)
+@router.get("/{id}")
+def get_message(id: UUID) -> Message:
+    response = db.get_message(id)
     if not response:
         raise HTTPException(404, "message not found")
 

@@ -23,6 +23,7 @@ class Agent(BaseModel):
     llm_model_id: int
     models: LLMModel
     tools: list[dict]
+    crew_ids: list[UUID] | None = None
     description: str | None = None
     role: str
     version: str | None = None
@@ -35,6 +36,7 @@ class AgentInsertRequest(BaseModel):
     system_message: str
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
     tools: list[dict]
+    crew_ids: list[UUID] | None = None
     description: str | None = None
     role: str
     version: str | None = None
@@ -48,6 +50,7 @@ class AgentUpdateModel(BaseModel):
     system_message: str | None = None
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"] | None = None
     tools: list[dict] | None = None
+    crew_ids: list[UUID] | None = None
     version: str | None = None
     description: str | None = None
     role: str | None = None
