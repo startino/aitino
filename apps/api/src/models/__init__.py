@@ -4,6 +4,7 @@ from .agent_model import (
     AgentGetRequest,
     AgentInsertRequest,
     AgentUpdateModel,
+    LLMModel,
 )
 from .api_key import (
     APIKey,
@@ -108,4 +109,5 @@ __all__ = [
     "BillingInsertRequest",
     "BillingUpdateRequest",
     "ValidCrew",
+    "LLMModel",
 ]
