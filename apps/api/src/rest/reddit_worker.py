@@ -1,15 +1,15 @@
-from praw import Reddit
-from praw.models import Subreddits, Submission
 import os
-from dotenv import load_dotenv
-from urllib.parse import quote_plus
-import diskcache as dc
-
 from pathlib import Path
+from urllib.parse import quote_plus
 
+import diskcache as dc
+from dotenv import load_dotenv
+from praw import Reddit
+from praw.models import Submission, Subreddits
+
+from .reddit_utils import get_reddit_instance, get_subreddits
 from .relevance_bot import evaluate_relevance
 from .saving import update_db_with_submission
-from .reddit_utils import get_subreddits, get_reddit_instance
 
 load_dotenv()
 REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")

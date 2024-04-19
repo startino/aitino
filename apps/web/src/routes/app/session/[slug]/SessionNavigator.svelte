@@ -7,16 +7,13 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
-	import type { Crew, Session } from '$lib/types/models';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import * as models from '$lib/types/models';
-	import * as api from '$lib/api';
-	import type { UUID } from '$lib/types';
+	import type { schemas } from '$lib/api';
+	import api from '$lib/api';
 
 	export let profileId: string;
-	export let sessions: Session[];
-	export let crew: Crew | null;
-	export let session: Session | null;
+	export let sessions: schemas['Session'][];
+	export let crews: schemas['Crew'][];
+	export let session: schemas['Session'];
 
 	let newSessionName: string = '';
 
@@ -63,14 +60,17 @@
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
 
-		api.upsertSession(session.id as UUID, { title: renamingValue });
+		await api.PATCH('/sessions/{session_id}', {
+			params: { path: { session_id: sessionId } },
+			body: { title: renamingValue }
+		});
 
 		// Update the session locally in order to not refetch
 		sessions = sessions.map((session) => {
 			if (session.id === sessionId) {
 				session.title = renamingValue;
 			}
-			return session as Session;
+			return session as schemas['Session'];
 		});
 
 		// Reset the renaming variables
@@ -82,7 +82,17 @@
 		deletingInProgress = true;
 		deletingSession = sessionId;
 
-		const success: boolean = await api.deleteSession(sessionId as UUID);
+		const success = await api
+			.DELETE('/sessions/{session_id}', {
+				params: { path: { session_id: sessionId } }
+			})
+			.then(({ error: e }) => {
+				if (e) {
+					console.error(`Error deleting session: ${e.detail}`);
+					return false;
+				}
+				return true;
+			});
 
 		if (!success) {
 			console.error('Failed to delete session');
@@ -99,20 +109,36 @@
 		}
 	}
 
-	async function loadSession(session: models.Session) {
+	async function loadSession(session: schemas['Session']) {
 		console.log('Loading session', JSON.stringify(session));
 		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
 	}
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
-		const session = await api.startSession(profileId as UUID, crewId as UUID, title);
+		const s = await api
+			.POST('/sessions/run', {
+				body: {
+					profile_id: profileId,
+					crew_id: crewId,
+					title: title
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error running crew: ${e.detail}`);
+					return null;
+				}
+				return d;
+			});
 
-		if (!session) {
+		// const session = await api.startSession(profileId as UUID, crewId as UUID, title);
+
+		if (!s) {
 			console.error('Failed to start session');
 			return;
 		}
 
-		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + s.id; // Can this be done better without full page reload?
 	}
 </script>
 
@@ -136,7 +162,7 @@
 		<Sheet.Footer class="mt-2">
 			<Sheet.Close asChild let:builder>
 				<div class="flex h-full w-full flex-col gap-2">
-					{#if crew}
+					{#if crews}
 						<Dialog.Root>
 							<Dialog.Trigger let:builder>
 								<Button class="mb-2 w-full" builders={[builder]}>Start New Session</Button>
@@ -162,14 +188,14 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{crew.title}
+											{crews[0]?.title}
 										</Button>
 									</div>
 								</div>
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(profileId, crew.id, newSessionName)}
+										on:click={() => startNewSession(profileId, crews[0]?.id, newSessionName)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>

@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
 from src.models import (
-    AgentInsertRequest,
-    AgentUpdateModel,
     Agent,
     AgentGetRequest,
+    AgentInsertRequest,
+    AgentUpdateModel,
 )
 
 router = APIRouter(
@@ -24,7 +24,7 @@ def get_agents(q: AgentGetRequest = Depends()) -> list[Agent]:
     response = db.get_agents(q.profile_id, q.crew_id, q.published)
     if not response:
         raise HTTPException(404, "crew not found or crew has no agents")
-    
+
     return response
 
 
@@ -37,7 +37,7 @@ def get_agent_by_id(agent_id: UUID) -> Agent:
     return agent
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 def insert_agent(agent_request: AgentInsertRequest) -> Agent:
     if not db.get_profile(agent_request.profile_id):
         raise HTTPException(404, "profile not found")
@@ -55,9 +55,7 @@ def insert_agent(agent_request: AgentInsertRequest) -> Agent:
 
 
 @router.patch("/{agent_id}")
-def patch_agent(
-    agent_id: UUID, agent_update_request: AgentUpdateModel
-) -> Agent:
+def patch_agent(agent_id: UUID, agent_update_request: AgentUpdateModel) -> Agent:
     if not db.get_agent(agent_id):
         raise HTTPException(404, "agent not found")
 

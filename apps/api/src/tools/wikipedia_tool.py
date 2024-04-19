@@ -18,7 +18,7 @@ class WikipediaToolInput(BaseModel):
 class WikipediaTool(Tool, BaseTool):
     args_schema: Type[BaseModel] = WikipediaToolInput
 
-    def __init__(self):
+    def __init__(self) -> None:
         wiki_tool = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
         super().__init__(
             name="wikipedia",

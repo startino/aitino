@@ -1,6 +1,8 @@
 from __future__ import annotations
-from uuid import UUID, uuid4
+
 from datetime import datetime
+from uuid import UUID, uuid4
+
 from pydantic import BaseModel
 
 
@@ -20,6 +22,12 @@ class APIKeyInsertRequest(BaseModel):
 
 class APIKeyUpdateRequest(BaseModel):
     api_key: str
+
+
+class APIKeyGetRequest(BaseModel):
+    profile_id: UUID | None = None
+    api_key_type_id: UUID | None = None
+    api_key: str | None = None
 
 
 class APIKeyType(BaseModel):

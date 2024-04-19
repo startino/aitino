@@ -1,15 +1,16 @@
 import logging
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
-from .models import EvaluatedSubmission, RedditComment, PublishCommentResponse
-from .dummy_submissions import relevant_submissions, irrelevant_submissions
-from .prompts import generate_comment_prompt
-from .interfaces import db
-from .reddit_utils import get_reddit_instance
+import os
 
 from dotenv import load_dotenv
-import os
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+
+from .dummy_submissions import irrelevant_submissions, relevant_submissions
+from .interfaces import db
+from .models import EvaluatedSubmission, PublishCommentResponse, RedditComment
+from .prompts import generate_comment_prompt
+from .reddit_utils import get_reddit_instance
 
 # Load Enviornment variables
 load_dotenv()

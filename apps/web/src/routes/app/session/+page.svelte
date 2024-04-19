@@ -1,53 +1,52 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import type { NoSessionLoad } from '$lib/types/loads';
-	import {
-		SessionsService,
-		type CrewResponseModel,
-		type RunResponseModel,
-		type RunRequestModel
-	} from '$lib/client';
+	import api, { type schemas } from '$lib/api';
 
-	export let data: NoSessionLoad;
+	export let data;
 
-	let profileId: string = data.profileId;
-	let crews: CrewResponseModel[] = data.crews;
+	let profileId = data.profileId;
+	let crews = data.crews;
+	let crew: schemas['Crew'] | undefined = crews[0];
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
-		const runRequest: RunRequestModel = {
-			id: crewId,
-			profile_id: profileId,
-			session_title: title
-		};
-
-		const runResponse: RunResponseModel | null = await SessionsService.runCrewSessionsRunPost(
-			runRequest
-		).catch((e) => {
-			console.error('Failed to start new session', e);
-			return null;
-		});
+		const runResponse = await api
+			.POST('/sessions/run', {
+				body: {
+					crew_id: crewId,
+					profile_id: profileId,
+					session_title: title
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error running crew: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error('Failed to start session');
+					return null;
+				}
+				return d;
+			});
 
 		if (!runResponse) {
 			return;
 		}
 
-		window.location.href = '/app/session/' + runResponse.session.id; // Can this be done better without full page reload?
+		window.location.href = '/app/session/' + runResponse.id; // Can this be done better without full page reload?
 	}
 </script>
 
-{#if crews}
+{#if crew}
 	<div
 		class="xl:prose-md prose prose-sm prose-main mx-auto flex h-screen max-w-none flex-col items-center justify-center gap-4 px-12 text-center md:prose-base 2xl:prose-lg"
 	>
 		<h1>It looks like you haven't started a session yet...</h1>
-		{#if crews}
-			<!-- Allow user to choose crew -->
-			<Button on:click={() => startNewSession(profileId, crews[0].id, 'New Session')}
-				>Run Your Crew!</Button
-			>
-		{:else}
-			<p>Loading...</p>
-		{/if}
+		<!-- TODO: Allow user to choose crew -->
+
+		<Button on:click={() => crew && startNewSession(profileId, crew.id, 'New Session')}
+			>Run Your Crew!</Button
+		>
 	</div>
 {:else}
 	<div

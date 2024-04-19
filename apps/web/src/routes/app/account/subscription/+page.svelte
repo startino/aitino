@@ -19,7 +19,7 @@
 		<Card.Content class="p-6">
 			{#if $subscriptionStore.sub}
 				<div class="space-y-8">
-					<div class="from-background-950 bg-background to-primary-800 rounded-lg">
+					<div class="from-background-950 rounded-lg bg-background to-primary-800">
 						<div class="rounded-lg p-6 pt-2">
 							<div class="mb-4 flex items-center justify-between">
 								<div>

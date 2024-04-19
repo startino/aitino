@@ -4,7 +4,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 
 from src.interfaces import db
-from src.models import CrewInsertRequest, Crew, CrewUpdateRequest, CrewGetRequest
+from src.models import (
+    Crew,
+    CrewGetRequest,
+    CrewInsertRequest,
+    CrewUpdateRequest,
+)
 
 router = APIRouter(
     prefix="/crews",
@@ -58,6 +63,7 @@ def get_crew_by_id(crew_id: UUID) -> Crew:
         raise HTTPException(404, "Crew not found")
 
     return response
+
 
 @router.delete("/{crew_id}")
 def delete_crew(crew_id: UUID) -> Crew:

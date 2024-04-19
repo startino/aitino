@@ -6,6 +6,10 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+class LLMModel(BaseModel):
+    id: int
+    name: str
+
 
 class Agent(BaseModel):
     id: UUID
@@ -15,11 +19,13 @@ class Agent(BaseModel):
     profile_id: UUID
     avatar: str
     system_message: str
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
+    #model_ is protected namespace, so changed attribute below to llm_model_
+    llm_model_id: int
+    models: LLMModel
     tools: list[dict]
     crew_ids: list[UUID] | None = None
     description: str | None = None
-    role: str 
+    role: str
     version: str | None = None
 
 
