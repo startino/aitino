@@ -99,8 +99,8 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				return [];
+				console.error(`Error retrieving agents for profile ${userSession.user.id}: ${e.detail}`);
+				throw error(500, `Failed to load agents for profile ${userSession.user.id}`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
@@ -119,8 +119,8 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				return [];
+				console.error(`Error retrieving published agents: ${e.detail}`);
+				throw error(500, `Failed to load published agents`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
