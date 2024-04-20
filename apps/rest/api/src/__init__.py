@@ -11,13 +11,9 @@ from .reddit_utils import get_subreddits
 from .relevance_bot import evaluate_relevance
 from .interfaces import db
 from . import comment_bot
-from .models import (
-    PublishCommentRequest,
-    GenerateCommentRequest,
-    FalseLead,
-    Lead
-)
+from .models import PublishCommentRequest, GenerateCommentRequest, FalseLead, Lead
 from .reddit_worker import RedditStreamWorker
+from . import upwork_worker
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -76,7 +72,18 @@ def redirect_to_docs() -> RedirectResponse:
 @app.get("/test")
 def test():
     print("TEST")
-    db.post_lead(Lead(id=uuid4(), submission_id=uuid4(), reddit_id="test", prospect_username="test", source="test", last_event="test", status="test", data={"test": "test"}))
+    db.post_lead(
+        Lead(
+            id=uuid4(),
+            submission_id=uuid4(),
+            reddit_id="test",
+            prospect_username="test",
+            source="test",
+            last_event="test",
+            status="test",
+            data={"test": "test"},
+        )
+    )
 
 
 @app.post("/start")
@@ -148,3 +155,9 @@ def publish_comment(publish_request: PublishCommentRequest):
         raise HTTPException(404, "lead not found")
 
     return updated_content
+
+
+@app.get("/generate-proposal")
+def generate_proposal(post: str):
+    proposal = upwork_worker.generate_proposal(post)
+    return proposal

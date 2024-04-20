@@ -26,8 +26,6 @@ def create_chain(model: str):
     """
     Creates a processing chain for evaluating the relevance of a submission using a specified language model.
 
-    The chain is composed of a prompt template, a language model, and a parser to interpret the model's output as a Pydantic object.
-
     Parameters:
     - model (str): The name of the language model to be used for generating responses.
 
@@ -74,11 +72,11 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
                 return result, cb.total_cost
         except Exception as e:
             print(f"An error occurred while invoke_chain: {e}")
-            time.sleep(10)  # Wait for 10 seconds before trying again
+            time.sleep(2)  # Wait for 10 seconds before trying again
 
     raise RuntimeError(
-    "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
-)
+        "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
+    )
 
 
 def summarize_submission(submission: Submission) -> Submission:
@@ -309,17 +307,6 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
     if filter:
         questions = [
             FilterQuestion(
-                question="Is the author himself a technical person? is/was he a programmer? is/was he a software developer?",
-                reject_on=True,
-            ),
-            FilterQuestion(
-                question="Has the project already started development?", reject_on=True
-            ),
-            FilterQuestion(
-                question="Is the author currently engaged in job searching activities and promoting their technical expertise?",
-                reject_on=True,
-            ),
-            FilterQuestion(
                 question="Is the author starting a non digital business? Like a bakery, garden business, salon, etc.",
                 reject_on=True,
             ),
@@ -336,9 +323,9 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
                 submission=submission, is_relevant=False, cost=cost, reason=source
             )
 
-    evalualuated_submission = calculate_relevance("gpt-4-turbo-preview", 1, submission)
+    evalualuated_submission = calculate_relevance("gpt-4-turbo", 1, submission)
     log_relevance_calculation(
-        "gpt-4-turbo-preview",
+        "gpt-4-turbo",
         submission,
         evalualuated_submission.is_relevant,
         evalualuated_submission.cost,

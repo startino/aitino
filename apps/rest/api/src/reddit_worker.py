@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 import diskcache as dc
+import logging
 
 from pathlib import Path
 
@@ -34,28 +35,32 @@ class RedditStreamWorker:
     def start(self):
         self._running = True
         while self._running:
-            if not REDDIT_USERNAME or not REDDIT_PASSWORD:
-                raise TypeError("couldnt find username or password in env vars")
+            try:
+                if not REDDIT_USERNAME or not REDDIT_PASSWORD:
+                    raise TypeError("couldnt find username or password in env vars")
 
-            for submission in self.subreddits.stream.submissions(pause_after=-1):
-                if submission is None:
-                    break
-                # Skip if not a submission (for typing)
-                if not isinstance(submission, Submission):
-                    continue
+                for submission in self.subreddits.stream.submissions(pause_after=-1):
+                    if submission is None:
+                        break
+                    # Skip if not a submission (for typing)
+                    if not isinstance(submission, Submission):
+                        continue
 
-                # TODO: filter by kewords
+                    # TODO: filter by kewords
 
-                # Avoid repeating posts using caching
-                is_cached = cache.get(submission.id)
-                if is_cached:
-                    continue
+                    # Avoid repeating posts using caching
+                    is_cached = cache.get(submission.id)
+                    if is_cached:
+                        continue
 
-                # Use LLMs to see if submission is relevant (expensive part)
-                evaluated_submission = evaluate_relevance(submission, filter=True)
+                    # Use LLMs to see if submission is relevant (expensive part)
+                    evaluated_submission = evaluate_relevance(submission, filter=True)
 
-                # Save to db and cache
-                update_db_with_submission(evaluated_submission)
+                    # Save to db and cache
+                    update_db_with_submission(evaluated_submission)
+                    cache.set(submission.id, submission.id)
+            except Exception as e:
+                logging.error(f"Error when evalauting submission. Error: {e} \n Submission: {submission}")
                 cache.set(submission.id, submission.id)
 
     def stop(self):

@@ -75,7 +75,7 @@ def post_lead(lead: Lead) -> None:
     # Check if lead already exists (temporary until supabase-py supports onConflict)
     existing_lead = supabase.table("leads").select("*").eq("prospect_username", lead.prospect_username).execute()
 
-    if existing_lead:
+    if len(existing_lead.data) > 0:
         return
     
     supabase.table("leads").insert(
@@ -135,7 +135,7 @@ def post_evaluated_submission(saved_submission: SavedSubmission) -> None:
     # Check if submission already exists (temporary until supabase-py supports onConflict)
     existing_submission = supabase.table("evaluated_submissions").select("*").eq("body", saved_submission.body).execute()
 
-    if existing_submission:
+    if len(existing_submission.data) > 0:
         return
 
     supabase.table("evaluated_submissions").insert(

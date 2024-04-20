@@ -14,7 +14,7 @@ with open(
 ) as file:
     good_examples = file.read()
 
-with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding="utf-8") as file:
+with open(os.path.join(script_dir, "bad_comment_examples.md"), "r", encoding="utf-8") as file:
     bad_examples = file.read()
 
 purpose = """
