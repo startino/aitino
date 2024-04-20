@@ -27,7 +27,7 @@
 	</Form.Field>
 	<Form.Field {form} name="description">
 		<Form.Control let:attrs>
-			<Form.Label>Description*</Form.Label>
+			<Form.Label>Description</Form.Label>
 			<Textarea class="w-full" {...attrs} bind:value={$formData.description} />
 		</Form.Control>
 		<Form.FieldErrors />

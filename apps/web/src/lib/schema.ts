@@ -16,19 +16,18 @@ export type EditCrewSchema = typeof editCrewSchema;
 
 export const createCrewSchema = z.object({
 	title: z.string().min(1).max(50),
-	description: z.string().min(10).max(500),
+	description: z.string().max(500).default(''),
 	published: z.boolean().default(false)
 });
 export type CreateCrewSchema = typeof createCrewSchema;
 
 export const createAgentSchema = z.object({
-	id: z.string(),
 	title: z.string().min(1).max(50),
-	description: z.string().min(10).max(500),
+	description: z.string().max(500).default(''),
 	published: z.boolean().default(false),
 	role: z.string().min(1).max(50),
 	tools: z.string(),
-	system_message: z.string(),
+	system_message: z.string().min(20),
 	model: z.string()
 });
 

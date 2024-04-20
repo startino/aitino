@@ -17,7 +17,8 @@
 </script>
 
 <form class="flex flex-col gap-4" method="POST" action="?/create" use:enhance>
-	<h2>Creating a new Agent</h2>
+	<h2 class="text-xl">Creating a new Agent</h2>
+	<h3 class="pt-4 text-lg">Basic Information</h3>
 	<Form.Field {form} name="title">
 		<Form.Control let:attrs>
 			<Form.Label>Title*</Form.Label>
@@ -27,7 +28,7 @@
 	</Form.Field>
 	<Form.Field {form} name="description">
 		<Form.Control let:attrs>
-			<Form.Label>Description*</Form.Label>
+			<Form.Label>Description</Form.Label>
 			<Textarea class="w-full" {...attrs} bind:value={$formData.description} />
 		</Form.Control>
 		<Form.FieldErrors />
@@ -40,6 +41,8 @@
 		<Form.Description class="inline">Check this to publish the crew.</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
+
+	<h3 class="pt-4 text-lg">Functional Options</h3>
 	<Form.Field {form} name="role">
 		<Form.Control let:attrs>
 			<Form.Label>Role*</Form.Label>
@@ -47,13 +50,13 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
-	<form.Field {form} name="system_message">
+	<Form.Field {form} name="system_message">
 		<Form.Control let:attrs>
-			<Form.Label>System Message</Form.Label>
+			<Form.Label>System Message*</Form.Label>
 			<Textarea class="w-full" {...attrs} bind:value={$formData.system_message} />
 		</Form.Control>
 		<Form.FieldErrors />
-	</form.Field>
+	</Form.Field>
 
 	<p class="text-sm opacity-50">* required fields</p>
 	<Form.Button>Create</Form.Button>
