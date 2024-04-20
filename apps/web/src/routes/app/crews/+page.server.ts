@@ -9,7 +9,7 @@ import api from '$lib/api';
 export const load = async ({ locals: { getSession } }) => {
 	const userSession = await getSession();
 
-	const form = await superValidate(zod(editCrewSchema));
+	const superValidated = await superValidate(zod(editCrewSchema));
 
 	const crews = await api
 		.GET('/crews/', {
@@ -33,33 +33,33 @@ export const load = async ({ locals: { getSession } }) => {
 
 	return {
 		crews,
-		form
+		form: superValidated
 	};
 };
 
 export const actions = {
 	edit: async ({ request }) => {
-		const form = await superValidate(request, zod(editCrewSchema));
+		const superValidated = await superValidate(request, zod(editCrewSchema));
 
-		if (!form.valid) {
-			return fail(400, { form });
+		if (!superValidated.valid) {
+			return fail(400, { superValidated });
 		}
 
 		await api
 			.PATCH(`/crews/{id}`, {
 				params: {
 					path: {
-						id: form.data.id
+						id: superValidated.data.id
 					}
 				},
 				body: {
-					...form.data
+					...superValidated.data
 				}
 			})
 			.catch((e) => {
-				setError(form, e.message, { status: 500 });
+				setError(superValidated, e.message, { status: 500 });
 			});
 
-		return message(form, 'Changes saved successfully!');
+		return message(superValidated, 'Changes saved successfully!');
 	}
 };

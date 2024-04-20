@@ -1,2 +1,2 @@
-export { default as CreateAgent } from './form-create.svelte';
-export { default as EditAgent } from './form-edit.svelte';
+export { default as AgentEditorItems } from './agent-items.svelte';
+export { default as AgentTools } from './agent-tools.svelte';

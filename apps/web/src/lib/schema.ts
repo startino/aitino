@@ -12,6 +12,12 @@ export const editCrewSchema = z.object({
 	published: z.boolean().default(false)
 });
 
+export const createCrewSchema = z.object({
+	title: z.string().default('Untitled'),
+	description: z.string().default('No description'),
+	published: z.boolean().default(false)
+});
+
 export const formSchema = z.object({
 	display_name: z
 		.string()
@@ -42,7 +48,7 @@ export const waitlistSchema = z.object({
 	email: z.string().email({ message: 'Invalid email address' })
 });
 
-export const createNewAgents = z.object({
+export const createAgentSchema = z.object({
 	id: z.string(),
 	title: z
 		.string()
@@ -63,4 +69,4 @@ export const createNewAgents = z.object({
 });
 
 export type FormSchema = typeof formSchema;
-export type AgentFormSchema = typeof createNewAgents;
+export type AgentFormSchema = typeof createAgentSchema;

@@ -2,8 +2,7 @@ import { supabase } from '$lib/supabase';
 import { fail } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import type { Actions, PageServerLoad } from './$types';
-import { createNewAgents } from '$lib/schema';
+import { createAgentSchema } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 
@@ -30,15 +29,15 @@ export const load = async ({ locals }) => {
 		api_key_types,
 		agentTools,
 		user_api_keys,
-		agentForm: await superValidate(zod(createNewAgents))
+		agentForm: await superValidate(zod(createAgentSchema))
 	};
 };
 
 export const actions = {
-	creatAgents: async ({ request, locals }) => {
+	create: async ({ request, locals }) => {
 		const session = await locals.getSession();
 
-		const form = await superValidate(request, zod(createNewAgents));
+		const form = await superValidate(request, zod(createAgentSchema));
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
@@ -90,7 +89,7 @@ export const actions = {
 	editAgent: async ({ request, url }) => {
 		const id = url.searchParams.get('id');
 
-		const form = await superValidate(request, zod(createNewAgents));
+		const form = await superValidate(request, zod(createAgentSchema));
 		console.log(form, 'form');
 
 		const currentAgent = await supabase
