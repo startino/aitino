@@ -41,6 +41,45 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
+	create: async ({ request, locals: { getSession } }) => {
+		const userSession = await getSession();
+		const form = await superValidate(request, zod(createCrewSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+		const { data } = form;
+
+		await api
+			.POST('/crews/', {
+				body: {
+					profile_id: userSession.user.id,
+					...data,
+
+					receiver_id: '00000000-0000-0000-0000-000000000000',
+					prompt: { id: '00000000-0000-0000-0000-000000000000', title: 'prompt', content: '' },
+					edges: [],
+					nodes: []
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating crew: ${e.detail}`);
+					return setError(
+						form,
+						'Crew creation failed. Please try again. If the problem persists, contact support.'
+					);
+				}
+				if (!d) {
+					console.error(`No data returned from crew creation`);
+					return setError(
+						form,
+						'Crew creation failed. Please try again. If the problem persists, contact support.'
+					);
+				}
+				return d;
+			});
+		return message(form, 'Crew created successfully!');
+	},
 	edit: async ({ request }) => {
 		const superValidated = await superValidate(request, zod(editCrewSchema));
 

@@ -16,7 +16,7 @@
 		validators: createAgentSchema
 	});
 
-	$: agents =
+	let agents: schemas['Agent'][] =
 		(data.currentUserAgents.data as schemas['Agent'] | null) ?? ([] as schemas['Agent'][]);
 	$: tools = (data.agentTools.data as schemas['Tool'] | null) ?? ([] as schemas['Agent'][]);
 	let open = false;
