@@ -1,15 +1,18 @@
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { editCrewSchema } from '$lib/schema';
+import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
 export const load = async ({ locals: { getSession } }) => {
 	const userSession = await getSession();
 
-	const superValidated = await superValidate(zod(editCrewSchema));
+	const form = {
+		create: await superValidate(zod(createCrewSchema)),
+		edit: await superValidate(zod(editCrewSchema))
+	};
 
 	const crews = await api
 		.GET('/crews/', {
@@ -33,7 +36,7 @@ export const load = async ({ locals: { getSession } }) => {
 
 	return {
 		crews,
-		form: superValidated
+		form
 	};
 };
 

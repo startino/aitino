@@ -11,7 +11,7 @@
 	};
 </script>
 
-<Dialog.Root {open} onOpenChange={(o) => dispatch('close')}>
+<Dialog.Root {open} onOpenChange={() => dispatch('close')}>
 	<Dialog.Trigger
 		on:click={handleTrigger}
 		class="transition-hover group relative flex aspect-[3/4] flex-col items-center justify-center overflow-hidden rounded-lg bg-background from-primary-950 to-primary-800 shadow-lg duration-1000 hover:scale-105 hover:bg-gradient-to-br hover:shadow-xl"

@@ -13,10 +13,11 @@ export const editCrewSchema = z.object({
 });
 
 export const createCrewSchema = z.object({
-	title: z.string().default('Untitled'),
-	description: z.string().default('No description'),
+	title: z.string().min(1).max(50),
+	description: z.string().min(10).max(500),
 	published: z.boolean().default(false)
 });
+export type CreateCrewSchema = typeof createCrewSchema;
 
 export const formSchema = z.object({
 	display_name: z

@@ -3,6 +3,7 @@
 	import { timeSince } from '$lib/utils';
 	import Create from './Create.svelte';
 	import api from '$lib/api';
+	import CreateForm from './CreateForm.svelte';
 	// import { createCrewSchema } from '$lib/schema';
 	// import { zod } from 'sveltekit-superforms/adapters';
 
@@ -36,7 +37,9 @@
 
 <div class="min-h-screen bg-background p-8">
 	<div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-		<Create />
+		<Create>
+			<CreateForm formCreate={data.form.create} />
+		</Create>
 		{#each data.crews as crew (crew.id)}
 			<div
 				class="group relative flex flex-col overflow-hidden rounded-lg bg-surface shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
