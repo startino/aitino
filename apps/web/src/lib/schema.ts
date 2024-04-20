@@ -4,6 +4,7 @@ export const apiKeySchema = z.object({
 	typeId: z.string().min(1, 'An API Key Type is required'),
 	value: z.string().min(1, 'The value of the key is required')
 });
+export type ApiKeySchema = typeof apiKeySchema;
 
 export const editCrewSchema = z.object({
 	id: z.string(),
@@ -11,6 +12,7 @@ export const editCrewSchema = z.object({
 	description: z.string().default('No description'),
 	published: z.boolean().default(false)
 });
+export type EditCrewSchema = typeof editCrewSchema;
 
 export const createCrewSchema = z.object({
 	title: z.string().min(1).max(50),
@@ -19,6 +21,20 @@ export const createCrewSchema = z.object({
 });
 export type CreateCrewSchema = typeof createCrewSchema;
 
+export const createAgentSchema = z.object({
+	id: z.string(),
+	title: z.string().min(1).max(50),
+	description: z.string().min(10).max(500),
+	published: z.boolean().default(false),
+	role: z.string().min(1).max(50),
+	tools: z.string(),
+	system_message: z.string(),
+	model: z.string()
+});
+
+export type CreateAgentSchema = typeof createAgentSchema;
+
+// TODO: rename to createUserSchema
 export const formSchema = z.object({
 	display_name: z
 		.string()
@@ -33,6 +49,7 @@ export const formSchema = z.object({
 		.regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
 		.regex(/[0-9]/, { message: 'Password must contain at least one number.' })
 });
+export type FormSchema = typeof formSchema; // TODO: rename to CreateUserSchema
 
 export const loginUserSchema = z.object({
 	email: z.string().email({ message: 'Invalid email address' }),
@@ -44,30 +61,9 @@ export const loginUserSchema = z.object({
 		.regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
 		.regex(/[0-9]/, { message: 'Password must contain at least one number.' })
 });
+export type LoginUserSchema = typeof loginUserSchema;
 
 export const waitlistSchema = z.object({
 	email: z.string().email({ message: 'Invalid email address' })
 });
-
-export const createAgentSchema = z.object({
-	id: z.string(),
-	title: z
-		.string()
-		.min(1, { message: 'Title must not be empty' })
-		.max(100, { message: 'Title must be 100 characters or less' }),
-	role: z
-		.string()
-		.min(1, { message: 'Role must not be empty' })
-		.max(100, { message: 'Role must be 100 characters or less' }),
-	description: z
-		.string()
-		.min(10, { message: 'Description must be at least 20 characters' })
-		.max(1000, { message: 'Description must be 1000 characters or less' }),
-	published: z.string(),
-	tools: z.string(),
-	system_message: z.string(),
-	model: z.string()
-});
-
-export type FormSchema = typeof formSchema;
-export type AgentFormSchema = typeof createAgentSchema;
+export type WaitlistSchema = typeof waitlistSchema;

@@ -1,35 +1,45 @@
 import { supabase } from '$lib/supabase';
-import { fail } from '@sveltejs/kit';
+import { fail, error } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { createAgentSchema } from '$lib/schema';
+import { createAgentSchema, editAgentSchema } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
+import api from '$lib/api';
 
 export const load = async ({ locals }) => {
-	const session = await locals.getSession();
-	const currentUserAgents = await supabase
-		.from('agents')
-		.select('*')
-		.eq('profile_id', session?.user.id);
+	const userSession = await locals.getSession();
+	const agents = await api
+		.GET('/agents/', {
+			params: {
+				query: {
+					profile_id: userSession.user.id
+				}
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error retrieving agents for profile ${userSession.user.id}: ${e.detail}`);
+				throw error(500, `Failed to load agents for profile ${userSession.user.id}`);
+			}
+			if (!d) {
+				console.error(`No data returned from agents`);
+				return [];
+			}
+			if (d.length === 0) {
+				console.warn(`No agents found for profile ${userSession.user.id}`);
+				return d;
+			}
+			return d;
+		});
 
-	const { data: userApis, error: userApiError } = await supabase
-		.from('users_api_keys')
-		.select('*')
-		.eq('profile_id', session?.user.id);
+	const form = {
+		create: await superValidate(zod(createAgentSchema))
+	};
 
-	const user_api_keys = userApis;
-
-	const { data, error } = await supabase.from('api_key_types').select('*');
-	const api_key_types = data;
-
-	const agentTools = await supabase.from('tools').select('*');
 	return {
-		currentUserAgents,
-		api_key_types,
-		agentTools,
-		user_api_keys,
-		agentForm: await superValidate(zod(createAgentSchema))
+		agents,
+		form
 	};
 };
 
