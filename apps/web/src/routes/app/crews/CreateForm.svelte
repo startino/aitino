@@ -17,7 +17,7 @@
 </script>
 
 <form class="flex flex-col gap-4" method="POST" action="?/create" use:enhance>
-	<h2>Creating a new Crew</h2>
+	<h2>Create a new Crew</h2>
 	<Form.Field {form} name="title">
 		<Form.Control let:attrs>
 			<Form.Label>Title*</Form.Label>

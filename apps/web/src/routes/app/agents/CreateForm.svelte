@@ -17,7 +17,7 @@
 </script>
 
 <form class="flex flex-col gap-4" method="POST" action="?/create" use:enhance>
-	<h2 class="text-xl">Creating a new Agent</h2>
+	<h2 class="text-xl">Create a new Agent</h2>
 	<h3 class="pt-4 text-lg">Basic Information</h3>
 	<Form.Field {form} name="title">
 		<Form.Control let:attrs>
