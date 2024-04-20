@@ -202,6 +202,10 @@ export interface paths {
     /** Get Profile From Header */
     get: operations["get_profile_from_header_me_get"];
   };
+  "/models": {
+    /** Get Models */
+    get: operations["get_models_models_get"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -2381,6 +2385,17 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Profile"];
+        };
+      };
+    };
+  };
+  /** Get Models */
+  get_models_models_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["LLMModel"][];
         };
       };
     };
