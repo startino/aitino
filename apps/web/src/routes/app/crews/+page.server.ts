@@ -79,29 +79,5 @@ export const actions = {
 				return d;
 			});
 		return message(form, 'Crew created successfully!');
-	},
-	edit: async ({ request }) => {
-		const superValidated = await superValidate(request, zod(editCrewSchema));
-
-		if (!superValidated.valid) {
-			return fail(400, { superValidated });
-		}
-
-		await api
-			.PATCH(`/crews/{id}`, {
-				params: {
-					path: {
-						id: superValidated.data.id
-					}
-				},
-				body: {
-					...superValidated.data
-				}
-			})
-			.catch((e) => {
-				setError(superValidated, e.message, { status: 500 });
-			});
-
-		return message(superValidated, 'Changes saved successfully!');
 	}
 };

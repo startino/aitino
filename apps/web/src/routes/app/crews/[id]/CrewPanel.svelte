@@ -9,50 +9,13 @@
 	import { AGENT_LIMIT } from '$lib/config';
 	import { toast } from 'svelte-sonner';
 	import { getContext, getCleanNodes } from '$lib/utils';
-	import api from '$lib/api';
+	import api, { type schemas } from '$lib/api';
 
-	let { receiver, crew, agents, publishedAgents, nodes } = getContext('crew');
+	let { crew, agents, publishedAgents, nodes } = getContext('crew');
 
 	let openAgentLibrary = false;
 
-	async function save() {
-		toast.message('Saving crew...');
-
-		const response = await api
-			.PATCH('/crews/{id}', {
-				params: {
-					path: {
-						id: $crew.id
-					}
-				},
-				body: {
-					receiver_id: $crew.receiver_id,
-					prompt: $crew.prompt,
-					profile_id: $crew.profile_id,
-					published: $crew.published,
-					title: $crew.title,
-					description: $crew.description,
-					edges: [],
-					nodes: $agents.map((n: any) => n.id)
-				}
-			})
-			.then(({ data: d, error: e }) => {
-				if (e) {
-					console.error(`Error saving crew: ${e.detail}`);
-					toast.error(`Failed to save crew! Please report to dev team with logs from the console.`);
-					return null;
-				}
-				if (!d) {
-					console.error(`No data returned from agents`);
-					toast.error(`Failed to save crew! Please report to dev team with logs from the console.`);
-					return null;
-				}
-				toast.success('Crew successfully saved!');
-				return d;
-			});
-
-		return response ? true : false;
-	}
+	async function save() {}
 
 	const { getViewport } = useSvelteFlow();
 
@@ -94,16 +57,7 @@
 		{
 			name: 'Export',
 			onclick: () => {
-				const jsonString = JSON.stringify(
-					{
-						nodes: getCleanNodes($nodes),
-						title: $crew.title,
-						description: $crew.description,
-						receiver_id: $receiver?.node.id ?? null
-					},
-					null,
-					2
-				);
+				const jsonString = JSON.stringify($crew, null, 2);
 				const blob = new Blob([jsonString], { type: 'application/json' });
 				const url = window.URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -117,7 +71,52 @@
 		},
 		{
 			name: 'Save',
-			onclick: save
+			onclick: async () => {
+				toast.message('Saving crew...');
+
+				const response = await api
+					.PATCH('/crews/{id}', {
+						params: {
+							path: {
+								id: $crew.id
+							}
+						},
+						body: {
+							receiver_id: $crew.receiver_id,
+							prompt: {
+								id: '495145a0-a412-4578-b0b3-293d446af8b1',
+								title: 'TITLE',
+								content: 'Test Prompt'
+							},
+							profile_id: $crew.profile_id,
+							title: $crew.title,
+							published: $crew.published,
+							description: $crew.description,
+							edges: [],
+							nodes: $crew.nodes
+						}
+					})
+					.then(({ data: d, error: e }) => {
+						if (e) {
+							console.error(`Error saving crew: ${e.detail}`);
+							toast.error(
+								`Failed to save crew! Please report to dev team with logs from the console.`
+							);
+							return null;
+						}
+						if (!d) {
+							console.error(`No data returned from agents`);
+							toast.error(
+								`Failed to save crew! Please report to dev team with logs from the console.`
+							);
+							return null;
+						}
+						toast.success('Crew successfully saved!');
+						return d;
+					});
+
+				return response ? true : false;
+			}
 		}
 	];
 </script>

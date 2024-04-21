@@ -1,39 +1,45 @@
 import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
-import type { Edge, Node } from '@xyflow/svelte';
-import { writable } from 'svelte/store';
+import type { Node } from '@xyflow/svelte';
 import { getWritablePrompt } from '$lib/utils.js';
-import type { CrewContext } from '$lib/types/index.js';
 
-const processEdges = (crewEdges: schemas['Crew']['edges']): Edge[] => {
-	let edges: Edge[] = [];
-
-	for (let edge of crewEdges) {
-		edges.push({
-			id: edge.id,
-			source: edge.source,
-			target: edge.target,
-			sourceHandle: edge.sourceHandle,
-			targetHandle: edge.targetHandle,
-			selected: false
-		});
-	}
-	return edges;
-};
-
-const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
+const getNodesByCrewId = async (crew: schemas['Crew']): Promise<Node[]> => {
 	const agents = await api
 		.GET('/agents/', {
 			params: {
 				query: {
-					crew_id: crew_id
+					crew_id: crew.id
 				}
 			}
 		})
-		.then(({ data: d, error: e }) => {
+		.then(async ({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Failed to load agents for crew ${crew_id}. ${e.detail}`);
-				return [];
+				console.error(`Failed to load agents for crew ${crew}. ${e.detail}. Using HEAVY fallback`);
+				let a = [];
+				// for (let agentId of crew.nodes) {
+				// 	a.push(
+				// 		await api
+				// 			.GET('/agents/{id}', {
+				// 				params: {
+				// 					path: {
+				// 						id: agentId
+				// 					}
+				// 				}
+				// 			})
+				// 			.then(({ data: d2, error: e2 }) => {
+				// 				if (e2) {
+				// 					console.error(`Failed to load agent ${agentId}. ${e2.detail}`);
+				// 					return;
+				// 				}
+				// 				if (!d2) {
+				// 					console.error(`No data returned from agent ${agentId}`);
+				// 					return;
+				// 				}
+				// 				return d2;
+				// 			})
+				// 	);
+				// }
+				// return a;
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
@@ -45,6 +51,12 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 	let nodes: Node[] = [];
 
 	for (let agent of agents) {
+		if (!agent) {
+			console.error(
+				`Skipping null agent. This happened because the fallback above was used and one of the agents still failed to be retrieved.`
+			);
+			continue;
+		}
 		nodes.push({
 			id: agent.id,
 			type: 'agent',
@@ -61,11 +73,11 @@ export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
 	const userSession = await getSession();
 
-	const crew = await api
-		.GET('/crews/{crew_id}', {
+	const crew: schemas['Crew'] | null = await api
+		.GET('/crews/{id}', {
 			params: {
 				path: {
-					crew_id: id
+					id: id
 				}
 			}
 		})
@@ -83,7 +95,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 
 	if (!crew) {
 		console.error(`Redirecting to '/app/crews': No crew found with id ${id}`);
-		redirect(303, '/app/crews');
+		throw redirect(303, '/app/crews');
 	}
 
 	const userAgents = await api
@@ -134,45 +146,13 @@ export const load = async ({ locals: { getSession }, params }) => {
 		throw error(500, 'Failed to load published agents');
 	}
 
-	// TODO: get the prompt count and receiver agent if it exists
-	const count = { agents: 0, prompts: 0 };
-	const receiver = null;
 	const nodes = getWritablePrompt(await getNodesByCrewId(crew.id));
-	const edges = processEdges(crew.edges);
 
 	return {
-		count: count,
-		receiver: receiver,
 		profileId: userSession.user.id,
 		crew: crew,
 		agents: userAgents,
 		publishedAgents: publishedAgents,
-		nodes: nodes,
-		edges: edges
+		nodes: nodes
 	};
-};
-
-export const actions = {
-	save: async ({ request }) => {
-		const data = await request.json();
-		const prompt = data.nodes.find((n: any) => n.type === 'prompt');
-		const agents = data.nodes.filter((n: any) => n.type === 'agent');
-
-		await api
-			.PATCH('/crews/{crew_id}', {
-				params: {
-					path: {
-						crew_id: data.id
-					}
-				},
-				body: {
-					...data,
-					prompt: prompt ? { id: prompt.id, ...prompt.data } : null,
-					nodes: agents.map((n: any) => n.id)
-				}
-			})
-			.catch((e) => {
-				error(500, `Failed saving the Crew: ${e.detail}`);
-			});
-	}
 };
