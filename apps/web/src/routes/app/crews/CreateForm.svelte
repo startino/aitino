@@ -6,6 +6,7 @@
 	import { createCrewSchema, type CreateCrewSchema } from '$lib/schema';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
+	import * as Dialog from '$lib/components/ui/dialog';
 
 	export let formCreate: SuperValidated<Infer<CreateCrewSchema>>;
 
@@ -17,7 +18,13 @@
 </script>
 
 <form class="flex flex-col gap-4" method="POST" action="?/create" use:enhance>
-	<h2>Create a new Crew</h2>
+	<Dialog.Header>
+		<Dialog.Title>Create a new Crew</Dialog.Title>
+		<Dialog.Description>
+			You are about to create a new Crew. Please fill out the form below.
+		</Dialog.Description>
+	</Dialog.Header>
+
 	<Form.Field {form} name="title">
 		<Form.Control let:attrs>
 			<Form.Label>Title*</Form.Label>
@@ -25,6 +32,7 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
+
 	<Form.Field {form} name="description">
 		<Form.Control let:attrs>
 			<Form.Label>Description</Form.Label>
@@ -32,6 +40,7 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
+
 	<Form.Field {form} name="published">
 		<Form.Control let:attrs>
 			<Form.Label>Publish</Form.Label>
