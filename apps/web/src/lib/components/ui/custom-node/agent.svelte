@@ -11,10 +11,11 @@
 	import { getContext } from '$lib/utils';
 	import { Avatar } from '../avatar/';
 	import Skeleton from '../skeleton/skeleton.svelte';
+	import { toast } from 'svelte-sonner';
 
 	type $$Props = NodeProps;
 
-	const { receiver, count } = getContext('crew');
+	const { receiver, count, nodes } = getContext('crew');
 
 	export let data: {
 		avatar: string;
@@ -30,10 +31,19 @@
 
 	let isConnecting = false;
 	let isTarget = false;
+	let isReceiver = false;
 
 	$: isConnecting = !!$connection.startHandle?.nodeId;
 	$: isTarget = !!$connection.startHandle && $connection.startHandle?.nodeId !== id;
-	$: isReceiver = $receiver?.node.id === id;
+
+	$: if (isReceiver) {
+		const me = $nodes.find((n) => n.id === id);
+		if (!me) {
+			toast.error(`Node didn't find itself somehow`);
+		} else {
+			$receiver = { node: me, targetCount: 1 };
+		}
+	}
 
 	const { deleteElements } = useSvelteFlow();
 </script>
@@ -64,6 +74,8 @@
 					(Receiver)
 				{/if}
 			</p>
+			<label for="is-receiver">Receiver</label>
+			<input id="is-receiver" name="is-receiver" bind:value={isReceiver} type="checkbox" />
 		</Card.Title>
 		<Card.Description>{data.role}</Card.Description>
 		{#if data.avatar}
@@ -76,8 +88,8 @@
 	</Card.Header>
 	<Card.Content class="grid gap-2 text-center">
 		<p class="line-clamp-3 text-ellipsis">{data.description}</p>
-		<Button href="/app/agents/editor">Edit Agent</Button>
-		<Handle type="target" id="top-{id}" position={Position.Top} />
-		<Handle type="source" id="bottom-{id}" position={Position.Bottom} />
+		<Button href="/app/agents">Edit Agent</Button>
+		<!-- <Handle type="target" id="top-{id}" position={Position.Top} /> -->
+		<!-- <Handle type="source" id="bottom-{id}" position={Position.Bottom} /> -->
 	</Card.Content>
 </Card.Root>

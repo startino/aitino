@@ -1,15 +1,18 @@
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { editCrewSchema } from '$lib/schema';
+import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
 export const load = async ({ locals: { getSession } }) => {
 	const userSession = await getSession();
 
-	const form = await superValidate(zod(editCrewSchema));
+	const form = {
+		create: await superValidate(zod(createCrewSchema)),
+		edit: await superValidate(zod(editCrewSchema))
+	};
 
 	const crews = await api
 		.GET('/crews/', {
@@ -38,28 +41,67 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	editCrew: async ({ request }) => {
-		const form = await superValidate(request, zod(editCrewSchema));
-
+	create: async ({ request, locals: { getSession } }) => {
+		const userSession = await getSession();
+		const form = await superValidate(request, zod(createCrewSchema));
 		if (!form.valid) {
 			return fail(400, { form });
 		}
+		const { data } = form;
 
 		await api
-			.PATCH(`/crews/{crew_id}`, {
+			.POST('/crews/', {
+				body: {
+					profile_id: userSession.user.id,
+					...data,
+
+					receiver_id: '00000000-0000-0000-0000-000000000000',
+					prompt: { id: '00000000-0000-0000-0000-000000000000', title: 'prompt', content: '' },
+					edges: [],
+					nodes: []
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating crew: ${e.detail}`);
+					return setError(
+						form,
+						'Crew creation failed. Please try again. If the problem persists, contact support.'
+					);
+				}
+				if (!d) {
+					console.error(`No data returned from crew creation`);
+					return setError(
+						form,
+						'Crew creation failed. Please try again. If the problem persists, contact support.'
+					);
+				}
+				return d;
+			});
+		return message(form, 'Crew created successfully!');
+	},
+	edit: async ({ request }) => {
+		const superValidated = await superValidate(request, zod(editCrewSchema));
+
+		if (!superValidated.valid) {
+			return fail(400, { superValidated });
+		}
+
+		await api
+			.PATCH(`/crews/{id}`, {
 				params: {
 					path: {
-						crew_id: form.data.id
+						id: superValidated.data.id
 					}
 				},
 				body: {
-					...form.data
+					...superValidated.data
 				}
 			})
 			.catch((e) => {
-				setError(form, e.message, { status: 500 });
+				setError(superValidated, e.message, { status: 500 });
 			});
 
-		return message(form, 'Changes saved successfully!');
+		return message(superValidated, 'Changes saved successfully!');
 	}
 };
