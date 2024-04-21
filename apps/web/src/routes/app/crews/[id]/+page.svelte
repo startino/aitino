@@ -20,9 +20,8 @@
 	setContext('crew', writableData);
 	let { crew, nodes } = getContext('crew');
 
-	const startNodes = $crew.nodes;
-
-	$: $crew.nodes = $nodes.map((n) => n.id);
+	// update $crew.nodes to n.id where it is of type 'agent'
+	$: $crew.nodes = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
 
 	const nodeTypes = {
 		agent: Nodes.Agent,
@@ -55,7 +54,8 @@
 			]);
 
 			// create agents
-			for (const agentId of startNodes) {
+			console.log(`adding startNodes: ${data.startNodes}`);
+			for (const agentId of data.startNodes) {
 				nodes.update((v) => [
 					...v,
 					{

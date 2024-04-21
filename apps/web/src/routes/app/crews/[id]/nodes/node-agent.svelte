@@ -20,15 +20,20 @@
 
 	const agent = $agents.find((n) => n.id === id);
 
+	const { deleteElements } = useSvelteFlow();
+
 	if (!agent) {
 		toast.error(`Error: Agent ${id} not found, please refresh the page.`);
+		deleteElements({ nodes: [{ id }] });
+
+		if (isReceiver) {
+			$crew.receiver_id = '00000000-0000-0000-0000-000000000000';
+		}
 	}
 
 	$: if (isReceiver && agent) {
 		$crew.receiver_id = agent.id;
 	}
-
-	const { deleteElements } = useSvelteFlow();
 </script>
 
 <Card.Root
