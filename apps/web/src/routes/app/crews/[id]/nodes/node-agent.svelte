@@ -43,7 +43,28 @@
 	const { deleteElements } = useSvelteFlow();
 </script>
 
-<Card.Root class="{isReceiver ? 'bg-primary-950' : ''} aspect-1 w-[300px] transition-all">
+<Card.Root
+	class="group flex aspect-[3/4] w-80 flex-col items-center justify-center overflow-hidden rounded-lg border-none bg-surface text-center shadow-md transition-all duration-300 hover:shadow-xl"
+>
+	<img
+		src={avatar}
+		alt={`Entry Avatar`}
+		class="flex w-full flex-1 items-center justify-center object-cover object-bottom transition-transform duration-500 group-hover:scale-105"
+	/>
+
+	<div class="absolute top-0 flex items-center justify-center p-2 text-center"></div>
+	<div class="absolute left-0 top-0 flex items-center justify-center p-2 text-center">
+		<Badge variant="outline" class="self-center">{model}</Badge>
+	</div>
+
+	<div
+		class="absolute bottom-0 left-0 right-0 m-1 flex flex-col items-center justify-center gap-1 rounded-md bg-black/60 p-1"
+	>
+		<h2 class="text-xl">{title}</h2>
+		<p class="text-md pb-1">{role}</p>
+		<Button href="/app/agents" class="w-full">Edit Agent</Button>
+	</div>
+
 	<button
 		on:click={() => {
 			deleteElements({ nodes: [{ id }] });
@@ -55,38 +76,11 @@
 		}}
 		aria-label="delete agent"
 		type="button"
-		class="absolute right-2 top-2 z-10 rounded-sm bg-background/60 p-1 text-white transition-all duration-300 disabled:pointer-events-none group-hover:scale-125"
+		class="absolute right-0 top-0 z-10 m-2 rounded-sm bg-background/60 p-1 text-white transition-all duration-300 disabled:pointer-events-none group-hover:scale-125"
 	>
 		<div class="transition-all duration-100 hover:scale-125">
 			<X />
 			<span class="sr-only">Delete</span>
 		</div>
 	</button>
-
-	<Card.Header class="flex gap-2 text-center">
-		<Card.Title class="mt-4">
-			<p>
-				{title}
-				{#if isReceiver}
-					(Receiver)
-				{/if}
-			</p>
-			<label for="is-receiver">Receiver</label>
-			<input id="is-receiver" name="is-receiver" bind:value={isReceiver} type="checkbox" />
-		</Card.Title>
-		<Card.Description>{role}</Card.Description>
-		{#if avatar}
-			<Avatar class="mx-auto h-24 w-24">
-				<Skeleton class="h-24 w-24 rounded-full" />
-				<img src={avatar} alt="" />
-			</Avatar>
-		{/if}
-		<Badge variant="outline" class="self-center">{model}</Badge>
-	</Card.Header>
-	<Card.Content class="grid gap-2 text-center">
-		<p class="line-clamp-3 text-ellipsis">{description}</p>
-		<Button href="/app/agents">Edit Agent</Button>
-		<!-- <Handle type="target" id="top-{id}" position={Position.Top} /> -->
-		<!-- <Handle type="source" id="bottom-{id}" position={Position.Bottom} /> -->
-	</Card.Content>
 </Card.Root>
