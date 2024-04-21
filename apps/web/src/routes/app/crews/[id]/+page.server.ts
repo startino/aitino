@@ -32,8 +32,8 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				error(500, `Failed to load agents for crew ${crew_id}`);
+				console.error(`Failed to load agents for crew ${crew_id}. ${e.detail}`);
+				return [];
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);

@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import api from '$lib/api';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -33,7 +34,10 @@
 		<CreateForm formCreate={data.form.create} />
 	</Library.CreateButton>
 	{#each data.crews as crew (crew.id)}
-		<Library.Entry avatar={'https://images.unsplash.com/photo-1608303588026-884930af2559'}>
+		<Library.Entry
+			on:click={() => goto(`/app/crews/${crew.id}`)}
+			avatar={'https://images.unsplash.com/photo-1608303588026-884930af2559'}
+		>
 			<div slot="content">
 				<Library.EntryHeader>
 					{crew.title}
