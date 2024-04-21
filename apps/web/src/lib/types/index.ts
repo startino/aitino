@@ -34,7 +34,6 @@ export interface CrewContext {
 	agents: Writable<schemas['Agent'][]>;
 	publishedAgents: Writable<schemas['Agent'][]>;
 	nodes: Writable<Node[]>;
-	edges: Writable<Edge[]>;
 }
 
 export type Categories =

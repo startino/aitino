@@ -32,18 +32,15 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				console.error(`Failed to load agents for crew ${crew_id}. ${e.detail}`);
+				return [];
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
-	if (!agents) {
-		return [];
-	}
 
 	let nodes: Node[] = [];
 
@@ -62,8 +59,7 @@ const getNodesByCrewId = async (crew_id: string): Promise<Node[]> => {
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
-	const session = await getSession();
-	const profileId = session?.user?.id as string;
+	const userSession = await getSession();
 
 	const crew = await api
 		.GET('/crews/{crew_id}', {
@@ -86,26 +82,26 @@ export const load = async ({ locals: { getSession }, params }) => {
 		});
 
 	if (!crew) {
-		console.error(`Redirecting to '/crews': No crew found with id ${id}`);
-		redirect(303, '/crews');
+		console.error(`Redirecting to '/app/crews': No crew found with id ${id}`);
+		redirect(303, '/app/crews');
 	}
 
 	const userAgents = await api
 		.GET('/agents/', {
 			params: {
 				query: {
-					profile_id: profileId
+					profile_id: userSession.user.id
 				}
 			}
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				console.error(`Error retrieving agents for profile ${userSession.user.id}: ${e.detail}`);
+				throw error(500, `Failed to load agents for profile ${userSession.user.id}`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
@@ -120,12 +116,12 @@ export const load = async ({ locals: { getSession }, params }) => {
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents: ${e.detail}`);
-				return null;
+				console.error(`Error retrieving published agents: ${e.detail}`);
+				throw error(500, `Failed to load published agents`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
-				return null;
+				return [];
 			}
 			return d;
 		});
@@ -139,7 +135,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 	}
 
 	// TODO: get the prompt count and receiver agent if it exists
-	const count = { agents: userAgents.length, prompts: 0 };
+	const count = { agents: 0, prompts: 0 };
 	const receiver = null;
 	const nodes = getWritablePrompt(await getNodesByCrewId(crew.id));
 	const edges = processEdges(crew.edges);
@@ -147,7 +143,7 @@ export const load = async ({ locals: { getSession }, params }) => {
 	return {
 		count: count,
 		receiver: receiver,
-		profileId: profileId,
+		profileId: userSession.user.id,
 		crew: crew,
 		agents: userAgents,
 		publishedAgents: publishedAgents,

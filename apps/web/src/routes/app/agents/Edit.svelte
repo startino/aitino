@@ -7,7 +7,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { AgentEditorItems } from '$lib/components/ui/agent-editor-items';
+	import { AgentEditorItems } from './components';
 
 	export let apiKeyTypes: string[] | null;
 	export let user_api_keys: string[] | null;

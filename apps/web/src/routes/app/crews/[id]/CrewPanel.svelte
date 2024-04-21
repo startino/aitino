@@ -3,7 +3,7 @@
 	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { AgentLibrary } from '$lib/components/ui/library';
+	import AgentLibrary from './AgentLibrary.svelte';
 	import { goto } from '$app/navigation';
 	import type { PanelAction } from '$lib/types';
 	import { PROMPT_LIMIT, AGENT_LIMIT } from '$lib/config';

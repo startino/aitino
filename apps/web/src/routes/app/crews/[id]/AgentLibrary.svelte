@@ -7,7 +7,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Library } from '$lib/components/ui/community-details';
-	import AgentRow from '../community-details/agent-row.svelte';
+	import AgentRow from '$lib/components/ui/community-details/agent-row.svelte';
 	import type { schemas } from '$lib/api';
 
 	const loadAgentDispatch = createEventDispatcher<{ 'load-agent': schemas['Agent'] }>();
