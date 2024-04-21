@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { Panel, useSvelteFlow } from '@xyflow/svelte';
-	import RightEditorSidebar from '$lib/components/RightEditorSidebar.svelte';
+	import { X, Loader2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import AgentLibrary from './AgentLibrary.svelte';
 	import { goto } from '$app/navigation';
 	import type { PanelAction } from '$lib/types';
-	import { PROMPT_LIMIT, AGENT_LIMIT } from '$lib/config';
-	import { writable } from 'svelte/store';
+	import { AGENT_LIMIT } from '$lib/config';
 	import { toast } from 'svelte-sonner';
-
 	import { getContext, getCleanNodes } from '$lib/utils';
 	import api from '$lib/api';
 
-	let { count, receiver, crew, agents, publishedAgents, nodes, edges } = getContext('crew');
+	let { receiver, crew, agents, publishedAgents, nodes } = getContext('crew');
 
 	let openAgentLibrary = false;
 
@@ -21,10 +19,10 @@
 		toast.message('Saving crew...');
 
 		const response = await api
-			.PATCH('/crews/{crew_id}', {
+			.PATCH('/crews/{id}', {
 				params: {
 					path: {
-						crew_id: $crew.id
+						id: $crew.id
 					}
 				},
 				body: {
@@ -34,7 +32,7 @@
 					published: $crew.published,
 					title: $crew.title,
 					description: $crew.description,
-					edges: $crew.edges,
+					edges: [],
 					nodes: $agents.map((n: any) => n.id)
 				}
 			})
@@ -56,32 +54,10 @@
 		return response ? true : false;
 	}
 
-	const { deleteElements, getNodes, getViewport, setCenter } = useSvelteFlow();
-	function addPrompt() {
-		if ($count.prompts >= PROMPT_LIMIT) return;
-
-		const position = { ...getViewport() };
-		setCenter(position.x, position.y, { zoom: position.zoom });
-
-		nodes.update((v) => [
-			...v,
-			{
-				id: crypto.randomUUID(),
-				type: 'prompt',
-				selectable: false,
-				position,
-				data: {
-					title: writable(''),
-					content: writable('')
-				}
-			}
-		]);
-
-		$count.prompts++;
-	}
+	const { getViewport } = useSvelteFlow();
 
 	function addAgent(data: any) {
-		if ($count.agents >= AGENT_LIMIT) return;
+		if ($agents.length >= AGENT_LIMIT) return;
 
 		const existingNode = $nodes.find((node) => node.id === data.id);
 		if (existingNode) {
@@ -100,8 +76,6 @@
 				data
 			}
 		]);
-
-		$count.agents++;
 	}
 
 	let panelActions: PanelAction[];
@@ -113,7 +87,6 @@
 				goto('/app/session');
 			}
 		},
-		{ name: 'Add Prompt', buttonVariant: 'outline', onclick: addPrompt },
 		{
 			name: 'Add Agent',
 			isCustom: true
@@ -124,7 +97,6 @@
 				const jsonString = JSON.stringify(
 					{
 						nodes: getCleanNodes($nodes),
-						edges: $edges,
 						title: $crew.title,
 						description: $crew.description,
 						receiver_id: $receiver?.node.id ?? null
@@ -151,29 +123,59 @@
 </script>
 
 <Panel position="top-right">
-	<RightEditorSidebar
-		bind:description={$crew.description}
-		bind:title={$crew.title}
-		actions={panelActions}
-		let:action
+	<!-- Static sidebar for desktop -->
+	<div
+		class="hidden h-full overflow-y-clip rounded-2xl border bg-primary-900/50 p-6 lg:z-50 lg:grid lg:w-72"
 	>
-		{#if action.isCustom}
-			<Dialog.Root open={openAgentLibrary} onOpenChange={(o) => (openAgentLibrary = o)}>
-				<Dialog.Trigger>
-					<Button variant={action.buttonVariant ?? 'outline'} class="w-full">
-						{action.name}
-					</Button>
-				</Dialog.Trigger>
-				<Dialog.Content class="max-w-6xl">
-					<AgentLibrary
-						agents={$agents}
-						publishedAgents={$publishedAgents}
-						on:load-agent={({ detail }) => {
-							addAgent(detail);
-						}}
-					/>
-				</Dialog.Content>
-			</Dialog.Root>
-		{/if}
-	</RightEditorSidebar>
+		<div class="mb-4 grid">
+			<h1 contenteditable on:input={(e) => ($crew.title = e.target.innerText)}>
+				{$crew.title}
+			</h1>
+			<p
+				contenteditable
+				class="text-sm text-gray-300"
+				on:input={(e) => ($crew.description = e.target.innerText)}
+			>
+				{$crew.description}
+			</p>
+		</div>
+		<!-- Sidebar component, swap this element with another sidebar if you like -->
+		<ul role="list" class="grid w-full gap-2">
+			{#each panelActions as action}
+				<li class="grid">
+					{#if action.isCustom}
+						<Dialog.Root open={openAgentLibrary} onOpenChange={(o) => (openAgentLibrary = o)}>
+							<Dialog.Trigger>
+								<Button variant={action.buttonVariant ?? 'outline'} class="w-full">
+									{action.name}
+								</Button>
+							</Dialog.Trigger>
+							<Dialog.Content class="max-w-6xl">
+								<AgentLibrary
+									agents={$agents}
+									publishedAgents={$publishedAgents}
+									on:load-agent={({ detail }) => {
+										addAgent(detail);
+									}}
+								/>
+							</Dialog.Content>
+						</Dialog.Root>
+					{:else}
+						<Button
+							on:click={action.onclick}
+							variant={action.buttonVariant ?? 'outline'}
+							class="w-full"
+						>
+							<span class="flex gap-2">
+								{#if action.loading}
+									<Loader2 class="animate-spin" />
+								{/if}
+								{action.name}
+							</span>
+						</Button>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	</div>
 </Panel>
