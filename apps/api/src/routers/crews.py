@@ -41,9 +41,8 @@ def validate_crew(crew_id: UUID) -> str:
 def insert_crew(crew: CrewInsertRequest) -> Crew:
     if not db.get_profile(crew.profile_id):
         raise HTTPException(404, "profile not found")
-    inserted_crew = db.insert_crew(crew)
-
-    return inserted_crew
+    
+    return db.insert_crew(crew)
 
 
 @router.patch("/{id}")
@@ -56,7 +55,7 @@ def update_crew(id: UUID, content: CrewUpdateRequest) -> Crew:
 
 
 @router.get("/{id}")
-def get_crew_by_id(id: UUID) -> Crew:
+def get_crew(id: UUID) -> Crew:
     response = db.get_crew(id)
     if not response:
         raise HTTPException(404, "Crew not found")
