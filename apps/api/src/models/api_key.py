@@ -10,13 +10,13 @@ class APIKey(BaseModel):
     id: UUID
     created_at: datetime
     profile_id: UUID
-    api_key_type: APIKeyType | None = None
+    api_provider: APIProvider | None = None
     api_key: str
 
 
 class APIKeyInsertRequest(BaseModel):
     profile_id: UUID
-    api_key_type_id: UUID
+    api_provider_id: UUID
     api_key: str
 
 
@@ -26,11 +26,11 @@ class APIKeyUpdateRequest(BaseModel):
 
 class APIKeyGetRequest(BaseModel):
     profile_id: UUID | None = None
-    api_key_type_id: UUID | None = None
+    api_provider_id: UUID | None = None
     api_key: str | None = None
 
 
-class APIKeyType(BaseModel):
+class APIProvider(BaseModel):
     id: UUID
     created_at: datetime
     name: str | None = None
