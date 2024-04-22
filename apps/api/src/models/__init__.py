@@ -10,7 +10,7 @@ from .api_key import (
     APIKey,
     APIKeyGetRequest,
     APIKeyInsertRequest,
-    APIKeyType,
+    APIProvider,
     APIKeyUpdateRequest,
 )
 from .billing_information import (
@@ -56,7 +56,7 @@ from .subscription import (
     SubscriptionUpdateRequest,
 )
 from .tiers import Tier, TierGetRequest, TierInsertRequest, TierUpdateRequest
-from .tool import Tool,ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
+from .tool import Tool, ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
 from .user import User
 
 __all__ = [
@@ -82,7 +82,7 @@ __all__ = [
     "ProfileInsertRequest",
     "APIKeyInsertRequest",
     "APIKey",
-    "APIKeyType",
+    "APIProvider",
     "APIKeyUpdateRequest",
     "User",
     "MessageInsertRequest",

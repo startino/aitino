@@ -20,7 +20,7 @@ def get_api_keys(q: APIKeyGetRequest = Depends()) -> list[APIKey]:
     if q.profile_id and not db.get_profile(q.profile_id):
         raise HTTPException(404, "profile not found")
 
-    return db.get_api_keys(q.profile_id, q.api_key_type_id, q.api_key)
+    return db.get_api_keys(q.profile_id, q.api_provider_id, q.api_key)
 
 
 @router.get("/{id}")
