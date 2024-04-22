@@ -4,12 +4,12 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Tools(BaseModel):
     id: UUID
-    parameters: list[dict]
-
+    parameter: dict
+    # will fix typing on this eventually, rn it's just gonna be dict
 
 class Agent(BaseModel):
     id: UUID
@@ -20,7 +20,9 @@ class Agent(BaseModel):
     avatar: str
     system_message: str
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[Tools]
+    tools: list[Tools] | list
+    # the list type is just empty list, since list[Tools] requires defined fields in the db, but rn
+    # if an agent doesn't use tools the "tools" field is an empty list
     description: str
     role: str
     version: str
@@ -33,7 +35,7 @@ class AgentInsertRequest(BaseModel):
     system_message: str
     published: bool
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[Tools]
+    tools: list[Tools] | list
     avatar: str = ""
     description: str = ""
     version: str = ""

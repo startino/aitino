@@ -422,7 +422,6 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
     )
     return Crew(**response.data[0])
-    # supabase.table("crews").upsert(crew.model_dump())
 
 
 def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
@@ -592,7 +591,7 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if not response.data:
         return None
 
@@ -620,12 +619,12 @@ def get_agents(
 
 def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
     supabase: Client = create_client(url, key)
-    nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
-    if len(nodes.data) == 0:
+    agents = supabase.table("crews").select("agents").eq("id", crew_id).execute()
+    if len(agents.data) == 0:
         return None
 
     response = (
-        supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
+        supabase.table("agents").select("*").in_("id", agents.data[0]["agents"]).execute()
     )
     return [Agent(**data) for data in response.data]
 

@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from .agent_model import Agent
 
 class CrewProcessed(BaseModel):
-    receiver_id: UUID
+    receiver_id: UUID | None = None
     delegator_id: UUID | None = None
     # None means admin again, so its the original crew (has no parent crew)
     agents: list[Agent]
@@ -25,7 +25,7 @@ class Crew(BaseModel):
     description: str
     updated_at: datetime
     agents: list[UUID]
-    receiver_id: UUID 
+    receiver_id: UUID | None = None
     avatar: str
     prompt: str
 
@@ -38,13 +38,13 @@ class ValidCrew(BaseModel):
     description: str
     updated_at: datetime
     agents: list[UUID]
-    receiver_id: UUID
+    receiver_id: UUID | None = None
     avatar: str 
     prompt: str
 
 
 class CrewInsertRequest(BaseModel):
-    receiver_id: UUID
+    receiver_id: UUID | None = None
     prompt: str = ""
     profile_id: UUID
     published: bool

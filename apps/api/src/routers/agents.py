@@ -21,11 +21,7 @@ logger = logging.getLogger("root")
 
 @router.get("/")
 def get_agents(q: AgentGetRequest = Depends()) -> list[Agent]:
-    response = db.get_agents(q.profile_id, q.published)
-    if not response:
-        raise HTTPException(404, "crew not found or crew has no agents")
-
-    return response
+    return db.get_agents(q.profile_id, q.published)
 
 
 @router.get("/{id}")

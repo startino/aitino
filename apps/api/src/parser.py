@@ -36,7 +36,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
     """
     logger.debug(f"Getting agent {agent_id}")
     response = (
-        supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+        supabase.table("agents").select("*").eq("id", agent_id).execute()
     )
     if len(response.data) == 0:
         logger.error(f"No agent found for {agent_id}")
@@ -47,14 +47,14 @@ def get_agent(agent_id: UUID) -> Agent | None:
 def get_agents(agent_ids: list[UUID]) -> list[Agent]:
     logger.debug(f"getting agents from agent_ids: {agent_ids}")
     response = (
-        supabase.table("agents").select("*, models(*)").in_("id", agent_ids).execute()
+        supabase.table("agents").select("*").in_("id", agent_ids).execute()
     )
     return [Agent(**agent) for agent in response.data]
 
 
 def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
     logger.debug("Processing crew")
-    agent_ids: list[UUID] = crew.nodes
+    agent_ids: list[UUID] = crew.agents
 
     _crew, error = validate_crew(crew)
 
@@ -66,19 +66,19 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
         agents=get_agents(agent_ids),
     )
 
-    message = _crew.prompt.content
+    message = _crew.prompt
     return message, crew_model
 
 
 def validate_crew(crew: Crew) -> tuple[ValidCrew | None, str]:
     logger.debug("Validating crew")
 
-    agent_ids: list[UUID] = crew.nodes
+    agent_ids: list[UUID] = crew.agents
     agents = get_agents(agent_ids)
 
     if not crew.receiver_id:
         return None, "Crew has no receiver id"
-    if not crew.prompt or crew.prompt.content == "":
+    if not crew.prompt or crew.prompt == "":
         return None, "Crew has no prompt"
     if len(agents) == 0:
         return None, "Crew has no agents"
