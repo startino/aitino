@@ -73,5 +73,13 @@
 	>
 		<Background class="!bg-background" />
 		<CrewPanel />
+		<div class="absolute bottom-0 flex w-full items-center justify-center p-4 text-center">
+			<code class="text-red-400">
+				Currently the node editor is only capable of the bare essentials. That means you can edit
+				the default prompt, and add and remove agents.<br />
+				Functionality for other features like connectng agents, set up hierarchies, subgroups are not
+				finished yet.
+			</code>
+		</div>
 	</SvelteFlow>
 </div>
