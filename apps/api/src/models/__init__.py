@@ -3,14 +3,14 @@ from .agent_model import (
     Agent,
     AgentGetRequest,
     AgentInsertRequest,
-    AgentUpdateModel,
-    LLMModel,
+    AgentUpdateRequest,
+    Tools,
 )
 from .api_key import (
     APIKey,
     APIKeyGetRequest,
     APIKeyInsertRequest,
-    APIKeyType,
+    APIProvider,
     APIKeyUpdateRequest,
 )
 from .billing_information import (
@@ -76,13 +76,13 @@ __all__ = [
     "SessionRunResponse",
     "Crew",
     "AgentInsertRequest",
-    "AgentUpdateModel",
+    "AgentUpdateRequest",
     "Profile",
     "ProfileUpdateRequest",
     "ProfileInsertRequest",
     "APIKeyInsertRequest",
     "APIKey",
-    "APIKeyType",
+    "APIProvider",
     "APIKeyUpdateRequest",
     "User",
     "MessageInsertRequest",
@@ -109,5 +109,5 @@ __all__ = [
     "BillingInsertRequest",
     "BillingUpdateRequest",
     "ValidCrew",
-    "LLMModel",
+    "Tools",
 ]

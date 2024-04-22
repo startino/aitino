@@ -6,15 +6,9 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from .agent_model import Agent
-from .edge import Edge
-
-class Prompt(BaseModel):
-    id: UUID
-    title: str
-    content: str
 
 class CrewProcessed(BaseModel):
-    receiver_id: UUID
+    receiver_id: UUID | None = None
     delegator_id: UUID | None = None
     # None means admin again, so its the original crew (has no parent crew)
     agents: list[Agent]
@@ -26,51 +20,47 @@ class Crew(BaseModel):
     id: UUID
     created_at: datetime
     profile_id: UUID
-    edges: list[Edge]
     published: bool
     title: str
     description: str
     updated_at: datetime
-    nodes: list[UUID]
+    agents: list[UUID]
     receiver_id: UUID | None = None
-    avatar: str | None = None
-    prompt: Prompt | None = None
+    avatar: str
+    prompt: str
 
 class ValidCrew(BaseModel):
     id: UUID
     created_at: datetime
     profile_id: UUID
-    edges: list[Edge]
     published: bool
     title: str
     description: str
     updated_at: datetime
-    nodes: list[UUID]
-    receiver_id: UUID
+    agents: list[UUID]
+    receiver_id: UUID | None = None
     avatar: str 
-    prompt: Prompt 
+    prompt: str
 
 
 class CrewInsertRequest(BaseModel):
-    receiver_id: UUID
-    prompt: Prompt
+    receiver_id: UUID | None = None
+    prompt: str = ""
     profile_id: UUID
-    edges: list[Edge]
     published: bool
-    title: str
-    description: str
-    nodes: list[str]
+    title: str = ""
+    description: str = ""
+    agents: list[UUID]
 
 
 class CrewUpdateRequest(BaseModel):
     receiver_id: UUID | None = None
-    prompt: Prompt | None = None
+    prompt: str | None = None
     profile_id: UUID | None = None
-    edges: list[Edge] | None = None
     published: bool | None = None
     title: str | None = None
     description: str | None = None
-    nodes: list[str] | None = None
+    agents: list[UUID] | None = None
 
 
 class CrewGetRequest(BaseModel):

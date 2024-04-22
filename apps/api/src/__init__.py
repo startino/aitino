@@ -6,6 +6,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from src.routers import api_provider
+
 from . import mock as mocks
 from .auth import get_current_user
 from .autobuilder import build_agents
@@ -18,8 +20,8 @@ from .dependencies import (
 )
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Profile, LLMModel
-from .routers import agents, api_key_types, api_keys
+from .models import Profile
+from .routers import agents, api_provider, api_keys
 from .routers import auth as auth_router
 from .routers import (
     billing_information,
@@ -44,7 +46,7 @@ app.include_router(agents.router)
 app.include_router(profiles.router)
 app.include_router(api_keys.router)
 app.include_router(auth_router.router)
-app.include_router(api_key_types.router)
+app.include_router(api_provider.router)
 app.include_router(tools.router)
 app.include_router(subscriptions.router)
 app.include_router(rest.router)
@@ -114,8 +116,3 @@ def auto_build_crew(general_task: str) -> str:
 @app.get("/me")
 def get_profile_from_header(current_user=Depends(get_current_user)) -> Profile:
     return current_user
-
-
-@app.get("/models")
-def get_models() -> list[LLMModel]:
-    return db.get_models()
