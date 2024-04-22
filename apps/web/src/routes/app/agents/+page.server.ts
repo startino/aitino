@@ -1,9 +1,8 @@
-import { supabase } from '$lib/supabase';
 import { fail, error } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { agentSchema } from '$lib/schema';
-import { setError, superValidate } from 'sveltekit-superforms/server';
+import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 import api from '$lib/api';
 
