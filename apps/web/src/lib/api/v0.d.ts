@@ -295,24 +295,25 @@ export interface components {
       avatar: string;
       /** System Message */
       system_message: string;
-      /** Llm Model Id */
-      llm_model_id: number;
+      /**
+       * Model
+       * @enum {string}
+       */
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       models: components["schemas"]["LLMModel"];
       /** Tools */
       tools: Record<string, never>[];
       /** Crew Ids */
-      crew_ids?: string[] | null;
+      crew_ids: string[];
       /** Description */
-      description?: string | null;
+      description: string;
       /** Role */
       role: string;
       /** Version */
-      version?: string | null;
+      version: string;
     };
     /** AgentInsertRequest */
     AgentInsertRequest: {
-      /** Title */
-      title: string;
       /**
        * Profile Id
        * Format: uuid
@@ -320,48 +321,52 @@ export interface components {
       profile_id: string;
       /** Avatar */
       avatar: string;
+      /** Title */
+      title: string;
+      /** Role */
+      role: string;
       /** System Message */
       system_message: string;
+      /** Published */
+      published: boolean;
       /**
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
       tools: Record<string, never>[];
       /** Crew Ids */
-      crew_ids?: string[] | null;
+      crew_ids: string[];
       /** Description */
-      description?: string | null;
-      /** Role */
-      role: string;
+      description: string;
       /** Version */
-      version?: string | null;
+      version: string;
     };
     /** AgentUpdateModel */
     AgentUpdateModel: {
-      /** Title */
-      title?: string | null;
-      /** Published */
-      published?: boolean | null;
       /** Profile Id */
       profile_id?: string | null;
       /** Avatar */
       avatar?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Role */
+      role?: string | null;
       /** System Message */
       system_message?: string | null;
+      /** Published */
+      published?: boolean | null;
       /** Model */
-      model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
+      model?: ("gpt-3.5-turbo" | "gpt-4-turbo") | null;
       /** Tools */
       tools?: Record<string, never>[] | null;
       /** Crew Ids */
       crew_ids?: string[] | null;
-      /** Version */
-      version?: string | null;
       /** Description */
       description?: string | null;
-      /** Role */
-      role?: string | null;
+      /** Version */
+      version?: string | null;
     };
     /** Billing */
     Billing: {
