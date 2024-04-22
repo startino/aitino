@@ -63,11 +63,13 @@ export const actions = {
 					avatar: randomAvatar.avatarUrl,
 					title: form.data.title,
 					description: form.data.description,
-					// published: form.data.published,
+					published: form.data.published,
 					role: form.data.role,
 					tools: form.data.tools,
 					system_message: form.data.system_message,
-					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
+					model: form.data.model,
+					crew_ids: [],
+					version: '1'
 				}
 			})
 			.then(({ data: d, error: e }) => {
@@ -108,13 +110,14 @@ export const actions = {
 					}
 				},
 				body: {
+					profile_id: userSession.user.id,
 					title: form.data.title,
 					description: form.data.description,
 					published: form.data.published,
 					role: form.data.role,
 					tools: form.data.tools,
 					system_message: form.data.system_message,
-					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
+					model: form.data.model
 				}
 			})
 			.then(({ data: d, error: e }) => {
