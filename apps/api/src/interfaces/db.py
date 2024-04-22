@@ -479,11 +479,11 @@ def delete_crew(crew_id: UUID) -> Crew:
     return Crew(**response.data[0])
 
 
-def get_api_key(api_provider_id: UUID) -> APIKey | None:
+def get_api_provider(api_provider_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("users_api_keys")
-        .select("*, api_provider(*)")
+        .select("*, api_providers(*)")
         .eq("id", api_provider_id)
         .execute()
     )
@@ -500,13 +500,13 @@ def get_api_keys(
     api_key: str | None = None,
 ) -> list[APIKey]:
     supabase: Client = create_client(url, key)
-    query = supabase.table("users_api_keys").select("*, api_key_types(*)")
+    query = supabase.table("users_api_keys").select("*, api_providers(*)")
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
 
     if api_key_type_id:
-        query = query.eq("api_key_type_id", api_key_type_id)
+        query = query.eq("api_provider_id", api_provider_id)
 
     if api_key:
         query = query.eq("api_key", api_key)
@@ -515,8 +515,8 @@ def get_api_keys(
 
     api_keys = []
     for data in response.data:
-        api_key_type = APIKeyType(**data["api_key_types"])
-        api_keys.append(APIKey(**data, api_key_type=api_key_type))
+        api_provider = APIProvider(**data["api_providers"])
+        api_keys.append(APIKey(**data, api_provider=api_provider))
 
     return api_keys
 
@@ -538,7 +538,7 @@ def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
         .execute()
     )
 
-    api_key_type = APIKeyType(**type_response.data[0])
+    api_key_type = APIProvider(**type_response.data[0])
     return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
@@ -554,7 +554,7 @@ def delete_api_key(api_key_id: UUID) -> APIKey | None:
         .eq("id", response.data[0]["api_key_type_id"])
         .execute()
     )
-    api_key_type = APIKeyType(**type_response.data[0])
+    api_key_type = APIProvider(**type_response.data[0])
     return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
@@ -573,15 +573,15 @@ def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> API
         .execute()
     )
 
-    api_key_type = APIKeyType(**type_response.data[0])
+    api_key_type = APIProvider(**type_response.data[0])
     return APIKey(**response.data[0], api_key_type=api_key_type)
 
 
-def get_api_key_types() -> list[APIKeyType]:
+def get_api_key_types() -> list[APIProvider]:
     supabase: Client = create_client(url, key)
     logger.debug("Getting all api key types")
     response = supabase.table("api_key_types").select("*").execute()
-    return [APIKeyType(**data) for data in response.data]
+    return [APIProvider(**data) for data in response.data]
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
