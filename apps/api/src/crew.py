@@ -184,7 +184,7 @@ class AutogenCrew:
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
-            api_key_types = db.get_api_key_type_ids(tool_ids)
+            api_key_types = db.get_api_provider_ids(tool_ids)
 
             # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
             if len(tool_ids):
