@@ -19,41 +19,40 @@ class Agent(BaseModel):
     profile_id: UUID
     avatar: str
     system_message: str
-    #model_ is protected namespace, so changed attribute below to llm_model_
-    llm_model_id: int
-    models: LLMModel
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
     tools: list[dict]
-    crew_ids: list[UUID] | None = None
-    description: str | None = None
+    crew_ids: list[UUID]
+    description: str
     role: str
-    version: str | None = None
+    version: str
 
 
 class AgentInsertRequest(BaseModel):
-    title: str
     profile_id: UUID
     avatar: str
-    system_message: str
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
-    tools: list[dict]
-    crew_ids: list[UUID] | None = None
-    description: str | None = None
+    title: str
     role: str
-    version: str | None = None
+    system_message: str
+    published: bool
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
+    tools: list[dict]
+    crew_ids: list[UUID]
+    description: str
+    version: str
 
 
 class AgentUpdateModel(BaseModel):
-    title: str | None = None
-    published: bool | None = None
     profile_id: UUID | None = None
     avatar: str | None = None
+    title: str | None = None
+    role: str | None = None
     system_message: str | None = None
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"] | None = None
+    published: bool | None = None
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"] | None = None
     tools: list[dict] | None = None
     crew_ids: list[UUID] | None = None
-    version: str | None = None
     description: str | None = None
-    role: str | None = None
+    version: str | None = None
 
 
 class AgentGetRequest(BaseModel):

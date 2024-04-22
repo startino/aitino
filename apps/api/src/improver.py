@@ -78,7 +78,7 @@ def improve_prompt(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ],
-        model="gpt-4-turbo-preview",
+        model="gpt-4-turbo",
         temperature=temperature,
         frequency_penalty=0.1,
         presence_penalty=0.1,
