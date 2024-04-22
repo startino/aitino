@@ -18,7 +18,7 @@
 		id: string;
 		name: string;
 		description: string;
-		api_key_type_id: string;
+		api_provider_id: string;
 		created_at: string;
 	};
 
@@ -80,7 +80,7 @@
 		.map((tool) => ({
 			id: tool.id,
 			name: tool.name,
-			api_key_type_id: tool.api_key_type_id,
+			api_provider_id: tool.api_provider_id,
 			description: tool.description
 		}));
 
@@ -91,7 +91,7 @@
 	let addedTools = [] as {
 		id: string;
 		name: string;
-		api_key_type_id: string;
+		api_provider_id: string;
 		description: string;
 	}[];
 
@@ -112,7 +112,7 @@
 	function handleSelect(tool: {
 		id: string;
 		name: string;
-		api_key_type_id: string;
+		api_provider_id: string;
 		description: string;
 	}) {
 		selectedName = tool.name;
@@ -290,14 +290,14 @@
 									<Button
 										class="absolute bottom-0 left-0 flex w-full items-center justify-center transition-all duration-500 hover:scale-95"
 										on:click={() => {
-											if (selectedId === tool.api_key_type_id) {
+											if (selectedId === tool.api_provider_id) {
 												console.log(user_api_keys, 'from success selected id here');
 												if (isCreate) {
 													showToolsDetail = false;
 													addedTools = [...addedTools, tool];
 												} else {
 													user_api_keys?.forEach((key) => {
-														if (key.api_key_type_id === selectedId) {
+														if (key.api_provider_id === selectedId) {
 															showToolsDetail = false;
 															addedTools = [...addedTools, tool];
 														} else {
@@ -307,7 +307,7 @@
 												}
 											} else {
 												console.log(selectedId, 'failure selected id here');
-												console.log(tool.api_key_type_id, 'apik selected id here');
+												console.log(tool.api_provider_id, 'apik selected id here');
 												showToolsDetail = true;
 												toast.error('Please select correct API key type');
 											}

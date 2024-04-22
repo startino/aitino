@@ -96,7 +96,7 @@
 						class="flex items-center justify-between rounded-lg bg-background p-4"
 					>
 						<div class="flex">
-							<h3 class="mr-1 text-lg font-semibold">{api.api_key_type?.name}</h3>
+							<h3 class="mr-1 text-lg font-semibold">{api.api_provider?.name}</h3>
 						</div>
 						<form
 							action="?/delete&id={api.id}"
