@@ -1,4 +1,4 @@
-import { fail, error } from '@sveltejs/kit';
+import { fail, error, redirect, type ActionFailure } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { agentSchema } from '$lib/schema';
@@ -73,22 +73,22 @@ export const actions = {
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					return fail(500, {
-						message:
-							'Agent create failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					return fail(500, {
-						message:
-							'Agent create failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				return d;
 			});
 
-		return { form };
+		if (!agent) {
+			return fail(500, {
+				message: 'Agent create failed. Please try again. If the problem persists, contact support.'
+			});
+		}
+
+		throw redirect(303, `/app/agents/${agent.id}`);
 	},
 	update: async ({ request, locals }) => {
 		console.log('update agent');
@@ -121,20 +121,21 @@ export const actions = {
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					return fail(500, {
-						message:
-							'Agent update failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					return fail(500, {
-						message:
-							'Agent update failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				return d;
 			});
+
+		if (!agent) {
+			return fail(500, {
+				form,
+				message: 'Agent update failed. Please try again. If the problem persists, contact support.'
+			});
+		}
 
 		return { form };
 	}

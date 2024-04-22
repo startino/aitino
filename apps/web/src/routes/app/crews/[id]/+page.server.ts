@@ -86,6 +86,6 @@ export const load = async ({ locals: { getSession }, params }) => {
 		agents: userAgents,
 		publishedAgents: publishedAgents,
 		nodes: nodes,
-		startNodes: crew.nodes
+		startNodes: crew.agents
 	};
 };
