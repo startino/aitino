@@ -1,5 +1,8 @@
-import { error, redirect } from '@sveltejs/kit';
-import api, { type schemas } from '$lib/api';
+import { redirect } from '@sveltejs/kit';
+import api from '$lib/api';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { agentSchema } from '$lib/schema';
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
@@ -29,8 +32,10 @@ export const load = async ({ locals: { getSession }, params }) => {
 		console.error(`Redirecting to '/app/agents': No crew found with id ${id}`);
 		throw redirect(303, '/app/agents');
 	}
+	const form = await superValidate(zod(agentSchema));
 
 	return {
-		agent
+		agent,
+		form
 	};
 };

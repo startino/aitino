@@ -64,7 +64,7 @@ export const actions = {
 					description: form.data.description,
 					published: form.data.published,
 					role: form.data.role,
-					tools: form.data.tools,
+					tools: [],
 					system_message: form.data.system_message,
 					model: form.data.model,
 					version: '1'
@@ -89,54 +89,5 @@ export const actions = {
 		}
 
 		throw redirect(303, `/app/agents/${agent.id}`);
-	},
-	update: async ({ request, locals }) => {
-		console.log('update agent');
-		const userSession = await locals.getSession();
-
-		const form = await superValidate(request, zod(agentSchema));
-
-		if (!form.valid) {
-			return fail(400, { form, message: 'unable to create a new agent' });
-		}
-
-		const agent = await api
-			.PATCH('/agents/{id}', {
-				params: {
-					path: {
-						id: form.data.id
-					}
-				},
-				body: {
-					profile_id: userSession.user.id,
-					title: form.data.title,
-					description: form.data.description,
-					published: form.data.published,
-					role: form.data.role,
-					tools: form.data.tools,
-					system_message: form.data.system_message,
-					model: form.data.model
-				}
-			})
-			.then(({ data: d, error: e }) => {
-				if (e) {
-					console.error(`Error creating crew: ${e.detail}`);
-					return null;
-				}
-				if (!d) {
-					console.error(`No data returned from crew creation`);
-					return null;
-				}
-				return d;
-			});
-
-		if (!agent) {
-			return fail(500, {
-				form,
-				message: 'Agent update failed. Please try again. If the problem persists, contact support.'
-			});
-		}
-
-		return { form };
 	}
 };
