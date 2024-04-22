@@ -15,7 +15,7 @@ from src.models import (
     AgentUpdateRequest,
     APIKey,
     APIKeyInsertRequest,
-    APIKeyType,
+    APIProvider,
     APIKeyUpdateRequest,
     Billing,
     BillingInsertRequest,
@@ -422,6 +422,7 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
     )
     return Crew(**response.data[0])
+    # supabase.table("crews").upsert(crew.model_dump())
 
 
 def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
@@ -478,19 +479,19 @@ def delete_crew(crew_id: UUID) -> Crew:
     return Crew(**response.data[0])
 
 
-def get_api_key(api_key_id: UUID) -> APIKey | None:
+def get_api_key(api_provider_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("users_api_keys")
-        .select("*, api_key_types(*)")
-        .eq("id", api_key_id)
+        .select("*, api_provider(*)")
+        .eq("id", api_provider_id)
         .execute()
     )
     if len(response.data) == 0:
         return None
 
-    api_key_type = APIKeyType(**response.data[0]["api_key_types"])
-    return APIKey(**response.data[0], api_key_type=api_key_type)
+    api_provider = APIProvider(**response.data[0]["api_providers"])
+    return APIKey(**response.data[0], api_provider=api_provider)
 
 
 def get_api_keys(
@@ -591,7 +592,9 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
+    response = (
+        supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+    )
     if not response.data:
         return None
 
@@ -600,6 +603,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents(
     profile_id: UUID | None = None,
+    crew_id: UUID | None = None,
     published: bool | None = None,
 ) -> list[Agent]:
     """Gets agents, filtered by what parameters are given"""
@@ -608,6 +612,17 @@ def get_agents(
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
+
+    # scuffed solution since agents dont have a crew id
+    # prob gonna rework or remove this completely
+    # also this crew_id param can't be used with any of the other parameters
+    # since this doesn't build on the query var (it also returns so L)
+    if crew_id:
+        response = get_agents_from_crew(crew_id)
+        if not response:
+            return []
+
+        return response
 
     if published is not None:
         query = query.eq("published", published)
@@ -619,12 +634,12 @@ def get_agents(
 
 def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
     supabase: Client = create_client(url, key)
-    agents = supabase.table("crews").select("agents").eq("id", crew_id).execute()
-    if len(agents.data) == 0:
+    nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
+    if len(nodes.data) == 0:
         return None
 
     response = (
-        supabase.table("agents").select("*").in_("id", agents.data[0]["agents"]).execute()
+        supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
     )
     return [Agent(**data) for data in response.data]
 
@@ -807,4 +822,4 @@ def delete_profile(profile_id: UUID) -> Profile:
 if __name__ == "__main__":
     from src.models import Session
 
-    #print(add_crew_to_agent(UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"), UUID("4cf4de3c-30cd-4ac1-bfd6-a26aeb0fec8c")))
+    # print(add_crew_to_agent(UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"), UUID("4cf4de3c-30cd-4ac1-bfd6-a26aeb0fec8c")))
