@@ -27,11 +27,12 @@
 	const { form: formData, enhance } = form;
 
 	$formData = {
+		id: agent.id,
 		title: agent.title,
 		description: agent.description ?? '',
 		published: agent.published,
 		tools: agent.tools,
-		model: agent.model === 1 ? 'gpt-4-turbo' : 'gpt-3.5-turbo',
+		model: agent.model,
 		role: agent.role,
 		system_message: agent.system_message
 	};

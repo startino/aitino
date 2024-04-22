@@ -122,14 +122,14 @@ export const actions = {
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					throw fail(500, {
+					return fail(500, {
 						message:
 							'Agent update failed. Please try again. If the problem persists, contact support.'
 					});
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					throw fail(500, {
+					return fail(500, {
 						message:
 							'Agent update failed. Please try again. If the problem persists, contact support.'
 					});
