@@ -21,17 +21,17 @@ export const createCrewSchema = z.object({
 });
 export type CreateCrewSchema = typeof createCrewSchema;
 
-export const createAgentSchema = z.object({
+export const agentSchema = z.object({
+	id: z.string(),
 	title: z.string().min(1).max(50),
 	description: z.string().max(500).default(''),
 	published: z.boolean().default(false),
 	role: z.string().min(1).max(50),
-	tools: z.string(),
+	tools: z.array(z.record(z.string(), z.never())),
 	system_message: z.string().min(20),
-	model: z.string()
+	model: z.union([z.literal('gpt-4-turbo'), z.literal('gpt-3.5-turbo')])
 });
-
-export type CreateAgentSchema = typeof createAgentSchema;
+export type AgentSchema = typeof agentSchema;
 
 // TODO: rename to createUserSchema
 export const formSchema = z.object({
