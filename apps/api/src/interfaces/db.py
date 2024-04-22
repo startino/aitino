@@ -479,12 +479,12 @@ def delete_crew(crew_id: UUID) -> Crew:
     return Crew(**response.data[0])
 
 
-def get_api_provider(api_provider_id: UUID) -> APIKey | None:
+def get_api_key(api_key_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("users_api_keys")
         .select("*, api_providers(*)")
-        .eq("id", api_provider_id)
+        .eq("id", api_key_id)
         .execute()
     )
     if len(response.data) == 0:
