@@ -8,10 +8,12 @@
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/select';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import type { schemas } from '$lib/api';
 
-	export let formCreate: SuperValidated<Infer<AgentSchema>>;
+	export let formUpdate: SuperValidated<Infer<AgentSchema>>;
+	export let agent: schemas['Agent'];
 
-	const form = superForm(formCreate, {
+	const form = superForm(formUpdate, {
 		validators: zodClient(agentSchema)
 	});
 
@@ -23,13 +25,23 @@
 		: undefined;
 
 	const { form: formData, enhance } = form;
+
+	$formData = {
+		title: agent.title,
+		description: agent.description ?? '',
+		published: agent.published,
+		tools: agent.tools,
+		model: agent.models.id === 1 ? 'gpt-4-turbo' : 'gpt-3.5-turbo',
+		role: agent.role,
+		system_message: agent.system_message
+	};
 </script>
 
-<form class="flex flex-col gap-4" method="POST" action="?/create" use:enhance>
+<form class="flex flex-col gap-4" method="POST" action="?/update" use:enhance>
 	<Dialog.Header>
-		<Dialog.Title>Create a new Agent</Dialog.Title>
+		<Dialog.Title>Update a new Agent</Dialog.Title>
 		<Dialog.Description>
-			You are about to create a new Agent. Please fill out the form below.
+			You are about to update an Agent. Please fill out the form below.
 		</Dialog.Description>
 	</Dialog.Header>
 	<h3 class="pt-4 text-lg">Basic Information</h3>

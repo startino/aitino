@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -49,7 +49,7 @@ export const actions = {
 		}
 		const { data } = form;
 
-		await api
+		const crew = await api
 			.POST('/crews/', {
 				body: {
 					profile_id: userSession.user.id,
@@ -64,44 +64,21 @@ export const actions = {
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					return setError(
+					throw setError(
 						form,
 						'Crew creation failed. Please try again. If the problem persists, contact support.'
 					);
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					return setError(
+					throw setError(
 						form,
 						'Crew creation failed. Please try again. If the problem persists, contact support.'
 					);
 				}
 				return d;
 			});
-		return message(form, 'Crew created successfully!');
-	},
-	edit: async ({ request }) => {
-		const superValidated = await superValidate(request, zod(editCrewSchema));
 
-		if (!superValidated.valid) {
-			return fail(400, { superValidated });
-		}
-
-		await api
-			.PATCH(`/crews/{id}`, {
-				params: {
-					path: {
-						id: superValidated.data.id
-					}
-				},
-				body: {
-					...superValidated.data
-				}
-			})
-			.catch((e) => {
-				setError(superValidated, e.message, { status: 500 });
-			});
-
-		return message(superValidated, 'Changes saved successfully!');
+		throw redirect(303, `/app/crews/${crew.id}`);
 	}
 };

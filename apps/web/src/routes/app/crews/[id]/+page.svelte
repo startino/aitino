@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { SvelteFlow, Background, ConnectionLineType, useSvelteFlow } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
-	import * as CustomNode from '$lib/components/ui/custom-node';
-	import { setContext, getContext, getCleanNodes } from '$lib/utils';
-	import { toast } from 'svelte-sonner';
+	import * as Nodes from './nodes';
+	import { setContext, getContext } from '$lib/utils';
 	import type { CrewContext } from '$lib/types/index.js';
 	import { writable } from 'svelte/store';
 	import CrewPanel from './CrewPanel.svelte';
@@ -11,8 +10,6 @@
 	export let data;
 
 	let writableData: CrewContext = {
-		count: writable(data.count),
-		receiver: writable(data.receiver),
 		profileId: writable(data.profileId),
 		crew: writable(data.crew),
 		agents: writable(data.agents),
@@ -21,29 +18,17 @@
 	};
 
 	setContext('crew', writableData);
-	let { count, receiver, nodes } = getContext('crew');
+	let { crew, nodes } = getContext('crew');
+
+	// update $crew.nodes to n.id where it is of type 'agent'
+	$: $crew.nodes = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
 
 	const nodeTypes = {
-		agent: CustomNode.Agent,
-		prompt: CustomNode.Prompt
+		agent: Nodes.Agent,
+		prompt: Nodes.Prompt
 	};
 
-	const { getNodes } = useSvelteFlow();
-
-	function setReceiver(id: string | null | undefined) {
-		if (!id) {
-			return;
-		}
-
-		const newReceiver = getNodes([id])[0];
-
-		if (!newReceiver) {
-			toast.error('Receiver node not found');
-			return;
-		}
-
-		$receiver = { node: newReceiver, targetCount: 1 };
-	}
+	const { getViewport } = useSvelteFlow();
 </script>
 
 <div style="height:100vh;">
@@ -54,19 +39,47 @@
 		{nodeTypes}
 		fitView
 		oninit={() => {
-			setReceiver($receiver ? $receiver.node.id : null);
-			getCleanNodes($nodes).forEach((n) => {
-				if (n.type === 'agent') {
-					$count.agents++;
-				} else {
-					$count.prompts++;
+			const position = { ...getViewport() };
+
+			// create prompt
+			nodes.update((v) => [
+				...v,
+				{
+					id: crypto.randomUUID(),
+					type: 'prompt',
+					selectable: false,
+					position,
+					data: {}
 				}
-			});
+			]);
+
+			// create agents
+			console.log(`adding startNodes: ${data.startNodes}`);
+			for (const agentId of data.startNodes) {
+				nodes.update((v) => [
+					...v,
+					{
+						id: agentId,
+						type: 'agent',
+						selectable: false,
+						position,
+						data: {}
+					}
+				]);
+			}
 		}}
 		connectionLineType={ConnectionLineType.SmoothStep}
 		defaultEdgeOptions={{ type: 'smoothstep', animated: true }}
 	>
 		<Background class="!bg-background" />
 		<CrewPanel />
+		<div class="absolute bottom-0 flex w-full items-center justify-center p-4 text-center">
+			<code class="text-red-400">
+				Currently the node editor is only capable of the bare essentials. That means you can edit
+				the default prompt, and add and remove agents.<br />
+				Functionality for other features like connectng agents, set up hierarchies, subgroups are not
+				finished yet.
+			</code>
+		</div>
 	</SvelteFlow>
 </div>
