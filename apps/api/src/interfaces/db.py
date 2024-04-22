@@ -522,13 +522,13 @@ def get_api_keys(
 
 def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
     supabase: Client = create_client(url, key)
-    type_response = (
+    provider_response = (
         supabase.table("api_providers")
         .select("*")
         .eq("id", api_key.api_provider_id)
         .execute()
     )
-    if len(type_response.data) == 0:
+    if len(provider_response.data) == 0:
         return None
 
     response = (
@@ -537,7 +537,7 @@ def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
         .execute()
     )
 
-    api_provider = APIProvider(**type_response.data[0])
+    api_provider = APIProvider(**provider_response.data[0])
     return APIKey(**response.data[0], api_provider=api_provider)
 
 
@@ -547,13 +547,13 @@ def delete_api_key(api_key_id: UUID) -> APIKey | None:
     if not len(response.data):
         return None
 
-    type_response = (
+    provider_response = (
         supabase.table("api_providers")
         .select("*")
         .eq("id", response.data[0]["api_provider_id"])
         .execute()
     )
-    api_provider = APIProvider(**type_response.data[0])
+    api_provider = APIProvider(**provider_response.data[0])
     return APIKey(**response.data[0], api_provider=api_provider)
 
 
@@ -565,14 +565,14 @@ def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> API
         .eq("id", api_key_id)
         .execute()
     )
-    type_response = (
+    provider_response = (
         supabase.table("api_providers")
         .select("*")
         .eq("id", response.data[0]["api_provider_id"])
         .execute()
     )
 
-    api_provider = APIProvider(**type_response.data[0])
+    api_provider = APIProvider(**provider_response.data[0])
     return APIKey(**response.data[0], api_provider=api_provider)
 
 
@@ -734,7 +734,7 @@ def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
 def get_tool_api_keys(
     profile_id: UUID, api_provider_ids: list[str] | None = None
 ) -> dict[str, str]:
-    """Gets all api keys for a profile id, if api_provider_ids is given, only give api keys corresponding to those key types."""
+    """Gets all api keys for a profile id, if api_provider_ids is given, only give api keys corresponding to those providers."""
     supabase: Client = create_client(url, key)
     query = (
         supabase.table("users_api_keys")
