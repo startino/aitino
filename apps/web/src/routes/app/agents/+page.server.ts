@@ -2,8 +2,8 @@ import { supabase } from '$lib/supabase';
 import { fail, error } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { createAgentSchema, editAgentSchema } from '$lib/schema';
-import { superValidate } from 'sveltekit-superforms/server';
+import { agentSchema } from '$lib/schema';
+import { setError, superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 import api from '$lib/api';
 
@@ -34,7 +34,7 @@ export const load = async ({ locals }) => {
 		});
 
 	const form = {
-		create: await superValidate(zod(createAgentSchema))
+		agent: await superValidate(zod(agentSchema))
 	};
 
 	return {
@@ -45,132 +45,96 @@ export const load = async ({ locals }) => {
 
 export const actions = {
 	create: async ({ request, locals }) => {
-		const session = await locals.getSession();
+		console.log('create agent');
+		const userSession = await locals.getSession();
 
-		const form = await superValidate(request, zod(createAgentSchema));
+		const form = await superValidate(request, zod(agentSchema));
 
 		if (!form.valid) {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
-		console.log(form);
+
 		const randomAvatar = pickRandomAvatar();
 
-		let data, error;
-
-		try {
-			({ data, error } = await supabase
-				.from('agents')
-				.insert([
-					{
-						profile_id: session?.user.id,
-						title: form.data.title,
-						description: form.data.description,
-						model: form.data.model === 'undefined' ? 'gpt-3.5-turbo' : form.data.model,
-						role: form.data.role,
-						published: form.data.published === 'on' ? true : false,
-						system_message: form.data.system_message,
-						tools: [
-							{
-								id: form.data.id,
-								parameter: {}
-							}
-						],
-						avatar: randomAvatar.avatarUrl,
-						version: '1.0'
-					}
-				])
-				.select());
-		} catch (error) {
-			console.error(error);
-			return fail(500, {
-				message: 'Something went wrong , please try again'
+		const agent = await api
+			.POST('/agents/', {
+				body: {
+					profile_id: userSession.user.id,
+					avatar: randomAvatar.avatarUrl,
+					title: form.data.title,
+					description: form.data.description,
+					// published: form.data.published,
+					role: form.data.role,
+					tools: form.data.tools,
+					system_message: form.data.system_message,
+					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating crew: ${e.detail}`);
+					return fail(500, {
+						message:
+							'Agent create failed. Please try again. If the problem persists, contact support.'
+					});
+				}
+				if (!d) {
+					console.error(`No data returned from crew creation`);
+					return fail(500, {
+						message:
+							'Agent create failed. Please try again. If the problem persists, contact support.'
+					});
+				}
+				return d;
 			});
-		}
 
-		if (error) {
-			console.error('Error creating agent:', error);
-			return { error, message: error.message };
-		}
-
-		return {
-			message: 'Agent created successfully please reload the page to view your new agent'
-		};
+		return { form };
 	},
-	editAgent: async ({ request, url }) => {
-		const id = url.searchParams.get('id');
+	update: async ({ request, locals }) => {
+		console.log('update agent');
+		const userSession = await locals.getSession();
 
-		const form = await superValidate(request, zod(createAgentSchema));
-		console.log(form, 'form');
-
-		const currentAgent = await supabase
-			.from('agents')
-			.select('*')
-			.eq('id', id?.split('$')[1])
-			.single();
-
-		const prev_tools = currentAgent.data.tools;
-
-		console.log(prev_tools);
+		const form = await superValidate(request, zod(agentSchema));
 
 		if (!form.valid) {
-			return fail(400, { form, message: 'Could not edit agent' });
+			return fail(400, { form, message: 'unable to create a new agent' });
 		}
 
-		console.log(form);
-
-		let data, error;
-
-		try {
-			({ data, error } = await supabase
-				.from('agents')
-				.update({
+		const agent = await api
+			.PATCH('/agents/{id}', {
+				params: {
+					path: {
+						id: form.data.id
+					}
+				},
+				body: {
 					title: form.data.title,
-					role: form.data.role,
 					description: form.data.description,
-					tools: [
-						...currentAgent.data.tools,
-						{
-							id: form.data.id,
-							parameter: {}
-						}
-					],
+					published: form.data.published,
+					role: form.data.role,
+					tools: form.data.tools,
 					system_message: form.data.system_message,
-					model: form.data.model,
-					published: form.data.published === 'on' ? true : false
-				})
-				.eq('id', id?.split('$')[1]));
-		} catch (error) {
-			console.error('something when wron when editing agent:', error);
-			return fail(500, { message: 'Something went wrong, please try again' });
-		}
-
-		if (error) {
-			console.error('Error editing agent:', error);
-			return { error };
-		}
-
-		console.log('Agent edited successfully:', data);
-		return {
-			message: 'Agent edited successfully please reload to see the changes you made'
-		};
-	},
-	removeTools: async ({ request, url }) => {
-		const id = url.searchParams.get('id');
-		const toolId = url.searchParams.get('toolId');
-		const form = await request.formData();
-
-		console.log(id, toolId, 'id, toolId');
-
-		const currentAgent = await supabase.from('agents').select('*').eq('id', id).single();
-
-		console.log(currentAgent, 'currentAgent');
-
-		const deleteTool = currentAgent.data.tools.filter((tool) => tool.id !== toolId);
-		const { data, error } = await supabase
-			.from('agents')
-			.update({
-				tools: deleteTool
+					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
+				}
 			})
-			.eq('id', id);
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating crew: ${e.detail}`);
+					throw fail(500, {
+						message:
+							'Agent update failed. Please try again. If the problem persists, contact support.'
+					});
+				}
+				if (!d) {
+					console.error(`No data returned from crew creation`);
+					throw fail(500, {
+						message:
+							'Agent update failed. Please try again. If the problem persists, contact support.'
+					});
+				}
+				return d;
+			});
+
+		return { form };
 	}
 };

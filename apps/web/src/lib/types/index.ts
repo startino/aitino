@@ -27,8 +27,6 @@ export interface ContextMap {
 }
 
 export interface CrewContext {
-	receiver: Writable<{ node: Node; targetCount: number } | null>;
-	count: Writable<{ agents: number; prompts: number }>;
 	profileId: Writable<string>;
 	crew: Writable<schemas['Crew']>;
 	agents: Writable<schemas['Agent'][]>;
