@@ -67,7 +67,6 @@ export const actions = {
 					tools: form.data.tools,
 					system_message: form.data.system_message,
 					model: form.data.model,
-					crew_ids: [],
 					version: '1'
 				}
 			})
