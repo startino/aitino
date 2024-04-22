@@ -93,7 +93,7 @@
 							published: $crew.published,
 							description: $crew.description,
 							edges: [],
-							nodes: $crew.nodes
+							nodes: $crew.agents
 						}
 					})
 					.then(({ data: d, error: e }) => {

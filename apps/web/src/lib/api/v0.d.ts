@@ -48,8 +48,8 @@ export interface paths {
     post: operations["validate_crew_crews_validate__crew_id__post"];
   };
   "/crews/{id}": {
-    /** Get Crew By Id */
-    get: operations["get_crew_by_id_crews__id__get"];
+    /** Get Crew */
+    get: operations["get_crew_crews__id__get"];
     /** Delete Crew */
     delete: operations["delete_crew_crews__id__delete"];
     /** Update Crew */
@@ -104,9 +104,9 @@ export interface paths {
     /** Provider Sign In */
     post: operations["provider_sign_in_auth_sign_in_provider_post"];
   };
-  "/api-key-types/": {
-    /** Get All Api Key Types */
-    get: operations["get_all_api_key_types_api_key_types__get"];
+  "/api-provider/": {
+    /** Get All Api Key Provider */
+    get: operations["get_all_api_key_provider_api_provider__get"];
   };
   "/tools/": {
     /** Get Tools */
@@ -119,8 +119,8 @@ export interface paths {
     get: operations["get_tool_tools__id__get"];
     /** Delete Tool */
     delete: operations["delete_tool_tools__id__delete"];
-    /** Update Profile */
-    patch: operations["update_profile_tools__id__patch"];
+    /** Update Tool */
+    patch: operations["update_tool_tools__id__patch"];
   };
   "/tools/{agent_id}": {
     /** Add Tool */
@@ -202,10 +202,6 @@ export interface paths {
     /** Get Profile From Header */
     get: operations["get_profile_from_header_me_get"];
   };
-  "/models": {
-    /** Get Models */
-    get: operations["get_models_models_get"];
-  };
 }
 
 export type webhooks = Record<string, never>;
@@ -229,7 +225,7 @@ export interface components {
        * Format: uuid
        */
       profile_id: string;
-      api_key_type?: components["schemas"]["APIKeyType"] | null;
+      api_provider?: components["schemas"]["APIProvider"] | null;
       /** Api Key */
       api_key: string;
     };
@@ -241,15 +237,20 @@ export interface components {
        */
       profile_id: string;
       /**
-       * Api Key Type Id
+       * Api Provider Id
        * Format: uuid
        */
-      api_key_type_id: string;
+      api_provider_id: string;
       /** Api Key */
       api_key: string;
     };
-    /** APIKeyType */
-    APIKeyType: {
+    /** APIKeyUpdateRequest */
+    APIKeyUpdateRequest: {
+      /** Api Key */
+      api_key: string;
+    };
+    /** APIProvider */
+    APIProvider: {
       /**
        * Id
        * Format: uuid
@@ -264,11 +265,6 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
-    };
-    /** APIKeyUpdateRequest */
-    APIKeyUpdateRequest: {
-      /** Api Key */
-      api_key: string;
     };
     /** Agent */
     Agent: {
@@ -295,73 +291,80 @@ export interface components {
       avatar: string;
       /** System Message */
       system_message: string;
-      /** Llm Model Id */
-      llm_model_id: number;
-      models: components["schemas"]["LLMModel"];
+      /**
+       * Model
+       * @enum {string}
+       */
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
       tools: Record<string, never>[];
-      /** Crew Ids */
-      crew_ids?: string[] | null;
       /** Description */
-      description?: string | null;
+      description: string;
       /** Role */
       role: string;
       /** Version */
-      version?: string | null;
+      version: string;
     };
     /** AgentInsertRequest */
     AgentInsertRequest: {
-      /** Title */
-      title: string;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /** Avatar */
-      avatar: string;
+      /** Title */
+      title: string;
+      /** Role */
+      role: string;
       /** System Message */
       system_message: string;
+      /** Published */
+      published: boolean;
       /**
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
       tools: Record<string, never>[];
-      /** Crew Ids */
-      crew_ids?: string[] | null;
-      /** Description */
-      description?: string | null;
-      /** Role */
-      role: string;
-      /** Version */
-      version?: string | null;
+      /**
+       * Avatar
+       * @default
+       */
+      avatar?: string;
+      /**
+       * Description
+       * @default
+       */
+      description?: string;
+      /**
+       * Version
+       * @default
+       */
+      version?: string;
     };
-    /** AgentUpdateModel */
-    AgentUpdateModel: {
-      /** Title */
-      title?: string | null;
-      /** Published */
-      published?: boolean | null;
+    /** AgentUpdateRequest */
+    AgentUpdateRequest: {
       /** Profile Id */
       profile_id?: string | null;
       /** Avatar */
       avatar?: string | null;
-      /** System Message */
-      system_message?: string | null;
-      /** Model */
-      model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
-      /** Tools */
-      tools?: Record<string, never>[] | null;
-      /** Crew Ids */
-      crew_ids?: string[] | null;
-      /** Version */
-      version?: string | null;
-      /** Description */
-      description?: string | null;
+      /** Title */
+      title?: string | null;
       /** Role */
       role?: string | null;
+      /** System Message */
+      system_message?: string | null;
+      /** Published */
+      published?: boolean | null;
+      /** Model */
+      model?: ("gpt-3.5-turbo" | "gpt-4-turbo") | null;
+      /** Tools */
+      tools?: Record<string, never>[] | null;
+      /** Description */
+      description?: string | null;
+      /** Version */
+      version?: string | null;
     };
     /** Billing */
     Billing: {
@@ -416,8 +419,6 @@ export interface components {
        * Format: uuid
        */
       profile_id: string;
-      /** Edges */
-      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
       /** Title */
@@ -429,101 +430,60 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      /** Nodes */
-      nodes: string[];
+      /** Agents */
+      agents: string[];
       /** Receiver Id */
       receiver_id?: string | null;
       /** Avatar */
-      avatar?: string | null;
-      prompt?: components["schemas"]["Prompt"] | null;
+      avatar: string;
+      /** Prompt */
+      prompt: string;
     };
     /** CrewInsertRequest */
     CrewInsertRequest: {
+      /** Receiver Id */
+      receiver_id?: string | null;
       /**
-       * Receiver Id
-       * Format: uuid
+       * Prompt
+       * @default
        */
-      receiver_id: string;
-      prompt: components["schemas"]["Prompt"];
+      prompt?: string;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /** Edges */
-      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
-      /** Title */
-      title: string;
-      /** Description */
-      description: string;
-      /** Nodes */
-      nodes: string[];
+      /**
+       * Title
+       * @default
+       */
+      title?: string;
+      /**
+       * Description
+       * @default
+       */
+      description?: string;
+      /** Agents */
+      agents: string[];
     };
     /** CrewUpdateRequest */
     CrewUpdateRequest: {
       /** Receiver Id */
       receiver_id?: string | null;
-      prompt?: components["schemas"]["Prompt"] | null;
+      /** Prompt */
+      prompt?: string | null;
       /** Profile Id */
       profile_id?: string | null;
-      /** Edges */
-      edges?: components["schemas"]["Edge"][] | null;
       /** Published */
       published?: boolean | null;
       /** Title */
       title?: string | null;
       /** Description */
       description?: string | null;
-      /** Nodes */
-      nodes?: string[] | null;
-    };
-    /** Edge */
-    Edge: {
-      /** Id */
-      id: string;
-      /** Type */
-      type?: string | null;
-      /** Source */
-      source: string;
-      /** Target */
-      target: string;
-      /** Sourcehandle */
-      sourceHandle?: string | null;
-      /** Targethandle */
-      targetHandle?: string | null;
-      /** Animated */
-      animated?: boolean | null;
-      /** Hidden */
-      hidden?: boolean | null;
-      /** Deletable */
-      deletable?: boolean | null;
-      /** Selectable */
-      selectable?: boolean | null;
-      /** Data */
-      data?: unknown;
-      /** Selected */
-      selected?: boolean | null;
-      /** Markerstart */
-      markerStart?: string | components["schemas"]["Marker"] | null;
-      /** Markerend */
-      markerEnd?: string | components["schemas"]["Marker"] | null;
-      /** Zindex */
-      zIndex?: number | null;
-      /** Arialabel */
-      ariaLabel?: string | null;
-      /** Interactionwidth */
-      interactionWidth?: number | null;
-      /** Label */
-      label?: string | null;
-      /** Labelstyle */
-      labelStyle?: string | null;
-      /** Style */
-      style?: string | null;
-      /** Class */
-      class?: string | null;
-      pathOptions?: components["schemas"]["PathOptions"] | null;
+      /** Agents */
+      agents?: string[] | null;
     };
     /** FalseLead */
     FalseLead: {
@@ -551,30 +511,6 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
-    };
-    /** LLMModel */
-    LLMModel: {
-      /** Id */
-      id: number;
-      /** Name */
-      name: string;
-    };
-    /** Marker */
-    Marker: {
-      /** Type */
-      type: string;
-      /** Color */
-      color?: string | null;
-      /** Width */
-      width?: number | null;
-      /** Height */
-      height?: number | null;
-      /** Markerunits */
-      markerUnits?: string | null;
-      /** Orient */
-      orient?: string | null;
-      /** Strokewidth */
-      strokeWidth?: number | null;
     };
     /** Message */
     Message: {
@@ -656,15 +592,6 @@ export interface components {
       /** Url */
       url: string;
     };
-    /** PathOptions */
-    PathOptions: {
-      /** Offset */
-      offset?: number | null;
-      /** Borderradius */
-      borderRadius?: number | null;
-      /** Curvature */
-      curvature?: number | null;
-    };
     /** Profile */
     Profile: {
       /**
@@ -712,18 +639,6 @@ export interface components {
       display_name?: string | null;
       /** Stripe Customer Id */
       stripe_customer_id?: string | null;
-    };
-    /** Prompt */
-    Prompt: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Title */
-      title: string;
-      /** Content */
-      content: string;
     };
     /** PublishCommentRequest */
     PublishCommentRequest: {
@@ -953,8 +868,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolInsertRequest */
     ToolInsertRequest: {
@@ -962,8 +877,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolUpdateRequest */
     ToolUpdateRequest: {
@@ -971,8 +886,8 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1329,8 +1244,8 @@ export interface operations {
       };
     };
   };
-  /** Get Crew By Id */
-  get_crew_by_id_crews__id__get: {
+  /** Get Crew */
+  get_crew_crews__id__get: {
     parameters: {
       path: {
         id: string;
@@ -1405,7 +1320,6 @@ export interface operations {
     parameters: {
       query?: {
         profile_id?: string | null;
-        crew_id?: string | null;
         published?: boolean | null;
       };
     };
@@ -1499,7 +1413,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AgentUpdateModel"];
+        "application/json": components["schemas"]["AgentUpdateRequest"];
       };
     };
     responses: {
@@ -1642,7 +1556,7 @@ export interface operations {
     parameters: {
       query?: {
         profile_id?: string | null;
-        api_key_type_id?: string | null;
+        api_provider_id?: string | null;
         api_key?: string | null;
       };
     };
@@ -1776,13 +1690,13 @@ export interface operations {
       };
     };
   };
-  /** Get All Api Key Types */
-  get_all_api_key_types_api_key_types__get: {
+  /** Get All Api Key Provider */
+  get_all_api_key_provider_api_provider__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["APIKeyType"][];
+          "application/json": components["schemas"]["APIProvider"][];
         };
       };
     };
@@ -1792,7 +1706,7 @@ export interface operations {
     parameters: {
       query?: {
         name?: string | null;
-        api_key_type_id?: string | null;
+        api_provider_id?: string | null;
       };
     };
     responses: {
@@ -1876,8 +1790,8 @@ export interface operations {
       };
     };
   };
-  /** Update Profile */
-  update_profile_tools__id__patch: {
+  /** Update Tool */
+  update_tool_tools__id__patch: {
     parameters: {
       path: {
         id: string;
@@ -2385,17 +2299,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Profile"];
-        };
-      };
-    };
-  };
-  /** Get Models */
-  get_models_models_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["LLMModel"][];
         };
       };
     };

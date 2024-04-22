@@ -96,5 +96,5 @@
 	</Form.Field>
 
 	<p class="text-sm opacity-50">* required fields</p>
-	<Form.Button>Update</Form.Button>
+	<Form.Button>Create</Form.Button>
 </form>

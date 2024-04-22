@@ -16,13 +16,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-export function getNodesCount(nodes: Node[]) {
-	return {
-		agents: nodes.filter((n) => n.type === 'agent').length,
-		prompts: nodes.filter((n) => n.type === 'prompt').length
-	};
-}
-
 export const pickRandomName = () => {
 	const genders = ['male', 'female'];
 	const genderKey = genders[getRandomIndex(genders)];
