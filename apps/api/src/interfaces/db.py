@@ -578,7 +578,7 @@ def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> API
 
 def get_api_providers() -> list[APIProvider]:
     supabase: Client = create_client(url, key)
-    logger.debug("Getting all api key types")
+    logger.debug("Getting all api providers")
     response = supabase.table("api_providers").select("*").execute()
     return [APIProvider(**data) for data in response.data]
 
