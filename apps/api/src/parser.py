@@ -76,8 +76,8 @@ def validate_crew(crew: Crew) -> tuple[ValidCrew | None, str]:
     agent_ids: list[UUID] = crew.agents
     agents = get_agents(agent_ids)
 
-    if not crew.receiver_id:
-        return None, "Crew has no receiver id"
+    #if not crew.receiver_id:
+    #    return None, "Crew has no receiver id"
     if not crew.prompt or crew.prompt == "":
         return None, "Crew has no prompt"
     if len(agents) == 0:
