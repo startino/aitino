@@ -13,4 +13,4 @@ logger = logging.getLogger("root")
 
 @router.get("/")
 def get_all_api_key_provider() -> list[APIProvider]:
-    return db.get_api_provider()
+    return db.get_api_providers()
