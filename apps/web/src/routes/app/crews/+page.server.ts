@@ -54,30 +54,27 @@ export const actions = {
 				body: {
 					profile_id: userSession.user.id,
 					...data,
-
-					receiver_id: '00000000-0000-0000-0000-000000000000',
-					prompt: { id: '00000000-0000-0000-0000-000000000000', title: 'prompt', content: '' },
-					edges: [],
-					nodes: []
+					agents: []
 				}
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					throw setError(
-						form,
-						'Crew creation failed. Please try again. If the problem persists, contact support.'
-					);
+					return null;
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					throw setError(
-						form,
-						'Crew creation failed. Please try again. If the problem persists, contact support.'
-					);
+					return null;
 				}
 				return d;
 			});
+
+		if (!crew) {
+			return fail(500, {
+				form,
+				message: 'Crew creation failed. Please try again. If the problem persists, contact support.'
+			});
+		}
 
 		throw redirect(303, `/app/crews/${crew.id}`);
 	}

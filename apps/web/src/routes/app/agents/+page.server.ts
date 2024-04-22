@@ -1,9 +1,8 @@
-import { supabase } from '$lib/supabase';
-import { fail, error } from '@sveltejs/kit';
+import { fail, error, redirect, type ActionFailure } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { agentSchema } from '$lib/schema';
-import { setError, superValidate } from 'sveltekit-superforms/server';
+import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 import api from '$lib/api';
 
@@ -63,78 +62,32 @@ export const actions = {
 					avatar: randomAvatar.avatarUrl,
 					title: form.data.title,
 					description: form.data.description,
-					// published: form.data.published,
-					role: form.data.role,
-					tools: form.data.tools,
-					system_message: form.data.system_message,
-					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
-				}
-			})
-			.then(({ data: d, error: e }) => {
-				if (e) {
-					console.error(`Error creating crew: ${e.detail}`);
-					return fail(500, {
-						message:
-							'Agent create failed. Please try again. If the problem persists, contact support.'
-					});
-				}
-				if (!d) {
-					console.error(`No data returned from crew creation`);
-					return fail(500, {
-						message:
-							'Agent create failed. Please try again. If the problem persists, contact support.'
-					});
-				}
-				return d;
-			});
-
-		return { form };
-	},
-	update: async ({ request, locals }) => {
-		console.log('update agent');
-		const userSession = await locals.getSession();
-
-		const form = await superValidate(request, zod(agentSchema));
-
-		if (!form.valid) {
-			return fail(400, { form, message: 'unable to create a new agent' });
-		}
-
-		const agent = await api
-			.PATCH('/agents/{id}', {
-				params: {
-					path: {
-						id: form.data.id
-					}
-				},
-				body: {
-					title: form.data.title,
-					description: form.data.description,
 					published: form.data.published,
 					role: form.data.role,
-					tools: form.data.tools,
+					tools: [],
 					system_message: form.data.system_message,
-					model: form.data.model === 'gpt-4-turbo' ? 'gpt-4-turbo-preview' : 'gpt-3.5-turbo'
+					model: form.data.model,
+					version: '1'
 				}
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {
 					console.error(`Error creating crew: ${e.detail}`);
-					throw fail(500, {
-						message:
-							'Agent update failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				if (!d) {
 					console.error(`No data returned from crew creation`);
-					throw fail(500, {
-						message:
-							'Agent update failed. Please try again. If the problem persists, contact support.'
-					});
+					return null;
 				}
 				return d;
 			});
 
-		return { form };
+		if (!agent) {
+			return fail(500, {
+				message: 'Agent create failed. Please try again. If the problem persists, contact support.'
+			});
+		}
+
+		throw redirect(303, `/app/agents/${agent.id}`);
 	}
 };

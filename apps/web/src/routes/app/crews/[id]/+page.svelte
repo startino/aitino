@@ -20,8 +20,8 @@
 	setContext('crew', writableData);
 	let { crew, nodes } = getContext('crew');
 
-	// update $crew.nodes to n.id where it is of type 'agent'
-	$: $crew.nodes = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
+	// update $crew.agents to n.id where it is of type 'agent'
+	$: $crew.agents = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
 
 	const nodeTypes = {
 		agent: Nodes.Agent,

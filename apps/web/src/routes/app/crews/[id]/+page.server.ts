@@ -1,6 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
-import { getWritablePrompt } from '$lib/utils.js';
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;
@@ -87,6 +86,6 @@ export const load = async ({ locals: { getSession }, params }) => {
 		agents: userAgents,
 		publishedAgents: publishedAgents,
 		nodes: nodes,
-		startNodes: crew.nodes
+		startNodes: crew.agents
 	};
 };
