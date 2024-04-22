@@ -9,16 +9,13 @@ fizz_buzz: dict = {
     "description": "Makes the crew write a program that prints the numbers from 1 to 100. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz”.",
     "receiver_id": "8e26f947-a0e9-4e47-b86f-22930ea948fa",
     "published": False,
-    "nodes": [
+    "agents": [
         "8e26f947-a0e9-4e47-b86f-22930ea948fa",
         "6e541720-b4ac-4c47-abf3-f17147c9a32a",
     ],
-    "prompt": {
-        "id": "",
-        "title": "",
-        "content": "Write a program that prints the numbers from 1 to 100. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz”.",
-    },
+    "prompt": "Write a program that prints the numbers from 1 to 100. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz”.",
     "created_at": DATE,
+    "avatar": "",
 }
 
 markdown_table: dict = {
@@ -28,16 +25,13 @@ markdown_table: dict = {
     "description": "Makes the crew create a markdown table of the 10 best LLMs and comparing their abilities by researching the internet.",
     "receiver_id": "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
     "published": False,
-    "nodes": [
+    "agents": [
         "8e26f947-a0e9-4e47-b86f-22930ea948fa",
         "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
     ],
-    "prompt": {
-        "id": "",
-        "title": "",
-        "content": "Create a markdown table of the top 10 large language models comparing their abilities by researching on the internet.",
-    },
+    "prompt": "Create a markdown table of the top 10 large language models comparing their abilities by researching on the internet.",
     "created_at": DATE,
+    "avatar": "",
 }
 
 # read_file: dict = {
@@ -47,17 +41,14 @@ markdown_table: dict = {
 #     "description": "Read content of file and output it in a nice format",
 #     "receiver_id": "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
 #     "published": False,
-#     "nodes": [
+#     "agents": [
 #         "8e26f947-a0e9-4e47-b86f-22930ea948fa",
 #         # "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
 #         "6e541720-b4ac-4c47-abf3-f17147c9a32a",
 #     ],
-#     "prompt": {
-#         "id": "",
-#         "title": "",
-#         "content": f"Get the file content of the file '{get_file_path_of_example()}', the 'agent python software' can call what function it has been",
-#     },
+#     "prompt": f"Get the file content of the file '{get_file_path_of_example()}', the 'agent python software' can call what function it has been",
 #     "created_at": DATE,
+#     "avatar": "",
 # }
 # "6e541720-b4ac-4c47-abf3-f17147c9a32a", agent for code reviewing
 # "2ce0b7db-84f7-4d59-8c38-3fcc3fd7da98", agent for writing tables in markdown
@@ -70,17 +61,14 @@ markdown_table: dict = {
 #     "description": "Read content of file and output it in a nice format",
 #     "receiver_id": "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
 #     "published": False,
-#     "nodes": [
+#     "agents": [
 #         "8e26f947-a0e9-4e47-b86f-22930ea948fa",
 #         # "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
 #         "6e541720-b4ac-4c47-abf3-f17147c9a32a",
 #     ],
-#     "prompt": {
-#         "id": "",
-#         "title": "",
-#         "content": f"Move the file: '{get_file_path_of_example()}' to the destination: {get_file_path_of_example().replace('.txt', '_2.txt')} the 'agent python software' can call what function it has been",
-#     },
+#     "prompt": f"Move the file: '{get_file_path_of_example()}' to the destination: {get_file_path_of_example().replace('.txt', '_2.txt')} the 'agent python software' can call what function it has been", 
 #     "created_at": DATE,
+#     "avatar": "",
 # }
 
 tool, prompt = "brave search tool", "what is openai?"
@@ -92,16 +80,12 @@ test_tool: dict = {
     "description": "Test the function of the tool and see if it calls and runs properly",
     "receiver_id": "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
     "published": False,
-    "nodes": [
+    "agents": [
         "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
     ],
-    "prompt": {
-        "id": "54bea062-7612-4f3a-8125-485e6cd6175c",
-        "title": "tool testing",
-        "content": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
-    },
+    "prompt": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
     "created_at": DATE,
-    "edges": [],
     "updated_at": DATE,
+    "avatar": "",
 }
 crew_model = test_tool
