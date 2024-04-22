@@ -3,8 +3,8 @@ from .agent_model import (
     Agent,
     AgentGetRequest,
     AgentInsertRequest,
-    AgentUpdateModel,
-    LLMModel,
+    AgentUpdateRequest,
+    Tools,
 )
 from .api_key import (
     APIKey,
@@ -56,7 +56,7 @@ from .subscription import (
     SubscriptionUpdateRequest,
 )
 from .tiers import Tier, TierGetRequest, TierInsertRequest, TierUpdateRequest
-from .tool import Tool, ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
+from .tool import Tool,ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
 from .user import User
 
 __all__ = [
@@ -76,7 +76,7 @@ __all__ = [
     "SessionRunResponse",
     "Crew",
     "AgentInsertRequest",
-    "AgentUpdateModel",
+    "AgentUpdateRequest",
     "Profile",
     "ProfileUpdateRequest",
     "ProfileInsertRequest",
@@ -109,5 +109,5 @@ __all__ = [
     "BillingInsertRequest",
     "BillingUpdateRequest",
     "ValidCrew",
-    "LLMModel",
+    "Tools",
 ]

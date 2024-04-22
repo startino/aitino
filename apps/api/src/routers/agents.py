@@ -8,7 +8,7 @@ from src.models import (
     Agent,
     AgentGetRequest,
     AgentInsertRequest,
-    AgentUpdateModel,
+    AgentUpdateRequest,
 )
 
 router = APIRouter(
@@ -48,7 +48,7 @@ def insert_agent(agent_request: AgentInsertRequest) -> Agent:
 
 
 @router.patch("/{id}")
-def patch_agent(id: UUID, agent_update_request: AgentUpdateModel) -> Agent:
+def patch_agent(id: UUID, agent_update_request: AgentUpdateRequest) -> Agent:
     if not db.get_agent(id):
         raise HTTPException(404, "agent not found")
 
@@ -56,14 +56,6 @@ def patch_agent(id: UUID, agent_update_request: AgentUpdateModel) -> Agent:
         agent_update_request.profile_id
     ):
         raise HTTPException(404, "profile not found")
-
-    if agent_update_request.crew_ids:
-        for crew_id in agent_update_request.crew_ids:
-            updated_crew = db.add_agent_to_crew(crew_id, id)
-            if not updated_crew:
-                logger.error("agent was already in crew or the crew was not found, not adding agent")
-            else:
-                logger.info(f"Added agent with id: {id} to the crew: {crew_id}")
 
     return db.update_agents(id, agent_update_request)
 
