@@ -119,8 +119,8 @@ export interface paths {
     get: operations["get_tool_tools__id__get"];
     /** Delete Tool */
     delete: operations["delete_tool_tools__id__delete"];
-    /** Update Profile */
-    patch: operations["update_profile_tools__id__patch"];
+    /** Update Tool */
+    patch: operations["update_tool_tools__id__patch"];
   };
   "/tools/{agent_id}": {
     /** Add Tool */
@@ -297,7 +297,7 @@ export interface components {
        */
       model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
-      tools: components["schemas"]["Tools"][] | unknown[];
+      tools: Record<string, never>[];
       /** Description */
       description: string;
       /** Role */
@@ -326,7 +326,7 @@ export interface components {
        */
       model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
-      tools: components["schemas"]["Tools"][] | unknown[];
+      tools: Record<string, never>[];
       /**
        * Avatar
        * @default
@@ -360,7 +360,7 @@ export interface components {
       /** Model */
       model?: ("gpt-3.5-turbo" | "gpt-4-turbo") | null;
       /** Tools */
-      tools?: components["schemas"]["Tools"][] | null;
+      tools?: Record<string, never>[] | null;
       /** Description */
       description?: string | null;
       /** Version */
@@ -868,8 +868,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolInsertRequest */
     ToolInsertRequest: {
@@ -877,8 +877,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolUpdateRequest */
     ToolUpdateRequest: {
@@ -886,18 +886,8 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
-    };
-    /** Tools */
-    Tools: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Parameter */
-      parameter: Record<string, never>;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1716,7 +1706,7 @@ export interface operations {
     parameters: {
       query?: {
         name?: string | null;
-        api_key_type_id?: string | null;
+        api_provider_id?: string | null;
       };
     };
     responses: {
@@ -1800,8 +1790,8 @@ export interface operations {
       };
     };
   };
-  /** Update Profile */
-  update_profile_tools__id__patch: {
+  /** Update Tool */
+  update_tool_tools__id__patch: {
     parameters: {
       path: {
         id: string;
