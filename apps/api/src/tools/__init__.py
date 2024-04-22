@@ -3,9 +3,11 @@ import logging
 import os
 import random
 from typing import Any
+from uuid import UUID
 
 from dotenv import load_dotenv
 from langchain_core.tools import BaseTool
+from src.models import Tools
 
 from src.tools.alpha_vantage import ID as ALPHA_VANTAGE_TOOL_ID
 from src.tools.alpha_vantage import AlphaVantageTool
@@ -78,8 +80,8 @@ def generate_llm_config(tools: list[BaseTool]) -> list[dict]:
     return schemas
 
 
-def get_tool_ids_from_agent(tools: list[dict[str, Any]]) -> list[str]:
-    return [tool["id"] for tool in tools]
+def get_tool_ids_from_agent(tools: list[Tools]) -> list[UUID]:
+    return [tool.id for tool in tools]
 
 
 def has_param(cls, param_name) -> bool:

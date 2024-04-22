@@ -6,9 +6,9 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-class LLMModel(BaseModel):
-    id: int
-    name: str
+class Tools(BaseModel):
+    id: UUID
+    parameters: list[dict]
 
 
 class Agent(BaseModel):
@@ -20,8 +20,7 @@ class Agent(BaseModel):
     avatar: str
     system_message: str
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[dict]
-    crew_ids: list[UUID]
+    tools: list[Tools]
     description: str
     role: str
     version: str
@@ -29,19 +28,18 @@ class Agent(BaseModel):
 
 class AgentInsertRequest(BaseModel):
     profile_id: UUID
-    avatar: str
     title: str
     role: str
     system_message: str
     published: bool
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[dict]
-    crew_ids: list[UUID]
-    description: str
-    version: str
+    tools: list[Tools]
+    avatar: str = ""
+    description: str = ""
+    version: str = ""
 
 
-class AgentUpdateModel(BaseModel):
+class AgentUpdateRequest(BaseModel):
     profile_id: UUID | None = None
     avatar: str | None = None
     title: str | None = None
@@ -49,8 +47,7 @@ class AgentUpdateModel(BaseModel):
     system_message: str | None = None
     published: bool | None = None
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"] | None = None
-    tools: list[dict] | None = None
-    crew_ids: list[UUID] | None = None
+    tools: list[Tools] | None = None
     description: str | None = None
     version: str | None = None
 
