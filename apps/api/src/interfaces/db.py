@@ -422,7 +422,6 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
     )
     return Crew(**response.data[0])
-    # supabase.table("crews").upsert(crew.model_dump())
 
 
 def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
@@ -592,9 +591,7 @@ def update_status(session_id: UUID, status: SessionStatus) -> None:
 
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
-    response = (
-        supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
-    )
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if not response.data:
         return None
 
@@ -603,7 +600,6 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents(
     profile_id: UUID | None = None,
-    crew_id: UUID | None = None,
     published: bool | None = None,
 ) -> list[Agent]:
     """Gets agents, filtered by what parameters are given"""
@@ -612,17 +608,6 @@ def get_agents(
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
-
-    # scuffed solution since agents dont have a crew id
-    # prob gonna rework or remove this completely
-    # also this crew_id param can't be used with any of the other parameters
-    # since this doesn't build on the query var (it also returns so L)
-    if crew_id:
-        response = get_agents_from_crew(crew_id)
-        if not response:
-            return []
-
-        return response
 
     if published is not None:
         query = query.eq("published", published)
@@ -634,12 +619,15 @@ def get_agents(
 
 def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
     supabase: Client = create_client(url, key)
-    nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
-    if len(nodes.data) == 0:
+    agents = supabase.table("crews").select("agents").eq("id", crew_id).execute()
+    if len(agents.data) == 0:
         return None
 
     response = (
-        supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
+        supabase.table("agents")
+        .select("*")
+        .in_("id", agents.data[0]["agents"])
+        .execute()
     )
     return [Agent(**data) for data in response.data]
 
