@@ -18,7 +18,7 @@ from .dependencies import (
 )
 from .improver import PromptType, improve_prompt
 from .interfaces import db
-from .models import Profile, LLMModel
+from .models import Profile
 from .routers import agents, api_key_types, api_keys
 from .routers import auth as auth_router
 from .routers import (
@@ -114,8 +114,3 @@ def auto_build_crew(general_task: str) -> str:
 @app.get("/me")
 def get_profile_from_header(current_user=Depends(get_current_user)) -> Profile:
     return current_user
-
-
-@app.get("/models")
-def get_models() -> list[LLMModel]:
-    return db.get_models()
