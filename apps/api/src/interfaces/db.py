@@ -604,10 +604,10 @@ def get_agents(
     profile_id: UUID | None = None,
     crew_id: UUID | None = None,
     published: bool | None = None,
-) -> list[Agent] | None:
+) -> list[Agent]:
     """Gets agents, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    query = supabase.table("agents").select("*, models(*)")
+    query = supabase.table("agents").select("*")
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
@@ -619,7 +619,7 @@ def get_agents(
     if crew_id:
         response = get_agents_from_crew(crew_id)
         if not response:
-            return None
+            return []
 
         return response
 

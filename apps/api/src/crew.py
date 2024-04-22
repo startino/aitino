@@ -177,11 +177,10 @@ class AutogenCrew:
         for agent in crew_model.agents:
             valid_agent_tools = []
             tool_schemas: list[dict] | None
-            logger.info(f"agent model name: {agent.models.name}")
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
-                    "model": [agent.models.name],
+                    "model": [agent.model],
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
