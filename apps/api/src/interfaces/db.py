@@ -489,7 +489,7 @@ def get_api_key(api_key_id: UUID) -> APIKey | None:
     if len(response.data) == 0:
         return None
 
-    api_key_type = APIKeyType(**response.data[0]["api_key_types"])
+    api_key_type = APIKeyType(**response.data[0]["api_key_types"])    
     return APIKey(**response.data[0], api_key_type=api_key_type)
 
 

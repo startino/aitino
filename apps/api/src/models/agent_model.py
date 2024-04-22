@@ -20,9 +20,9 @@ class Agent(BaseModel):
     avatar: str
     system_message: str
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[Tools] | list
-    # the list type is just empty list, since list[Tools] requires defined fields in the db, but rn
-    # if an agent doesn't use tools the "tools" field is an empty list
+    tools: list[dict]
+    # had to remove the "list[Tools]" type, since it wasn't being formatted properly
+    # i gotta find a solution to that eventually, but this works for now
     description: str
     role: str
     version: str
@@ -35,7 +35,7 @@ class AgentInsertRequest(BaseModel):
     system_message: str
     published: bool
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
-    tools: list[Tools] | list
+    tools: list[dict]
     avatar: str = ""
     description: str = ""
     version: str = ""
@@ -49,7 +49,7 @@ class AgentUpdateRequest(BaseModel):
     system_message: str | None = None
     published: bool | None = None
     model: Literal["gpt-3.5-turbo", "gpt-4-turbo"] | None = None
-    tools: list[Tools] | None = None
+    tools: list[dict] | None = None
     description: str | None = None
     version: str | None = None
 

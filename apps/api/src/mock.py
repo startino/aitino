@@ -71,7 +71,7 @@ markdown_table: dict = {
 #     "avatar": "",
 # }
 
-tool, prompt = "brave search tool", "what is openai?"
+tool, prompt = "bing search tool", "what is openai?"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
