@@ -184,7 +184,9 @@ class AutogenCrew:
                 },
             )
             tool_ids = get_tool_ids_from_agent(agent.tools)
-            api_key_types = db.get_api_key_type_ids(tool_ids)
+            api_key_types = db.get_api_provider_ids(tool_ids)
+            logger.info(f"tool_ids: {tool_ids}")
+            logger.info(f"api_key_types: {api_key_types}")
 
             # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
             if len(tool_ids):
@@ -217,6 +219,7 @@ class AutogenCrew:
                 "config_list": config_list,
                 "timeout": 120,
             }
+            logger.info(f"tool_schemas for agent: {agent.id}, {tool_schemas}")
             if tool_schemas:
                 config["functions"] = tool_schemas
 

@@ -398,15 +398,15 @@ def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
 
 # typed as list[str] even though its technically UUID,
 # since its typed this way in the get_tool_ids_from_agents
-def get_api_key_type_ids(tool_ids: list[str]) -> dict[str, str]:
+def get_api_provider_ids(tool_ids: list[str]) -> dict[str, str]:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("tools")
-        .select("id", "api_key_type_id")
+        .select("id", "api_provider_id")
         .in_("id", tool_ids)
         .execute()
     )
-    return {data["id"]: data["api_key_type_id"] for data in response.data}
+    return {data["id"]: data["api_provider_id"] for data in response.data}
 
 
 def post_agents(agents: list[Agent]) -> None:
@@ -669,7 +669,7 @@ def get_tool(tool_id: UUID) -> Tool | None:
 
 def get_tools(
     name: str | None = None,
-    api_key_type_id: UUID | None = None,
+    api_provider_id: UUID | None = None,
 ) -> list[Tool]:
     supabase: Client = create_client(url, key)
     query = supabase.table("tools").select("*")
@@ -677,8 +677,8 @@ def get_tools(
     if name:
         query = query.eq("name", name)
 
-    if api_key_type_id:
-        query = query.eq("api_key_type_id", api_key_type_id)
+    if api_provider_id:
+        query = query.eq("api_provider_id", api_provider_id)
 
     response = query.execute()
 
@@ -732,21 +732,21 @@ def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
 
 
 def get_tool_api_keys(
-    profile_id: UUID, api_key_type_ids: list[str] | None = None
+    profile_id: UUID, api_provider_ids: list[str] | None = None
 ) -> dict[str, str]:
-    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
+    """Gets all api keys for a profile id, if api_provider_ids is given, only give api keys corresponding to those key types."""
     supabase: Client = create_client(url, key)
     query = (
         supabase.table("users_api_keys")
-        .select("api_key", "api_key_type_id")
+        .select("api_key", "api_provider_id")
         .eq("profile_id", profile_id)
     )
 
-    if api_key_type_ids:
-        query = query.in_("api_key_type_id", api_key_type_ids)
+    if api_provider_ids:
+        query = query.in_("api_provider_id", api_provider_ids)
 
     response = query.execute()
-    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
+    return {data["api_provider_id"]: data["api_key"] for data in response.data}
 
 
 def get_profile(profile_id: UUID) -> Profile | None:

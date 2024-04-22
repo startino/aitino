@@ -91,19 +91,19 @@ def has_param(cls, param_name) -> bool:
 
 
 def generate_tool_from_uuid(
-    tool: str, api_key_types: dict[str, str], api_keys: dict[str, str]
+    tool: str, api_providers: dict[str, str], api_keys: dict[str, str]
 ) -> BaseTool | None:
     for tool_id in tools:
         if tool_id == tool:
-            tool_key_type = ""
+            tool_provider = ""
             tool_cls = tools[tool_id]
             api_key = None
-            if tool in api_key_types.keys():
+            if tool in api_providers.keys():
                 # set the api_key_type to the current tools api_key_type (the api_key_types dict has key "tool_id" and value "api_key_type_id")
-                tool_key_type = api_key_types[tool]
-                if tool_key_type in api_keys.keys():
+                tool_provider = api_providers[tool]
+                if tool_provider in api_keys.keys():
                     # set current api key that will be given to current tool (the api_keys dict has key "api_key_type_íd" and value "api_key")
-                    api_key = api_keys[tool_key_type]
+                    api_key = api_keys[tool_provider]
 
             if has_param(tool_cls, "api_key"):
                 logger.info("has parameter 'api_key'")
@@ -112,7 +112,6 @@ def generate_tool_from_uuid(
                         "api key should not be none when passed to tool that needs api key"
                     )
                 tool_object = tools[tool_id](api_key=api_key)
-                logger.info("creating tool")
                 return tool_object
 
             logger.info("making tool without api_key")
