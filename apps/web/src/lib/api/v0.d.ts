@@ -300,7 +300,6 @@ export interface components {
        * @enum {string}
        */
       model: "gpt-3.5-turbo" | "gpt-4-turbo";
-      models: components["schemas"]["LLMModel"];
       /** Tools */
       tools: Record<string, never>[];
       /** Crew Ids */
