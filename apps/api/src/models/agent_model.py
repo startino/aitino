@@ -54,5 +54,4 @@ class AgentUpdateRequest(BaseModel):
 
 class AgentGetRequest(BaseModel):
     profile_id: UUID | None = None
-    crew_id: UUID | None = None
     published: bool | None = None
