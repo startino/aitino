@@ -36,6 +36,7 @@ from .routers import (
 )
 
 logger = logging.getLogger("root")
+logger.setLevel("INFO")
 
 app = FastAPI()
 
