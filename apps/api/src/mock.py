@@ -71,7 +71,7 @@ markdown_table: dict = {
 #     "avatar": "",
 # }
 
-tool, prompt = "arxiv tool", "read this arxiv article: 2404.00939"
+tool, prompt = "google serper results tool", "'hvordan ikke være dum' in norwegian with region set to norway"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
@@ -83,7 +83,7 @@ test_tool: dict = {
     "agents": [
         "7c707c30-2cfe-46a0-afa7-8bcc38f9687e",
     ],
-    "prompt": f"This is a tool testing environment, use the tool: {tool}, {prompt}. Suggest this function call",
+    "prompt": f"This is a tool testing environment, use the tool: {tool}, {prompt}.",
     "created_at": DATE,
     "updated_at": DATE,
     "avatar": "",
