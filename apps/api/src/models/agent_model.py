@@ -6,10 +6,10 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-class LLMModel(BaseModel):
-    id: int
-    name: str
-
+class Tools(BaseModel):
+    id: UUID
+    parameter: dict
+    # will fix typing on this eventually, rn it's just gonna be dict
 
 class Agent(BaseModel):
     id: UUID
@@ -19,44 +19,41 @@ class Agent(BaseModel):
     profile_id: UUID
     avatar: str
     system_message: str
-    #model_ is protected namespace, so changed attribute below to llm_model_
-    llm_model_id: int
-    models: LLMModel
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
     tools: list[dict]
-    crew_ids: list[UUID] | None = None
-    description: str | None = None
+    # had to remove the "list[Tools]" type, since it wasn't being formatted properly
+    # i gotta find a solution to that eventually, but this works for now
+    description: str
     role: str
-    version: str | None = None
+    version: str
 
 
 class AgentInsertRequest(BaseModel):
-    title: str
     profile_id: UUID
-    avatar: str
-    system_message: str
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"]
-    tools: list[dict]
-    crew_ids: list[UUID] | None = None
-    description: str | None = None
+    title: str
     role: str
-    version: str | None = None
+    system_message: str
+    published: bool
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"]
+    tools: list[dict]
+    avatar: str = ""
+    description: str = ""
+    version: str = ""
 
 
-class AgentUpdateModel(BaseModel):
-    title: str | None = None
-    published: bool | None = None
+class AgentUpdateRequest(BaseModel):
     profile_id: UUID | None = None
     avatar: str | None = None
-    system_message: str | None = None
-    model: Literal["gpt-3.5-turbo", "gpt-4-turbo-preview"] | None = None
-    tools: list[dict] | None = None
-    crew_ids: list[UUID] | None = None
-    version: str | None = None
-    description: str | None = None
+    title: str | None = None
     role: str | None = None
+    system_message: str | None = None
+    published: bool | None = None
+    model: Literal["gpt-3.5-turbo", "gpt-4-turbo"] | None = None
+    tools: list[dict] | None = None
+    description: str | None = None
+    version: str | None = None
 
 
 class AgentGetRequest(BaseModel):
     profile_id: UUID | None = None
-    crew_id: UUID | None = None
     published: bool | None = None

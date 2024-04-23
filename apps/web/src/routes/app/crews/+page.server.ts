@@ -1,15 +1,18 @@
-import { error, fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { editCrewSchema } from '$lib/schema';
+import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
 export const load = async ({ locals: { getSession } }) => {
 	const userSession = await getSession();
 
-	const form = await superValidate(zod(editCrewSchema));
+	const form = {
+		create: await superValidate(zod(createCrewSchema)),
+		edit: await superValidate(zod(editCrewSchema))
+	};
 
 	const crews = await api
 		.GET('/crews/', {
@@ -38,28 +41,41 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	editCrew: async ({ request }) => {
-		const form = await superValidate(request, zod(editCrewSchema));
-
+	create: async ({ request, locals: { getSession } }) => {
+		const userSession = await getSession();
+		const form = await superValidate(request, zod(createCrewSchema));
 		if (!form.valid) {
 			return fail(400, { form });
 		}
+		const { data } = form;
 
-		await api
-			.PATCH(`/crews/{crew_id}`, {
-				params: {
-					path: {
-						crew_id: form.data.id
-					}
-				},
+		const crew = await api
+			.POST('/crews/', {
 				body: {
-					...form.data
+					profile_id: userSession.user.id,
+					...data,
+					agents: []
 				}
 			})
-			.catch((e) => {
-				setError(form, e.message, { status: 500 });
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating crew: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from crew creation`);
+					return null;
+				}
+				return d;
 			});
 
-		return message(form, 'Changes saved successfully!');
+		if (!crew) {
+			return fail(500, {
+				form,
+				message: 'Crew creation failed. Please try again. If the problem persists, contact support.'
+			});
+		}
+
+		throw redirect(303, `/app/crews/${crew.id}`);
 	}
 };

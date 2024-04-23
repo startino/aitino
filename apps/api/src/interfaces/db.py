@@ -12,10 +12,10 @@ from supabase import Client, create_client
 from src.models import (
     Agent,
     AgentInsertRequest,
-    AgentUpdateModel,
+    AgentUpdateRequest,
     APIKey,
     APIKeyInsertRequest,
-    APIKeyType,
+    APIProvider,
     APIKeyUpdateRequest,
     Billing,
     BillingInsertRequest,
@@ -54,15 +54,12 @@ if url is None or key is None:
     raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
 
 
-logger = logging.getLogger("root")
-
-
 # keeping this function for now, since typing gets crazy with the sessions/run endpoint
 # if it uses the "get_session_by_param" function
 def get_session(session_id: UUID) -> Session | None:
     """Get a session from the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting session {session_id}")
+    logging.debug(f"Getting session {session_id}")
     response = supabase.table("sessions").select("*").eq("id", session_id).execute()
     if len(response.data) == 0:
         return None
@@ -98,7 +95,7 @@ def get_sessions(
 
 def insert_session(content: SessionInsertRequest) -> Session:
     supabase: Client = create_client(url, key)
-    logger.info("inserting session")
+    logging.info("inserting session")
     response = (
         supabase.table("sessions")
         .insert(json.loads(content.model_dump_json()))
@@ -109,7 +106,7 @@ def insert_session(content: SessionInsertRequest) -> Session:
 
 def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
     supabase: Client = create_client(url, key)
-    logger.info(f"updating session with id: {session_id}")
+    logging.info(f"updating session with id: {session_id}")
     response = (
         supabase.table("sessions")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
@@ -122,7 +119,7 @@ def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
 def post_session(session: Session) -> None:
     """Post a session to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting session: {session}")
+    logging.debug(f"Posting session: {session}")
     supabase.table("sessions").insert(
         json.loads(json.dumps(session.model_dump(), default=str))
     ).execute()
@@ -142,7 +139,7 @@ def get_messages(
 ) -> list[Message]:
     """Gets messages, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting messages")
+    logging.debug("Getting messages")
     query = supabase.table("messages").select("*")
 
     if session_id:
@@ -175,7 +172,7 @@ def get_message(message_id: UUID) -> Message:
 def post_message(message: Message) -> None:
     """Post a message to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting message: {message}")
+    logging.debug(f"Posting message: {message}")
     supabase.table("messages").insert(
         json.loads(json.dumps(message.model_dump(), default=str))
     ).execute()
@@ -223,7 +220,7 @@ def get_subscriptions(
 ) -> list[Subscription]:
     """Gets subscriptions, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting subscriptions")
+    logging.debug("Getting subscriptions")
     query = supabase.table("subscriptions").select("*")
 
     if profile_id:
@@ -325,7 +322,7 @@ def get_billing(
 ) -> Billing | None:
     """Gets billings, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting billings")
+    logging.debug("Getting billings")
     response = (
         supabase.table("billing_information")
         .select("*")
@@ -383,7 +380,7 @@ def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing |
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
     """Get the description list for the given agent."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting description from agent_ids: {agent_ids}")
+    logging.debug(f"Getting description from agent_ids: {agent_ids}")
     response = (
         supabase.table("agents")
         .select("id", "description")
@@ -398,21 +395,21 @@ def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
 
 # typed as list[str] even though its technically UUID,
 # since its typed this way in the get_tool_ids_from_agents
-def get_api_key_type_ids(tool_ids: list[str]) -> dict[str, str]:
+def get_api_provider_ids(tool_ids: list[str]) -> dict[str, str]:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("tools")
-        .select("id", "api_key_type_id")
+        .select("id", "api_provider_id")
         .in_("id", tool_ids)
         .execute()
     )
-    return {data["id"]: data["api_key_type_id"] for data in response.data}
+    return {data["id"]: data["api_provider_id"] for data in response.data}
 
 
 def post_agents(agents: list[Agent]) -> None:
     """Post a list of agents to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting agents: {agents}")
+    logging.debug(f"Posting agents: {agents}")
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
@@ -422,7 +419,6 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
         supabase.table("crews").insert(json.loads(crew.model_dump_json())).execute()
     )
     return Crew(**response.data[0])
-    # supabase.table("crews").upsert(crew.model_dump())
 
 
 def update_crew(crew_id: UUID, content: CrewUpdateRequest) -> Crew:
@@ -453,7 +449,7 @@ def get_crews(
 ) -> list[Crew]:
     """Gets crews, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting crews")
+    logging.debug("Getting crews")
     query = supabase.table("crews").select("*")
 
     if profile_id:
@@ -483,30 +479,30 @@ def get_api_key(api_key_id: UUID) -> APIKey | None:
     supabase: Client = create_client(url, key)
     response = (
         supabase.table("users_api_keys")
-        .select("*, api_key_types(*)")
+        .select("*, api_providers(*)")
         .eq("id", api_key_id)
         .execute()
     )
     if len(response.data) == 0:
         return None
 
-    api_key_type = APIKeyType(**response.data[0]["api_key_types"])
-    return APIKey(**response.data[0], api_key_type=api_key_type)
+    api_provider = APIProvider(**response.data[0]["api_providers"])
+    return APIKey(**response.data[0], api_provider=api_provider)
 
 
 def get_api_keys(
     profile_id: UUID | None = None,
-    api_key_type_id: UUID | None = None,
+    api_provider_id: UUID | None = None,
     api_key: str | None = None,
 ) -> list[APIKey]:
     supabase: Client = create_client(url, key)
-    query = supabase.table("users_api_keys").select("*, api_key_types(*)")
+    query = supabase.table("users_api_keys").select("*, api_providers(*)")
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
 
-    if api_key_type_id:
-        query = query.eq("api_key_type_id", api_key_type_id)
+    if api_provider_id:
+        query = query.eq("api_provider_id", api_provider_id)
 
     if api_key:
         query = query.eq("api_key", api_key)
@@ -515,21 +511,21 @@ def get_api_keys(
 
     api_keys = []
     for data in response.data:
-        api_key_type = APIKeyType(**data["api_key_types"])
-        api_keys.append(APIKey(**data, api_key_type=api_key_type))
+        api_provider = APIProvider(**data["api_providers"])
+        api_keys.append(APIKey(**data, api_provider=api_provider))
 
     return api_keys
 
 
 def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
     supabase: Client = create_client(url, key)
-    type_response = (
-        supabase.table("api_key_types")
+    provider_response = (
+        supabase.table("api_providers")
         .select("*")
-        .eq("id", api_key.api_key_type_id)
+        .eq("id", api_key.api_provider_id)
         .execute()
     )
-    if len(type_response.data) == 0:
+    if len(provider_response.data) == 0:
         return None
 
     response = (
@@ -538,8 +534,8 @@ def insert_api_key(api_key: APIKeyInsertRequest) -> APIKey | None:
         .execute()
     )
 
-    api_key_type = APIKeyType(**type_response.data[0])
-    return APIKey(**response.data[0], api_key_type=api_key_type)
+    api_provider = APIProvider(**provider_response.data[0])
+    return APIKey(**response.data[0], api_provider=api_provider)
 
 
 def delete_api_key(api_key_id: UUID) -> APIKey | None:
@@ -548,14 +544,14 @@ def delete_api_key(api_key_id: UUID) -> APIKey | None:
     if not len(response.data):
         return None
 
-    type_response = (
-        supabase.table("api_key_types")
+    provider_response = (
+        supabase.table("api_providers")
         .select("*")
-        .eq("id", response.data[0]["api_key_type_id"])
+        .eq("id", response.data[0]["api_provider_id"])
         .execute()
     )
-    api_key_type = APIKeyType(**type_response.data[0])
-    return APIKey(**response.data[0], api_key_type=api_key_type)
+    api_provider = APIProvider(**provider_response.data[0])
+    return APIKey(**response.data[0], api_provider=api_provider)
 
 
 def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> APIKey:
@@ -566,33 +562,33 @@ def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> API
         .eq("id", api_key_id)
         .execute()
     )
-    type_response = (
-        supabase.table("api_key_types")
+    provider_response = (
+        supabase.table("api_providers")
         .select("*")
-        .eq("id", response.data[0]["api_key_type_id"])
+        .eq("id", response.data[0]["api_provider_id"])
         .execute()
     )
 
-    api_key_type = APIKeyType(**type_response.data[0])
-    return APIKey(**response.data[0], api_key_type=api_key_type)
+    api_provider = APIProvider(**provider_response.data[0])
+    return APIKey(**response.data[0], api_provider=api_provider)
 
 
-def get_api_key_types() -> list[APIKeyType]:
+def get_api_providers() -> list[APIProvider]:
     supabase: Client = create_client(url, key)
-    logger.debug("Getting all api key types")
-    response = supabase.table("api_key_types").select("*").execute()
-    return [APIKeyType(**data) for data in response.data]
+    logging.debug("Getting all api providers")
+    response = supabase.table("api_providers").select("*").execute()
+    return [APIProvider(**data) for data in response.data]
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     supabase: Client = create_client(url, key)
-    logger.debug(f"Updating session status: {status} for session: {session_id}")
+    logging.debug(f"Updating session status: {status} for session: {session_id}")
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
 
 
 def get_agent(agent_id: UUID) -> Agent | None:
     supabase: Client = create_client(url, key)
-    response = supabase.table("agents").select("*, models(*)").eq("id", agent_id).execute()
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if not response.data:
         return None
 
@@ -601,26 +597,14 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents(
     profile_id: UUID | None = None,
-    crew_id: UUID | None = None,
     published: bool | None = None,
-) -> list[Agent] | None:
+) -> list[Agent]:
     """Gets agents, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    query = supabase.table("agents").select("*, models(*)")
+    query = supabase.table("agents").select("*")
 
     if profile_id:
         query = query.eq("profile_id", profile_id)
-
-    # scuffed solution since agents dont have a crew id
-    # prob gonna rework or remove this completely
-    # also this crew_id param can't be used with any of the other parameters
-    # since this doesn't build on the query var (it also returns so L)
-    if crew_id:
-        response = get_agents_from_crew(crew_id)
-        if not response:
-            return None
-
-        return response
 
     if published is not None:
         query = query.eq("published", published)
@@ -632,12 +616,15 @@ def get_agents(
 
 def get_agents_from_crew(crew_id: UUID) -> list[Agent] | None:
     supabase: Client = create_client(url, key)
-    nodes = supabase.table("crews").select("nodes").eq("id", crew_id).execute()
-    if len(nodes.data) == 0:
+    agents = supabase.table("crews").select("agents").eq("id", crew_id).execute()
+    if len(agents.data) == 0:
         return None
 
     response = (
-        supabase.table("agents").select("*").in_("id", nodes.data[0]["nodes"]).execute()
+        supabase.table("agents")
+        .select("*")
+        .in_("id", agents.data[0]["agents"])
+        .execute()
     )
     return [Agent(**data) for data in response.data]
 
@@ -650,7 +637,7 @@ def insert_agent(content: AgentInsertRequest) -> Agent:
     return Agent(**response.data[0])
 
 
-def update_agents(agent_id: UUID, content: AgentUpdateModel) -> Agent:
+def update_agents(agent_id: UUID, content: AgentUpdateRequest) -> Agent:
     supabase: Client = create_client(url, key)
 
     response = (
@@ -660,58 +647,6 @@ def update_agents(agent_id: UUID, content: AgentUpdateModel) -> Agent:
         .execute()
     )
     return Agent(**response.data[0])
-
-def add_crew_to_agent(agent_id: UUID, crew_id: UUID) -> Agent | None:
-    supabase: Client = create_client(url, key)
-    # TODO: fix error handling here, also validate given crew_id before adding it
-    response = supabase.table("agents").select("crew_ids").eq("id", agent_id).execute()
-    
-    if len(response.data) == 0:
-        return None
-
-    agent_crew_array_dict = response.data[0]
-
-    if str(crew_id) in agent_crew_array_dict["crew_ids"]:
-        return None
-
-    agent_crew_array_dict["crew_ids"].append(str(crew_id))
-    agent_update = supabase.table("agents").update(agent_crew_array_dict).eq("id", agent_id).execute()
-    return Agent(**agent_update.data[0])
-
-
-def add_agent_to_crew(crew_id: UUID, agent_id: UUID):
-    supabase: Client = create_client(url, key)
-    response = supabase.table("crews").select("nodes", "id").eq("id", crew_id).execute()
-    if len(response.data) == 0:
-        return None
-
-    crew_agent_array_dict = response.data[0]
-
-    # idk if it will be ok to have multiple of the same agent in the crew or not
-    # but i assume that's not allowed until we have agent_instances implemented
-    # so im gonna do this check to see if an agent is already in the crew
-    if str(agent_id) in crew_agent_array_dict["nodes"]:
-        return None
-    
-    crew_agent_array_dict["nodes"].append(str(agent_id))
-    crew_update = supabase.table("crews").update(crew_agent_array_dict).eq("id", crew_id).execute()
-
-    return Crew(**crew_update.data[0])
-
-
-def add_agent_to_crews(crew_ids: list[UUID], agent_id: UUID):
-    supabase: Client = create_client(url, key)
-    response = supabase.table("crews").select("nodes", "id").in_("id", crew_ids).execute()
-    if len(response.data) == 0:
-        return None
-    for nodes in response.data:
-        for agent in nodes["nodes"]:
-            if str(agent_id) == agent:
-                print(nodes["id"])
-                continue
-            nodes["nodes"].append(agent_id)
-            #crew_update = supabase.table("crews").update(nodes).eq("id", nodes["id"]).execute()
-    # WIP function 
 
 
 def delete_agent(agent_id: UUID) -> Agent:
@@ -731,7 +666,7 @@ def get_tool(tool_id: UUID) -> Tool | None:
 
 def get_tools(
     name: str | None = None,
-    api_key_type_id: UUID | None = None,
+    api_provider_id: UUID | None = None,
 ) -> list[Tool]:
     supabase: Client = create_client(url, key)
     query = supabase.table("tools").select("*")
@@ -739,8 +674,8 @@ def get_tools(
     if name:
         query = query.eq("name", name)
 
-    if api_key_type_id:
-        query = query.eq("api_key_type_id", api_key_type_id)
+    if api_provider_id:
+        query = query.eq("api_provider_id", api_provider_id)
 
     response = query.execute()
 
@@ -794,21 +729,21 @@ def update_agent_tool(agent_id: UUID, tool_id: UUID) -> Agent:
 
 
 def get_tool_api_keys(
-    profile_id: UUID, api_key_type_ids: list[str] | None = None
+    profile_id: UUID, api_provider_ids: list[str] | None = None
 ) -> dict[str, str]:
-    """Gets all api keys for a profile id, if api_key_type_ids is given, only give api keys corresponding to those key types."""
+    """Gets all api keys for a profile id, if api_provider_ids is given, only give api keys corresponding to those providers."""
     supabase: Client = create_client(url, key)
     query = (
         supabase.table("users_api_keys")
-        .select("api_key", "api_key_type_id")
+        .select("api_key", "api_provider_id")
         .eq("profile_id", profile_id)
     )
 
-    if api_key_type_ids:
-        query = query.in_("api_key_type_id", api_key_type_ids)
+    if api_provider_ids:
+        query = query.in_("api_provider_id", api_provider_ids)
 
     response = query.execute()
-    return {data["api_key_type_id"]: data["api_key"] for data in response.data}
+    return {data["api_provider_id"]: data["api_key"] for data in response.data}
 
 
 def get_profile(profile_id: UUID) -> Profile | None:
@@ -872,5 +807,4 @@ def delete_profile(profile_id: UUID) -> Profile:
 if __name__ == "__main__":
     from src.models import Session
 
-    #print(add_crew_to_agent(UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"), UUID("4cf4de3c-30cd-4ac1-bfd6-a26aeb0fec8c")))
-    print(add_agent_to_crew(UUID("3ccccb64-7bcb-4902-a07d-5df65bbd601b"), UUID("80602167-d883-40b7-86e1-ed08f5e748b1")))
+    # print(add_crew_to_agent(UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e"), UUID("4cf4de3c-30cd-4ac1-bfd6-a26aeb0fec8c")))

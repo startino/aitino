@@ -42,7 +42,7 @@
 				},
 				{
 					name: 'Sessions',
-					href: '/app/session',
+					href: '/app/sessions',
 					icon: MessagesSquare,
 					current: false
 				}
@@ -57,7 +57,7 @@
 					icon: UsersRound,
 					current: false
 				},
-				{ name: 'Agents', href: '/app/agents/editor', icon: Dna, current: false }
+				{ name: 'Agents', href: '/app/agents', icon: Dna, current: false }
 			]
 		},
 		{

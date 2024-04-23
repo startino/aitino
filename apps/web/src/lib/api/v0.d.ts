@@ -11,13 +11,13 @@ export interface paths {
     /** Insert Session */
     post: operations["insert_session_sessions__post"];
   };
-  "/sessions/{session_id}": {
+  "/sessions/{id}": {
     /** Get Session */
-    get: operations["get_session_sessions__session_id__get"];
+    get: operations["get_session_sessions__id__get"];
     /** Delete Session */
-    delete: operations["delete_session_sessions__session_id__delete"];
+    delete: operations["delete_session_sessions__id__delete"];
     /** Update Session */
-    patch: operations["update_session_sessions__session_id__patch"];
+    patch: operations["update_session_sessions__id__patch"];
   };
   "/sessions/run": {
     /** Run Crew */
@@ -29,13 +29,13 @@ export interface paths {
     /** Insert Message */
     post: operations["insert_message_messages__post"];
   };
-  "/messages/{message_id}": {
+  "/messages/{id}": {
     /** Get Message */
-    get: operations["get_message_messages__message_id__get"];
+    get: operations["get_message_messages__id__get"];
     /** Delete Message */
-    delete: operations["delete_message_messages__message_id__delete"];
+    delete: operations["delete_message_messages__id__delete"];
     /** Update Message */
-    patch: operations["update_message_messages__message_id__patch"];
+    patch: operations["update_message_messages__id__patch"];
   };
   "/crews/": {
     /** Get Crews */
@@ -43,13 +43,17 @@ export interface paths {
     /** Insert Crew */
     post: operations["insert_crew_crews__post"];
   };
-  "/crews/{crew_id}": {
-    /** Get Crew By Id */
-    get: operations["get_crew_by_id_crews__crew_id__get"];
+  "/crews/validate/{crew_id}": {
+    /** Validate Crew */
+    post: operations["validate_crew_crews_validate__crew_id__post"];
+  };
+  "/crews/{id}": {
+    /** Get Crew */
+    get: operations["get_crew_crews__id__get"];
     /** Delete Crew */
-    delete: operations["delete_crew_crews__crew_id__delete"];
+    delete: operations["delete_crew_crews__id__delete"];
     /** Update Crew */
-    patch: operations["update_crew_crews__crew_id__patch"];
+    patch: operations["update_crew_crews__id__patch"];
   };
   "/agents/": {
     /** Get Agents */
@@ -57,13 +61,13 @@ export interface paths {
     /** Insert Agent */
     post: operations["insert_agent_agents__post"];
   };
-  "/agents/{agent_id}": {
+  "/agents/{id}": {
     /** Get Agent By Id */
-    get: operations["get_agent_by_id_agents__agent_id__get"];
+    get: operations["get_agent_by_id_agents__id__get"];
     /** Delete Agent */
-    delete: operations["delete_agent_agents__agent_id__delete"];
+    delete: operations["delete_agent_agents__id__delete"];
     /** Patch Agent */
-    patch: operations["patch_agent_agents__agent_id__patch"];
+    patch: operations["patch_agent_agents__id__patch"];
   };
   "/profiles/": {
     /** Get Profiles */
@@ -71,13 +75,13 @@ export interface paths {
     /** Insert Profile */
     post: operations["insert_profile_profiles__post"];
   };
-  "/profiles/{profile_id}": {
+  "/profiles/{id}": {
     /** Get Profile By Id */
-    get: operations["get_profile_by_id_profiles__profile_id__get"];
+    get: operations["get_profile_by_id_profiles__id__get"];
     /** Delete Profile */
-    delete: operations["delete_profile_profiles__profile_id__delete"];
+    delete: operations["delete_profile_profiles__id__delete"];
     /** Update Profile */
-    patch: operations["update_profile_profiles__profile_id__patch"];
+    patch: operations["update_profile_profiles__id__patch"];
   };
   "/api-keys/": {
     /**
@@ -88,21 +92,21 @@ export interface paths {
     /** Insert Api Key */
     post: operations["insert_api_key_api_keys__post"];
   };
-  "/api-keys/{api_key_id}": {
+  "/api-keys/{id}": {
     /** Get Api Key */
-    get: operations["get_api_key_api_keys__api_key_id__get"];
+    get: operations["get_api_key_api_keys__id__get"];
     /** Delete Api Key */
-    delete: operations["delete_api_key_api_keys__api_key_id__delete"];
+    delete: operations["delete_api_key_api_keys__id__delete"];
     /** Update Api Key */
-    patch: operations["update_api_key_api_keys__api_key_id__patch"];
+    patch: operations["update_api_key_api_keys__id__patch"];
   };
   "/auth/sign_in/provider": {
     /** Provider Sign In */
     post: operations["provider_sign_in_auth_sign_in_provider_post"];
   };
-  "/api-key-types/": {
-    /** Get All Api Key Types */
-    get: operations["get_all_api_key_types_api_key_types__get"];
+  "/api-provider/": {
+    /** Get All Api Key Provider */
+    get: operations["get_all_api_key_provider_api_provider__get"];
   };
   "/tools/": {
     /** Get Tools */
@@ -110,13 +114,13 @@ export interface paths {
     /** Insert Tool */
     post: operations["insert_tool_tools__post"];
   };
-  "/tools/{tool_id}": {
+  "/tools/{id}": {
     /** Get Tool */
-    get: operations["get_tool_tools__tool_id__get"];
+    get: operations["get_tool_tools__id__get"];
     /** Delete Tool */
-    delete: operations["delete_tool_tools__tool_id__delete"];
-    /** Update Profile */
-    patch: operations["update_profile_tools__tool_id__patch"];
+    delete: operations["delete_tool_tools__id__delete"];
+    /** Update Tool */
+    patch: operations["update_tool_tools__id__patch"];
   };
   "/tools/{agent_id}": {
     /** Add Tool */
@@ -128,11 +132,11 @@ export interface paths {
     /** Insert Subscription */
     post: operations["insert_subscription_subscriptions__post"];
   };
-  "/subscriptions/{profile_id}": {
+  "/subscriptions/{id}": {
     /** Delete Subscription */
-    delete: operations["delete_subscription_subscriptions__profile_id__delete"];
+    delete: operations["delete_subscription_subscriptions__id__delete"];
     /** Update Subscription */
-    patch: operations["update_subscription_subscriptions__profile_id__patch"];
+    patch: operations["update_subscription_subscriptions__id__patch"];
   };
   "/rest/": {
     /** Redirect To Docs */
@@ -173,16 +177,14 @@ export interface paths {
   "/billing/{id}": {
     /** Get Billings */
     get: operations["get_billings_billing__id__get"];
+    /** Delete Billing */
+    delete: operations["delete_billing_billing__id__delete"];
+    /** Update Billing */
+    patch: operations["update_billing_billing__id__patch"];
   };
   "/billing/": {
     /** Insert Billing */
     post: operations["insert_billing_billing__post"];
-  };
-  "/billing/{profile_id}": {
-    /** Delete Billing */
-    delete: operations["delete_billing_billing__profile_id__delete"];
-    /** Update Billing */
-    patch: operations["update_billing_billing__profile_id__patch"];
   };
   "/": {
     /** Redirect To Docs */
@@ -223,7 +225,7 @@ export interface components {
        * Format: uuid
        */
       profile_id: string;
-      api_key_type?: components["schemas"]["APIKeyType"] | null;
+      api_provider?: components["schemas"]["APIProvider"] | null;
       /** Api Key */
       api_key: string;
     };
@@ -235,15 +237,20 @@ export interface components {
        */
       profile_id: string;
       /**
-       * Api Key Type Id
+       * Api Provider Id
        * Format: uuid
        */
-      api_key_type_id: string;
+      api_provider_id: string;
       /** Api Key */
       api_key: string;
     };
-    /** APIKeyType */
-    APIKeyType: {
+    /** APIKeyUpdateRequest */
+    APIKeyUpdateRequest: {
+      /** Api Key */
+      api_key: string;
+    };
+    /** APIProvider */
+    APIProvider: {
       /**
        * Id
        * Format: uuid
@@ -258,11 +265,6 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
-    };
-    /** APIKeyUpdateRequest */
-    APIKeyUpdateRequest: {
-      /** Api Key */
-      api_key: string;
     };
     /** Agent */
     Agent: {
@@ -293,65 +295,76 @@ export interface components {
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
       tools: Record<string, never>[];
       /** Description */
-      description?: string | null;
+      description: string;
       /** Role */
       role: string;
       /** Version */
-      version?: string | null;
+      version: string;
     };
     /** AgentInsertRequest */
     AgentInsertRequest: {
-      /** Title */
-      title: string;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /** Avatar */
-      avatar: string;
+      /** Title */
+      title: string;
+      /** Role */
+      role: string;
       /** System Message */
       system_message: string;
+      /** Published */
+      published: boolean;
       /**
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo-preview";
+      model: "gpt-3.5-turbo" | "gpt-4-turbo";
       /** Tools */
       tools: Record<string, never>[];
-      /** Description */
-      description?: string | null;
-      /** Role */
-      role: string;
-      /** Version */
-      version?: string | null;
+      /**
+       * Avatar
+       * @default
+       */
+      avatar?: string;
+      /**
+       * Description
+       * @default
+       */
+      description?: string;
+      /**
+       * Version
+       * @default
+       */
+      version?: string;
     };
-    /** AgentUpdateModel */
-    AgentUpdateModel: {
-      /** Title */
-      title?: string | null;
-      /** Published */
-      published?: boolean | null;
+    /** AgentUpdateRequest */
+    AgentUpdateRequest: {
       /** Profile Id */
       profile_id?: string | null;
       /** Avatar */
       avatar?: string | null;
-      /** System Message */
-      system_message?: string | null;
-      /** Model */
-      model?: ("gpt-3.5-turbo" | "gpt-4-turbo-preview") | null;
-      /** Tools */
-      tools?: Record<string, never>[] | null;
-      /** Version */
-      version?: string | null;
-      /** Description */
-      description?: string | null;
+      /** Title */
+      title?: string | null;
       /** Role */
       role?: string | null;
+      /** System Message */
+      system_message?: string | null;
+      /** Published */
+      published?: boolean | null;
+      /** Model */
+      model?: ("gpt-3.5-turbo" | "gpt-4-turbo") | null;
+      /** Tools */
+      tools?: Record<string, never>[] | null;
+      /** Description */
+      description?: string | null;
+      /** Version */
+      version?: string | null;
     };
     /** Billing */
     Billing: {
@@ -406,8 +419,6 @@ export interface components {
        * Format: uuid
        */
       profile_id: string;
-      /** Edges */
-      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
       /** Title */
@@ -419,101 +430,60 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      /** Nodes */
-      nodes: string[];
+      /** Agents */
+      agents: string[];
       /** Receiver Id */
       receiver_id?: string | null;
       /** Avatar */
-      avatar?: string | null;
-      prompt?: components["schemas"]["Prompt"] | null;
+      avatar: string;
+      /** Prompt */
+      prompt: string;
     };
     /** CrewInsertRequest */
     CrewInsertRequest: {
+      /** Receiver Id */
+      receiver_id?: string | null;
       /**
-       * Receiver Id
-       * Format: uuid
+       * Prompt
+       * @default
        */
-      receiver_id: string;
-      prompt: components["schemas"]["Prompt"];
+      prompt?: string;
       /**
        * Profile Id
        * Format: uuid
        */
       profile_id: string;
-      /** Edges */
-      edges: components["schemas"]["Edge"][];
       /** Published */
       published: boolean;
-      /** Title */
-      title: string;
-      /** Description */
-      description: string;
-      /** Nodes */
-      nodes: string[];
+      /**
+       * Title
+       * @default
+       */
+      title?: string;
+      /**
+       * Description
+       * @default
+       */
+      description?: string;
+      /** Agents */
+      agents: string[];
     };
     /** CrewUpdateRequest */
     CrewUpdateRequest: {
       /** Receiver Id */
       receiver_id?: string | null;
-      prompt?: components["schemas"]["Prompt"] | null;
+      /** Prompt */
+      prompt?: string | null;
       /** Profile Id */
       profile_id?: string | null;
-      /** Edges */
-      edges?: components["schemas"]["Edge"][] | null;
       /** Published */
       published?: boolean | null;
       /** Title */
       title?: string | null;
       /** Description */
       description?: string | null;
-      /** Nodes */
-      nodes?: string[] | null;
-    };
-    /** Edge */
-    Edge: {
-      /** Id */
-      id: string;
-      /** Type */
-      type?: string | null;
-      /** Source */
-      source: string;
-      /** Target */
-      target: string;
-      /** Sourcehandle */
-      sourceHandle?: string | null;
-      /** Targethandle */
-      targetHandle?: string | null;
-      /** Animated */
-      animated?: boolean | null;
-      /** Hidden */
-      hidden?: boolean | null;
-      /** Deletable */
-      deletable?: boolean | null;
-      /** Selectable */
-      selectable?: boolean | null;
-      /** Data */
-      data?: unknown;
-      /** Selected */
-      selected?: boolean | null;
-      /** Markerstart */
-      markerStart?: string | components["schemas"]["Marker"] | null;
-      /** Markerend */
-      markerEnd?: string | components["schemas"]["Marker"] | null;
-      /** Zindex */
-      zIndex?: number | null;
-      /** Arialabel */
-      ariaLabel?: string | null;
-      /** Interactionwidth */
-      interactionWidth?: number | null;
-      /** Label */
-      label?: string | null;
-      /** Labelstyle */
-      labelStyle?: string | null;
-      /** Style */
-      style?: string | null;
-      /** Class */
-      class?: string | null;
-      pathOptions?: components["schemas"]["PathOptions"] | null;
+      /** Agents */
+      agents?: string[] | null;
     };
     /** FalseLead */
     FalseLead: {
@@ -541,23 +511,6 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
-    };
-    /** Marker */
-    Marker: {
-      /** Type */
-      type: string;
-      /** Color */
-      color?: string | null;
-      /** Width */
-      width?: number | null;
-      /** Height */
-      height?: number | null;
-      /** Markerunits */
-      markerUnits?: string | null;
-      /** Orient */
-      orient?: string | null;
-      /** Strokewidth */
-      strokeWidth?: number | null;
     };
     /** Message */
     Message: {
@@ -639,15 +592,6 @@ export interface components {
       /** Url */
       url: string;
     };
-    /** PathOptions */
-    PathOptions: {
-      /** Offset */
-      offset?: number | null;
-      /** Borderradius */
-      borderRadius?: number | null;
-      /** Curvature */
-      curvature?: number | null;
-    };
     /** Profile */
     Profile: {
       /**
@@ -695,18 +639,6 @@ export interface components {
       display_name?: string | null;
       /** Stripe Customer Id */
       stripe_customer_id?: string | null;
-    };
-    /** Prompt */
-    Prompt: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Title */
-      title: string;
-      /** Content */
-      content: string;
     };
     /** PublishCommentRequest */
     PublishCommentRequest: {
@@ -936,8 +868,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolInsertRequest */
     ToolInsertRequest: {
@@ -945,8 +877,8 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ToolUpdateRequest */
     ToolUpdateRequest: {
@@ -954,8 +886,8 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
-      /** Api Key Type Id */
-      api_key_type_id?: string | null;
+      /** Api Provider Id */
+      api_provider_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1028,10 +960,10 @@ export interface operations {
     };
   };
   /** Get Session */
-  get_session_sessions__session_id__get: {
+  get_session_sessions__id__get: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1050,10 +982,10 @@ export interface operations {
     };
   };
   /** Delete Session */
-  delete_session_sessions__session_id__delete: {
+  delete_session_sessions__id__delete: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1072,10 +1004,10 @@ export interface operations {
     };
   };
   /** Update Session */
-  update_session_sessions__session_id__patch: {
+  update_session_sessions__id__patch: {
     parameters: {
       path: {
-        session_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1173,10 +1105,10 @@ export interface operations {
     };
   };
   /** Get Message */
-  get_message_messages__message_id__get: {
+  get_message_messages__id__get: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1195,10 +1127,10 @@ export interface operations {
     };
   };
   /** Delete Message */
-  delete_message_messages__message_id__delete: {
+  delete_message_messages__id__delete: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1217,10 +1149,10 @@ export interface operations {
     };
   };
   /** Update Message */
-  update_message_messages__message_id__patch: {
+  update_message_messages__id__patch: {
     parameters: {
       path: {
-        message_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1290,11 +1222,33 @@ export interface operations {
       };
     };
   };
-  /** Get Crew By Id */
-  get_crew_by_id_crews__crew_id__get: {
+  /** Validate Crew */
+  validate_crew_crews_validate__crew_id__post: {
     parameters: {
       path: {
         crew_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Crew */
+  get_crew_crews__id__get: {
+    parameters: {
+      path: {
+        id: string;
       };
     };
     responses: {
@@ -1313,10 +1267,10 @@ export interface operations {
     };
   };
   /** Delete Crew */
-  delete_crew_crews__crew_id__delete: {
+  delete_crew_crews__id__delete: {
     parameters: {
       path: {
-        crew_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1335,10 +1289,10 @@ export interface operations {
     };
   };
   /** Update Crew */
-  update_crew_crews__crew_id__patch: {
+  update_crew_crews__id__patch: {
     parameters: {
       path: {
-        crew_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1366,7 +1320,6 @@ export interface operations {
     parameters: {
       query?: {
         profile_id?: string | null;
-        crew_id?: string | null;
         published?: boolean | null;
       };
     };
@@ -1408,10 +1361,10 @@ export interface operations {
     };
   };
   /** Get Agent By Id */
-  get_agent_by_id_agents__agent_id__get: {
+  get_agent_by_id_agents__id__get: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1430,10 +1383,10 @@ export interface operations {
     };
   };
   /** Delete Agent */
-  delete_agent_agents__agent_id__delete: {
+  delete_agent_agents__id__delete: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1452,15 +1405,15 @@ export interface operations {
     };
   };
   /** Patch Agent */
-  patch_agent_agents__agent_id__patch: {
+  patch_agent_agents__id__patch: {
     parameters: {
       path: {
-        agent_id: string;
+        id: string;
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AgentUpdateModel"];
+        "application/json": components["schemas"]["AgentUpdateRequest"];
       };
     };
     responses: {
@@ -1525,10 +1478,10 @@ export interface operations {
     };
   };
   /** Get Profile By Id */
-  get_profile_by_id_profiles__profile_id__get: {
+  get_profile_by_id_profiles__id__get: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1547,10 +1500,10 @@ export interface operations {
     };
   };
   /** Delete Profile */
-  delete_profile_profiles__profile_id__delete: {
+  delete_profile_profiles__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1569,10 +1522,10 @@ export interface operations {
     };
   };
   /** Update Profile */
-  update_profile_profiles__profile_id__patch: {
+  update_profile_profiles__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1603,7 +1556,7 @@ export interface operations {
     parameters: {
       query?: {
         profile_id?: string | null;
-        api_key_type_id?: string | null;
+        api_provider_id?: string | null;
         api_key?: string | null;
       };
     };
@@ -1645,10 +1598,10 @@ export interface operations {
     };
   };
   /** Get Api Key */
-  get_api_key_api_keys__api_key_id__get: {
+  get_api_key_api_keys__id__get: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1667,10 +1620,10 @@ export interface operations {
     };
   };
   /** Delete Api Key */
-  delete_api_key_api_keys__api_key_id__delete: {
+  delete_api_key_api_keys__id__delete: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1689,10 +1642,10 @@ export interface operations {
     };
   };
   /** Update Api Key */
-  update_api_key_api_keys__api_key_id__patch: {
+  update_api_key_api_keys__id__patch: {
     parameters: {
       path: {
-        api_key_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1737,13 +1690,13 @@ export interface operations {
       };
     };
   };
-  /** Get All Api Key Types */
-  get_all_api_key_types_api_key_types__get: {
+  /** Get All Api Key Provider */
+  get_all_api_key_provider_api_provider__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["APIKeyType"][];
+          "application/json": components["schemas"]["APIProvider"][];
         };
       };
     };
@@ -1753,7 +1706,7 @@ export interface operations {
     parameters: {
       query?: {
         name?: string | null;
-        api_key_type_id?: string | null;
+        api_provider_id?: string | null;
       };
     };
     responses: {
@@ -1794,10 +1747,10 @@ export interface operations {
     };
   };
   /** Get Tool */
-  get_tool_tools__tool_id__get: {
+  get_tool_tools__id__get: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1816,10 +1769,10 @@ export interface operations {
     };
   };
   /** Delete Tool */
-  delete_tool_tools__tool_id__delete: {
+  delete_tool_tools__id__delete: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1837,11 +1790,11 @@ export interface operations {
       };
     };
   };
-  /** Update Profile */
-  update_profile_tools__tool_id__patch: {
+  /** Update Tool */
+  update_tool_tools__id__patch: {
     parameters: {
       path: {
-        tool_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -1935,10 +1888,10 @@ export interface operations {
     };
   };
   /** Delete Subscription */
-  delete_subscription_subscriptions__profile_id__delete: {
+  delete_subscription_subscriptions__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -1957,10 +1910,10 @@ export interface operations {
     };
   };
   /** Update Subscription */
-  update_subscription_subscriptions__profile_id__patch: {
+  update_subscription_subscriptions__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
@@ -2208,33 +2161,11 @@ export interface operations {
       };
     };
   };
-  /** Insert Billing */
-  insert_billing_billing__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["BillingInsertRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Billing"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /** Delete Billing */
-  delete_billing_billing__profile_id__delete: {
+  delete_billing_billing__id__delete: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     responses: {
@@ -2253,15 +2184,37 @@ export interface operations {
     };
   };
   /** Update Billing */
-  update_billing_billing__profile_id__patch: {
+  update_billing_billing__id__patch: {
     parameters: {
       path: {
-        profile_id: string;
+        id: string;
       };
     };
     requestBody: {
       content: {
         "application/json": components["schemas"]["BillingUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Billing"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Insert Billing */
+  insert_billing_billing__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BillingInsertRequest"];
       };
     };
     responses: {
