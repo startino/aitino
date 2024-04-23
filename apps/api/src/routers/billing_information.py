@@ -14,7 +14,6 @@ from src.models import Billing, BillingInsertRequest, BillingUpdateRequest
 
 router = APIRouter(prefix="/billing", tags=["billings"])
 
-logger = logging.getLogger("root")
 
 
 @router.get("/{id}")

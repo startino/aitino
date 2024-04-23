@@ -10,8 +10,6 @@ from supabase import Client, create_client
 
 from src.interfaces.redis_cache import get_redis
 
-logger = logging.getLogger("root")
-
 load_dotenv()
 
 url: str | None = os.environ.get("SUPABASE_URL")

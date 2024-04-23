@@ -26,8 +26,6 @@ key: str | None = os.environ.get("SUPABASE_ANON_KEY")
 if url is None or key is None:
     raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
 
-logger = logging.getLogger("root")
-
 
 @router.post("/sign_in/provider")
 def provider_sign_in(provider_request: SignInWithOAuthCredentials) -> OAuthResponse:
