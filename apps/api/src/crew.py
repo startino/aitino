@@ -175,8 +175,6 @@ class AutogenCrew:
         profile_api_keys = db.get_tool_api_keys(self.profile_id)
 
         for agent in crew_model.agents:
-            valid_agent_tools = []
-            tool_schemas: list[dict] | None
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -187,6 +185,8 @@ class AutogenCrew:
             api_key_types = db.get_api_provider_ids(tool_ids)
 
             # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
+            valid_agent_tools = []
+            tool_schemas: list[dict] | None = []
             if len(tool_ids):
                 for tool in tool_ids:
                     try:
@@ -218,7 +218,7 @@ class AutogenCrew:
                 "timeout": 120,
             }
             if tool_schemas:
-                config["functions"] = tool_schemas
+                config["tools"] = tool_schemas
 
             system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """  # TODO: add what agent it should send to next - Leon
 
@@ -237,6 +237,7 @@ class AutogenCrew:
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
+
             agents.append(agent_instance)
 
         return agents

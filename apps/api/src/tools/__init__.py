@@ -65,17 +65,20 @@ def generate_llm_config(tools: list[BaseTool]) -> list[dict]:
     schemas = []
     for tool in tools:
         function_schema = {
-            "name": tool.name.lower().replace(" ", "_"),
-            "description": tool.description,
-            "parameters": {
-                "type": "object",
-                "properties": {},
-                "required": [],
-            },
+            "type": "function",
+            "function": {
+                "name": tool.name.lower().replace(" ", "_"),
+                "description": tool.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                },
+            }
         }
 
         if tool.args is not None:
-            function_schema["parameters"]["properties"] = tool.args
+            function_schema["function"]["parameters"]["properties"] = tool.args
         schemas.append(function_schema)
 
     return schemas
