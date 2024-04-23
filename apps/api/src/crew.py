@@ -18,9 +18,6 @@ from .tools import (
     get_tool_ids_from_agent,
 )
 
-logger = logging.getLogger("root")
-
-
 class AutogenCrew:
     def __init__(
         self,
@@ -84,29 +81,29 @@ class AutogenCrew:
     ) -> tuple[bool, Any | None]:
         # This function is called when an LLM model replies
         if not self.on_reply:
-            logger.warn("No on_reply function")
+            logging.warn("No on_reply function")
             return False, None
 
-        logger.debug(f"on_reply: {recipient.name} {messages}")
+        logging.debug(f"on_reply: {recipient.name} {messages}")
 
         if not messages:
-            logger.error("on_reply: No messages")
+            logging.error("on_reply: No messages")
             return False, None
         if len(messages) == 0:
-            logger.error("on_reply: No messages")
+            logging.error("on_reply: No messages")
             return False, None
 
         last_msg = messages[-1]
 
         # Validate last message
         if not last_msg.get("name"):
-            logger.warn(f"on_reply: No name\n{last_msg}")
+            logging.warn(f"on_reply: No name\n{last_msg}")
             last_msg["name"] = None
         if not last_msg.get("content"):
-            logger.error(f"on_reply: No content\n{last_msg}")
+            logging.error(f"on_reply: No content\n{last_msg}")
             return False, None
         if not last_msg.get("role"):
-            logger.error(f"on_reply: No role\n{last_msg}")
+            logging.error(f"on_reply: No role\n{last_msg}")
             return False, None
 
         sender_name = last_msg["name"]
@@ -131,7 +128,7 @@ class AutogenCrew:
                 recipient.name == "chat_manager",
             ]
         ):
-            logger.error(
+            logging.error(
                 "on_reply: both ids are none, sender is not admin and recipient is not chat manager"
             )
 
@@ -172,7 +169,7 @@ class AutogenCrew:
                             tool, api_key_types, profile_api_keys
                         )
                     except TypeError as e:
-                        logger.error(f"tried to generate tool, got error: {e}")
+                        logging.error(f"tried to generate tool, got error: {e}")
                         raise HTTPException(500, f"tried to generate tool, got error {e}")
 
                     (
@@ -226,12 +223,12 @@ class AutogenCrew:
         message: str,
         messages: list[Message] | None = None,
     ) -> None:
-        logger.debug("Running Crew")
+        logging.debug("Running Crew")
 
         # convert Message list to dict list
         dict_messages = [m.model_dump() for m in (messages if messages else [])]
         speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
-        logger.info(speaker_selection_method)
+        logging.info(speaker_selection_method)
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
@@ -246,9 +243,9 @@ class AutogenCrew:
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
 
-        logger.info("Starting Crew")
+        logging.info("Starting Crew")
         with Cache.disk() as cache:
-            logger.info("Starting chat")
+            logging.info("Starting chat")
             await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
