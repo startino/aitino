@@ -33,10 +33,7 @@ from .routers import (
     subscriptions,
     tiers,
     tools,
-)
-from .routers.sandbox import (
-    daniel,
-    leon,
+    sandbox,
 )
 
 logger = logging.getLogger("root")
@@ -58,11 +55,10 @@ app.include_router(rest.router)
 app.include_router(tiers.router)
 app.include_router(billing_information.router)
 
-daniel.include_router(daniel.router)
-app.mount("/daniel", daniel)
 
-leon.include_router(leon.router)
-app.mount("/leon", leon)
+sandbox_app = sandbox.create_app()
+app.mount("/sandbox", sandbox_app)
+
 
 app.add_middleware(
     CORSMiddleware,

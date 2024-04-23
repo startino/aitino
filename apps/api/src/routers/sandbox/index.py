@@ -1,13 +1,11 @@
 import logging
-from fastapi import FastAPI
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-daniel = FastAPI()
-
 router = APIRouter(
-    prefix="/daniel",
-    tags=["daniel"],
+    prefix="/sandbox",
+    tags=["sandbox"],
 )
 
 logger = logging.getLogger("root")
