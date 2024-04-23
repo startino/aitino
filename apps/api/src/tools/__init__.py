@@ -49,9 +49,7 @@ tools: dict = {
     STACKAPI_ID: StackAPISearchTool,
 }
 
-logger = logging.getLogger("root")
 load_dotenv()
-
 
 def get_file_path_of_example() -> str:
     current_dir = os.getcwd()
@@ -109,7 +107,7 @@ def generate_tool_from_uuid(
                     api_key = api_keys[tool_provider]
 
             if has_param(tool_cls, "api_key"):
-                logger.info("has parameter 'api_key'")
+                logging.info("has parameter 'api_key'")
                 if not api_key:
                     raise TypeError(
                         "api key should not be none when passed to tool that needs api key"
@@ -117,7 +115,7 @@ def generate_tool_from_uuid(
                 tool_object = tools[tool_id](api_key=api_key)
                 return tool_object
 
-            logger.info("making tool without api_key")
+            logging.info("making tool without api_key")
             return tool_cls()
 
     return None

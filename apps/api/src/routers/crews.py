@@ -19,8 +19,6 @@ router = APIRouter(
     tags=["crews"],
 )
 
-logger = logging.getLogger("root")
-
 
 @router.get("/")
 def get_crews(q: CrewGetRequest = Depends()) -> list[Crew]:
@@ -47,7 +45,7 @@ def insert_crew(crew: CrewInsertRequest) -> Crew:
 
 @router.patch("/{id}")
 def update_crew(id: UUID, content: CrewUpdateRequest) -> Crew:
-    logger.debug(content.model_dump())
+    logging.debug(content.model_dump())
     if not db.get_crew(id):
         raise HTTPException(404, "crew not found")
 

@@ -15,8 +15,6 @@ load_dotenv()
 JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET")
 ALGORITHM = "HS256"
 
-logger = logging.getLogger("root")
-
 
 async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> Profile:
     credentials_exception = HTTPException(
