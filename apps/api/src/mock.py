@@ -71,7 +71,7 @@ markdown_table: dict = {
 #     "avatar": "",
 # }
 
-tool, prompt = "bing search tool", "what is openai?"
+tool, prompt = "arxiv tool", "read this arxiv article: 2404.00939"
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
