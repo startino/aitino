@@ -4,70 +4,17 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MessageItem from './Message.svelte';
 	import { afterUpdate } from 'svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from 'svelte-sonner';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
-	import type { schemas } from '$lib/api';
+	import { getContext } from '$lib/utils';
 
-	export let session: schemas['Session'];
-	export let messages: schemas['Message'][];
-	export let agents: schemas['Agent'][];
+	let { messages, agents } = getContext('session');
 
 	// Reactivity
 	export let waitingForUser = true;
 
 	let rows = 1;
 	$: minRows = rows <= 1 ? 1 : rows >= 50 ? 50 : rows;
-
-	supabase
-		.channel('message-insert-channel')
-		.on(
-			'postgres_changes',
-			{
-				event: 'INSERT',
-				schema: 'public',
-				table: 'messages',
-				filter: `session_id=eq.${session.id}`
-			},
-			async (payload) => {
-				console.log(payload);
-				const message = payload.new as schemas['Message'];
-				console.log(message);
-				messages = [...messages, message];
-			}
-		)
-		.subscribe((status) => {
-			if (status === 'SUBSCRIBED') {
-				console.log('connected to message-insert-channel');
-			} else {
-				console.error('message-insert-channel status: ' + status);
-			}
-		});
-
-	supabase
-		.channel('session-update-channel')
-		.on(
-			'postgres_changes',
-			{
-				event: 'UPDATE',
-				schema: 'public',
-				table: 'sessions',
-				filter: `id=eq.${session.id}`
-			},
-			async (payload) => {
-				console.log(payload);
-				const session = payload.new as models.Session;
-				console.log(session);
-				// TODO: Set local status based on message status
-			}
-		)
-		.subscribe((status) => {
-			if (status === 'SUBSCRIBED') {
-				console.log('connected to session-update-channel');
-			} else {
-				console.error('session-update-channel status: ' + status);
-			}
-		});
 
 	function handleInputChange(event: { target: { value: string } }) {
 		newMessageContent = event.target.value;
@@ -110,12 +57,12 @@
 	>
 		<!-- TODO: add scroll to the bottom of the chat button -->
 		{#if messages}
-			{#if messages.length > 0}
-				{#each messages as message, index}
+			{#if $messages.length > 0}
+				{#each $messages as message, index}
 					{#if index !== 0}
-						<MessageItem {message} {agents} />
+						<MessageItem {message} agents={$agents} />
 
-						{#if index !== messages.length - 1}
+						{#if index !== $messages.length - 1}
 							<hr class="prose my-20 w-full max-w-none border-t border-nsecondary px-12" />
 						{/if}
 					{/if}
@@ -152,8 +99,6 @@
 						: 'Waiting for the crew to finish...'}
 					bind:value={newMessageContent}
 					disabled={!waitingForUser}
-					{minRows}
-					maxRows={minRows}
 					on:input={handleInputChange}
 				></Textarea>
 				<Button

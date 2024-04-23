@@ -3,7 +3,7 @@
 	import '@xyflow/svelte/dist/style.css';
 	import * as Nodes from './nodes';
 	import { setContext, getContext } from '$lib/utils';
-	import type { CrewContext } from '$lib/types/index.js';
+	import type { CrewContext } from '$lib/types';
 	import { writable } from 'svelte/store';
 	import CrewPanel from './CrewPanel.svelte';
 
