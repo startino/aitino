@@ -34,7 +34,10 @@ from .routers import (
     tiers,
     tools,
 )
-from .routers.sandbox import daniel, leon
+from .routers.sandbox import (
+    daniel,
+    leon,
+)
 
 logger = logging.getLogger("root")
 logger.setLevel("INFO")
@@ -55,10 +58,11 @@ app.include_router(rest.router)
 app.include_router(tiers.router)
 app.include_router(billing_information.router)
 
-daniel = FastAPI()
 daniel.include_router(daniel.router)
-leon = FastAPI()
+app.mount("/daniel", daniel)
+
 leon.include_router(leon.router)
+app.mount("/leon", leon)
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,10 +86,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-app.mount("/daniel", daniel)
-app.mount("/leon", leon)
 
 
 @app.get("/")
