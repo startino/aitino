@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Sheet from '$lib/components/ui/sheet';
-	import * as utils from '$lib/utils';
+	import { getContext, daysRelativeToToday } from '$lib/utils';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
@@ -11,10 +11,7 @@
 	import api from '$lib/api';
 	import { goto } from '$app/navigation';
 
-	export let profileId: string;
-	export let sessions: schemas['Session'][];
-	export let crews: schemas['Crew'][];
-	export let session: schemas['Session'];
+	let { profileId, session: openSession, sessions, crew } = getContext('session');
 
 	let newSessionName: string = '';
 
@@ -48,12 +45,12 @@
 		}
 
 		// If no session is being renamed, ignore
-		if (!session) {
+		if (!openSession) {
 			resetRenamingUI();
 			return;
 		}
 		// If no changes were made or if empty, reset the UI and ignore
-		if (session?.title == renamingValue && renamingValue === '') {
+		if ($openSession.title == renamingValue && renamingValue === '') {
 			resetRenamingUI();
 			return;
 		}
@@ -61,13 +58,13 @@
 		renamingInProgress = true;
 		console.log('renaming', renamingValue, sessionId);
 
-		await api.PATCH('/sessions/{session_id}', {
-			params: { path: { session_id: sessionId } },
+		await api.PATCH('/sessions/{id}', {
+			params: { path: { id: sessionId } },
 			body: { title: renamingValue }
 		});
 
 		// Update the session locally in order to not refetch
-		sessions = sessions.map((session) => {
+		$sessions = $sessions.map((session) => {
 			if (session.id === sessionId) {
 				session.title = renamingValue;
 			}
@@ -84,8 +81,8 @@
 		deletingSession = sessionId;
 
 		const success = await api
-			.DELETE('/sessions/{session_id}', {
-				params: { path: { session_id: sessionId } }
+			.DELETE('/sessions/{id}', {
+				params: { path: { id: sessionId } }
 			})
 			.then(({ error: e }) => {
 				if (e) {
@@ -102,10 +99,10 @@
 		console.log('Successfully deleted session');
 
 		// Update the session locally in order to not refetch
-		sessions = sessions.filter((session) => session.id !== sessionId);
+		$sessions = $sessions.filter((session) => session.id !== sessionId);
 		resetDeletingUI();
 
-		if (session?.id === sessionId) {
+		if ($openSession.id === sessionId) {
 			goto('/app/sessions/');
 		}
 	}
@@ -152,7 +149,7 @@
 	<Sheet.Content side="right">
 		<Sheet.Header>
 			<Sheet.Description>
-				{#if session}
+				{#if openSession}
 					Click anywhere on the left to continue with your most recent session
 				{:else}
 					Create a new session or select an existing one
@@ -163,7 +160,7 @@
 		<Sheet.Footer class="mt-2">
 			<Sheet.Close asChild let:builder>
 				<div class="flex h-full w-full flex-col gap-2">
-					{#if crews}
+					{#if crew}
 						<Dialog.Root>
 							<Dialog.Trigger let:builder>
 								<Button class="mb-2 w-full" builders={[builder]}>Start New Session</Button>
@@ -189,14 +186,14 @@
 									<div class="grid grid-cols-4 items-center gap-4">
 										<Label for="username" class="text-right">Crew</Label>
 										<Button disabled variant="outline" class="col-span-3 w-full text-left">
-											{crews[0]?.title}
+											{$crew.title}
 										</Button>
 									</div>
 								</div>
 								<Dialog.Footer>
 									<Button
 										builders={[builder]}
-										on:click={() => startNewSession(profileId, crews[0]?.id, newSessionName)}
+										on:click={() => startNewSession($profileId, $crew.id, newSessionName)}
 										>Start Session</Button
 									>
 								</Dialog.Footer>
@@ -207,13 +204,13 @@
 						{#if !sessions}
 							<p>Loading...</p>
 						{:else}
-							{#each sessions as session}
+							{#each $sessions as session}
 								<li class="my-3 flex w-full flex-row gap-4">
 									{#if renamePopoverOpen && renamingSession === session.id}
 										<Input
 											type="text"
 											class="w-full px-0.5"
-											placeholder={session.title ?? 'Empty'}
+											placeholder={session.title}
 											disabled={renamingInProgress}
 											on:focusout={() => renameSession(session.id)}
 											on:keydown={(e) => {
@@ -239,7 +236,7 @@
 										</Button>
 									{:else}
 										<Button
-											variant="icon"
+											variant="ghost"
 											class="p-2"
 											on:click={() => {
 												renamePopoverOpen = true;
@@ -258,11 +255,11 @@
 										>
 											{session.title}
 											<div class="	text-right text-xs">
-												Last opened {utils.daysRelativeToToday(session.created_at).toLowerCase()}
+												Last opened {daysRelativeToToday(session.created_at).toLowerCase()}
 											</div>
 										</Button>
 										<Button
-											variant="icon"
+											variant="ghost"
 											class="p-2"
 											on:click={() => {
 												deleteSession(session.id);

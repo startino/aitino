@@ -19,6 +19,7 @@ export type PanelAction = {
 
 export interface ContextMap {
 	crew: CrewContext;
+	session: SessionContext;
 	subscriptionStore: Writable<{
 		sub: Stripe.Response<Stripe.Subscription> | null;
 		tier: any | null;
@@ -32,6 +33,16 @@ export interface CrewContext {
 	agents: Writable<schemas['Agent'][]>;
 	publishedAgents: Writable<schemas['Agent'][]>;
 	nodes: Writable<Node[]>;
+}
+
+export interface SessionContext {
+	profileId: Writable<string>;
+	session: Writable<schemas['Session']>;
+	sessions: Writable<schemas['Session'][]>;
+	crew: Writable<schemas['Crew']>;
+	crews: Writable<schemas['Crew'][]>;
+	messages: Writable<schemas['Message'][]>;
+	agents: Writable<schemas['Agent'][]>;
 }
 
 export type Categories =
