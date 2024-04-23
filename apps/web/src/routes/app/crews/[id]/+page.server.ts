@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
+import { type Node } from '@xyflow/svelte';
 
 export const load = async ({ locals: { getSession }, params }) => {
 	const { id } = params;

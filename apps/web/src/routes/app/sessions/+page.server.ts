@@ -25,7 +25,7 @@ const redirectToSessions = async (userSession: Session) => {
 
 	if (sessions[0]) {
 		console.log(`Redirecting to session ${sessions[0].id}`);
-		redirect(303, `/app/session/${sessions[0].id}`);
+		redirect(303, `/app/sessions/${sessions[0].id}`);
 	}
 };
 

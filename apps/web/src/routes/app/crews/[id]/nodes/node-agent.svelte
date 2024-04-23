@@ -47,9 +47,7 @@
 		/>
 
 		<div class="absolute left-0 top-0 flex items-center justify-center p-2 text-center">
-			<Badge variant="outline" class="self-center"
-				>{agent.llm_model_id == 1 ? 'gpt-4-turbo' : 'gpt-3.5-turbo'}</Badge
-			>
+			<Badge variant="outline" class="self-center">{agent.model}</Badge>
 		</div>
 
 		<div
