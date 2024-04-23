@@ -76,6 +76,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+subapi = FastAPI()
+
+
+@subapi.get("/sub")
+def read_sub():
+    return {"message": "Hello World from sub API"}
+
+
+app.mount("/subapi", subapi)
+
 
 @app.get("/")
 def redirect_to_docs() -> RedirectResponse:
