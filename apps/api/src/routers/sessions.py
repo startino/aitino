@@ -153,10 +153,10 @@ async def run_crew(
 
     try:
         crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
-    except ValueError as e:
+    except Exception as e:
         db.delete_session(session.id)
-        logger.error(e)
-        raise HTTPException(400, f"crew model bad input: {e}")
+        logger.error(f"got error when running crew: {e}")
+        raise e
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
