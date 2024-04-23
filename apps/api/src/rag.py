@@ -7,15 +7,9 @@ from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProx
 config_list = autogen.config_list_from_json(
     "OAI_CONFIG_LIST",
     filter_dict={
-        "model": ["gpt-3.5-turbo", "gpt-4-turbo"],
+        "model": ["gpt-3.5-turbo"],
     },
 )
-config = {
-    "seed": 41,
-    "temperature": 0,
-    "config_list": config_list,
-    "timeout": 60,
-}
 #assistant = RetrieveAssistantAgent(
 #    name="assistant",
 #    system_message="you are an assistant who retrieves context",
