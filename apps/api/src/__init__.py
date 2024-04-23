@@ -34,6 +34,7 @@ from .routers import (
     tiers,
     tools,
 )
+from .routers.daniel import autogen
 
 logger = logging.getLogger("root")
 logger.setLevel("INFO")
@@ -53,6 +54,9 @@ app.include_router(subscriptions.router)
 app.include_router(rest.router)
 app.include_router(tiers.router)
 app.include_router(billing_information.router)
+
+daniel = FastAPI()
+daniel.include_router(autogen.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,15 +81,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-subapi = FastAPI()
 
-
-@subapi.get("/sub")
-def read_sub():
-    return {"message": "Hello World from sub API"}
-
-
-app.mount("/subapi", subapi)
+app.mount("/daniel", daniel)
 
 
 @app.get("/")
