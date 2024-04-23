@@ -15,11 +15,11 @@ export const load = async ({ params, locals: { getSession } }) => {
 		.then(({ data: d, error: e }) => {
 			if (e) {
 				console.error(`Error retrieving sessions: ${e.detail}`);
-				throw redirect(303, '/app/session');
+				throw redirect(303, '/app/sessions');
 			}
 			if (!d) {
 				console.error(`No data returned from sessions`);
-				throw redirect(303, '/app/session');
+				throw redirect(303, '/app/sessions');
 			}
 			return d;
 		});

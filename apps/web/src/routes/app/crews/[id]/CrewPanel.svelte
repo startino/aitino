@@ -47,7 +47,7 @@
 			name: 'Run',
 			buttonVariant: 'default',
 			onclick: async () => {
-				goto('/app/session');
+				goto('/app/sessions');
 			}
 		},
 		{
