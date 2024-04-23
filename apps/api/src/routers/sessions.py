@@ -33,8 +33,6 @@ router = APIRouter(
     tags=["sessions"],
 )
 
-logger = logging.getLogger("root")
-
 
 @router.get("/")
 def get_sessions(q: SessionGetRequest = Depends()) -> list[Session]:
@@ -148,15 +146,15 @@ async def run_crew(
             role=role,
             created_at=datetime.now(tz=UTC),
         )
-        logger.debug(f"on_reply: {message}")
+        logging.debug(f"on_reply: {message}")
         db.post_message(message)
 
     try:
         crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
-    except ValueError as e:
+    except Exception as e:
         db.delete_session(session.id)
-        logger.error(e)
-        raise HTTPException(400, f"crew model bad input: {e}")
+        logging.error(f"got error when running crew: {e}")
+        raise e
 
     background_tasks.add_task(crew.run, message, messages=cached_messages)
 
