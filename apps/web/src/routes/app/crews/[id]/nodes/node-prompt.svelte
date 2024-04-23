@@ -6,13 +6,6 @@
 	import { getContext } from '$lib/utils';
 	let { crew } = getContext('crew');
 
-	let prompt = $crew.prompt ? $crew.prompt.content : '';
-	$: $crew.prompt = {
-		id: '00000000-0000-0000-0000-000000000000',
-		title: 'prompt',
-		content: prompt
-	};
-
 	type $$Props = NodeProps;
 
 	export const data = {};
@@ -24,6 +17,6 @@
 	</Card.Header>
 
 	<Card.Content class="grid w-[300px] gap-2">
-		<PromptEditor bind:value={prompt} />
+		<PromptEditor bind:value={$crew.prompt} />
 	</Card.Content>
 </Card.Root>

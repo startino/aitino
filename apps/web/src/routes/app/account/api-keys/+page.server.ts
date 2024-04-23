@@ -28,7 +28,7 @@ export const load = async ({ locals: { getSession } }) => {
 			return d;
 		});
 
-	const apiKeyTypes = await api.GET('/api_key_types/').then(({ data: d, error: e }) => {
+	const apiKeyTypes = await api.GET('/api_providers/').then(({ data: d, error: e }) => {
 		if (e) {
 			console.error(`Error retrieving api key types: ${e}`);
 			return [];
@@ -59,7 +59,7 @@ export const actions = {
 				body: {
 					profile_id: userSession.user.id,
 					api_key: form.data.value,
-					api_key_type_id: form.data.typeId
+					api_provider_id: form.data.typeId
 				}
 			})
 			.then(({ data: d, error: e }) => {

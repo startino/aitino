@@ -47,7 +47,7 @@
 			name: 'Run',
 			buttonVariant: 'default',
 			onclick: async () => {
-				goto('/app/session');
+				goto('/app/sessions');
 			}
 		},
 		{
@@ -93,7 +93,7 @@
 							published: $crew.published,
 							description: $crew.description,
 							edges: [],
-							nodes: $crew.nodes
+							nodes: $crew.agents
 						}
 					})
 					.then(({ data: d, error: e }) => {

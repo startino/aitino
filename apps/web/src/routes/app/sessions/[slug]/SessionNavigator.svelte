@@ -9,6 +9,7 @@
 	import { ArrowLeftFromLine, CheckCircle, PencilLine, Trash2, Loader } from 'lucide-svelte';
 	import type { schemas } from '$lib/api';
 	import api from '$lib/api';
+	import { goto } from '$app/navigation';
 
 	export let profileId: string;
 	export let sessions: schemas['Session'][];
@@ -105,13 +106,13 @@
 		resetDeletingUI();
 
 		if (session?.id === sessionId) {
-			window.location.href = '/app/session/';
+			goto('/app/sessions/');
 		}
 	}
 
 	async function loadSession(session: schemas['Session']) {
 		console.log('Loading session', JSON.stringify(session));
-		window.location.href = '/app/session/' + session.id; // Can this be done better without full page reload?
+		goto(`/app/sessions/${session.id}`); // Can this be done better without full page reload?
 	}
 
 	async function startNewSession(profileId: string, crewId: string, title: string) {
@@ -138,7 +139,7 @@
 			return;
 		}
 
-		window.location.href = '/app/session/' + s.id; // Can this be done better without full page reload?
+		goto(`/app/sessions/${s.id}`); // Can this be done better without full page reload?
 	}
 </script>
 

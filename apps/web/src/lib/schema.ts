@@ -27,7 +27,7 @@ export const agentSchema = z.object({
 	description: z.string().max(500).default(''),
 	published: z.boolean().default(false),
 	role: z.string().min(1).max(50),
-	tools: z.array(z.record(z.string(), z.never())),
+	tools: z.array(z.any()),
 	system_message: z.string().min(20),
 	model: z.union([z.literal('gpt-4-turbo'), z.literal('gpt-3.5-turbo')])
 });
