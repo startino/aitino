@@ -5,6 +5,7 @@ from uuid import UUID
 
 import autogen
 from autogen.cache import Cache
+from fastapi import HTTPException
 from langchain.tools import BaseTool
 
 from src.models.session import SessionStatus
@@ -137,22 +138,6 @@ class AutogenCrew:
         await self.on_reply(recipient_id, sender_id, content, role)
         return False, None
 
-    def _extract_uuid(self, dictionary: dict[UUID, list[str]]) -> dict[UUID, list[str]]:
-        new_dict = {}
-        for key, value in dictionary.items():
-            if isinstance(key, UUID):
-                logger.warn("went through isinstance if statement!")
-                new_dict[key] = value
-
-            try:
-                split_uuid = str(key).split("(")
-                logger.warn(f"split_uuid: {split_uuid}")
-                new_dict[UUID(split_uuid[0])] = value
-            except ValueError:
-                # if the key can't be converted to uuid, return the old value
-                new_dict[key] = value
-        return new_dict
-
     def _format_agent_name(self, agent: Agent) -> str:
         return re.sub(
             r"[^a-zA-Z0-9-]",
@@ -164,19 +149,10 @@ class AutogenCrew:
         self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
         agents = []
-        descriptions = db.get_descriptions([agent.id for agent in crew_model.agents])
-        if not descriptions:
-            raise ValueError("at least one agent id is invalid")
-
-        formatted_descriptions = self._extract_uuid(descriptions)
-        # idk why this is the only way i got it working, but will hopefully simplify later...
-        # this function basically takes a uuid and turns it into uuid again, but the program stopped throwing key errors when i use this formatted_description
 
         profile_api_keys = db.get_tool_api_keys(self.profile_id)
 
         for agent in crew_model.agents:
-            valid_agent_tools = []
-            tool_schemas: list[dict] | None
             config_list = autogen.config_list_from_json(
                 "OAI_CONFIG_LIST",
                 filter_dict={
@@ -187,6 +163,8 @@ class AutogenCrew:
             api_key_types = db.get_api_provider_ids(tool_ids)
 
             # db.get_tool_api_keys(self.profile_id, list(api_key_types.values()))
+            valid_agent_tools = []
+            tool_schemas: list[dict] | None = []
             if len(tool_ids):
                 for tool in tool_ids:
                     try:
@@ -195,7 +173,8 @@ class AutogenCrew:
                         )
                     except TypeError as e:
                         logger.error(f"tried to generate tool, got error: {e}")
-                        raise e
+                        raise HTTPException(500, f"tried to generate tool, got error {e}")
+
                     (
                         (
                             self.valid_tools.append(generated_tool),
@@ -218,15 +197,15 @@ class AutogenCrew:
                 "timeout": 120,
             }
             if tool_schemas:
-                config["functions"] = tool_schemas
+                config["tools"] = tool_schemas
 
-            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """  # TODO: add what agent it should send to next - Leon
+            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """  
+            # TODO: add what agent it should send to next - Leon
 
             agent_instance = autogen.AssistantAgent(
                 name=self._format_agent_name(agent),
                 system_message=system_message,
-                description=formatted_descriptions[agent.id][0],
-                # could add something to concatenate all strings in description list for a given agent - Leon
+                description=agent.description,
                 llm_config=config,
             )
             if agent.id == crew_model.receiver_id:
@@ -237,6 +216,7 @@ class AutogenCrew:
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
+
             agents.append(agent_instance)
 
         return agents
