@@ -33,6 +33,7 @@ from .routers import (
     subscriptions,
     tiers,
     tools,
+    sandbox,
 )
 
 logger = logging.getLogger("root")
@@ -53,6 +54,11 @@ app.include_router(subscriptions.router)
 app.include_router(rest.router)
 app.include_router(tiers.router)
 app.include_router(billing_information.router)
+
+
+sandbox_app = sandbox.create_app()
+app.mount("/sandbox", sandbox_app)
+
 
 app.add_middleware(
     CORSMiddleware,
