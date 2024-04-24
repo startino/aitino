@@ -1,16 +1,10 @@
-import logging
 import os
-from uuid import UUID
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from gotrue import (
-    AuthResponse,
     OAuthResponse,
-    SignInWithEmailAndPasswordCredentials,
     SignInWithOAuthCredentials,
-    SignUpWithEmailAndPasswordCredentials,
-    errors,
 )
 from supabase import Client, create_client
 

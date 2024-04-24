@@ -3,12 +3,9 @@ import logging
 import os
 import random
 from typing import Any
-from uuid import UUID
 
 from dotenv import load_dotenv
 from langchain_core.tools import BaseTool
-from src.interfaces import db
-from src.models import Tools
 
 from src.tools.alpha_vantage import ID as ALPHA_VANTAGE_TOOL_ID
 from src.tools.alpha_vantage import AlphaVantageTool
@@ -51,6 +48,7 @@ tools: dict = {
 
 load_dotenv()
 
+
 def get_file_path_of_example() -> str:
     current_dir = os.getcwd()
     target_folder = os.path.join(current_dir, "src/tools/test_files")
@@ -72,7 +70,7 @@ def generate_llm_config(tools: list[BaseTool]) -> list[dict]:
                     "properties": {},
                     "required": [],
                 },
-            }
+            },
         }
 
         if tool.args is not None:
@@ -169,4 +167,3 @@ if __name__ == "__main__":
             generated_tools.append(tool)
 
     print(generate_llm_config(generated_tools))
-   
