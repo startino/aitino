@@ -1,19 +1,11 @@
-import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 
-from src.dependencies import (
-    RateLimitResponse,
-    rate_limit,
-    rate_limit_profile,
-    rate_limit_tiered,
-)
 from src.interfaces import db
 from src.models import Billing, BillingInsertRequest, BillingUpdateRequest
 
 router = APIRouter(prefix="/billing", tags=["billings"])
-
 
 
 @router.get("/{id}")

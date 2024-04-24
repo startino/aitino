@@ -10,8 +10,8 @@ from .api_key import (
     APIKey,
     APIKeyGetRequest,
     APIKeyInsertRequest,
-    APIProvider,
     APIKeyUpdateRequest,
+    APIProvider,
 )
 from .billing_information import (
     Billing,
@@ -21,11 +21,11 @@ from .billing_information import (
 from .code_execution_config import CodeExecutionConfig
 from .crew_model import (
     Crew,
-    ValidCrew,
     CrewGetRequest,
     CrewInsertRequest,
     CrewProcessed,
     CrewUpdateRequest,
+    ValidCrew,
 )
 from .llm_config import LLMConfig
 from .message import (

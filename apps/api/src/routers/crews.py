@@ -1,11 +1,9 @@
 import logging
-from typing import Literal
 from uuid import UUID
-
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src import parser
+from src.lib import parser
 from src.interfaces import db
 from src.models import (
     Crew,
@@ -39,7 +37,7 @@ def validate_crew(crew_id: UUID) -> str:
 def insert_crew(crew: CrewInsertRequest) -> Crew:
     if not db.get_profile(crew.profile_id):
         raise HTTPException(404, "profile not found")
-    
+
     return db.insert_crew(crew)
 
 

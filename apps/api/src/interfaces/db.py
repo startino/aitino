@@ -1,12 +1,9 @@
 import json
 import logging
 import os
-from typing import Any, Literal, Optional
 from uuid import UUID
 
 from dotenv import load_dotenv
-from fastapi import HTTPException
-from pydantic import ValidationError
 from supabase import Client, create_client
 
 from src.models import (
@@ -15,8 +12,8 @@ from src.models import (
     AgentUpdateRequest,
     APIKey,
     APIKeyInsertRequest,
-    APIProvider,
     APIKeyUpdateRequest,
+    APIProvider,
     Billing,
     BillingInsertRequest,
     BillingUpdateRequest,
@@ -34,7 +31,6 @@ from src.models import (
     SessionStatus,
     SessionUpdateRequest,
     Subscription,
-    SubscriptionGetRequest,
     SubscriptionInsertRequest,
     SubscriptionUpdateRequest,
     Tier,
@@ -44,7 +40,6 @@ from src.models import (
     ToolInsertRequest,
     ToolUpdateRequest,
 )
-from src.models.tiers import TierGetRequest
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")

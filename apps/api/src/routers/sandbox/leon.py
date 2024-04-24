@@ -1,5 +1,4 @@
 import logging
-from fastapi import FastAPI
 
 import os
 from typing import Annotated
