@@ -1,5 +1,5 @@
-import json
 import logging
+import json
 from typing import Literal, cast
 from uuid import UUID, uuid4
 
@@ -7,10 +7,6 @@ from fastapi import HTTPException
 
 from src.interfaces import db
 from src.models import Agent, Crew, CrewProcessed, ValidCrew
-
-logger = logging.getLogger("root")
-logging.basicConfig(level=logging.DEBUG)
-
 
 # Below is the code from src/interfaces/db.py
 import os  # noqa: E402
@@ -34,18 +30,18 @@ def get_agent(agent_id: UUID) -> Agent | None:
     """
     Get an agent from the database.
     """
-    logger.debug(f"Getting agent {agent_id}")
+    logging.debug(f"Getting agent {agent_id}")
     response = (
         supabase.table("agents").select("*").eq("id", agent_id).execute()
     )
     if len(response.data) == 0:
-        logger.error(f"No agent found for {agent_id}")
+        logging.error(f"No agent found for {agent_id}")
         return None
     return Agent(**response.data[0])
 
 
-def get_agents(agent_ids: list[UUID]) -> list[Agent]:
-    logger.debug(f"getting agents from agent_ids: {agent_ids}")
+def get_agents_by_ids(agent_ids: list[UUID]) -> list[Agent]:
+    logging.debug(f"getting agents from agent_ids: {agent_ids}")
     response = (
         supabase.table("agents").select("*").in_("id", agent_ids).execute()
     )
@@ -53,7 +49,7 @@ def get_agents(agent_ids: list[UUID]) -> list[Agent]:
 
 
 def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
-    logger.debug("Processing crew")
+    logging.debug("Processing crew")
     agent_ids: list[UUID] = crew.agents
 
     _crew, error = validate_crew(crew)
@@ -63,7 +59,7 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
 
     crew_model = CrewProcessed(
         receiver_id=_crew.receiver_id,
-        agents=get_agents(agent_ids),
+        agents=get_agents_by_ids(agent_ids),
     )
 
     message = _crew.prompt
@@ -71,10 +67,10 @@ def process_crew(crew: Crew) -> tuple[str, CrewProcessed]:
 
 
 def validate_crew(crew: Crew) -> tuple[ValidCrew | None, str]:
-    logger.debug("Validating crew")
+    logging.debug("Validating crew")
 
     agent_ids: list[UUID] = crew.agents
-    agents = get_agents(agent_ids)
+    agents = get_agents_by_ids(agent_ids)
 
     if not crew.receiver_id:
         return None, "Crew has no receiver id"
@@ -96,7 +92,7 @@ def validate_crew(crew: Crew) -> tuple[ValidCrew | None, str]:
 
 
 def get_processed_crew_by_id(crew_id: UUID) -> tuple[str, CrewProcessed]:
-    logger.debug("Getting processed crew by id")
+    logging.debug("Getting processed crew by id")
     crew = db.get_crew(crew_id)
     if not crew:
         raise HTTPException(404, "Crew not found")
@@ -113,7 +109,7 @@ def parse_autobuild(
         print(dict_input)
 
     except json.JSONDecodeError as e:
-        logger.debug("failed input decoding, trying fix")
+        logging.debug("failed input decoding, trying fix")
         dict_input = json.loads("{%s}" % input_data)
         print(dict_input)
     # agents: list[Agent] = list()
@@ -131,4 +127,4 @@ if __name__ == "__main__":
     # message, composition = parse_autobuild(
     #    '"composition": {"message": "create a website for designing your own lamps","agents":[{"role": "UI/UX Designer","system_message": "Design the user interface and user experience for the lamp designing website. This includes creating wireframes, mockups, and interactive prototypes to ensure a user-friendly and visually appealing design."},{"role": "React Developer","system_message": "Develop the front-end of the lamp designing website using React. This includes implementing the UI/UX designs into functional web pages, ensuring responsiveness, and integrating any necessary APIs for lamp design functionalities."},{"role": "Backend Developer","system_message": "Create and manage the server, database, and application logic for the lamp designing website. This includes setting up the server, creating database schemas, and developing APIs for user management, lamp design storage, and retrieval."},{"role": "Quality Assurance Engineer","system_message": "Test the lamp designing website for bugs, performance issues, and usability. This includes conducting both automated and manual tests to ensure the website is reliable, efficient, and user-friendly."}]}'
     # )
-    print(get_agents([UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e")]))
+    print(get_agents_by_ids([UUID("7c707c30-2cfe-46a0-afa7-8bcc38f9687e")]))

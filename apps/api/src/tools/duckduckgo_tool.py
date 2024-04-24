@@ -42,7 +42,7 @@ class DuckDuckGoSearchTool(Tool, BaseTool):
         self, tool_input: str, region: str = "wt-wt", source: str = "text"
     ) -> str:
         """Method passed to agent so the agent can initialize the wrapper with additional args"""
-        logger.debug("Creating DuckDuckGo wrapper")
+        logging.debug("Creating DuckDuckGo wrapper")
         ddgs_tool = DuckDuckGoSearchRun(
             wrapper=DuckDuckGoSearchAPIWrapper(region=region, source=source)
         )

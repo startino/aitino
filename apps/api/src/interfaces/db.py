@@ -54,15 +54,12 @@ if url is None or key is None:
     raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
 
 
-logger = logging.getLogger("root")
-
-
 # keeping this function for now, since typing gets crazy with the sessions/run endpoint
 # if it uses the "get_session_by_param" function
 def get_session(session_id: UUID) -> Session | None:
     """Get a session from the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting session {session_id}")
+    logging.debug(f"Getting session {session_id}")
     response = supabase.table("sessions").select("*").eq("id", session_id).execute()
     if len(response.data) == 0:
         return None
@@ -98,7 +95,7 @@ def get_sessions(
 
 def insert_session(content: SessionInsertRequest) -> Session:
     supabase: Client = create_client(url, key)
-    logger.info("inserting session")
+    logging.info("inserting session")
     response = (
         supabase.table("sessions")
         .insert(json.loads(content.model_dump_json()))
@@ -109,7 +106,7 @@ def insert_session(content: SessionInsertRequest) -> Session:
 
 def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
     supabase: Client = create_client(url, key)
-    logger.info(f"updating session with id: {session_id}")
+    logging.info(f"updating session with id: {session_id}")
     response = (
         supabase.table("sessions")
         .update(json.loads(content.model_dump_json(exclude_none=True)))
@@ -122,7 +119,7 @@ def update_session(session_id: UUID, content: SessionUpdateRequest) -> Session:
 def post_session(session: Session) -> None:
     """Post a session to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting session: {session}")
+    logging.debug(f"Posting session: {session}")
     supabase.table("sessions").insert(
         json.loads(json.dumps(session.model_dump(), default=str))
     ).execute()
@@ -142,7 +139,7 @@ def get_messages(
 ) -> list[Message]:
     """Gets messages, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting messages")
+    logging.debug("Getting messages")
     query = supabase.table("messages").select("*")
 
     if session_id:
@@ -175,7 +172,7 @@ def get_message(message_id: UUID) -> Message:
 def post_message(message: Message) -> None:
     """Post a message to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting message: {message}")
+    logging.debug(f"Posting message: {message}")
     supabase.table("messages").insert(
         json.loads(json.dumps(message.model_dump(), default=str))
     ).execute()
@@ -223,7 +220,7 @@ def get_subscriptions(
 ) -> list[Subscription]:
     """Gets subscriptions, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting subscriptions")
+    logging.debug("Getting subscriptions")
     query = supabase.table("subscriptions").select("*")
 
     if profile_id:
@@ -325,7 +322,7 @@ def get_billing(
 ) -> Billing | None:
     """Gets billings, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting billings")
+    logging.debug("Getting billings")
     response = (
         supabase.table("billing_information")
         .select("*")
@@ -383,7 +380,7 @@ def update_billing(profile_id: UUID, content: BillingUpdateRequest) -> Billing |
 def get_descriptions(agent_ids: list[UUID]) -> dict[UUID, list[str]] | None:
     """Get the description list for the given agent."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Getting description from agent_ids: {agent_ids}")
+    logging.debug(f"Getting description from agent_ids: {agent_ids}")
     response = (
         supabase.table("agents")
         .select("id", "description")
@@ -412,7 +409,7 @@ def get_api_provider_ids(tool_ids: list[str]) -> dict[str, str]:
 def post_agents(agents: list[Agent]) -> None:
     """Post a list of agents to the database."""
     supabase: Client = create_client(url, key)
-    logger.debug(f"Posting agents: {agents}")
+    logging.debug(f"Posting agents: {agents}")
     supabase.table("agents").insert([agent.model_dump() for agent in agents]).execute()
 
 
@@ -452,7 +449,7 @@ def get_crews(
 ) -> list[Crew]:
     """Gets crews, filtered by what parameters are given"""
     supabase: Client = create_client(url, key)
-    logger.debug("Getting crews")
+    logging.debug("Getting crews")
     query = supabase.table("crews").select("*")
 
     if profile_id:
@@ -578,14 +575,14 @@ def update_api_key(api_key_id: UUID, api_key_update: APIKeyUpdateRequest) -> API
 
 def get_api_providers() -> list[APIProvider]:
     supabase: Client = create_client(url, key)
-    logger.debug("Getting all api providers")
+    logging.debug("Getting all api providers")
     response = supabase.table("api_providers").select("*").execute()
     return [APIProvider(**data) for data in response.data]
 
 
 def update_status(session_id: UUID, status: SessionStatus) -> None:
     supabase: Client = create_client(url, key)
-    logger.debug(f"Updating session status: {status} for session: {session_id}")
+    logging.debug(f"Updating session status: {status} for session: {session_id}")
     supabase.table("sessions").update({"status": status}).eq("id", session_id).execute()
 
 
