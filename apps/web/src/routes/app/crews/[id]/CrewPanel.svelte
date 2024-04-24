@@ -8,7 +8,7 @@
 	import type { PanelAction } from '$lib/types';
 	import { AGENT_LIMIT } from '$lib/config';
 	import { toast } from 'svelte-sonner';
-	import { getContext, getCleanNodes } from '$lib/utils';
+	import { getContext } from '$lib/utils';
 	import api, { type schemas } from '$lib/api';
 
 	let { crew, agents, publishedAgents, nodes } = getContext('crew');
@@ -83,11 +83,7 @@
 						},
 						body: {
 							receiver_id: $crew.receiver_id,
-							prompt: {
-								id: '495145a0-a412-4578-b0b3-293d446af8b1',
-								title: 'TITLE',
-								content: 'Test Prompt'
-							},
+							prompt: $crew.prompt,
 							profile_id: $crew.profile_id,
 							title: $crew.title,
 							published: $crew.published,
