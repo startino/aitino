@@ -142,9 +142,11 @@
 
 <Sheet.Root>
 	<Sheet.Trigger asChild let:builder>
-		<Button builders={[builder]} class="my-auto mr-8 h-14 w-14">
-			<ArrowLeftFromLine size="24" />
-		</Button>
+		<div class="fixed bottom-0 right-4 top-0 flex items-center justify-center">
+			<Button builders={[builder]} class="size-12">
+				<ArrowLeftFromLine size="24" />
+			</Button>
+		</div>
 	</Sheet.Trigger>
 	<Sheet.Content side="right">
 		<Sheet.Header>
@@ -248,14 +250,14 @@
 										<Button
 											builders={[builder]}
 											variant="outline"
-											class="flex w-full flex-row justify-between {session?.id == session.id
+											class="flex w-full flex-row justify-between {session?.id === session.id
 												? 'bg-accent text-accent-foreground'
 												: 'hover:bg-accent/20 hover:text-foreground'}"
 											on:click={() => loadSession(session)}
 										>
 											{session.title}
-											<div class="	text-right text-xs">
-												Last opened {daysRelativeToToday(session.created_at).toLowerCase()}
+											<div class="pl-1 text-right text-xs">
+												- {daysRelativeToToday(session.created_at).toLowerCase()}
 											</div>
 										</Button>
 										<Button
@@ -265,11 +267,7 @@
 												deleteSession(session.id);
 											}}
 										>
-											{#if deletingInProgress && deletingSession === session.id}
-												<Loader size="18" class="mx-auto my-auto " />
-											{:else}
-												<Trash2 size="18" />
-											{/if}
+											<Trash2 size="18" />
 										</Button>
 									{/if}
 								</li>

@@ -15,7 +15,7 @@
 		title: 'Admin',
 		description: 'Acts as the user and admin of the conversation',
 		role: 'Admin',
-		model: 'gpt-4-turbo-preview',
+		model: 'gpt-4-turbo',
 		published: false,
 		system_message: 'N/A',
 		profile_id: 'N/A',

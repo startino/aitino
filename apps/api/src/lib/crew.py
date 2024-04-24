@@ -240,7 +240,7 @@ class AutogenCrew:
         groupchat = autogen.GroupChat(
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
-            max_round=20,
+            max_round=100,
             speaker_selection_method="round_robin",
             # TODO: Fix auto method to not spam route to admin
             send_introductions=True,

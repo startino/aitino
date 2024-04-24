@@ -5,6 +5,22 @@
 
 
 export interface paths {
+  "/": {
+    /** Redirect To Docs */
+    get: operations["redirect_to_docs__get"];
+  };
+  "/improve": {
+    /** Improve */
+    get: operations["improve_improve_get"];
+  };
+  "/auto-build": {
+    /** Auto Build Crew */
+    get: operations["auto_build_crew_auto_build_get"];
+  };
+  "/me": {
+    /** Get Profile From Header */
+    get: operations["get_profile_from_header_me_get"];
+  };
   "/sessions/": {
     /** Get Sessions */
     get: operations["get_sessions_sessions__get"];
@@ -185,22 +201,6 @@ export interface paths {
   "/billing/": {
     /** Insert Billing */
     post: operations["insert_billing_billing__post"];
-  };
-  "/": {
-    /** Redirect To Docs */
-    get: operations["redirect_to_docs__get"];
-  };
-  "/improve": {
-    /** Improve */
-    get: operations["improve_improve_get"];
-  };
-  "/auto-build": {
-    /** Auto Build Crew */
-    get: operations["auto_build_crew_auto_build_get"];
-  };
-  "/me": {
-    /** Get Profile From Header */
-    get: operations["get_profile_from_header_me_get"];
   };
 }
 
@@ -465,8 +465,11 @@ export interface components {
        * @default
        */
       description?: string;
-      /** Agents */
-      agents: string[];
+      /**
+       * Agents
+       * @default []
+       */
+      agents?: string[];
     };
     /** CrewUpdateRequest */
     CrewUpdateRequest: {
@@ -912,6 +915,77 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** Redirect To Docs */
+  redirect_to_docs__get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+    };
+  };
+  /** Improve */
+  improve_improve_get: {
+    parameters: {
+      query: {
+        word_limit: number;
+        prompt: string;
+        prompt_type: "generic" | "system" | "user";
+        temperature: number;
+        profile_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Auto Build Crew */
+  auto_build_crew_auto_build_get: {
+    parameters: {
+      query: {
+        general_task: string;
+        profile_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Profile From Header */
+  get_profile_from_header_me_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Profile"];
+        };
+      };
+    };
+  };
   /** Get Sessions */
   get_sessions_sessions__get: {
     parameters: {
@@ -2228,77 +2302,6 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Redirect To Docs */
-  redirect_to_docs__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Improve */
-  improve_improve_get: {
-    parameters: {
-      query: {
-        word_limit: number;
-        prompt: string;
-        prompt_type: "generic" | "system" | "user";
-        temperature: number;
-        profile_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Auto Build Crew */
-  auto_build_crew_auto_build_get: {
-    parameters: {
-      query: {
-        general_task: string;
-        profile_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Profile From Header */
-  get_profile_from_header_me_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Profile"];
         };
       };
     };
