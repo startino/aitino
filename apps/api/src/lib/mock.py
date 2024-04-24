@@ -1,4 +1,4 @@
-from .tools import get_file_path_of_example
+from ..tools import get_file_path_of_example
 
 DATE = "2024-01-01T00:00:00.000Z"
 
@@ -66,12 +66,15 @@ markdown_table: dict = {
 #         # "0c0f0b05-e4ff-4d9a-a103-96a9702248f4",
 #         "6e541720-b4ac-4c47-abf3-f17147c9a32a",
 #     ],
-#     "prompt": f"Move the file: '{get_file_path_of_example()}' to the destination: {get_file_path_of_example().replace('.txt', '_2.txt')} the 'agent python software' can call what function it has been", 
+#     "prompt": f"Move the file: '{get_file_path_of_example()}' to the destination: {get_file_path_of_example().replace('.txt', '_2.txt')} the 'agent python software' can call what function it has been",
 #     "created_at": DATE,
 #     "avatar": "",
 # }
 
-tool, prompt = "google serper results tool", "'hvordan ikke være dum' in norwegian with region set to norway"
+tool, prompt = (
+    "google serper results tool",
+    "'hvordan ikke være dum' in norwegian with region set to norway",
+)
 
 test_tool: dict = {
     "id": "00000000-0000-0000-0000-000000000001",
