@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src import parser
+from src.lib import parser
 from src.interfaces import db
 from src.models import (
     Crew,

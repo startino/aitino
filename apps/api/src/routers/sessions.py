@@ -4,8 +4,8 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
-from src import mock as mocks
-from src.crew import AutogenCrew
+from src.lib import mock as mocks
+from src.lib.crew import AutogenCrew
 from src.interfaces import db
 from src.models import (
     Crew,
@@ -17,7 +17,7 @@ from src.models import (
     SessionUpdateRequest,
 )
 from src.models.session import SessionInsertRequest
-from src.parser import get_processed_crew_by_id, process_crew
+from src.lib.parser import get_processed_crew_by_id, process_crew
 
 router = APIRouter(
     prefix="/sessions",
