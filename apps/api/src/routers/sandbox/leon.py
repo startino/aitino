@@ -1,7 +1,6 @@
 import logging
-from fastapi import FastAPI
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 
 router = APIRouter(
     prefix="/leon",

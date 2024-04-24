@@ -1,9 +1,9 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from enum import StrEnum, auto
-from typing import Literal, Protocol
-from uuid import UUID, uuid4
+from typing import Literal
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class SessionStatus(StrEnum):
