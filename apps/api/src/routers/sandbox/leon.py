@@ -5,7 +5,7 @@ from typing import Annotated
 import autogen
 from autogen.agentchat.contrib.retrieve_assistant_agent import RetrieveAssistantAgent
 from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 
 router = APIRouter(
     prefix="/leon",
