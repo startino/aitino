@@ -71,7 +71,7 @@ def run_rag_crew():
                 "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md",
                 "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md",
                 os.path.join(os.path.abspath(""), "..", "website", "docs"),
-           ],
+            ],
             "get_or_create": True,
         },
         code_execution_config=False,  # we don't want to execute code in this case.

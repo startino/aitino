@@ -1,6 +1,7 @@
 import logging
+import os
 import re
-from typing import Any, cast
+from typing import Annotated, Any, cast
 from uuid import UUID
 
 import autogen
@@ -22,6 +23,35 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
+
+class RagContext:
+    def __init__(
+        self,
+        use_rag: bool,
+        task: str,
+        docs_path: dict[str, list[str]] | None,
+    ):
+        self.use_rag = use_rag
+        self.task = task
+        self.docs_path = docs_path
+        self.rag_proxy = RetrieveUserProxyAgent(
+            name="Boss_Assistant",
+            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+            system_message="Assistant who has extra content retrieval power for solving difficult problems.",
+            human_input_mode="NEVER",
+            max_consecutive_auto_reply=3,
+            retrieve_config={
+                "task": self.task,
+                "docs_path": self.docs_path,
+                "get_or_create": True,
+            },
+            code_execution_config=False,  # we don't want to execute code in this case.
+        )
+
+    @classmethod
+    def get_default(cls):
+        RagContext(use_rag=True, task="default", docs_path=None)
 
 
 class AutogenCrew:
@@ -40,11 +70,10 @@ class AutogenCrew:
         self.on_reply = on_message
         self.crew_model = crew_model
         self.valid_tools: list[BaseTool] = []
-
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
         )
-
+        self.rag_agent = RagContext.get_default()
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
@@ -64,7 +93,7 @@ class AutogenCrew:
             else None
         )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
-
+        
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
             filter_dict={
@@ -147,6 +176,24 @@ class AutogenCrew:
             "",
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
+
+    def _retrieve_content(
+        self,
+        message: Annotated[
+            str,
+            "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
+        ],
+        n_results: Annotated[int, "number of results"] = 3,
+    ) -> str:
+        # Check if we need to update the context.
+        update_context_case1, update_context_case2 = self.rag_agent._check_update_context(message)
+        if (update_context_case1 or update_context_case2) and self.rag_agent.update_context:
+            self.rag_agent.problem = message if not hasattr(self.rag_agent, "problem") else self.rag_agent.problem # type: ignore
+            _, ret_msg = self.rag_agent._generate_retrieve_user_reply(message) # type: ignore
+        else:
+            _context = {"problem": message, "n_results": n_results}
+            ret_msg = self.rag_agent.message_generator(self.rag_agent, None, _context)
+        return ret_msg if ret_msg else message # type: ignore
 
     def _create_agents(
         self, crew_model: CrewProcessed
