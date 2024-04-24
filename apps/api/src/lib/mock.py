@@ -91,4 +91,21 @@ test_tool: dict = {
     "updated_at": DATE,
     "avatar": "",
 }
-crew_model = test_tool
+
+test_rag: dict = {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "profile_id": "070c1d2e-9d72-4854-a55e-52ade5a42071",
+    "title": "Test RAG (retrieval augmented generation)",
+    "description": "Test getting context from a RAG user proxy and see if it helps with generating more relevant prompts",
+    "receiver_id": "4d7d9332-3027-40bc-a7fa-968b440c7bfe",
+    "published": False,
+    "agents": [
+        "4d7d9332-3027-40bc-a7fa-968b440c7bfe"
+    ],
+    "prompt": f"How to use spark for parallel training in FLAML? Give me sample code.",
+    "created_at": DATE,
+    "updated_at": DATE,
+    "avatar": "",
+}
+
+crew_model = test_rag

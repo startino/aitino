@@ -52,6 +52,41 @@ class RagContext:
     def get_default(cls):
         return RagContext(task="default", docs_path=None)
 
+rag_proxy_agent = RetrieveUserProxyAgent(
+            name="Boss_Assistant",
+            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+            system_message="Assistant who has extra content retrieval power for solving difficult problems.",
+            human_input_mode="NEVER",
+            max_consecutive_auto_reply=3,
+            retrieve_config={
+                "task": "qa",
+                "docs_path": [
+                    "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md",
+                    "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md",
+                    os.path.join(os.path.abspath(""), "..", "website", "docs"),
+                ],
+                "get_or_create": True,
+            },
+            code_execution_config=False,  # we don't want to execute code in this case.
+        )
+
+def retrieve_content(
+    message: Annotated[
+        str,
+        "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
+    ],
+    n_results: Annotated[int, "number of results"] = 3,
+) -> str:
+    # Check if we need to update the context.
+    update_context_case1, update_context_case2 = rag_proxy_agent._check_update_context(message)
+    if (update_context_case1 or update_context_case2) and rag_proxy_agent.update_context:
+        rag.proxy.problem = message if not hasattr(rag_proxy_agent, "problem") else rag_proxy_agent.problem # type: ignore
+        _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message) # type: ignore
+    else:
+        _context = {"problem": message, "n_results": n_results}
+        ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
+    return ret_msg if ret_msg else message # type: ignore
+
 
 class AutogenCrew:
     def __init__(
@@ -93,7 +128,8 @@ class AutogenCrew:
             else None
         )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
-        
+        self.user_proxy.register_for_execution()(self.decorated_function)
+
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
             filter_dict={
@@ -181,23 +217,6 @@ class AutogenCrew:
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
 
-    def retrieve_content(
-        self,
-        message: Annotated[
-            str,
-            "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
-        ],
-        n_results: Annotated[int, "number of results"] = 3,
-    ) -> str:
-        # Check if we need to update the context.
-        update_context_case1, update_context_case2 = self.rag.proxy._check_update_context(message)
-        if (update_context_case1 or update_context_case2) and self.rag.proxy.update_context:
-            self.rag.proxy.problem = message if not hasattr(self.rag.proxy, "problem") else self.rag.proxy.problem # type: ignore
-            _, ret_msg = self.rag.proxy._generate_retrieve_user_reply(message) # type: ignore
-        else:
-            _context = {"problem": message, "n_results": n_results}
-            ret_msg = self.rag.proxy.message_generator(self.rag.proxy, None, _context)
-        return ret_msg if ret_msg else message # type: ignore
 
     def _create_agents(
         self, crew_model: CrewProcessed
@@ -274,11 +293,10 @@ class AutogenCrew:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
 
             if self.rag_options.use_rag:
-                agent_instance.register_for_llm(
+                self.decorated_function = agent_instance.register_for_llm(
                     name="retrieve_content",
                     description="retrieve content for code generation and question answering.",
-                    api_style="function"
-                )(self.retrieve_content)
+                )(retrieve_content)
 
             agents.append(agent_instance)
 
@@ -296,7 +314,7 @@ class AutogenCrew:
         speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
         logging.info(speaker_selection_method)
         groupchat = autogen.GroupChat(
-            agents=self.agents + [self.user_proxy],
+            agents=self.agents + [self.user_proxy] + [rag_proxy_agent],
             messages=dict_messages,
             max_round=20,
             speaker_selection_method="round_robin",
