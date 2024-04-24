@@ -31,9 +31,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
     Get an agent from the database.
     """
     logging.debug(f"Getting agent {agent_id}")
-    response = (
-        supabase.table("agents").select("*").eq("id", agent_id).execute()
-    )
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if len(response.data) == 0:
         logging.error(f"No agent found for {agent_id}")
         return None
@@ -42,9 +40,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents_by_ids(agent_ids: list[UUID]) -> list[Agent]:
     logging.debug(f"getting agents from agent_ids: {agent_ids}")
-    response = (
-        supabase.table("agents").select("*").in_("id", agent_ids).execute()
-    )
+    response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
     return [Agent(**agent) for agent in response.data]
 
 

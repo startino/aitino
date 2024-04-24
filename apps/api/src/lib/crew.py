@@ -10,13 +10,14 @@ from langchain.tools import BaseTool
 
 from src.models.session import SessionStatus
 
-from .interfaces import db
-from .models import Agent, CodeExecutionConfig, CrewProcessed, Message, Session
-from .tools import (
+from src.interfaces import db
+from src.models import Agent, CodeExecutionConfig, CrewProcessed, Message, Session
+from src.tools import (
     generate_llm_config,
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
+
 
 class AutogenCrew:
     def __init__(
@@ -170,7 +171,9 @@ class AutogenCrew:
                         )
                     except TypeError as e:
                         logging.error(f"tried to generate tool, got error: {e}")
-                        raise HTTPException(500, f"tried to generate tool, got error {e}")
+                        raise HTTPException(
+                            500, f"tried to generate tool, got error {e}"
+                        )
 
                     (
                         (
@@ -196,7 +199,7 @@ class AutogenCrew:
             if tool_schemas:
                 config["tools"] = tool_schemas
 
-            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """  
+            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """
             # TODO: add what agent it should send to next - Leon
 
             agent_instance = autogen.AssistantAgent(
