@@ -1,13 +1,6 @@
-import logging
-from uuid import UUID
+from fastapi import FastAPI
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
-
-from . import (
-    index,
-    daniel,
-    leon,
-)
+from . import daniel, index, leon
 
 
 def create_app():

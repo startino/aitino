@@ -1,19 +1,17 @@
-import logging
 import json
+import logging
+# Below is the code from src/interfaces/db.py
+import os  # noqa: E402
 from typing import Literal, cast
 from uuid import UUID, uuid4
 
+from dotenv import load_dotenv  # noqa: E402
 from fastapi import HTTPException
+from supabase import Client  # noqa: E402
+from supabase import create_client
 
 from src.interfaces import db
 from src.models import Agent, Crew, CrewProcessed, ValidCrew
-
-# Below is the code from src/interfaces/db.py
-import os  # noqa: E402
-
-from dotenv import load_dotenv  # noqa: E402
-from supabase import Client  # noqa: E402
-from supabase import create_client
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")
@@ -31,9 +29,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
     Get an agent from the database.
     """
     logging.debug(f"Getting agent {agent_id}")
-    response = (
-        supabase.table("agents").select("*").eq("id", agent_id).execute()
-    )
+    response = supabase.table("agents").select("*").eq("id", agent_id).execute()
     if len(response.data) == 0:
         logging.error(f"No agent found for {agent_id}")
         return None
@@ -42,9 +38,7 @@ def get_agent(agent_id: UUID) -> Agent | None:
 
 def get_agents_by_ids(agent_ids: list[UUID]) -> list[Agent]:
     logging.debug(f"getting agents from agent_ids: {agent_ids}")
-    response = (
-        supabase.table("agents").select("*").in_("id", agent_ids).execute()
-    )
+    response = supabase.table("agents").select("*").in_("id", agent_ids).execute()
     return [Agent(**agent) for agent in response.data]
 
 

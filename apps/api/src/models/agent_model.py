@@ -6,10 +6,12 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+
 class Tools(BaseModel):
     id: UUID
     parameter: dict
     # will fix typing on this eventually, rn it's just gonna be dict
+
 
 class Agent(BaseModel):
     id: UUID

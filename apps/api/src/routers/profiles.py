@@ -1,4 +1,3 @@
-import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -39,9 +38,7 @@ def delete_profile(id: UUID) -> Profile:
 
 
 @router.patch("/{id}")
-def update_profile(
-    id: UUID, profile_update_request: ProfileUpdateRequest
-) -> Profile:
+def update_profile(id: UUID, profile_update_request: ProfileUpdateRequest) -> Profile:
     if not db.get_profile(id):
         raise HTTPException(404, "profile not found")
 

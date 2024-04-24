@@ -1,4 +1,3 @@
-import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -15,8 +14,6 @@ router = APIRouter(
     prefix="/agents",
     tags=["agents"],
 )
-
-logger = logging.getLogger("root")
 
 
 @router.get("/")
