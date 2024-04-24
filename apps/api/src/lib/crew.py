@@ -16,6 +16,7 @@ from src.models import (
     CrewProcessed,
     Message,
     Session,
+    RagOptions,
 )
 from src.models.session import SessionStatus
 from src.tools import (
@@ -28,14 +29,12 @@ from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProx
 class RagContext:
     def __init__(
         self,
-        use_rag: bool,
         task: str,
         docs_path: dict[str, list[str]] | None,
     ):
-        self.use_rag = use_rag
         self.task = task
         self.docs_path = docs_path
-        self.rag_proxy = RetrieveUserProxyAgent(
+        self.proxy = RetrieveUserProxyAgent(
             name="Boss_Assistant",
             is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
             system_message="Assistant who has extra content retrieval power for solving difficult problems.",
@@ -51,7 +50,7 @@ class RagContext:
 
     @classmethod
     def get_default(cls):
-        RagContext(use_rag=True, task="default", docs_path=None)
+        return RagContext(task="default", docs_path=None)
 
 
 class AutogenCrew:
@@ -60,6 +59,7 @@ class AutogenCrew:
         profile_id: UUID,
         session: Session,
         crew_model: CrewProcessed,
+        rag_options: RagOptions,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo",
         seed: int = 41,
@@ -70,10 +70,10 @@ class AutogenCrew:
         self.on_reply = on_message
         self.crew_model = crew_model
         self.valid_tools: list[BaseTool] = []
+        self.rag_options = rag_options
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
         )
-        self.rag_agent = RagContext.get_default()
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
@@ -106,6 +106,10 @@ class AutogenCrew:
             "config_list": self.base_config_list,
             "timeout": 120,
         }
+        if rag_options.use_rag:
+            self.rag = RagContext(task=rag_options.task, docs_path=rag_options.docs_path)
+
+        self.rag = RagContext.get_default()
 
     async def _on_reply(
         self,
@@ -177,7 +181,7 @@ class AutogenCrew:
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
 
-    def _retrieve_content(
+    def retrieve_content(
         self,
         message: Annotated[
             str,
@@ -186,13 +190,13 @@ class AutogenCrew:
         n_results: Annotated[int, "number of results"] = 3,
     ) -> str:
         # Check if we need to update the context.
-        update_context_case1, update_context_case2 = self.rag_agent._check_update_context(message)
-        if (update_context_case1 or update_context_case2) and self.rag_agent.update_context:
-            self.rag_agent.problem = message if not hasattr(self.rag_agent, "problem") else self.rag_agent.problem # type: ignore
-            _, ret_msg = self.rag_agent._generate_retrieve_user_reply(message) # type: ignore
+        update_context_case1, update_context_case2 = self.rag.proxy._check_update_context(message)
+        if (update_context_case1 or update_context_case2) and self.rag.proxy.update_context:
+            self.rag.proxy.problem = message if not hasattr(self.rag.proxy, "problem") else self.rag.proxy.problem # type: ignore
+            _, ret_msg = self.rag.proxy._generate_retrieve_user_reply(message) # type: ignore
         else:
             _context = {"problem": message, "n_results": n_results}
-            ret_msg = self.rag_agent.message_generator(self.rag_agent, None, _context)
+            ret_msg = self.rag.proxy.message_generator(self.rag.proxy, None, _context)
         return ret_msg if ret_msg else message # type: ignore
 
     def _create_agents(
@@ -268,6 +272,13 @@ class AutogenCrew:
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
+
+            if self.rag_options.use_rag:
+                agent_instance.register_for_llm(
+                    name="retrieve_content",
+                    description="retrieve content for code generation and question answering.",
+                    api_style="function"
+                )(self.retrieve_content)
 
             agents.append(agent_instance)
 

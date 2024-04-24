@@ -141,7 +141,7 @@ async def run_crew(
         db.post_message(message)
 
     try:
-        crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
+        crew = AutogenCrew(session.profile_id, session, crew_model, request.rag_options, on_reply)
     except Exception as e:
         db.delete_session(session.id)
         logging.error(f"got error when running crew: {e}")
