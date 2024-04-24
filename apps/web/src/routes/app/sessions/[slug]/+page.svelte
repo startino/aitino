@@ -29,6 +29,13 @@
 
 	const continueSession = async () => {
 		if ($session.reply !== '') {
+			const reply = `
+                Continue the conversation from last time, here is the conversation:
+                ${JSON.stringify($messages)}
+
+                The Admin has Replied:
+                ${$session.reply}
+            `;
 			const newSession = await api
 				.POST('/sessions/run', {
 					body: {
@@ -36,7 +43,7 @@
 						profile_id: $session.profile_id,
 						session_title: $session.title,
 						session_id: $session.id,
-						reply: $session.reply
+						reply: reply
 					}
 				})
 				.then(({ data: d, error: e }) => {
@@ -80,7 +87,7 @@
 <h1 class="fixed left-[13em] right-0 top-0 z-10 w-full bg-background p-2 text-2xl font-bold">
 	{$session.title} - {$crew.title}
 </h1>
-<div class="flex flex-col overflow-hidden px-12 pt-12">
+<div class="flex flex-col px-12 pt-12">
 	<Chat />
 	<div class="my-8 flex h-full w-full items-center justify-center gap-2">
 		<Textarea bind:value={$session.reply}></Textarea>
