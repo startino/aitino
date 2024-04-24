@@ -1,14 +1,9 @@
-import logging
-from uuid import UUID
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from src.interfaces import db
 from src.models import APIProvider
 
 router = APIRouter(prefix="/api-provider", tags=["api provider"])
-
-logger = logging.getLogger("root")
 
 
 @router.get("/")

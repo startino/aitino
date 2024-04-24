@@ -16,7 +16,9 @@ JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET")
 ALGORITHM = "HS256"
 
 
-async def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> Profile:
+async def get_current_user(
+    token: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+) -> Profile:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

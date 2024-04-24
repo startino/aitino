@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Literal, Optional, Type
+from typing import Literal, Type
 
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field

@@ -1,19 +1,17 @@
-import logging
 import json
+import logging
+# Below is the code from src/interfaces/db.py
+import os  # noqa: E402
 from typing import Literal, cast
 from uuid import UUID, uuid4
 
+from dotenv import load_dotenv  # noqa: E402
 from fastapi import HTTPException
+from supabase import Client  # noqa: E402
+from supabase import create_client
 
 from src.interfaces import db
 from src.models import Agent, Crew, CrewProcessed, ValidCrew
-
-# Below is the code from src/interfaces/db.py
-import os  # noqa: E402
-
-from dotenv import load_dotenv  # noqa: E402
-from supabase import Client  # noqa: E402
-from supabase import create_client
 
 load_dotenv()
 url: str | None = os.environ.get("SUPABASE_URL")

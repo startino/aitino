@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Optional, Type
+from typing import Type
 
 from langchain.agents import Tool
 from langchain.pydantic_v1 import BaseModel, Field
@@ -38,9 +38,7 @@ class DuckDuckGoSearchTool(Tool, BaseTool):
             description="""search the internet through the search engine duck duck go""",
         )
 
-    def _run(
-        self, tool_input: str, region: str = "wt-wt", source: str = "text"
-    ) -> str:
+    def _run(self, tool_input: str, region: str = "wt-wt", source: str = "text") -> str:
         """Method passed to agent so the agent can initialize the wrapper with additional args"""
         logging.debug("Creating DuckDuckGo wrapper")
         ddgs_tool = DuckDuckGoSearchRun(
