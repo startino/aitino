@@ -1,7 +1,7 @@
 import logging
 import os
 import re
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, cast, Callable
 from uuid import UUID
 
 import autogen
@@ -25,6 +25,7 @@ from src.tools import (
     get_tool_ids_from_agent,
 )
 from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
+from autogen.function_utils import get_function_schema
 
 
 class RagContext:
@@ -75,45 +76,6 @@ rag_proxy_agent = RetrieveUserProxyAgent(
 )
 
 
-def retrieve_content(
-    message: Annotated[
-        str,
-        "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
-    ],
-    n_results: Annotated[int, "number of results"] = 3,
-) -> str:
-    """
-    This function retrieves content based on a given message and a specified number of results.
-
-    Parameters:
-    message (str): A refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.
-    n_results (int): The number of results to retrieve. Default is 3.
-
-    Returns:
-    str: The retrieved content. If no content is retrieved, the original message is returned.
-
-    """
-    # Check if we need to update the context.
-    update_context_case1, update_context_case2 = rag_proxy_agent._check_update_context(
-        message
-    )
-    # If either context update case is true and the rag_proxy_agent's update_context attribute is also true
-    if (
-        update_context_case1 or update_context_case2
-    ) and rag_proxy_agent.update_context:
-        # Update the problem attribute of rag_proxy_agent with the message if it doesn't already exist
-        rag_proxy_agent.problem = message if not hasattr(rag_proxy_agent, "problem") else rag_proxy_agent.problem  # type: ignore
-        # Generate a user reply based on the message
-        _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message)  # type: ignore
-    else:
-        # If the context doesn't need to be updated, create a context dictionary with the problem and number of results
-        _context = {"problem": message, "n_results": n_results}
-        # Generate a message based on the context
-        ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
-    # Return the retrieved message if it exists, otherwise return the original message
-    return ret_msg if ret_msg else message  # type: ignore
-
-
 class AutogenCrew:
     def __init__(
         self,
@@ -154,7 +116,8 @@ class AutogenCrew:
             else None
         )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
-        self.user_proxy.register_for_execution()(self.decorated_function)
+        wrapped_function = self.user_proxy._wrap_function(self._retrieve_content)
+        self.user_proxy.register_function({"retrieve_content": wrapped_function})
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -245,6 +208,66 @@ class AutogenCrew:
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
 
+    def register_func_to_config(
+        self,
+        name: str,
+        description: str,
+        function: Callable[..., Any],
+        agent: autogen.AssistantAgent,
+    ):
+        function_schema = get_function_schema(
+            function, name=name, description=description
+        )
+        agent.update_tool_signature(
+            function_schema,
+            is_remove=False,
+        )
+
+        return function
+
+    def _retrieve_content(
+        self,
+        message: Annotated[
+            str,
+            "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
+        ],
+        n_results: Annotated[int, "number of results"] = 3,
+    ) -> str:
+        """
+        This function retrieves content based on a given message and a specified number of results.
+
+        Parameters:
+        message (str): A refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.
+        n_results (int): The number of results to retrieve. Default is 3.
+
+        Returns:
+        str: The retrieved content. If no content is retrieved, the original message is returned.
+
+        """
+        # Check if we need to update the context.
+        update_context_case1, update_context_case2 = (
+            rag_proxy_agent._check_update_context(message)
+        )
+        # If either context update case is true and the rag_proxy_agent's update_context attribute is also true
+        if (
+            update_context_case1 or update_context_case2
+        ) and rag_proxy_agent.update_context:
+            # Update the problem attribute of rag_proxy_agent with the message if it doesn't already exist
+            rag_proxy_agent.problem = (  # type: ignore
+                message
+                if not hasattr(rag_proxy_agent, "problem")
+                else rag_proxy_agent.problem  # type: ignore
+            )
+            # Generate a user reply based on the message
+            _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message)  # type: ignore
+        else:
+            # If the context doesn't need to be updated, create a context dictionary with the problem and number of results
+            _context = {"problem": message, "n_results": n_results}
+            # Generate a message based on the context
+            ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
+        # Return the retrieved message if it exists, otherwise return the original message
+        return ret_msg if ret_msg else message  # type: ignore
+
     def _create_agents(
         self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
@@ -320,11 +343,12 @@ class AutogenCrew:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
 
             if self.rag_options.use_rag:
-                self.decorated_function = agent_instance.register_for_llm(
+                self.decorated_function = self.register_func_to_config(
                     name="retrieve_content",
                     description="retrieve content for code generation and question answering.",
-                )(retrieve_content)
-
+                    function=self._retrieve_content,
+                    agent=agent_instance,
+                )
             agents.append(agent_instance)
 
         return agents

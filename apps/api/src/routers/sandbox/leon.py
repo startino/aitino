@@ -145,3 +145,30 @@ def run_rag_crew():
         manager,
         message="How to use spark for parallel training in FLAML? Give me sample code.",
     )
+
+
+@router.get("/test_register")
+def test_register_for_llm():
+    def test_func(a: int, b: int) -> int:
+        return a + b
+
+    config_list = autogen.config_list_from_json(
+        "OAI_CONFIG_LIST",
+        filter_dict={
+            "model": ["gpt-3.5-turbo"],
+        },
+    )
+    termination_msg = lambda x: x.get("content", "").rstrip().endswith("TERMINATE")
+    test_agent = autogen.AssistantAgent(
+        name="Senior_Python_Engineer",
+        is_termination_msg=termination_msg,
+        system_message="You are a senior python engineer. Reply `TERMINATE` in the end when everything is done.",
+        llm_config={"config_list": config_list, "timeout": 60, "temperature": 0},
+    )
+
+    new_test_func = test_agent.register_for_llm(
+        name="function_moment",
+        description="test function",
+        api_style="function",
+    )(test_func)
+    return test_agent.llm_config, test_func.__name__

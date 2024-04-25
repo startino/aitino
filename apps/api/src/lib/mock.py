@@ -1,5 +1,3 @@
-from ..tools import get_file_path_of_example
-
 DATE = "2024-01-01T00:00:00.000Z"
 
 fizz_buzz: dict = {
@@ -100,7 +98,7 @@ test_rag: dict = {
     "receiver_id": "4d7d9332-3027-40bc-a7fa-968b440c7bfe",
     "published": False,
     "agents": ["4d7d9332-3027-40bc-a7fa-968b440c7bfe"],
-    "prompt": f"How to use spark for parallel training in FLAML? Give me sample code.",
+    "prompt": "How to use spark for parallel training in FLAML? Give me sample code.",
     "created_at": DATE,
     "updated_at": DATE,
     "avatar": "",
