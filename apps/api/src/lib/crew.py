@@ -5,9 +5,6 @@ from typing import Annotated, Any, cast
 from uuid import UUID
 
 import autogen
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
-    RetrieveUserProxyAgent,
-)
 from autogen.cache import Cache
 from fastapi import HTTPException
 from langchain.tools import BaseTool
@@ -18,9 +15,8 @@ from src.models import (
     CodeExecutionConfig,
     CrewProcessed,
     Message,
-    RagOptions,
     Session,
-    SessionGetRequest,
+    RagOptions,
 )
 from src.models.session import SessionStatus
 from src.tools import (
@@ -28,12 +24,13 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
 
 
 class RagContext:
     def __init__(
         self,
-        task: str,
+        task: str | None,
         docs_path: dict[str, list[str]] | None,
     ):
         self.task = task
@@ -85,18 +82,35 @@ def retrieve_content(
     ],
     n_results: Annotated[int, "number of results"] = 3,
 ) -> str:
+    """
+    This function retrieves content based on a given message and a specified number of results.
+
+    Parameters:
+    message (str): A refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.
+    n_results (int): The number of results to retrieve. Default is 3.
+
+    Returns:
+    str: The retrieved content. If no content is retrieved, the original message is returned.
+
+    """
     # Check if we need to update the context.
     update_context_case1, update_context_case2 = rag_proxy_agent._check_update_context(
         message
     )
+    # If either context update case is true and the rag_proxy_agent's update_context attribute is also true
     if (
         update_context_case1 or update_context_case2
     ) and rag_proxy_agent.update_context:
+        # Update the problem attribute of rag_proxy_agent with the message if it doesn't already exist
         rag_proxy_agent.problem = message if not hasattr(rag_proxy_agent, "problem") else rag_proxy_agent.problem  # type: ignore
+        # Generate a user reply based on the message
         _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message)  # type: ignore
     else:
+        # If the context doesn't need to be updated, create a context dictionary with the problem and number of results
         _context = {"problem": message, "n_results": n_results}
+        # Generate a message based on the context
         ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
+    # Return the retrieved message if it exists, otherwise return the original message
     return ret_msg if ret_msg else message  # type: ignore
 
 
