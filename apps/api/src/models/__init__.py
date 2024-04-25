@@ -58,7 +58,7 @@ from .subscription import (
 from .tiers import Tier, TierGetRequest, TierInsertRequest, TierUpdateRequest
 from .tool import Tool, ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
 from .user import User
-from .rag import RagOptions
+from .rag_model import RagOptions
 
 __all__ = [
     "AgentConfig",
