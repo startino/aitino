@@ -40,6 +40,7 @@ from .profile import (
     ProfileInsertRequest,
     ProfileUpdateRequest,
 )
+from .rag_model import RagOptions
 from .session import (
     Session,
     SessionGetRequest,
@@ -58,7 +59,6 @@ from .subscription import (
 from .tiers import Tier, TierGetRequest, TierInsertRequest, TierUpdateRequest
 from .tool import Tool, ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
 from .user import User
-from .rag_model import RagOptions
 
 __all__ = [
     "AgentConfig",

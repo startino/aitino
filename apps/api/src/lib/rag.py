@@ -1,8 +1,13 @@
 import os
 from typing import Annotated
+
 import autogen
-from autogen.agentchat.contrib.retrieve_assistant_agent import RetrieveAssistantAgent
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
+from autogen.agentchat.contrib.retrieve_assistant_agent import (
+    RetrieveAssistantAgent,
+)
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
+    RetrieveUserProxyAgent,
+)
 
 config_list = autogen.config_list_from_json(
     "OAI_CONFIG_LIST",
@@ -10,21 +15,21 @@ config_list = autogen.config_list_from_json(
         "model": ["gpt-3.5-turbo"],
     },
 )
-#assistant = RetrieveAssistantAgent(
+# assistant = RetrieveAssistantAgent(
 #    name="assistant",
 #    system_message="you are an assistant who retrieves context",
 #    llm_config=config
-#)
+# )
 #
-#user_proxy = RetrieveUserProxyAgent(
+# user_proxy = RetrieveUserProxyAgent(
 #    name="rag proxy agent",
 #     retrieve_config={
 #        "task": "qa",
 #        "docs_path": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
 #    }
-#)
+# )
 #
-#user_proxy.initiate_chat(assistant, message=user_proxy.message_generator, problem="Tell me about autogen")
+# user_proxy.initiate_chat(assistant, message=user_proxy.message_generator, problem="Tell me about autogen")
 
 termination_msg = lambda x: x.get("content", "").rstrip().endswith("TERMINATE")
 
@@ -73,6 +78,7 @@ reviewer = autogen.AssistantAgent(
     llm_config={"config_list": config_list, "timeout": 60, "temperature": 0},
 )
 
+
 def retrieve_content(
     message: Annotated[
         str,
@@ -83,16 +89,18 @@ def retrieve_content(
     # Check if we need to update the context.
     update_context_case1, update_context_case2 = boss_aid._check_update_context(message)
     if (update_context_case1 or update_context_case2) and boss_aid.update_context:
-        boss_aid.problem = message if not hasattr(boss_aid, "problem") else boss_aid.problem # type: ignore
-        _, ret_msg = boss_aid._generate_retrieve_user_reply(message) # type: ignore
+        boss_aid.problem = message if not hasattr(boss_aid, "problem") else boss_aid.problem  # type: ignore
+        _, ret_msg = boss_aid._generate_retrieve_user_reply(message)  # type: ignore
     else:
         _context = {"problem": message, "n_results": n_results}
         ret_msg = boss_aid.message_generator(boss_aid, None, _context)
-    return ret_msg if ret_msg else message # type: ignore
+    return ret_msg if ret_msg else message  # type: ignore
+
 
 for caller in [pm, coder, reviewer]:
     d_retrieve_content = caller.register_for_llm(
-        description="retrieve content for code generation and question answering.", api_style="function"
+        description="retrieve content for code generation and question answering.",
+        api_style="function",
     )(retrieve_content)
 
 for executor in [boss, pm]:

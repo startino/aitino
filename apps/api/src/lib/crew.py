@@ -5,6 +5,9 @@ from typing import Annotated, Any, cast
 from uuid import UUID
 
 import autogen
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
+    RetrieveUserProxyAgent,
+)
 from autogen.cache import Cache
 from fastapi import HTTPException
 from langchain.tools import BaseTool
@@ -15,8 +18,9 @@ from src.models import (
     CodeExecutionConfig,
     CrewProcessed,
     Message,
-    Session,
     RagOptions,
+    Session,
+    SessionGetRequest,
 )
 from src.models.session import SessionStatus
 from src.tools import (
@@ -24,7 +28,7 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
+
 
 class RagContext:
     def __init__(
@@ -36,7 +40,9 @@ class RagContext:
         self.docs_path = docs_path
         self.proxy = RetrieveUserProxyAgent(
             name="Boss_Assistant",
-            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+            is_termination_msg=lambda x: x.get("content", "")
+            .rstrip()
+            .endswith("TERMINATE"),
             system_message="Assistant who has extra content retrieval power for solving difficult problems.",
             human_input_mode="NEVER",
             max_consecutive_auto_reply=3,
@@ -52,23 +58,25 @@ class RagContext:
     def get_default(cls):
         return RagContext(task="default", docs_path=None)
 
+
 rag_proxy_agent = RetrieveUserProxyAgent(
-            name="Boss_Assistant",
-            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
-            system_message="Assistant who has extra content retrieval power for solving difficult problems.",
-            human_input_mode="NEVER",
-            max_consecutive_auto_reply=3,
-            retrieve_config={
-                "task": "qa",
-                "docs_path": [
-                    "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md",
-                    "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md",
-                    os.path.join(os.path.abspath(""), "..", "website", "docs"),
-                ],
-                "get_or_create": True,
-            },
-            code_execution_config=False,  # we don't want to execute code in this case.
-        )
+    name="Boss_Assistant",
+    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+    system_message="Assistant who has extra content retrieval power for solving difficult problems.",
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=3,
+    retrieve_config={
+        "task": "qa",
+        "docs_path": [
+            "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md",
+            "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md",
+            os.path.join(os.path.abspath(""), "..", "website", "docs"),
+        ],
+        "get_or_create": True,
+    },
+    code_execution_config=False,  # we don't want to execute code in this case.
+)
+
 
 def retrieve_content(
     message: Annotated[
@@ -78,14 +86,18 @@ def retrieve_content(
     n_results: Annotated[int, "number of results"] = 3,
 ) -> str:
     # Check if we need to update the context.
-    update_context_case1, update_context_case2 = rag_proxy_agent._check_update_context(message)
-    if (update_context_case1 or update_context_case2) and rag_proxy_agent.update_context:
-        rag.proxy.problem = message if not hasattr(rag_proxy_agent, "problem") else rag_proxy_agent.problem # type: ignore
-        _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message) # type: ignore
+    update_context_case1, update_context_case2 = rag_proxy_agent._check_update_context(
+        message
+    )
+    if (
+        update_context_case1 or update_context_case2
+    ) and rag_proxy_agent.update_context:
+        rag_proxy_agent.problem = message if not hasattr(rag_proxy_agent, "problem") else rag_proxy_agent.problem  # type: ignore
+        _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message)  # type: ignore
     else:
         _context = {"problem": message, "n_results": n_results}
         ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
-    return ret_msg if ret_msg else message # type: ignore
+    return ret_msg if ret_msg else message  # type: ignore
 
 
 class AutogenCrew:
@@ -143,7 +155,9 @@ class AutogenCrew:
             "timeout": 120,
         }
         if rag_options.use_rag:
-            self.rag = RagContext(task=rag_options.task, docs_path=rag_options.docs_path)
+            self.rag = RagContext(
+                task=rag_options.task, docs_path=rag_options.docs_path
+            )
 
         self.rag = RagContext.get_default()
 
@@ -216,7 +230,6 @@ class AutogenCrew:
             "",
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
-
 
     def _create_agents(
         self, crew_model: CrewProcessed

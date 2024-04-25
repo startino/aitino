@@ -2,9 +2,9 @@ import autogen
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 
-from src.lib.auth import get_current_user
 from src.autobuilder import build_agents
 from src.dependencies import rate_limit_profile
+from src.lib.auth import get_current_user
 from src.lib.improver import PromptType, improve_prompt
 from src.models import Profile
 
