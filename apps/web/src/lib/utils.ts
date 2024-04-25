@@ -102,26 +102,6 @@ export function getLocalCrew() {
 	return JSON.parse(crewStr) as Crew;
 }
 
-// creates an array of nodes without the stores
-export function getCleanNodes(nodes: Node[]): Node[] {
-	const agents = nodes.filter((n) => n.type === 'agent');
-
-	const prompts = nodes
-		.filter((n) => n.type === 'prompt')
-		.map((n) => {
-			const { title, content } = n.data;
-			return {
-				...n,
-				data: {
-					title: get(title),
-					content: get(content)
-				}
-			};
-		});
-
-	return [...prompts, ...agents];
-}
-
 // creates an array of writable nodes
 export function getWritablePrompt(nodes: Node[]): Node[] {
 	return [
