@@ -797,6 +797,17 @@ def delete_profile(profile_id: UUID) -> Profile:
     return Profile(**response.data[0])
 
 
+def update_funding(profile_id: UUID, new_funding: int) -> int:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("profiles")
+        .update({"funding": new_funding})
+        .eq("id", profile_id)
+        .execute()
+    )
+    return response.data[0]["funding"]
+
+
 if __name__ == "__main__":
     from src.models import Session
 

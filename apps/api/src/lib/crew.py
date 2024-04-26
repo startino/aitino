@@ -2,6 +2,7 @@ import logging
 import re
 from typing import Any, cast
 from uuid import UUID
+import tiktoken
 
 import autogen
 from autogen.cache import Cache
@@ -226,6 +227,26 @@ class AutogenCrew:
 
         return agents
 
+    def calculate_cost(self, chat_history: list[dict[str, str]]) -> float:
+        input_list = []
+        output_list = []
+        # {"gpt-4-turbo": {"cost": 3, "input_tokens" : 0, "output_tokens": 0}}
+        for messages in chat_history:
+            input_list.append(messages.get("content"))
+            if messages.get("role") == "assistant":
+                output_list.append(messages.get("content"))
+
+        # encoding for gpt-4 and gpt-3.5
+        encoding = tiktoken.get_encoding("cl100k_base")
+        all_input_messages = " ".join(input_list)
+        all_output_messages = " ".join(output_list)
+        input_tokens = encoding.encode(all_input_messages)
+        output_tokens = encoding.encode(all_output_messages)
+
+        input_cost = len(input_tokens) * 0.001
+        output_cost = len(output_tokens) * 0.003
+        return input_cost + output_cost
+
     async def run(
         self,
         message: str,
@@ -254,7 +275,10 @@ class AutogenCrew:
         logging.info("Starting Crew")
         with Cache.disk() as cache:
             logging.info("Starting chat")
-            await self.user_proxy.a_initiate_chat(
+            chat_result = await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
+        logging.info(f"Chat result: {chat_result}")
+        logging.info(f"{self.calculate_cost(chat_result.chat_history)}")
+
         db.update_status(self.session.id, SessionStatus.FINISHED)
