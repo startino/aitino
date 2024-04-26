@@ -785,11 +785,9 @@ def update_profile(profile_id: UUID, content: ProfileUpdateRequest) -> Profile:
 
 def insert_profile(profile: ProfileInsertRequest) -> Profile:
     supabase: Client = create_client(url, key)
-    response = (
-        supabase.table("profiles")
-        .insert(json.loads(profile.model_dump_json(exclude_none=True)))
-        .execute()
-    )
+    profile_dict = json.loads(profile.model_dump_json(exclude_none=True))
+    profile_dict["funding"] = 100
+    response = supabase.table("profiles").insert(profile_dict).execute()
     return Profile(**response.data[0])
 
 
