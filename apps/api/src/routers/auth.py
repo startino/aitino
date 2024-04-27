@@ -2,10 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import APIRouter
-from gotrue import (
-    OAuthResponse,
-    SignInWithOAuthCredentials,
-)
+from gotrue import OAuthResponse, SignInWithOAuthCredentials
 from supabase import Client, create_client
 
 router = APIRouter(
