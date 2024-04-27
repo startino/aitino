@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 from typing import Any, cast
 from uuid import UUID
@@ -23,6 +24,10 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
+
+ACCURACY = os.environ.get("MONETARY_DECIMAL_ACCURACY")
+if ACCURACY is None:
+    raise ValueError("MONETARY_DECIMAL_ACCURACY environment variable not set")
 
 
 class AutogenCrew:
@@ -253,9 +258,9 @@ class AutogenCrew:
         decimal_amount = len(decimal_part)
 
         if decimal_amount > 2:
-            return round(cost * 100 * 1.05)
+            return round(cost * int(ACCURACY) * 1.05)
 
-        return int(cost * 100 * 1.05)
+        return int(cost * int(ACCURACY) * 1.05)
 
     async def run(
         self,
