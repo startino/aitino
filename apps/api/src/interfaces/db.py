@@ -785,11 +785,9 @@ def update_profile(profile_id: UUID, content: ProfileUpdateRequest) -> Profile:
 
 def insert_profile(profile: ProfileInsertRequest) -> Profile:
     supabase: Client = create_client(url, key)
-    response = (
-        supabase.table("profiles")
-        .insert(json.loads(profile.model_dump_json(exclude_none=True)))
-        .execute()
-    )
+    profile_dict = json.loads(profile.model_dump_json(exclude_none=True))
+    profile_dict["funding"] = 10000
+    response = supabase.table("profiles").insert(profile_dict).execute()
     return Profile(**response.data[0])
 
 
@@ -797,6 +795,17 @@ def delete_profile(profile_id: UUID) -> Profile:
     supabase: Client = create_client(url, key)
     response = supabase.table("profiles").delete().eq("id", profile_id).execute()
     return Profile(**response.data[0])
+
+
+def update_funding(profile_id: UUID, new_funding: int) -> int:
+    supabase: Client = create_client(url, key)
+    response = (
+        supabase.table("profiles")
+        .update({"funding": new_funding})
+        .eq("id", profile_id)
+        .execute()
+    )
+    return response.data[0]["funding"]
 
 
 if __name__ == "__main__":

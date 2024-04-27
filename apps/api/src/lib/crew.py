@@ -5,6 +5,7 @@ from typing import Annotated, Any, cast, Callable
 from uuid import UUID
 
 import autogen
+import tiktoken
 from autogen.cache import Cache
 from fastapi import HTTPException
 from langchain.tools import BaseTool
@@ -74,6 +75,10 @@ rag_proxy_agent = RetrieveUserProxyAgent(
     },
     code_execution_config=False,  # we don't want to execute code in this case.
 )
+
+ACCURACY = os.environ.get("MONETARY_DECIMAL_ACCURACY")
+if ACCURACY is None:
+    raise ValueError("MONETARY_DECIMAL_ACCURACY environment variable not set")
 
 
 class AutogenCrew:
@@ -353,6 +358,36 @@ class AutogenCrew:
 
         return agents
 
+    def calculate_cost(self, chat_history: list[dict[str, str]]) -> float:
+        input_list = []
+        output_list = []
+        # {"gpt-4-turbo": {"cost": 3, "input_tokens" : 0, "output_tokens": 0}}
+        for messages in chat_history:
+            input_list.append(messages.get("content"))
+            if messages.get("role") == "assistant":
+                output_list.append(messages.get("content"))
+
+        # encoding for gpt-4 and gpt-3.5
+        encoding = tiktoken.get_encoding("cl100k_base")
+        all_input_messages = " ".join(input_list)
+        all_output_messages = " ".join(output_list)
+        input_tokens = encoding.encode(all_input_messages)
+        output_tokens = encoding.encode(all_output_messages)
+
+        input_cost = len(input_tokens) * 0.00001
+        output_cost = len(output_tokens) * 0.00003
+        return input_cost + output_cost
+
+    def add_margin(self, cost: float) -> int:
+        str_cost = str(cost)
+        _, _, decimal_part = str_cost.partition(".")
+        decimal_amount = len(decimal_part)
+
+        if decimal_amount > 2:
+            return round(cost * int(ACCURACY) * 1.05)
+
+        return int(cost * int(ACCURACY) * 1.05)
+
     async def run(
         self,
         message: str,
@@ -368,7 +403,7 @@ class AutogenCrew:
             agents=self.agents + [self.user_proxy] + [rag_proxy_agent],
             messages=dict_messages,
             max_round=100,
-            speaker_selection_method="round_robin",
+            speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
             send_introductions=True,
         )
@@ -381,7 +416,23 @@ class AutogenCrew:
         logging.info("Starting Crew")
         with Cache.disk() as cache:
             logging.info("Starting chat")
-            await self.user_proxy.a_initiate_chat(
+            chat_result = await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
+
+        logging.info(f"chat result: {chat_result}")
+
+        total_cost = chat_result.cost["usage_excluding_cached_inference"]["total_cost"]
+
+        logging.info(f"Cost: {total_cost}")
+        profile = db.get_profile(self.profile_id)
+        if not profile:
+            raise HTTPException(
+                500,
+                "profile not found somehow, this is very weird and should not happen",
+            )
+        profile_funds = profile.funding
+        new_funding = profile_funds - self.add_margin(total_cost + 0.01)  # type: ignore
+        db.update_funding(self.profile_id, new_funding)
+
         db.update_status(self.session.id, SessionStatus.FINISHED)
