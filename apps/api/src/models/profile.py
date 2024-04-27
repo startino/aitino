@@ -10,11 +10,12 @@ class Profile(BaseModel):
     created_at: datetime
     display_name: str
     stripe_customer_id: str | None
+    funding: int
 
 
 class ProfileInsertRequest(BaseModel):
     # user id needs to be passed since its created from some "auth" table in the db
-    user_id: UUID
+    id: UUID
     tier_id: UUID
     display_name: str
     stripe_customer_id: str | None = None
