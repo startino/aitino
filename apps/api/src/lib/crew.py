@@ -243,9 +243,19 @@ class AutogenCrew:
         input_tokens = encoding.encode(all_input_messages)
         output_tokens = encoding.encode(all_output_messages)
 
-        input_cost = len(input_tokens) * 0.001
-        output_cost = len(output_tokens) * 0.003
+        input_cost = len(input_tokens) * 0.00001
+        output_cost = len(output_tokens) * 0.00003
         return input_cost + output_cost
+
+    def add_margin(self, cost: float) -> int:
+        str_cost = str(cost)
+        _, _, decimal_part = str_cost.partition(".")
+        decimal_amount = len(decimal_part)
+
+        if decimal_amount > 2:
+            return round(cost * 100 * 1.05)
+
+        return int(cost * 100 * 1.05)
 
     async def run(
         self,
@@ -278,7 +288,20 @@ class AutogenCrew:
             chat_result = await self.user_proxy.a_initiate_chat(
                 manager, message=message, cache=cast(Cache, cache)
             )
-        logging.info(f"Chat result: {chat_result}")
-        logging.info(f"{self.calculate_cost(chat_result.chat_history)}")
+
+        logging.info(f"chat result: {chat_result}")
+
+        total_cost = chat_result.cost["usage_including_cached_inference"]["total_cost"]
+
+        logging.info(f"Cost: {total_cost}")
+        profile = db.get_profile(self.profile_id)
+        if not profile:
+            raise HTTPException(
+                500,
+                "profile not found somehow, this is very weird and should not happen",
+            )
+        profile_funds = profile.funding
+        new_funding = profile_funds - self.add_margin(total_cost + 0.01)  # type: ignore
+        db.update_funding(self.profile_id, new_funding)
 
         db.update_status(self.session.id, SessionStatus.FINISHED)
