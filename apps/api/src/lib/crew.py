@@ -277,7 +277,7 @@ class AutogenCrew:
             agents=self.agents + [self.user_proxy],
             messages=dict_messages,
             max_round=100,
-            speaker_selection_method="round_robin",
+            speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
             send_introductions=True,
         )
@@ -296,7 +296,7 @@ class AutogenCrew:
 
         logging.info(f"chat result: {chat_result}")
 
-        total_cost = chat_result.cost["usage_including_cached_inference"]["total_cost"]
+        total_cost = chat_result.cost["usage_excluding_cached_inference"]["total_cost"]
 
         logging.info(f"Cost: {total_cost}")
         profile = db.get_profile(self.profile_id)
