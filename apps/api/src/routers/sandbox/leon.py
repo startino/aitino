@@ -32,27 +32,31 @@ def run_rag_crew():
             "model": ["gpt-3.5-turbo"],
         },
     )
-    config = {
-        "seed": 41,
-        "temperature": 0,
-        "config_list": config_list,
-        "timeout": 60,
-    }
+    # config = {
+    #     "seed": 41,
+    #     "temperature": 0,
+    #     "config_list": config_list,
+    #     "timeout": 60,
+    # }
     # assistant = RetrieveAssistantAgent(
-    #    name="assistant",
-    #    system_message="you are an assistant who retrieves context",
-    #    llm_config=config
+    #     name="assistant",
+    #     system_message="you are an assistant who retrieves context",
+    #     llm_config=config,
     # )
     #
     # user_proxy = RetrieveUserProxyAgent(
-    #    name="rag proxy agent",
+    #     name="rag proxy agent",
     #     retrieve_config={
-    #        "task": "qa",
-    #        "docs_path": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
-    #    }
+    #         "task": "qa",
+    #         "docs_path": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
+    #         "get_or_create": True,
+    #     },
     # )
     #
-    # user_proxy.initiate_chat(assistant, message=user_proxy.message_generator, problem="Tell me about autogen")
+    # chat_result = user_proxy.initiate_chat(
+    #     assistant, message=user_proxy.message_generator, problem="Tell me about autogen"
+    # )
+    # return chat_result
 
     termination_msg = lambda x: x.get("content", "").rstrip().endswith("TERMINATE")
 
@@ -141,10 +145,12 @@ def run_rag_crew():
     manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
 
     # Start chatting with the boss as this is the user proxy agent.
-    boss.initiate_chat(
+    chat_result = boss.initiate_chat(
         manager,
         message="How to use spark for parallel training in FLAML? Give me sample code.",
     )
+
+    return chat_result
 
 
 @router.get("/test_register")
