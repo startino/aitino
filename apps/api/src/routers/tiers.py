@@ -4,11 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 
 from src.interfaces import db
-from src.models import (
-    Tier,
-    TierInsertRequest,
-    TierUpdateRequest,
-)
+from src.models import Tier, TierInsertRequest, TierUpdateRequest
 
 router = APIRouter(prefix="/tiers", tags=["tiers"])
 
