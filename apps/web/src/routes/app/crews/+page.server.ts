@@ -1,13 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
-export const load = async ({ locals: { getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	const userSession = await authGetSession();
 
 	const form = {
 		create: await superValidate(zod(createCrewSchema)),
@@ -41,8 +40,8 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	create: async ({ request, locals: { getSession } }) => {
-		const userSession = await getSession();
+	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+		const userSession = await authGetSession();
 		const form = await superValidate(request, zod(createCrewSchema));
 		if (!form.valid) {
 			return fail(400, { form });

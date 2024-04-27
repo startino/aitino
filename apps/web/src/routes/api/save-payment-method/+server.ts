@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 
 export const POST = async ({ request, locals: { supabase, getSession } }) => {
-	const session = await getSession();
+	const session = await authGetSession();
 
 	const { paymentMethod } = await request.json();
 	const { error } = await supabase
