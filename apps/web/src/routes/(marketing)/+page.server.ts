@@ -9,8 +9,6 @@ export const load = async (event) => {
 	const contactForm = await superValidate(zod(formSchema));
 	const waitlistForm = await superValidate(zod(waitlistSchema));
 
-	const session = await event.locals.getSession();
-
 	// Always return { form } in load and form actions.
 	return { contactForm, waitlistForm };
 };

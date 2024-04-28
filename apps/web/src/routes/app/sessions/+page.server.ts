@@ -29,8 +29,8 @@ const redirectToSessions = async (userSession: Session) => {
 	}
 };
 
-export const load = async ({ url, locals: { getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ url, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	const userSession = await authGetSession();
 
 	if (!url.searchParams.has('debug')) {
 		await redirectToSessions(userSession);

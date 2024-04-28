@@ -5,8 +5,8 @@ import api from '$lib/api';
 
 import { apiKeySchema } from '$lib/schema';
 
-export const load = async ({ locals: { getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	const userSession = await authGetSession();
 
 	const userApiKeys = await api
 		.GET('/api-keys/', {
@@ -45,8 +45,8 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	create: async ({ request, locals }) => {
-		const userSession = await locals.getSession();
+	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+		const userSession = await authGetSession();
 
 		const form = await superValidate(request, zod(apiKeySchema));
 

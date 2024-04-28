@@ -1,8 +1,8 @@
 import type Stripe from 'stripe';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ locals: { supabase, stripe, getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
+	const userSession = await authGetSession();
 
 	// TODO: convert to using api
 
