@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import api from '$lib/api';
 
-export const load = async ({ params, locals: { getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ params, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	const userSession = await authGetSession();
 
 	const session = await api
 		.GET('/sessions/{id}', {

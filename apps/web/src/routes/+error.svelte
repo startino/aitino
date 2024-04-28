@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{status} {error}</title>
+	<title>{status} {error?.message.toString()}</title>
 </svelte:head>
 
 <main class="grid h-screen min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
@@ -15,7 +15,7 @@
 			{error?.message}
 		</h1>
 		<p class="mt-6 text-base leading-7 text-foreground/70">
-			{status == 404 ? 'Sorry, we couldn’t find the page you’re looking for.' : ''}
+			{status == 404 ? 'Sorry, we couldn’t find what you were looking for.' : ''}
 		</p>
 		<div class="mt-10 flex items-center justify-center gap-x-6">
 			<a
