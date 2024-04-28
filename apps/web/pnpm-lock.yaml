@@ -14,9 +14,6 @@ dependencies:
   '@stripe/stripe-js':
     specifier: ^3.3.0
     version: 3.3.0
-  '@supabase/auth-helpers-sveltekit':
-    specifier: ^0.13.0
-    version: 0.13.0(@supabase/supabase-js@2.42.7)(@sveltejs/kit@2.5.7)
   '@supabase/ssr':
     specifier: ^0.3.0
     version: 0.3.0(@supabase/supabase-js@2.42.7)
@@ -63,8 +60,8 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0(svelte@4.2.15)(sveltekit-superforms@2.12.6)
   lucide-svelte:
-    specifier: ^0.376.0
-    version: 0.376.0(svelte@4.2.15)
+    specifier: 0.360.0
+    version: 0.360.0(svelte@4.2.15)
   mdsvex:
     specifier: ^0.11.0
     version: 0.11.0(svelte@4.2.15)
@@ -823,26 +820,6 @@ packages:
   /@stripe/stripe-js@3.3.0:
     resolution: {integrity: sha512-dUgAsko9KoYC1U2TIawHzbkQJzPoApxCc1Qf6/j318d1ArViyh6ROHVYTxnU3RlOQL/utUD9I4/QoyiCowsgrw==}
     engines: {node: '>=12.16'}
-    dev: false
-
-  /@supabase/auth-helpers-shared@0.7.0(@supabase/supabase-js@2.42.7):
-    resolution: {integrity: sha512-FBFf2ei2R7QC+B/5wWkthMha8Ca2bWHAndN+syfuEUUfufv4mLcAgBCcgNg5nJR8L0gZfyuaxgubtOc9aW3Cpg==}
-    peerDependencies:
-      '@supabase/supabase-js': ^2.39.8
-    dependencies:
-      '@supabase/supabase-js': 2.42.7
-      jose: 4.15.5
-    dev: false
-
-  /@supabase/auth-helpers-sveltekit@0.13.0(@supabase/supabase-js@2.42.7)(@sveltejs/kit@2.5.7):
-    resolution: {integrity: sha512-nNZUJv49e0RpEaRBWAEqzPQkeTfWiN6XhVxBJJWGkS9BIk47H+dDRJvvDd1lCT+u6xKXkgnp2VHosT5UK2UOcg==}
-    peerDependencies:
-      '@supabase/supabase-js': ^2.39.8
-      '@sveltejs/kit': ^1.30.3 || ^2.0.0
-    dependencies:
-      '@supabase/auth-helpers-shared': 0.7.0(@supabase/supabase-js@2.42.7)
-      '@supabase/supabase-js': 2.42.7
-      '@sveltejs/kit': 2.5.7(@sveltejs/vite-plugin-svelte@3.1.0)(svelte@4.2.15)(vite@5.2.10)
     dev: false
 
   /@supabase/auth-js@2.64.1:
@@ -2950,10 +2927,6 @@ packages:
       '@sideway/pinpoint': 2.0.0
     optional: true
 
-  /jose@4.15.5:
-    resolution: {integrity: sha512-jc7BFxgKPKi94uOvEmzlSWFFe2+vASyXaKUpdQKatWAESU2MWjDfFf0fdfc83CDKcA5QecabZeNLyfhe3yKNkg==}
-    dev: false
-
   /js-yaml@4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
     hasBin: true
@@ -3080,8 +3053,8 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /lucide-svelte@0.376.0(svelte@4.2.15):
-    resolution: {integrity: sha512-6ZIMO6IjncXC6L1GuXeqPyvTB3oaKCCHfr15qTN9S4bmP9i5CAEag4Nq0zNscdiLFn7AFi/jFFj7X2gCxFbjEQ==}
+  /lucide-svelte@0.360.0(svelte@4.2.15):
+    resolution: {integrity: sha512-Rs1opdeQZIQjyhMgqwQUJ3GdwrBOl6Z7HtbomzXN/rNWHqEKlgqsQvNh3kMSPoDHQiREqW1Sj/drYP5fw9J6BA==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
     dependencies:
