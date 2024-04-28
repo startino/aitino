@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
 import { type Node } from '@xyflow/svelte';
 
-export const load = async ({ locals, params }) => {
+export const load = async ({ locals: { authGetSession }, params }) => {
 	const { id } = params;
 	const userSession = await authGetSession();
 

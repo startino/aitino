@@ -10,7 +10,7 @@ declare global {
 		interface Locals {
 			supabase: SupabaseClient;
 			stripe: Stripe;
-			safeGetSession(): Promise<{ session: Session | null; user: User | null }>;
+			safeGetSession(): Promise<{ session: Session; user: User } | null>;
 			authGetSession(): Promise<{ session: Session; user: User }>;
 		}
 		interface PageData {
