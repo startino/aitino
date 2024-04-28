@@ -4,7 +4,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { agentSchema } from '$lib/schema';
 
-export const load = async ({ locals, params }) => {
+export const load = async ({ locals: { authGetSession }, params }) => {
 	const { id } = params;
 	const userSession = await authGetSession();
 
