@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type Stripe from 'stripe';
 
-export const load = async ({ locals: { supabase, stripe, getSession }, params, parent }) => {
-	const session = await getSession();
+export const load = async ({ locals: { supabase, stripe, authGetSession }, params, parent }) => {
+	const session = await authGetSession();
 
 	const { data: profile } = await supabase
 		.from('profiles')

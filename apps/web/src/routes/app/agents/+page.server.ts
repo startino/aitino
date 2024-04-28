@@ -6,8 +6,8 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { pickRandomAvatar } from '$lib/utils';
 import api from '$lib/api';
 
-export const load = async ({ locals }) => {
-	const userSession = await locals.getSession();
+export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	const userSession = await authGetSession();
 	const agents = await api
 		.GET('/agents/', {
 			params: {
@@ -43,9 +43,9 @@ export const load = async ({ locals }) => {
 };
 
 export const actions = {
-	create: async ({ request, locals }) => {
+	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
 		console.log('create agent');
-		const userSession = await locals.getSession();
+		const userSession = await authGetSession();
 
 		const form = await superValidate(request, zod(agentSchema));
 

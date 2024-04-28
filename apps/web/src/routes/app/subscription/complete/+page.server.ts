@@ -3,7 +3,7 @@ import type Stripe from 'stripe';
 
 export const load = async ({ url, locals: { stripe, supabase, getSession }, parent }) => {
 	const { tiersList } = await parent();
-	const session = await getSession();
+	const session = await authGetSession();
 	const id = url.searchParams.get('payment_intent');
 	const subscriptionId = url.searchParams.get('subscription_id');
 	const tierId = url.searchParams.get('tier_id');

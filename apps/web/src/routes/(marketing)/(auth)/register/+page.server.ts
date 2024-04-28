@@ -13,7 +13,7 @@ export const load = async () => {
 export const actions = {
 	register: async ({ request, locals, url }) => {
 		const body = Object.fromEntries(await request.formData());
-		const session = await locals.getSession();
+		const session = await authGetSession();
 
 		const provider = url.searchParams.get('provider') as Provider;
 
