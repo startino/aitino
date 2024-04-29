@@ -51,6 +51,7 @@ class RagContext:
                 "task": self.task,
                 "docs_path": self.docs_path,
                 "get_or_create": True,
+                "model": "gpt-3.5-turbo",
             },
             code_execution_config=False,  # we don't want to execute code in this case.
         )
@@ -383,8 +384,12 @@ class AutogenCrew:
         dict_messages = [m.model_dump() for m in (messages if messages else [])]
         speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
         logging.info(speaker_selection_method)
+        chat_agents = self.agents + [self.user_proxy]
+        if self.rag_options.use_rag:
+            chat_agents.append(self.rag.proxy)
+
         groupchat = autogen.GroupChat(
-            agents=self.agents + [self.user_proxy] + [self.rag.proxy],
+            agents=chat_agents,
             messages=dict_messages,
             max_round=100,
             speaker_selection_method="auto",
