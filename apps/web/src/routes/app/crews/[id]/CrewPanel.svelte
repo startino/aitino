@@ -15,8 +15,6 @@
 
 	let openAgentLibrary = false;
 
-	async function save() {}
-
 	const { getViewport } = useSvelteFlow();
 
 	function addAgent(data: any) {
@@ -88,8 +86,7 @@
 							title: $crew.title,
 							published: $crew.published,
 							description: $crew.description,
-							edges: [],
-							nodes: $crew.agents
+							agents: $crew.agents
 						}
 					})
 					.then(({ data: d, error: e }) => {

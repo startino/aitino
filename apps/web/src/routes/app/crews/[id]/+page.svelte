@@ -21,7 +21,11 @@
 	let { crew, nodes } = getContext('crew');
 
 	// update $crew.agents to n.id where it is of type 'agent'
-	$: $crew.agents = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
+	$: {
+		console.log('Updating agents');
+		$crew.agents = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
+		console.log($crew.agents);
+	}
 
 	const nodeTypes = {
 		agent: Nodes.Agent,
