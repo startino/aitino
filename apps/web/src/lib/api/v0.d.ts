@@ -616,14 +616,16 @@ export interface components {
       display_name: string;
       /** Stripe Customer Id */
       stripe_customer_id: string | null;
+      /** Funding */
+      funding: number;
     };
     /** ProfileInsertRequest */
     ProfileInsertRequest: {
       /**
-       * User Id
+       * Id
        * Format: uuid
        */
-      user_id: string;
+      id: string;
       /**
        * Tier Id
        * Format: uuid

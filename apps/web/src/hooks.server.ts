@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 import { redirect, type Handle } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { toast } from 'svelte-sonner';
+import type { User } from '@supabase/supabase-js';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -26,6 +27,26 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
+	event.locals.getUser = async (): Promise<User | null> => {
+		const {
+			data: { user },
+			error
+		} = await event.locals.supabase.auth.getUser();
+		if (!user || error) {
+			return null;
+		}
+		return user;
+	};
+
+	event.locals.authGetUser = async () => {
+		const user = await event.locals.getUser();
+		if (!user) {
+			toast('No user. Please log in.');
+			redirect(303, '/login');
+		}
+		return user;
+	};
+
 	/**
 	 * Unlike `supabase.auth.getSession()`, which returns the session _without_
 	 * validating the JWT, this function also calls `getUser()` to validate the
@@ -39,11 +60,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return null;
 		}
 
-		const {
-			data: { user },
-			error
-		} = await event.locals.supabase.auth.getUser();
-		if (!user || error) {
+		const user = await event.locals.getUser();
+		if (!user) {
 			// JWT validation has failed
 			return null;
 		}
