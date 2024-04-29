@@ -58,24 +58,6 @@ class RagContext:
         return RagContext(task="default", docs_path=None)
 
 
-rag_proxy_agent = RetrieveUserProxyAgent(
-    name="Boss_Assistant",
-    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
-    system_message="Assistant who has extra content retrieval power for solving difficult problems.",
-    human_input_mode="NEVER",
-    max_consecutive_auto_reply=3,
-    retrieve_config={
-        "task": "qa",
-        "docs_path": [
-            "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md",
-            "https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md",
-            os.path.join(os.path.abspath(""), "..", "website", "docs"),
-        ],
-        "get_or_create": True,
-    },
-    code_execution_config=False,  # we don't want to execute code in this case.
-)
-
 ACCURACY = os.environ.get("MONETARY_DECIMAL_ACCURACY")
 if ACCURACY is None:
     raise ValueError("MONETARY_DECIMAL_ACCURACY environment variable not set")
@@ -251,25 +233,25 @@ class AutogenCrew:
         """
         # Check if we need to update the context.
         update_context_case1, update_context_case2 = (
-            rag_proxy_agent._check_update_context(message)
+            self.rag.proxy._check_update_context(message)
         )
-        # If either context update case is true and the rag_proxy_agent's update_context attribute is also true
+        # If either context update case is true and the self.rag.proxy's update_context attribute is also true
         if (
             update_context_case1 or update_context_case2
-        ) and rag_proxy_agent.update_context:
-            # Update the problem attribute of rag_proxy_agent with the message if it doesn't already exist
-            rag_proxy_agent.problem = (  # type: ignore
+        ) and self.rag.proxy.update_context:
+            # Update the problem attribute of self.rag.proxy with the message if it doesn't already exist
+            self.rag.proxy.problem = (  # type: ignore
                 message
-                if not hasattr(rag_proxy_agent, "problem")
-                else rag_proxy_agent.problem  # type: ignore
+                if not hasattr(self.rag.proxy, "problem")
+                else self.rag.proxy.problem  # type: ignore
             )
             # Generate a user reply based on the message
-            _, ret_msg = rag_proxy_agent._generate_retrieve_user_reply(message)  # type: ignore
+            _, ret_msg = self.rag.proxy._generate_retrieve_user_reply(message)  # type: ignore
         else:
             # If the context doesn't need to be updated, create a context dictionary with the problem and number of results
             _context = {"problem": message, "n_results": n_results}
             # Generate a message based on the context
-            ret_msg = rag_proxy_agent.message_generator(rag_proxy_agent, None, _context)
+            ret_msg = self.rag.proxy.message_generator(self.rag.proxy, None, _context)
         # Return the retrieved message if it exists, otherwise return the original message
         return ret_msg if ret_msg else message  # type: ignore
 
@@ -400,7 +382,7 @@ class AutogenCrew:
         speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
         logging.info(speaker_selection_method)
         groupchat = autogen.GroupChat(
-            agents=self.agents + [self.user_proxy] + [rag_proxy_agent],
+            agents=self.agents + [self.user_proxy] + [self.rag.proxy],
             messages=dict_messages,
             max_round=100,
             speaker_selection_method="auto",
@@ -432,7 +414,7 @@ class AutogenCrew:
                 "profile not found somehow, this is very weird and should not happen",
             )
         profile_funds = profile.funding
-        new_funding = profile_funds - self.add_margin(total_cost + 0.01)  # type: ignore
+        new_funding = profile_funds - self.add_margin(total_cost)  # type: ignore
         db.update_funding(self.profile_id, new_funding)
 
         db.update_status(self.session.id, SessionStatus.FINISHED)
