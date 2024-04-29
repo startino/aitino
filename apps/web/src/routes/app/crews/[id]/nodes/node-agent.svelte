@@ -10,29 +10,23 @@
 	import { getContext } from '$lib/utils';
 	import { toast } from 'svelte-sonner';
 
-	const { crew, agents } = getContext('crew');
+	const { agents, publishedAgents } = getContext('crew');
 
 	type $$Props = NodeProps;
 
 	export let id: NodeProps['id'];
 
-	let isReceiver = false;
-
-	const agent = $agents.find((n) => n.id === id);
+	const agent = [...$agents, ...$publishedAgents].find((n) => n.id === id);
 
 	const { deleteElements } = useSvelteFlow();
 
-	if (!agent) {
-		toast.error(`Error: Agent ${id} not found, please refresh the page.`);
+	const deleteAgent = () => {
 		deleteElements({ nodes: [{ id }] });
+		// agents are being updated using nodes automatically so dw about deleting and adding agents in this file
+	};
 
-		if (isReceiver) {
-			$crew.receiver_id = '00000000-0000-0000-0000-000000000000';
-		}
-	}
-
-	$: if (isReceiver && agent) {
-		$crew.receiver_id = agent.id;
+	if (!agent) {
+		deleteAgent();
 	}
 </script>
 
@@ -60,11 +54,9 @@
 
 		<button
 			on:click={() => {
-				deleteElements({ nodes: [{ id }] });
+				toast.error(`Error: Agent ${id} not found, please refresh the page.`);
 
-				if (isReceiver) {
-					$crew.receiver_id = '00000000-0000-0000-0000-000000000000';
-				}
+				deleteAgent();
 			}}
 			aria-label="delete agent"
 			type="button"
