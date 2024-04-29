@@ -307,6 +307,14 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
     if filter:
         questions = [
             FilterQuestion(
+                question="Is the author himself an IT person? is/was he a programmer? is/was he a software developer?",
+                reject_on=True,
+            ),
+            FilterQuestion(
+                question="Is the author currently engaged in job searching activities and promoting their technical expertise?",
+                reject_on=True,
+            ),
+            FilterQuestion(
                 question="Is the author starting a non digital business? Like a bakery, garden business, salon, etc.",
                 reject_on=True,
             ),

@@ -57,6 +57,7 @@ def publish_comment(
     id, text: str, username: str, password: str
 ) -> PublishCommentResponse | None:
     lead = db.get_lead(id)
+    print(lead)
     if lead is None or lead.status == "subscriber":
         logging.error(f"Lead with id {id} not found")
         return None
