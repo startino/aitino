@@ -35,15 +35,12 @@ class RagContext:
     def __init__(
         self,
         task: str | None,
-        docs_path: dict[str, list[str]] | None,
+        docs_path: str | list[str] | None,
     ):
         self.task = task
         self.docs_path = docs_path
         self.proxy = RetrieveUserProxyAgent(
             name="Boss_Assistant",
-            is_termination_msg=lambda x: x.get("content", "")
-            .rstrip()
-            .endswith("TERMINATE"),
             system_message="Assistant who has extra content retrieval power for solving difficult problems.",
             human_input_mode="NEVER",
             max_consecutive_auto_reply=3,
@@ -79,7 +76,6 @@ class AutogenCrew:
     ):
         self.seed = seed
         self.profile_id = profile_id
-        self.profile = db.get_profile(self.profile_id)
         self.session = session
         self.on_reply = on_message
         self.crew_model = crew_model
@@ -126,19 +122,8 @@ class AutogenCrew:
             self.rag = RagContext(
                 task=rag_options.task, docs_path=rag_options.docs_path
             )
-
-        self.rag = RagContext.get_default()
-        if not self.profile:
-            raise HTTPException(
-                404,
-                "profile not found",
-            )
-        self.funds = self.profile.funding
-        if self.funds <= 0:
-            raise HTTPException(
-                402,
-                "Insufficient funds",
-            )
+        else:
+            self.rag = RagContext.get_default()
 
     async def _on_reply(
         self,
@@ -406,7 +391,6 @@ class AutogenCrew:
             max_round=100,
             speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
-            send_introductions=True,
         )
 
         manager = autogen.GroupChatManager(
@@ -418,7 +402,7 @@ class AutogenCrew:
         with Cache.disk() as cache:
             logging.info("Starting chat")
             chat_result = await self.user_proxy.a_initiate_chat(
-                manager, message=message, cache=cast(Cache, cache)
+                manager, message=message, cache=cast(Cache, cache), max_turns=10
             )
 
         logging.info(f"chat result: {chat_result}")
