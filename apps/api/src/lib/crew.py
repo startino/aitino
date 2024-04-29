@@ -42,6 +42,7 @@ class AutogenCrew:
     ):
         self.seed = seed
         self.profile_id = profile_id
+        self.profile = db.get_profile(self.profile_id)
         self.session = session
         self.on_reply = on_message
         self.crew_model = crew_model
@@ -83,6 +84,17 @@ class AutogenCrew:
             "config_list": self.base_config_list,
             "timeout": 120,
         }
+        if not self.profile:
+            raise HTTPException(
+                500,
+                "self.profile not found somehow, this is very weird and should not happen",
+            )
+        self.funds = self.profile.funding
+        if self.funds <= 0:
+            raise HTTPException(
+                402,
+                "Insufficient funds",
+            )
 
     async def _on_reply(
         self,
@@ -299,14 +311,7 @@ class AutogenCrew:
         total_cost = chat_result.cost["usage_excluding_cached_inference"]["total_cost"]
 
         logging.info(f"Cost: {total_cost}")
-        profile = db.get_profile(self.profile_id)
-        if not profile:
-            raise HTTPException(
-                500,
-                "profile not found somehow, this is very weird and should not happen",
-            )
-        profile_funds = profile.funding
-        new_funding = profile_funds - self.add_margin(total_cost + 0.01)  # type: ignore
+        new_funding = self.funds - self.add_margin(total_cost)  # type: ignore
         db.update_funding(self.profile_id, new_funding)
 
         db.update_status(self.session.id, SessionStatus.FINISHED)
