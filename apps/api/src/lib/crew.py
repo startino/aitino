@@ -86,8 +86,8 @@ class AutogenCrew:
         }
         if not self.profile:
             raise HTTPException(
-                500,
-                "self.profile not found somehow, this is very weird and should not happen",
+                404,
+                "profile not found",
             )
         self.funds = self.profile.funding
         if self.funds <= 0:
