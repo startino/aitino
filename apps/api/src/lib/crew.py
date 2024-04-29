@@ -76,6 +76,7 @@ class AutogenCrew:
     ):
         self.seed = seed
         self.profile_id = profile_id
+        self.profile = db.get_profile(profile_id)
         self.session = session
         self.on_reply = on_message
         self.crew_model = crew_model
@@ -124,6 +125,18 @@ class AutogenCrew:
             )
         else:
             self.rag = RagContext.get_default()
+
+        if not self.profile:
+            raise HTTPException(
+                404,
+                "profile not found",
+            )
+        self.funds = self.profile.funding
+        if self.funds <= 0:
+            raise HTTPException(
+                402,
+                "Insufficient funds",
+            )
 
     async def _on_reply(
         self,
@@ -389,7 +402,7 @@ class AutogenCrew:
             agents=chat_agents,
             messages=dict_messages,
             max_round=100,
-            speaker_selection_method="auto",
+            speaker_selection_method="round_robin",
             # TODO: Fix auto method to not spam route to admin
         )
 
