@@ -10,7 +10,7 @@
 	import { getContext } from '$lib/utils';
 	import { toast } from 'svelte-sonner';
 
-	const { crew, agents, publishedAgents } = getContext('crew');
+	const { agents, publishedAgents } = getContext('crew');
 
 	type $$Props = NodeProps;
 
@@ -18,20 +18,11 @@
 
 	const agent = [...$agents, ...$publishedAgents].find((n) => n.id === id);
 
-	$crew.agents = [...$crew.agents, id];
-
 	const { deleteElements } = useSvelteFlow();
 
 	const deleteAgent = () => {
-		toast.error(`Error: Agent ${id} not found, please refresh the page.`);
-
 		deleteElements({ nodes: [{ id }] });
-
-		$crew.agents = $crew.agents.filter((n) => n !== id);
-
-		if ($crew.receiver_id === id) {
-			$crew.receiver_id = null;
-		}
+		// agents are being updated using nodes automatically so dw about deleting and adding agents in this file
 	};
 
 	if (!agent) {
