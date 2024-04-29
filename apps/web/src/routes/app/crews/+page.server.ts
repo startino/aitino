@@ -5,8 +5,8 @@ import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
-export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
-	const userSession = await authGetSession();
+export const load = async ({ locals: { supabase, stripe, authGetUser, safeGetSession } }) => {
+	const user = await authGetUser();
 
 	const form = {
 		create: await superValidate(zod(createCrewSchema)),
@@ -17,7 +17,7 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 		.GET('/crews/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: user.id
 				}
 			}
 		})
@@ -40,8 +40,8 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 };
 
 export const actions = {
-	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
-		const userSession = await authGetSession();
+	create: async ({ request, locals: { supabase, stripe, authGetUser, safeGetSession } }) => {
+		const user = await authGetUser();
 		const form = await superValidate(request, zod(createCrewSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -51,7 +51,7 @@ export const actions = {
 		const crew = await api
 			.POST('/crews/', {
 				body: {
-					profile_id: userSession.user.id,
+					profile_id: user.id,
 					...data,
 					agents: []
 				}

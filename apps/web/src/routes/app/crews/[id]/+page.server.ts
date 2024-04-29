@@ -2,9 +2,9 @@ import { error, redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
 import { type Node } from '@xyflow/svelte';
 
-export const load = async ({ locals: { authGetSession }, params }) => {
+export const load = async ({ locals: { authGetUser }, params }) => {
 	const { id } = params;
-	const userSession = await authGetSession();
+	const user = await authGetUser();
 
 	const crew: schemas['Crew'] | null = await api
 		.GET('/crews/{id}', {
@@ -35,14 +35,14 @@ export const load = async ({ locals: { authGetSession }, params }) => {
 		.GET('/agents/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: user.id
 				}
 			}
 		})
 		.then(({ data: d, error: e }) => {
 			if (e) {
-				console.error(`Error retrieving agents for profile ${userSession.user.id}: ${e.detail}`);
-				throw error(500, `Failed to load agents for profile ${userSession.user.id}`);
+				console.error(`Error retrieving agents for profile ${user.id}: ${e.detail}`);
+				throw error(500, `Failed to load agents for profile ${user.id}`);
 			}
 			if (!d) {
 				console.error(`No data returned from agents`);
@@ -82,7 +82,7 @@ export const load = async ({ locals: { authGetSession }, params }) => {
 	const nodes: Node[] = [];
 
 	return {
-		profileId: userSession.user.id,
+		profileId: user.id,
 		crew: crew,
 		agents: userAgents,
 		publishedAgents: publishedAgents,
