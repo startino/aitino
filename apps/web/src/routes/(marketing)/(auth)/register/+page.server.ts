@@ -10,21 +10,21 @@ export const load = async () => {
 	};
 };
 
+// TODO: Passwordless auth
 export const actions = {
-	register: async ({ request, locals, url }) => {
+	register: async ({ request, locals: { stripe, supabase }, url }) => {
 		const body = Object.fromEntries(await request.formData());
-		const session = await locals.getSession();
 
 		const provider = url.searchParams.get('provider') as Provider;
 
 		try {
-			const customer = await locals.stripe.customers.create({
+			const customer = await stripe.customers.create({
 				email: body.email as string,
 				name: body.display_name as string
 			});
 
 			if (provider) {
-				const { data, error: err } = await locals.supabase.auth.signInWithOAuth({
+				const { data, error: err } = await supabase.auth.signInWithOAuth({
 					provider: provider
 				});
 
@@ -40,7 +40,7 @@ export const actions = {
 				const user = data.user;
 
 				if (user) {
-					const { error: profileError } = await locals.supabase.from('profiles').upsert({
+					const { error: profileError } = await supabase.from('profiles').upsert({
 						id: user.id,
 						display_name: body.display_name as string,
 						stripe_customer_id: customer.id
@@ -67,7 +67,7 @@ export const actions = {
 				}
 			}
 
-			const { data, error: err } = await locals.supabase.auth.signUp({
+			const { data, error: err } = await supabase.auth.signUp({
 				email: body.email as string,
 				password: body.password as string,
 				options: {
@@ -87,7 +87,7 @@ export const actions = {
 			const user = data.user;
 
 			if (user) {
-				const { error: profileError } = await locals.supabase.from('profiles').upsert({
+				const { error: profileError } = await supabase.from('profiles').upsert({
 					id: user.id,
 					display_name: body.display_name as string,
 					stripe_customer_id: customer.id

@@ -2,14 +2,11 @@ import { fail } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
-import { formSchema } from '../schema';
-import { waitlistSchema } from '$lib/schema';
+import { contactSchema, waitlistSchema } from '$lib/schema';
 
 export const load = async (event) => {
-	const contactForm = await superValidate(zod(formSchema));
+	const contactForm = await superValidate(zod(contactSchema));
 	const waitlistForm = await superValidate(zod(waitlistSchema));
-
-	const session = await event.locals.getSession();
 
 	// Always return { form } in load and form actions.
 	return { contactForm, waitlistForm };
@@ -64,7 +61,7 @@ export const actions = {
 		};
 	},
 	contactUs: async ({ request }) => {
-		const form = await superValidate(request, zod(formSchema));
+		const form = await superValidate(request, zod(contactSchema));
 
 		console.log(form, 'from backend');
 

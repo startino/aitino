@@ -1,13 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { message, setError } from 'sveltekit-superforms';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { createCrewSchema, editCrewSchema } from '$lib/schema';
 
 import api from '$lib/api';
 
-export const load = async ({ locals: { getSession } }) => {
-	const userSession = await getSession();
+export const load = async ({ locals: { supabase, stripe, authGetUser, safeGetSession } }) => {
+	const user = await authGetUser();
 
 	const form = {
 		create: await superValidate(zod(createCrewSchema)),
@@ -18,7 +17,7 @@ export const load = async ({ locals: { getSession } }) => {
 		.GET('/crews/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: user.id
 				}
 			}
 		})
@@ -41,8 +40,8 @@ export const load = async ({ locals: { getSession } }) => {
 };
 
 export const actions = {
-	create: async ({ request, locals: { getSession } }) => {
-		const userSession = await getSession();
+	create: async ({ request, locals: { supabase, stripe, authGetUser, safeGetSession } }) => {
+		const user = await authGetUser();
 		const form = await superValidate(request, zod(createCrewSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -52,7 +51,7 @@ export const actions = {
 		const crew = await api
 			.POST('/crews/', {
 				body: {
-					profile_id: userSession.user.id,
+					profile_id: user.id,
 					...data,
 					agents: []
 				}

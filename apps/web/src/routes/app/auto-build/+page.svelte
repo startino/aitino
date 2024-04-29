@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import ComingSoonPage from '$lib/components/ui/coming-soon/coming-soon-page.svelte';
 </script>
 
