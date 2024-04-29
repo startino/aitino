@@ -16,8 +16,9 @@ from src.models import (
     SessionRunRequest,
     SessionStatus,
     SessionUpdateRequest,
+    RagOptions,
+    SessionInsertRequest,
 )
-from src.models.session import SessionInsertRequest
 
 router = APIRouter(
     prefix="/sessions",
@@ -139,6 +140,11 @@ async def run_crew(
         )
         logging.debug(f"on_reply: {message}")
         db.post_message(message)
+
+    # default the rag options if not provided, might
+    # move this to the AutogenCrew constructor later
+    if not request.rag_options:
+        request.rag_options = RagOptions(use_rag=False)
 
     try:
         crew = AutogenCrew(
