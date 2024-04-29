@@ -1,12 +1,16 @@
 import logging
 import os
 import re
-from typing import Annotated, Any, cast, Callable
+from typing import Annotated, Any, Callable, cast
 from uuid import UUID
 
 import autogen
 import tiktoken
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
+    RetrieveUserProxyAgent,
+)
 from autogen.cache import Cache
+from autogen.function_utils import get_function_schema
 from fastapi import HTTPException
 from langchain.tools import BaseTool
 
@@ -16,8 +20,8 @@ from src.models import (
     CodeExecutionConfig,
     CrewProcessed,
     Message,
-    Session,
     RagOptions,
+    Session,
 )
 from src.models.session import SessionStatus
 from src.tools import (
@@ -25,8 +29,6 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
-from autogen.function_utils import get_function_schema
 
 
 class RagContext:

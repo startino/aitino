@@ -11,13 +11,13 @@ from src.lib.parser import get_processed_crew_by_id, process_crew
 from src.models import (
     Crew,
     Message,
+    RagOptions,
     Session,
     SessionGetRequest,
+    SessionInsertRequest,
     SessionRunRequest,
     SessionStatus,
     SessionUpdateRequest,
-    RagOptions,
-    SessionInsertRequest,
 )
 
 router = APIRouter(
