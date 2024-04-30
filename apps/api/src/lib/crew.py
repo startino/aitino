@@ -9,9 +9,9 @@ import tiktoken
 from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
     RetrieveUserProxyAgent,
 )
+from autogen.agentchat.utils import gather_usage_summary
 from autogen.cache import Cache
 from autogen.function_utils import get_function_schema
-from autogen.agentchat.utils import gather_usage_summary
 from fastapi import HTTPException
 from langchain.tools import BaseTool
 

@@ -15,21 +15,6 @@ config_list = autogen.config_list_from_json(
         "model": ["gpt-3.5-turbo"],
     },
 )
-# assistant = RetrieveAssistantAgent(
-#    name="assistant",
-#    system_message="you are an assistant who retrieves context",
-#    llm_config=config
-# )
-#
-# user_proxy = RetrieveUserProxyAgent(
-#    name="rag proxy agent",
-#     retrieve_config={
-#        "task": "qa",
-#        "docs_path": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
-#    }
-# )
-#
-# user_proxy.initiate_chat(assistant, message=user_proxy.message_generator, problem="Tell me about autogen")
 
 termination_msg = lambda x: x.get("content", "").rstrip().endswith("TERMINATE")
 
