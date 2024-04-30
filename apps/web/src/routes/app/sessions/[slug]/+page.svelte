@@ -10,7 +10,6 @@
 	import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import api from '$lib/api';
 	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
 
 	export let data;
 
@@ -27,11 +26,24 @@
 	setContext('session', writableData);
 	let { session, messages, crew } = getContext('session');
 
+	// TODO: remove this when we don't need to remove duplicate messages with less than 3 seconds between them
+	$: $messages = $messages.filter((msg, index, self) => {
+		const firstIndex = self.findIndex(
+			(m) =>
+				m.content === msg.content &&
+				m.sender_id === msg.sender_id &&
+				Math.abs(new Date(m.created_at).getTime() - new Date(msg.created_at).getTime()) < 3000
+		);
+		return firstIndex === index;
+	});
+
 	const continueSession = async () => {
 		if ($session.reply !== '') {
+			// messages but just with the .content
+			const messageContentDict = $messages.map((msg) => msg.content);
 			const reply = `
                 Continue the conversation from last time, here is the conversation:
-                ${JSON.stringify($messages)}
+                ${JSON.stringify(messageContentDict)}
 
                 The Admin has Replied:
                 ${$session.reply}
@@ -73,7 +85,6 @@
 		if (payload.new.session_id === $session.id) {
 			$messages = [...$messages, payload.new];
 			console.log('New message:', payload.new);
-			window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 		}
 	};
 
