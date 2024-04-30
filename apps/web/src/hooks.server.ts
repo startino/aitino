@@ -1,10 +1,10 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { STRIPE_SECRET_KEY } from '$env/static/private';
 import { createServerClient } from '@supabase/ssr';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { error, redirect, type Handle } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { toast } from 'svelte-sonner';
-import type { User } from '@supabase/supabase-js';
+import api from '$lib/api';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -27,24 +27,50 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
-	event.locals.getUser = async (): Promise<User | null> => {
+	event.locals.getUser = async () => {
 		const {
 			data: { user },
 			error
 		} = await event.locals.supabase.auth.getUser();
+
 		if (!user || error) {
 			return null;
 		}
-		return user;
+
+		const profile = await api
+			.GET('/profiles/{id}', {
+				params: {
+					path: {
+						id: user.id
+					}
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error retrieving profile: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from profile`);
+					return null;
+				}
+				return d;
+			});
+		if (!profile) {
+			return null;
+		}
+
+		return { ...user, ...profile };
 	};
 
 	event.locals.authGetUser = async () => {
-		const user = await event.locals.getUser();
-		if (!user) {
+		const userProfile = await event.locals.getUser();
+		if (!userProfile) {
 			toast('No user. Please log in.');
 			redirect(303, '/login');
 		}
-		return user;
+
+		return userProfile;
 	};
 
 	/**
@@ -60,13 +86,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return null;
 		}
 
-		const user = await event.locals.getUser();
-		if (!user) {
-			// JWT validation has failed
+		const userProfile = await event.locals.getUser();
+		if (!userProfile) {
 			return null;
 		}
 
-		return { session, user };
+		return { ...session, ...userProfile };
 	};
 
 	event.locals.authGetSession = async () => {
