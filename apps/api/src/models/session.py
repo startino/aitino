@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from .rag_model import RagOptions
+
 
 class SessionStatus(StrEnum):
     RUNNING = auto()
@@ -41,6 +43,7 @@ class SessionRunRequest(BaseModel):
     crew_id: UUID
     profile_id: UUID
     session_title: str = "Untitled"
+    rag_options: RagOptions | None = None
     session_id: UUID | None = None
     reply: str | None = None
 

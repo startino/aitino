@@ -11,13 +11,14 @@ from src.lib.parser import get_processed_crew_by_id, process_crew
 from src.models import (
     Crew,
     Message,
+    RagOptions,
     Session,
     SessionGetRequest,
+    SessionInsertRequest,
     SessionRunRequest,
     SessionStatus,
     SessionUpdateRequest,
 )
-from src.models.session import SessionInsertRequest
 
 router = APIRouter(
     prefix="/sessions",
@@ -140,8 +141,15 @@ async def run_crew(
         logging.debug(f"on_reply: {message}")
         db.post_message(message)
 
+    # default the rag options if not provided, might
+    # move this to the AutogenCrew constructor later
+    if not request.rag_options:
+        request.rag_options = RagOptions(use_rag=False)
+
     try:
-        crew = AutogenCrew(session.profile_id, session, crew_model, on_reply)
+        crew = AutogenCrew(
+            session.profile_id, session, crew_model, request.rag_options, on_reply
+        )
     except Exception as e:
         db.delete_session(session.id)
         logging.error(f"got error when running crew: {e}")
