@@ -40,6 +40,7 @@ from .profile import (
     ProfileInsertRequest,
     ProfileUpdateRequest,
 )
+from .rag_model import RagOptions
 from .session import (
     Session,
     SessionGetRequest,
@@ -110,4 +111,5 @@ __all__ = [
     "BillingUpdateRequest",
     "ValidCrew",
     "Tools",
+    "RagOptions",
 ]

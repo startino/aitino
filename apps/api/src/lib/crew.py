@@ -1,12 +1,17 @@
 import logging
 import os
 import re
-from typing import Any, cast
+from typing import Annotated, Any, Callable, cast
 from uuid import UUID
 
 import autogen
 import tiktoken
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
+    RetrieveUserProxyAgent,
+)
+from autogen.agentchat.utils import gather_usage_summary
 from autogen.cache import Cache
+from autogen.function_utils import get_function_schema
 from fastapi import HTTPException
 from langchain.tools import BaseTool
 
@@ -16,6 +21,7 @@ from src.models import (
     CodeExecutionConfig,
     CrewProcessed,
     Message,
+    RagOptions,
     Session,
 )
 from src.models.session import SessionStatus
@@ -24,6 +30,37 @@ from src.tools import (
     generate_tool_from_uuid,
     get_tool_ids_from_agent,
 )
+
+
+class RagContext:
+    def __init__(
+        self,
+        task: str | None,
+        docs_path: str | list[str] | None,
+    ):
+        self.task = task
+        self.docs_path = docs_path
+        self.proxy = RetrieveUserProxyAgent(
+            name="Boss_Assistant",
+            is_termination_msg=lambda x: x.get("content", "")
+            .rstrip()
+            .endswith("TERMINATE"),
+            system_message="Assistant who has extra content retrieval power for solving difficult problems.",
+            human_input_mode="NEVER",
+            max_consecutive_auto_reply=3,
+            retrieve_config={
+                "task": self.task,
+                "docs_path": self.docs_path,
+                "get_or_create": True,
+                "model": "gpt-3.5-turbo",
+            },
+            code_execution_config=False,  # we don't want to execute code in this case.
+        )
+
+    @classmethod
+    def get_default(cls):
+        return RagContext(task="default", docs_path=None)
+
 
 ACCURACY = os.environ.get("MONETARY_DECIMAL_ACCURACY")
 if ACCURACY is None:
@@ -36,28 +73,28 @@ class AutogenCrew:
         profile_id: UUID,
         session: Session,
         crew_model: CrewProcessed,
+        rag_options: RagOptions,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo",
-        seed: int = 41,
+        seed: int = 42,
     ):
         self.seed = seed
         self.profile_id = profile_id
-        self.profile = db.get_profile(self.profile_id)
+        self.profile = db.get_profile(profile_id)
         self.session = session
         self.on_reply = on_message
         self.crew_model = crew_model
         self.valid_tools: list[BaseTool] = []
-
+        self.rag_options = rag_options
         self.agents: list[autogen.ConversableAgent | autogen.Agent] = (
             self._create_agents(crew_model)
         )
-
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
-            max_consecutive_auto_reply=4,
+            max_consecutive_auto_reply=2,
+            is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
             human_input_mode="NEVER",
-            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            default_auto_reply="TERMINATE",
             code_execution_config=CodeExecutionConfig(
                 work_dir=f".cache/{self.seed}/scripts"
             ).model_dump(),
@@ -71,6 +108,8 @@ class AutogenCrew:
             else None
         )
         self.user_proxy.register_reply([autogen.Agent, None], self._on_reply)
+        wrapped_function = self.user_proxy._wrap_function(self._retrieve_content)
+        self.user_proxy.register_function({"retrieve_content": wrapped_function})
 
         self.base_config_list = autogen.config_list_from_json(
             "OAI_CONFIG_LIST",
@@ -84,6 +123,13 @@ class AutogenCrew:
             "config_list": self.base_config_list,
             "timeout": 120,
         }
+        if rag_options.use_rag:
+            self.rag = RagContext(
+                task=rag_options.task, docs_path=rag_options.docs_path
+            )
+        else:
+            self.rag = RagContext.get_default()
+
         if not self.profile:
             raise HTTPException(
                 404,
@@ -166,6 +212,66 @@ class AutogenCrew:
             f"""{agent.role.replace(' ', '')}-{agent.role.replace(' ', '')}""",
         )[:64]
 
+    def register_func_to_config(
+        self,
+        name: str,
+        description: str,
+        function: Callable[..., Any],
+        agent: autogen.AssistantAgent,
+    ):
+        function_schema = get_function_schema(
+            function, name=name, description=description
+        )
+        agent.update_tool_signature(
+            function_schema,
+            is_remove=False,
+        )
+
+        return function
+
+    def _retrieve_content(
+        self,
+        message: Annotated[
+            str,
+            "Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.",
+        ],
+        n_results: Annotated[int, "number of results"] = 3,
+    ) -> str:
+        """
+        This function retrieves content based on a given message and a specified number of results.
+
+        Parameters:
+        message (str): A refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.
+        n_results (int): The number of results to retrieve. Default is 3.
+
+        Returns:
+        str: The retrieved content. If no content is retrieved, the original message is returned.
+
+        """
+        # Check if we need to update the context.
+        update_context_case1, update_context_case2 = (
+            self.rag.proxy._check_update_context(message)
+        )
+        # If either context update case is true and the self.rag.proxy's update_context attribute is also true
+        if (
+            update_context_case1 or update_context_case2
+        ) and self.rag.proxy.update_context:
+            # Update the problem attribute of self.rag.proxy with the message if it doesn't already exist
+            self.rag.proxy.problem = (  # type: ignore
+                message
+                if not hasattr(self.rag.proxy, "problem")
+                else self.rag.proxy.problem  # type: ignore
+            )
+            # Generate a user reply based on the message
+            _, ret_msg = self.rag.proxy._generate_retrieve_user_reply(message)  # type: ignore
+        else:
+            # If the context doesn't need to be updated, create a context dictionary with the problem and number of results
+            _context = {"problem": message, "n_results": n_results}
+            # Generate a message based on the context
+            ret_msg = self.rag.proxy.message_generator(self.rag.proxy, None, _context)
+        # Return the retrieved message if it exists, otherwise return the original message
+        return ret_msg if ret_msg else message  # type: ignore
+
     def _create_agents(
         self, crew_model: CrewProcessed
     ) -> list[autogen.ConversableAgent | autogen.Agent]:
@@ -222,8 +328,7 @@ class AutogenCrew:
             if tool_schemas:
                 config["tools"] = tool_schemas
 
-            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """
-            # TODO: add what agent it should send to next - Leon
+            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. End the message with the agent you want to speak to."""
 
             agent_instance = autogen.AssistantAgent(
                 name=self._format_agent_name(agent),
@@ -234,12 +339,18 @@ class AutogenCrew:
             if agent.id == crew_model.receiver_id:
                 agent_instance.update_system_message(
                     system_message
-                    + "\nWrite TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."
-                    ""
+                    + "\nReply 'Admin' if all tasks has been solved at full satisfaction."
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
 
+            if self.rag_options.use_rag:
+                self.decorated_function = self.register_func_to_config(
+                    name="retrieve_content",
+                    description="retrieve content for code generation and question answering.",
+                    function=self._retrieve_content,
+                    agent=agent_instance,
+                )
             agents.append(agent_instance)
 
         return agents
@@ -285,25 +396,36 @@ class AutogenCrew:
         dict_messages = [m.model_dump() for m in (messages if messages else [])]
         speaker_selection_method = "auto" if len(self.agents) > 1 else "round_robin"
         logging.info(speaker_selection_method)
+        chat_agents = self.agents + [self.user_proxy]
+        if self.rag_options.use_rag:
+            chat_agents.append(self.rag.proxy)
+
+        logging.info(f"agents: {chat_agents}")
         groupchat = autogen.GroupChat(
-            agents=self.agents + [self.user_proxy],
+            agents=chat_agents,
             messages=dict_messages,
-            max_round=100,
+            max_round=30,
             speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
             send_introductions=True,
+            select_speaker_message_template="""You are in a role play game. The following roles are available:
+                {roles}.
+                Read the following conversation.
+                Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
+            select_speaker_prompt_template="""Read the above conversation. 
+                Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
         )
 
         manager = autogen.GroupChatManager(
-            groupchat=groupchat, llm_config=self.base_config
+            groupchat=groupchat,
+            llm_config=self.base_config,
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
-
         logging.info("Starting Crew")
         with Cache.disk() as cache:
             logging.info("Starting chat")
             chat_result = await self.user_proxy.a_initiate_chat(
-                manager, message=message, cache=cast(Cache, cache)
+                manager, message=message, cache=cast(Cache, cache), max_turns=10
             )
 
         logging.info(f"chat result: {chat_result}")
