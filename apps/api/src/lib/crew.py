@@ -92,7 +92,9 @@ class AutogenCrew:
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
             max_consecutive_auto_reply=2,
-            is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
+            is_termination_msg=lambda x: x.get("content", "")
+            .rstrip()
+            .endswith("TERMINATE"),
             human_input_mode="NEVER",
             default_auto_reply="TERMINATE",
             code_execution_config=CodeExecutionConfig(
@@ -430,7 +432,15 @@ class AutogenCrew:
 
         logging.info(f"chat result: {chat_result}")
 
-        total_cost = chat_result.cost["usage_excluding_cached_inference"]["total_cost"]
+        manager_admin_cost = chat_result.cost["usage_excluding_cached_inference"][
+            "total_cost"
+        ]
+        agent_cost_dict = gather_usage_summary(groupchat.agents)
+        agent_cost = agent_cost_dict["usage_excluding_cached_inference"]["total_cost"]
+
+        logging.info(f"manager + admin cost: {manager_admin_cost}")
+        logging.info(f"agent cost: {agent_cost}")
+        total_cost = manager_admin_cost + agent_cost
 
         logging.info(f"Cost: {total_cost}")
         new_funding = self.funds - self.add_margin(total_cost)  # type: ignore
