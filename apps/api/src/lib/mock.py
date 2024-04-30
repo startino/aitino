@@ -71,7 +71,7 @@ markdown_table: dict = {
 
 tool, prompt = (
     "google serper results tool",
-    "'hvordan ikke være dum' in norwegian with region set to norway",
+    "'hur är man inte dum' in swedish with region set to japan",
 )
 
 test_tool: dict = {
@@ -104,4 +104,4 @@ test_rag: dict = {
     "avatar": "",
 }
 
-crew_model = test_rag
+crew_model = test_tool

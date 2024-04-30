@@ -11,6 +11,7 @@ from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
 )
 from autogen.cache import Cache
 from autogen.function_utils import get_function_schema
+from autogen.agentchat.utils import gather_usage_summary
 from fastapi import HTTPException
 from langchain.tools import BaseTool
 
@@ -41,6 +42,9 @@ class RagContext:
         self.docs_path = docs_path
         self.proxy = RetrieveUserProxyAgent(
             name="Boss_Assistant",
+            is_termination_msg=lambda x: x.get("content", "")
+            .rstrip()
+            .endswith("TERMINATE"),
             system_message="Assistant who has extra content retrieval power for solving difficult problems.",
             human_input_mode="NEVER",
             max_consecutive_auto_reply=3,
@@ -72,7 +76,7 @@ class AutogenCrew:
         rag_options: RagOptions,
         on_message: Any | None = None,
         base_model: str = "gpt-4-turbo",
-        seed: int = 41,
+        seed: int = 42,
     ):
         self.seed = seed
         self.profile_id = profile_id
@@ -87,10 +91,10 @@ class AutogenCrew:
         )
         self.user_proxy = autogen.UserProxyAgent(
             name="Admin",
-            system_message="""Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.""",
-            max_consecutive_auto_reply=4,
+            max_consecutive_auto_reply=2,
+            is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
             human_input_mode="NEVER",
-            default_auto_reply="Reply TERMINATE if the task has been solved at full satisfaction. If you instead require more information reply TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+            default_auto_reply="TERMINATE",
             code_execution_config=CodeExecutionConfig(
                 work_dir=f".cache/{self.seed}/scripts"
             ).model_dump(),
@@ -324,8 +328,7 @@ class AutogenCrew:
             if tool_schemas:
                 config["tools"] = tool_schemas
 
-            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. """
-            # TODO: add what agent it should send to next - Leon
+            system_message = f"""{agent.role}\n\n{agent.system_message}. If you write a program, give the program to the admin. End the message with the agent you want to speak to."""
 
             agent_instance = autogen.AssistantAgent(
                 name=self._format_agent_name(agent),
@@ -336,8 +339,7 @@ class AutogenCrew:
             if agent.id == crew_model.receiver_id:
                 agent_instance.update_system_message(
                     system_message
-                    + "\nWrite TERMINATE if all tasks has been solved at full satisfaction. If you instead require more information write TERMINATE along with a list of items of information you need. Otherwise, reply CONTINUE, or the reason why the tasks are not solved yet."
-                    ""
+                    + "\nReply 'Admin' if all tasks has been solved at full satisfaction."
                 )
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
@@ -398,19 +400,27 @@ class AutogenCrew:
         if self.rag_options.use_rag:
             chat_agents.append(self.rag.proxy)
 
+        logging.info(f"agents: {chat_agents}")
         groupchat = autogen.GroupChat(
             agents=chat_agents,
             messages=dict_messages,
-            max_round=100,
-            speaker_selection_method="round_robin",
+            max_round=30,
+            speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
+            send_introductions=True,
+            select_speaker_message_template="""You are in a role play game. The following roles are available:
+                {roles}.
+                Read the following conversation.
+                Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
+            select_speaker_prompt_template="""Read the above conversation. 
+                Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
         )
 
         manager = autogen.GroupChatManager(
-            groupchat=groupchat, llm_config=self.base_config
+            groupchat=groupchat,
+            llm_config=self.base_config,
         )
         manager.register_reply([autogen.Agent, None], self._on_reply)
-
         logging.info("Starting Crew")
         with Cache.disk() as cache:
             logging.info("Starting chat")

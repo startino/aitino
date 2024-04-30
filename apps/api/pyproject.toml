@@ -42,6 +42,7 @@ langchain-exa = "^0.0.1"
 stackapi = "^0.3.0"
 mypy = "^1.9.0"
 sentence-transformers = "^2.7.0"
+flaml = "^2.1.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
