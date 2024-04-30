@@ -104,4 +104,4 @@ test_rag: dict = {
     "avatar": "",
 }
 
-crew_model = test_tool
+crew_model = test_rag
