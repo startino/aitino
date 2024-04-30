@@ -147,9 +147,4 @@ def test_register_for_llm():
         llm_config={"config_list": config_list, "timeout": 60, "temperature": 0},
     )
 
-    new_test_func = test_agent.register_for_llm(
-        name="function_moment",
-        description="test function",
-        api_style="function",
-    )(test_func)
     return test_agent.llm_config, test_func.__name__
