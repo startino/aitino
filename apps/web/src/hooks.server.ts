@@ -30,14 +30,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.getUser = async () => {
 		const {
 			data: { user },
-			error
+			error: e
 		} = await event.locals.supabase.auth.getUser();
 
-		if (!user || error) {
+		if (!user || e) {
 			return null;
 		}
 
-		const profile = await api
+		let profile = await api
 			.GET('/profiles/{id}', {
 				params: {
 					path: {
@@ -56,18 +56,47 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 				return d;
 			});
-		if (!profile) {
-			return null;
+
+		if (profile) {
+			return { ...user, ...profile };
 		}
 
-		return { ...user, ...profile };
+		profile = await api
+			.POST('/profiles/', {
+				body: {
+					id: user.id,
+					display_name: user.email ?? 'unknown',
+					tier_id: '3d0f047c-1125-41ef-9c85-0b441a1206cf',
+					funding: 500000
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating profile: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from profile`);
+					return null;
+				}
+				return d;
+			});
+
+		if (profile) {
+			return { ...user, ...profile };
+		}
+
+		throw error(
+			500,
+			'Failed to find and create profile. Please report the issue and try again later.'
+		);
 	};
 
 	event.locals.authGetUser = async () => {
 		const userProfile = await event.locals.getUser();
 		if (!userProfile) {
 			toast('No user. Please log in.');
-			redirect(303, '/login');
+			redirect(303, '/auth');
 		}
 
 		return userProfile;
@@ -98,7 +127,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const auth = await event.locals.safeGetSession();
 		if (!auth) {
 			toast('No session or user. Please log in.');
-			redirect(303, '/login');
+			redirect(303, '/auth');
 		}
 		return auth;
 	};

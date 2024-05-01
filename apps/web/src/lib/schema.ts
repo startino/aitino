@@ -5,7 +5,7 @@ export const contactSchema = z.object({
 	email: z.string().trim().email({ message: 'Invalid email address' }),
 	description: z.string().trim().min(20).max(500)
 });
-export type ContactSchema = typeof formSchema;
+export type ContactSchema = typeof contactSchema;
 
 export const waitlistSchema = z.object({
 	email: z.string().trim().email({ message: 'Invalid email address' })
@@ -15,7 +15,7 @@ export type WaitlistSchema = typeof waitlistSchema;
 export const promptSchema = z.object({
 	email: z.string().trim().email({ message: 'Invalid email address' })
 });
-export type promptSchema = typeof promptSchema;
+export type PromptSchema = typeof promptSchema;
 
 export const apiKeySchema = z.object({
 	typeId: z.string().min(1, 'An API Key Type is required'),
@@ -50,31 +50,7 @@ export const agentSchema = z.object({
 });
 export type AgentSchema = typeof agentSchema;
 
-// TODO: rename to createUserSchema
-export const formSchema = z.object({
-	display_name: z
-		.string()
-		.min(1, { message: 'Display Name is required' })
-		.max(100, { message: 'Display Name must be 100 characters or less' }),
-	email: z.string().email({ message: 'Invalid email address' }),
-	password: z
-		.string()
-		.min(8, { message: 'Password must be at least 8 characters long.' })
-		.max(100, { message: 'Password must be 100 characters or less.' })
-		.regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter.' })
-		.regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
-		.regex(/[0-9]/, { message: 'Password must contain at least one number.' })
+export const emailAuthSchema = z.object({
+	email: z.string().email({ message: 'Invalid email address' })
 });
-export type FormSchema = typeof formSchema; // TODO: rename to CreateUserSchema
-
-export const loginUserSchema = z.object({
-	email: z.string().email({ message: 'Invalid email address' }),
-	password: z
-		.string()
-		.min(8, { message: 'Password must be at least 8 characters long.' })
-		.max(100, { message: 'Password must be 100 characters or less.' })
-		.regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter.' })
-		.regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
-		.regex(/[0-9]/, { message: 'Password must contain at least one number.' })
-});
-export type LoginUserSchema = typeof loginUserSchema;
+export type EmailAuthSchema = typeof emailAuthSchema; // TODO: rename to CreateUserSchema

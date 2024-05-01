@@ -12,7 +12,7 @@
 	export let CTAButtons: {
 		[label: string]: { href: string; highlight: boolean };
 	} = {
-		'Sign In': { href: '/register', highlight: true }
+		'Sign In': { href: '/auth', highlight: true }
 	};
 </script>
 
