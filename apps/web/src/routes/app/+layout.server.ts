@@ -1,8 +1,9 @@
 import type Stripe from 'stripe';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
-	const userSession = await authGetSession();
+export const load = async ({ locals: { supabase, stripe, authGetUser } }) => {
+	const user = await authGetUser();
+	console.log('user', user);
 
 	// TODO: convert to using api
 
@@ -16,25 +17,19 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 	const { data: subscription } = await supabase
 		.from('subscriptions')
 		.select()
-		.eq('profile_id', userSession?.user.id)
-		.single();
-
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('tiers ( * )')
-		.eq('id', userSession?.user.id)
+		.eq('profile_id', user.id)
 		.single();
 
 	const { data: tiersList } = await supabase.from('tiers').select();
 
 	data.tiersList = tiersList ?? [];
 
-	data.userTier = profile?.tiers as any; // TODO: don't use any
+	data.userTier = user?.tiers as any; // TODO: don't use any
 
 	const { data: billing } = await supabase
 		.from('billing_information')
 		.select()
-		.eq('profile_id', userSession?.user.id)
+		.eq('profile_id', user.id)
 		.single();
 
 	try {
@@ -53,5 +48,8 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 		data.stripeSub = null;
 	}
 
-	return data;
+	return {
+		user,
+		...data
+	};
 };
