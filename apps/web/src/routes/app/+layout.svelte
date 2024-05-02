@@ -2,7 +2,7 @@
 	import { writable } from 'svelte/store';
 
 	import { Shell } from '$lib/components/layout/shell';
-	import { SideNav } from '$lib/components/ui/side-nav';
+	import SideNav from './SideNav.svelte';
 
 	import { CircleUserRound, Dna, LogOut, MessagesSquare, UsersRound, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
@@ -78,7 +78,7 @@
 <Shell class="h-screen">
 	<svelte:fragment slot="sidebarLeft">
 		{#key subscribed}
-			<SideNav {navigations} {bottomNavigation} {subscribed} />
+			<SideNav user={data.user} {navigations} {bottomNavigation} {subscribed} />
 		{/key}
 	</svelte:fragment>
 

@@ -3,12 +3,11 @@
 	import { LogOut, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import type { Icon } from 'lucide-svelte';
-	import { Logo } from '../logo';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Logo } from '$lib/components/ui/logo';
+	import type { schemas } from '$lib/api';
+	import type { User } from '@supabase/supabase-js';
 
-	export let subscribed = false;
+	export let user: User & schemas['Profile'];
 
 	export let navigations: {
 		name: string;
@@ -33,8 +32,6 @@
 		}
 	];
 	export let bottomNavigation = [{ name: 'Logout', href: '/', icon: LogOut, current: false }]; // TODO: Make this button actually log out the user
-
-	let tiersOpen = false;
 </script>
 
 <!-- Static sidebar for desktop -->
@@ -44,13 +41,22 @@
 		class="flex grow flex-col gap-y-5 overflow-hidden rounded-2xl border bg-primary-950/30 px-6 pb-6 text-white"
 	>
 		<div class="flex h-16 shrink-0 items-center px-2 pt-6">
-			<a href="/app/auto-build" class="mr-4 flex place-items-center space-x-2">
+			<a href="/app" class="mr-4 flex place-items-center space-x-2">
 				<Logo />
 				<span class="self-center whitespace-nowrap text-2xl font-semibold text-white"
 					>Aitino <span class="text-sm">[v0.1.0]</span></span
 				>
 			</a>
 		</div>
+		<div class="flex h-16 shrink-0 items-center px-2 pt-6">
+			<a href="/app" class="mr-4 flex place-items-center space-x-2">
+				<p class="self-center whitespace-nowrap text-lg font-semibold">
+					Funding:<br />
+					${user.funding / 100000}
+				</p>
+			</a>
+		</div>
+
 		<nav class="flex h-full flex-col sm:mt-0 sm:pt-0">
 			<ul role="list" class="mb-5 flex h-full list-none flex-col gap-y-0 pl-0 pt-6 sm:mt-0 sm:pl-0">
 				<li class="my-0 pl-0 sm:my-0 sm:pl-0">
@@ -83,21 +89,6 @@
 							{/each}
 						</ul>
 					{/each}
-					{#if !subscribed}
-						<Dialog.Root open={tiersOpen} onOpenChange={(open) => (tiersOpen = open)}>
-							<Dialog.Trigger class="mx-auto mt-4 block">
-								<Button>Upgrade</Button>
-							</Dialog.Trigger>
-							<Dialog.Content class="h-dvh max-w-screen-lg overflow-scroll py-10">
-								<PricingTiers
-									on:choose={() => {
-										tiersOpen = false;
-									}}
-								/>
-							</Dialog.Content>
-							<Dialog.Overlay />
-						</Dialog.Root>
-					{/if}
 				</li>
 				<li class="mt-auto">
 					<ul role="list" class="list-none">

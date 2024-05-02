@@ -1,10 +1,10 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { STRIPE_SECRET_KEY } from '$env/static/private';
 import { createServerClient } from '@supabase/ssr';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { error, redirect, type Handle } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { toast } from 'svelte-sonner';
-import type { User } from '@supabase/supabase-js';
+import api from '$lib/api';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -27,24 +27,79 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
-	event.locals.getUser = async (): Promise<User | null> => {
+	event.locals.getUser = async () => {
 		const {
 			data: { user },
-			error
+			error: e
 		} = await event.locals.supabase.auth.getUser();
-		if (!user || error) {
+
+		if (!user || e) {
 			return null;
 		}
-		return user;
+
+		let profile = await api
+			.GET('/profiles/{id}', {
+				params: {
+					path: {
+						id: user.id
+					}
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error retrieving profile: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from profile`);
+					return null;
+				}
+				return d;
+			});
+
+		if (profile) {
+			return { ...user, ...profile };
+		}
+
+		profile = await api
+			.POST('/profiles/', {
+				body: {
+					id: user.id,
+					display_name: user.email ?? 'unknown',
+					tier_id: '3d0f047c-1125-41ef-9c85-0b441a1206cf',
+					funding: 500000
+				}
+			})
+			.then(({ data: d, error: e }) => {
+				if (e) {
+					console.error(`Error creating profile: ${e.detail}`);
+					return null;
+				}
+				if (!d) {
+					console.error(`No data returned from profile`);
+					return null;
+				}
+				return d;
+			});
+
+		if (profile) {
+			return { ...user, ...profile };
+		}
+
+		throw error(
+			500,
+			'Failed to find and create profile. Please report the issue and try again later.'
+		);
 	};
 
 	event.locals.authGetUser = async () => {
-		const user = await event.locals.getUser();
-		if (!user) {
+		const userProfile = await event.locals.getUser();
+		if (!userProfile) {
 			toast('No user. Please log in.');
-			redirect(303, '/login');
+			redirect(303, '/auth');
 		}
-		return user;
+
+		return userProfile;
 	};
 
 	/**
@@ -60,20 +115,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return null;
 		}
 
-		const user = await event.locals.getUser();
-		if (!user) {
-			// JWT validation has failed
+		const userProfile = await event.locals.getUser();
+		if (!userProfile) {
 			return null;
 		}
 
-		return { session, user };
+		return { ...session, ...userProfile };
 	};
 
 	event.locals.authGetSession = async () => {
 		const auth = await event.locals.safeGetSession();
 		if (!auth) {
 			toast('No session or user. Please log in.');
-			redirect(303, '/login');
+			redirect(303, '/auth');
 		}
 		return auth;
 	};
