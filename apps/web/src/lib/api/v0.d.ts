@@ -659,6 +659,15 @@ export interface components {
       /** Reddit Password */
       reddit_password: string;
     };
+    /** RagOptions */
+    RagOptions: {
+      /** Use Rag */
+      use_rag: boolean;
+      /** Task */
+      task?: string | null;
+      /** Docs Path */
+      docs_path?: string | string[] | null;
+    };
     /** Session */
     Session: {
       /**
@@ -724,6 +733,7 @@ export interface components {
        * @default Untitled
        */
       session_title?: string;
+      rag_options?: components["schemas"]["RagOptions"] | null;
       /** Session Id */
       session_id?: string | null;
       /** Reply */
