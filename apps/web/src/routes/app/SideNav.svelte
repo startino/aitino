@@ -31,7 +31,6 @@
 			]
 		}
 	];
-	export let bottomNavigation = [{ name: 'Logout', href: '/', icon: LogOut, current: false }]; // TODO: Make this button actually log out the user
 </script>
 
 <!-- Static sidebar for desktop -->
@@ -92,21 +91,15 @@
 				</li>
 				<li class="mt-auto">
 					<ul role="list" class="list-none">
-						{#each bottomNavigation as { name, href, icon, current }}
-							<li>
-								<a
-									href={'/app/' + href}
-									class="group flex gap-x-3 rounded-md px-2 py-1 text-sm font-semibold transition hover:translate-x-2 hover:scale-[1.04] {$page.url.pathname.includes(
-										href
-									)
-										? 'bg-accent/90 text-foreground hover:bg-accent '
-										: 'text-foreground opacity-100 hover:bg-primary/5 hover:text-accent'}"
-								>
-									<svelte:component this={icon} />
-									{name}
-								</a>
-							</li>
-						{/each}
+						<li>
+							<a
+								href="/auth/logout"
+								class="group flex gap-x-3 rounded-md px-2 py-1 text-sm font-semibold text-foreground opacity-100 transition hover:translate-x-2 hover:scale-[1.04] hover:bg-primary/5 hover:text-accent"
+							>
+								<LogOut />
+								Logout
+							</a>
+						</li>
 					</ul>
 				</li>
 			</ul>
