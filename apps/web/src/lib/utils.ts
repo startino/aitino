@@ -10,7 +10,7 @@ import { writable } from 'svelte/store';
 import type { ContextMap, Crew } from '$lib/types';
 import { browser } from '$app/environment';
 import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
-import { supabase } from './supabase';
+import supabase from './supabase/server';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 

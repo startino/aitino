@@ -5,7 +5,7 @@
 	import type { Icon } from 'lucide-svelte';
 	import { Logo } from '$lib/components/ui/logo';
 	import type { schemas } from '$lib/api';
-	import type { User } from '@supabase/supabase-js';
+	import type { User } from '@supabase/supabase-js'; // TODO: Is supabase-js needed for this?
 
 	export let user: User & schemas['Profile'];
 
