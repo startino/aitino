@@ -2,10 +2,12 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from src.routers import index
 
 def create_app() -> FastAPI:
     app = FastAPI()
 
+    app.include_router(index.router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
