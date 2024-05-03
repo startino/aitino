@@ -1,6 +1,6 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { createServerClient, createBrowserClient } from '@supabase/ssr';
 import { STRIPE_SECRET_KEY } from '$env/static/private';
-import { createServerClient } from '@supabase/ssr';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { toast } from 'svelte-sonner';

@@ -61,7 +61,7 @@ def create_app() -> FastAPI:
     )
     return app
 
-def start():
+def run():
     app = create_app()
     sandbox_app = sandbox.create_app()
     app.mount("/sandbox", sandbox_app)
@@ -70,4 +70,4 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    run()
