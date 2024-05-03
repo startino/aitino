@@ -28,7 +28,7 @@ export const actions = {
 		const { error: e } = await supabase.auth.signInWithOtp({
 			email: data.email,
 			options: {
-				emailRedirectTo: getURL() + 'auth/callback'
+				emailRedirectTo: getURL() + 'app'
 			}
 		});
 
@@ -57,7 +57,7 @@ export const actions = {
 		const { data, error: err } = await supabase.auth.signInWithOAuth({
 			provider: url.searchParams.get('provider') as Provider,
 			options: {
-				redirectTo: getURL() + 'auth/callback'
+				redirectTo: getURL() + 'app'
 			}
 		});
 

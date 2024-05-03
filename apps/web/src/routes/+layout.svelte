@@ -5,8 +5,6 @@
 	import { Toaster } from 'svelte-sonner';
 	import { supabase } from '$lib/supabase/client';
 
-	export let data;
-
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange(() => {
 			invalidateAll();
@@ -19,11 +17,5 @@
 </script>
 
 <Toaster />
-
-{#if data.user}
-	<p class="fixed top-10">yes</p>
-{:else}
-	<p class="fixed top-10">no</p>
-{/if}
 
 <slot />
