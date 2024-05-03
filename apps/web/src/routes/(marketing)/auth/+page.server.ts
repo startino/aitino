@@ -28,7 +28,7 @@ export const actions = {
 		const { error: e } = await supabase.auth.signInWithOtp({
 			email: data.email,
 			options: {
-				emailRedirectTo: `https://${url.host}/app`
+				emailRedirectTo: getURL() + 'app'
 			}
 		});
 
@@ -55,7 +55,10 @@ export const actions = {
 		}
 
 		const { data, error: err } = await supabase.auth.signInWithOAuth({
-			provider: url.searchParams.get('provider') as Provider
+			provider: url.searchParams.get('provider') as Provider,
+			options: {
+				redirectTo: getURL() + 'app'
+			}
 		});
 
 		if (err) {
@@ -67,4 +70,16 @@ export const actions = {
 
 		throw redirect(307, data.url);
 	}
+};
+
+const getURL = () => {
+	let url =
+		process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+		process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+		`http://localhost:${process.env.PORT || 5173}/`; // Use dynamic port or default to 5173
+	// Make sure to include `https://` when not localhost.
+	url = url.includes('http') ? url : `https://${url}`;
+	// Make sure to include a trailing `/`.
+	url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+	return url;
 };

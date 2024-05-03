@@ -1,5 +1,4 @@
 import { fail } from '@sveltejs/kit';
-import { supabase } from '$lib/supabase';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
 import { contactSchema, waitlistSchema } from '$lib/schema';
@@ -13,7 +12,7 @@ export const load = async (event) => {
 };
 
 export const actions = {
-	register: async ({ request }) => {
+	register: async ({ request, locals: { supabase } }) => {
 		const waitlistForm = await superValidate(request, zod(waitlistSchema));
 
 		if (!waitlistForm.valid) {

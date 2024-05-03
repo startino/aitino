@@ -7,12 +7,12 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { TransitionConfig } from 'svelte/transition';
 import { getContext as getSvelteContext, setContext as setSvelteContext } from 'svelte';
 import { writable } from 'svelte/store';
-import type { ContextMap, Crew } from '$lib/types';
+import type { ContextMap } from '$lib/types';
 import { browser } from '$app/environment';
 import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
-import { supabase } from './supabase';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 dayjs.extend(relativeTime);
 
@@ -26,7 +26,7 @@ export const pickRandomName = () => {
 	return { name, gender: genderKey };
 };
 
-export const pickRandomAvatar = () => {
+export const pickRandomAvatar = (supabase: SupabaseClient) => {
 	const { name, gender } = pickRandomName();
 	let avatarIndex = getRandomIndex(Array.from({ length: 23 }, (_, i) => i));
 
