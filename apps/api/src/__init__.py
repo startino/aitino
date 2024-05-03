@@ -61,10 +61,13 @@ def create_app() -> FastAPI:
     )
     return app
 
-
-if __name__ == "__main__":
+def start():
     app = create_app()
     sandbox_app = sandbox.create_app()
     app.mount("/sandbox", sandbox_app)
 
     uvicorn.run(app, host="0.0.0.0", port=8000, log_config="logging.yaml")
+
+
+if __name__ == "__main__":
+    start()
