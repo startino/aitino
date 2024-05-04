@@ -28,8 +28,7 @@
 	}
 
 	const nodeTypes = {
-		agent: Nodes.Agent,
-		prompt: Nodes.Prompt
+		agent: Nodes.Agent
 	};
 
 	const { getViewport } = useSvelteFlow();
@@ -44,18 +43,6 @@
 		fitView
 		oninit={() => {
 			const position = { ...getViewport() };
-
-			// create prompt
-			nodes.update((v) => [
-				...v,
-				{
-					id: crypto.randomUUID(),
-					type: 'prompt',
-					selectable: false,
-					position,
-					data: {}
-				}
-			]);
 
 			// create agents
 			console.log(`adding startNodes: ${data.startNodes}`);
@@ -80,9 +67,7 @@
 		<div class="absolute bottom-0 flex w-full items-center justify-center p-4 text-center">
 			<code class="text-red-400">
 				Currently the node editor is only capable of the bare essentials. That means you can edit
-				the default prompt, and add and remove agents.<br />
-				Functionality for other features like connectng agents, set up hierarchies, subgroups are not
-				finished yet.
+				the prompt, and add and remove agents.
 			</code>
 		</div>
 	</SvelteFlow>
