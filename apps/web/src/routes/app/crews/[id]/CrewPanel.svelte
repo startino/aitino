@@ -82,6 +82,13 @@
 						}
 						toast.success('Crew successfully saved!');
 						return d;
+					})
+					.catch((e) => {
+						console.error(`Error saving crew: ${e}`);
+						toast.error(
+							`Failed to save crew! Please report to dev team with logs from the console.`
+						);
+						return null;
 					});
 
 				return response ? true : false;
