@@ -9,6 +9,8 @@
 	import { browser } from '$app/environment';
 	import { getPremadeInputsMap } from '$lib/utils';
 
+	export let data;
+
 	let inputs: { name: string; value: string }[] = [];
 
 	onMount(() => {
@@ -50,7 +52,7 @@
 <Tabs.Content value="/app/account">
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Profile</Card.Title>
+			<Card.Title>Profile - {data.user.email}</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<h2
@@ -101,4 +103,5 @@
 			</Button>
 		</Card.Content>
 	</Card.Root>
+</Tabs.Content>
 </Tabs.Content>
