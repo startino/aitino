@@ -9,11 +9,13 @@
 	import { Library } from '$lib/components/ui/community-details';
 	import AgentRow from '$lib/components/ui/community-details/agent-row.svelte';
 	import type { schemas } from '$lib/api';
+	import { getContext } from '$lib/utils';
+	import { useSvelteFlow } from '@xyflow/svelte';
+	import { AGENT_LIMIT } from '$lib/config';
 
 	const loadAgentDispatch = createEventDispatcher<{ 'load-agent': schemas['Agent'] }>();
 
-	export let agents: schemas['Agent'][] = [];
-	export let publishedAgents: schemas['Agent'][] = [];
+	let { agents, publishedAgents, nodes } = getContext('crew');
 
 	let searchQuery = '';
 	let filterPublished = false;
@@ -28,17 +30,15 @@
 				(searchQuery === '' ||
 					agent.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 					agent.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					agent.description.some((desc: string) =>
-						desc.toLowerCase().includes(searchQuery.toLowerCase())
-					)) &&
+					agent.description.toLowerCase().toLowerCase().includes(searchQuery.toLowerCase())) &&
 				(!filterPublished || agent.published) &&
 				(filterModel === '' || agent.model === filterModel)
 		);
 	};
 
-	$: filteredAgents = filterAgents(agents);
+	$: filteredAgents = filterAgents($agents);
 
-	$: filteredPublishedAgents = filterAgents(publishedAgents);
+	$: filteredPublishedAgents = filterAgents($publishedAgents);
 	$: showNoResults = filteredAgents.length === 0 && searchQuery !== '';
 	$: showNoResultsForPublished = filteredPublishedAgents.length === 0 && searchQuery !== '';
 
@@ -60,6 +60,35 @@
 
 	function handleClose() {
 		showDetails = false;
+	}
+
+	const { getViewport } = useSvelteFlow();
+	function addAgent(agent: schemas['Agent']) {
+		if ($nodes.length >= AGENT_LIMIT) {
+			toast.error(`You have reached the maximum limit of ${AGENT_LIMIT} agents.`);
+			return;
+		}
+
+		if ($nodes.find((node) => node.id === agent.id)) {
+			toast.error(
+				`Agent is already in the crew. We are working on supporting multiple of the same agent...`
+			);
+			return;
+		}
+
+		const position = { ...getViewport() };
+
+		nodes.update((v) => [
+			...v,
+			{
+				id: agent.id,
+				type: 'agent',
+				selectable: false,
+				position,
+				data: {}
+			}
+		]);
+		toast.success(`Added a new agent ${agent.title}`);
 	}
 </script>
 
@@ -115,8 +144,7 @@
 						displayedAgent = agent;
 					}}
 					on:load={({ detail: agent }) => {
-						toast.success(`Added a new agent ${agent.title}`);
-						loadAgentDispatch('load-agent', agent);
+						addAgent(agent);
 					}}
 				/>
 			{/each}
@@ -137,8 +165,7 @@
 						displayedAgent = agent;
 					}}
 					on:load={({ detail: agent }) => {
-						toast.success(`Added a new agent ${agent.title}`);
-						loadAgentDispatch('load-agent', agent);
+						addAgent(agent);
 					}}
 				/>
 			{/each}
