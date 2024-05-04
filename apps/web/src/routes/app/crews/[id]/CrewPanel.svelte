@@ -1,43 +1,19 @@
 <script lang="ts">
-	import { Panel, useSvelteFlow } from '@xyflow/svelte';
-	import { X, Loader2 } from 'lucide-svelte';
+	import { Panel } from '@xyflow/svelte';
+	import { Loader2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import AgentLibrary from './AgentLibrary.svelte';
 	import { goto } from '$app/navigation';
 	import type { PanelAction } from '$lib/types';
-	import { AGENT_LIMIT } from '$lib/config';
 	import { toast } from 'svelte-sonner';
 	import { getContext } from '$lib/utils';
-	import api, { type schemas } from '$lib/api';
+	import api from '$lib/api';
+	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 
-	let { crew, agents, publishedAgents, nodes } = getContext('crew');
+	let { crew } = getContext('crew');
 
 	let openAgentLibrary = false;
-
-	const { getViewport } = useSvelteFlow();
-
-	function addAgent(data: any) {
-		if ($agents.length >= AGENT_LIMIT) return;
-
-		const existingNode = $nodes.find((node) => node.id === data.id);
-		if (existingNode) {
-			console.log(`Node with ID ${data.id} already exists.`);
-			return;
-		}
-
-		const position = { ...getViewport() };
-		nodes.update((v) => [
-			...v,
-			{
-				id: data.id,
-				type: 'agent',
-				position,
-				selectable: false,
-				data
-			}
-		]);
-	}
 
 	let panelActions: PanelAction[];
 	$: panelActions = [
@@ -143,13 +119,7 @@
 								</Button>
 							</Dialog.Trigger>
 							<Dialog.Content class="max-w-6xl">
-								<AgentLibrary
-									agents={$agents}
-									publishedAgents={$publishedAgents}
-									on:load-agent={({ detail }) => {
-										addAgent(detail);
-									}}
-								/>
+								<AgentLibrary />
 							</Dialog.Content>
 						</Dialog.Root>
 					{:else}
@@ -168,6 +138,9 @@
 					{/if}
 				</li>
 			{/each}
+			<li class="grid">
+				<PromptEditor bind:value={$crew.prompt} />
+			</li>
 		</ul>
 	</div>
 </Panel>
