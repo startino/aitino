@@ -1,12 +1,39 @@
 import { fail, error, redirect, type ActionFailure } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
-
+import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
 import { agentSchema } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
-import { pickRandomAvatar } from '$lib/utils';
 import api from '$lib/api';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+function getRandomIndex(array: Array<unknown>) {
+	const randomArray = new Uint32Array(1);
+	crypto.getRandomValues(randomArray);
+	return randomArray[0] % array.length;
+}
+
+const pickRandomName = () => {
+	const genders = ['male', 'female'];
+	const genderKey = genders[getRandomIndex(genders)];
+
+	const namesArray = SAMPLE_FULL_NAMES[genderKey];
+	const name = namesArray[getRandomIndex(namesArray)];
+
+	return { name, gender: genderKey };
+};
+
+const pickRandomAvatar = (supabase: SupabaseClient) => {
+	const { name, gender } = pickRandomName();
+	let avatarIndex = getRandomIndex(Array.from({ length: 23 }, (_, i) => i));
+
+	if (gender === 'female') avatarIndex += 25;
+	const avatarPath = `agent-avatars/${gender}/`;
+
+	const { data } = supabase.storage.from(avatarPath).getPublicUrl(`${avatarIndex}.png`);
+	return { name, avatarUrl: data.publicUrl };
+};
+
+export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
 	const userSession = await authGetSession();
 	const agents = await api
 		.GET('/agents/', {
@@ -43,7 +70,7 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 };
 
 export const actions = {
-	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
+	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
 		console.log('create agent');
 		const userSession = await authGetSession();
 
@@ -53,7 +80,7 @@ export const actions = {
 			return fail(400, { form, message: 'unable to create a new agent' });
 		}
 
-		const randomAvatar = pickRandomAvatar();
+		const randomAvatar = pickRandomAvatar(supabase);
 
 		const agent = await api
 			.POST('/agents/', {
