@@ -67,7 +67,8 @@
 		<div class="absolute bottom-0 flex w-full items-center justify-center p-4 text-center">
 			<code class="text-red-400">
 				Currently the node editor is only capable of the bare essentials. That means you can edit
-				the prompt, and add and remove agents.
+				the prompt, and add and remove agents. All agents you add to the crew will be in the same
+				crew and will be able to talk with eachother. Don't forget to save!
 			</code>
 		</div>
 	</SvelteFlow>
