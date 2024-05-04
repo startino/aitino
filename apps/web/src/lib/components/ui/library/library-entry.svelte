@@ -20,7 +20,9 @@
 			dispatch('click');
 		}}
 	/>
-	<div class="absolute bottom-0 left-0 right-0 flex flex-grow flex-col bg-background/60 p-4">
+	<div
+		class="absolute bottom-0 left-0 right-0 flex flex-grow flex-col border-t border-background/60 bg-black/60 p-4 shadow-inner"
+	>
 		<slot name="content" />
 	</div>
 	<!-- delete -->
