@@ -9,39 +9,10 @@ import { getContext as getSvelteContext, setContext as setSvelteContext } from '
 import { writable } from 'svelte/store';
 import type { ContextMap } from '$lib/types';
 import { browser } from '$app/environment';
-import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
 dayjs.extend(relativeTime);
-
-export const pickRandomName = () => {
-	const genders = ['male', 'female'];
-	const genderKey = genders[getRandomIndex(genders)];
-
-	const namesArray = SAMPLE_FULL_NAMES[genderKey];
-	const name = namesArray[getRandomIndex(namesArray)];
-
-	return { name, gender: genderKey };
-};
-
-export const pickRandomAvatar = (supabase: SupabaseClient) => {
-	const { name, gender } = pickRandomName();
-	let avatarIndex = getRandomIndex(Array.from({ length: 23 }, (_, i) => i));
-
-	if (gender === 'female') avatarIndex += 25;
-	const avatarPath = `agent-avatars/${gender}/`;
-
-	const { data } = supabase.storage.from(avatarPath).getPublicUrl(`${avatarIndex}.png`);
-	return { name, avatarUrl: data.publicUrl };
-};
-
-function getRandomIndex(array: Array<unknown>) {
-	const randomArray = new Uint32Array(1);
-	crypto.getRandomValues(randomArray);
-	return randomArray[0] % array.length;
-}
 
 export const authenticateUser = ({ cookies }: RequestEvent) => {
 	if (cookies.get('profileId')) return;
