@@ -1,4 +1,7 @@
+import os
 import uvicorn
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -62,12 +65,25 @@ def create_app() -> FastAPI:
 
     return app
 
+
 def run():
     app = create_app()
     sandbox_app = sandbox.create_app()
     app.mount("/sandbox", sandbox_app)
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_config="logging.yaml")
+    try:
+        PORT = os.environ.get("PORT")
+        if not PORT:
+            logging.info(
+                "PORT not found in environment variables. Using default PORT=80"
+            )
+            PORT = 80
+
+        PORT = int(PORT)
+    except Exception:
+        raise ValueError("PORT is not an integer")
+
+    uvicorn.run(app, host="0.0.0.0", port=PORT, log_config="logging.yaml")
 
 
 if __name__ == "__main__":
