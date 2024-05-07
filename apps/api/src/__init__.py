@@ -86,12 +86,18 @@ def run():
         raise ValueError("PORT is not an integer")
 
     uvicorn.run(
-        "__init__:app",
+        app,
         host="0.0.0.0",
         port=PORT,
         log_config="logging.yaml",
-        reload=True,
     )
+    # uvicorn.run(
+    #     "__init__:app",
+    #     host="0.0.0.0",
+    #     port=PORT,
+    #     log_config="logging.yaml",
+    #     reload=True,
+    # )
 
 
 if __name__ == "__main__":
