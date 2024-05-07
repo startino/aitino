@@ -1,6 +1,5 @@
 import logging
-from autogen import ConversableAgent
-import autogen
+
 from fastapi import APIRouter
 
 router = APIRouter(
