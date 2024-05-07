@@ -50,7 +50,7 @@ class AgentUpdateRequest(BaseModel):
     role: str | None = None
     system_message: str | None = None
     published: bool | None = None
-    model: Literal["gpt-35-turbo", "gpt-4-turbo", "gpt-4"]
+    model: Literal["gpt-35-turbo", "gpt-4-turbo", "gpt-4"] | None = None
     tools: list[dict] | None = None
     description: str | None = None
     version: str | None = None
