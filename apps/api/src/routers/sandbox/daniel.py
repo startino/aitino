@@ -1,5 +1,4 @@
 import logging
-import os
 from autogen import ConversableAgent
 import autogen
 from fastapi import APIRouter
