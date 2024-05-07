@@ -66,12 +66,11 @@ def create_app() -> FastAPI:
     return app
 
 
-app = create_app()
-sandbox_app = sandbox.create_app()
-app.mount("/sandbox", sandbox_app)
-
-
 def run():
+
+    app = create_app()
+    sandbox_app = sandbox.create_app()
+    app.mount("/sandbox", sandbox_app)
 
     try:
         PORT = os.environ.get("PORT")
