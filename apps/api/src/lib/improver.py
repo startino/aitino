@@ -90,7 +90,7 @@ def improve_prompt(
     logging.info(result)
     if not result.usage:
         raise HTTPException(
-            status_code=500, detail="Result object from OpenAI was weird"
+            status_code=500, detail='Result from OpenAI had no "usage" attribute'
         )
 
     input_cost = int(result.usage.prompt_tokens * 0.00001 * int(ACCURACY))
