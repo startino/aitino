@@ -59,6 +59,7 @@ from .subscription import (
 from .tiers import Tier, TierGetRequest, TierInsertRequest, TierUpdateRequest
 from .tool import Tool, ToolGetRequest, ToolInsertRequest, ToolUpdateRequest
 from .user import User
+from .improve_prompt import ImproveInsertRequest
 
 __all__ = [
     "AgentConfig",
@@ -112,4 +113,5 @@ __all__ = [
     "ValidCrew",
     "Tools",
     "RagOptions",
+    "ImproveInsertRequest",
 ]
