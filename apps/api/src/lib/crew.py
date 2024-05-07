@@ -444,6 +444,10 @@ class AutogenCrew:
 
         logging.info(f"Cost: {total_cost}")
         new_funding = self.funds - self.add_margin(total_cost)  # type: ignore
+        logging.info(
+            f"New funding: {new_funding}, cost with margin: {self.add_margin(total_cost)}"
+        )
+
         db.update_funding(self.profile_id, new_funding)
 
         db.update_status(self.session.id, SessionStatus.FINISHED)

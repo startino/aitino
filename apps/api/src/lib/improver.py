@@ -1,14 +1,17 @@
 import os
+import logging
+
 from pathlib import Path
 from typing import Literal, Protocol
+from uuid import UUID
 
 from dotenv import load_dotenv
+from fastapi import HTTPException
 from openai import OpenAI
+from src.interfaces import db
 
 load_dotenv()
 client = OpenAI()
-
-PromptType = Literal["generic", "system", "user"]
 
 
 class InvalidPromptTypeError(BaseException): ...
@@ -32,14 +35,20 @@ class CompletionsProtocol(Protocol):
     ) -> ResponseProtocol: ...
 
 
+ACCURACY = os.environ.get("MONETARY_DECIMAL_ACCURACY")
+if not ACCURACY:
+    raise ValueError("MONETARY_DECIMAL_ACCURACY environment variable not set")
+
+
 def improve_prompt(
-    word_limit: int,
     prompt: str,
-    prompt_type: PromptType,
+    word_limit: int,
+    prompt_type: Literal["generic", "system", "user"],
+    profile_id: UUID,
     temperature: float = 0.0,
 ) -> str:
     """
-    Take a prompt and improve it with the use of GPT-4 Turbo preview.
+    Take a prompt and improve it with the use of GPT-4 Turbo.
 
     params:
         word_limit: int, The word limit for the improved prompt the function returns
@@ -54,14 +63,12 @@ def improve_prompt(
         ValueError: Word limit must be greater than 0
         ValueError: Temperature must be in between -2 and 2
     """
-    if prompt_type not in ["generic", "system", "user"]:
-        raise InvalidPromptTypeError(f"Invalid prompt type: {prompt_type}")
+    profile = db.get_profile(profile_id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
 
-    if word_limit <= 0:
-        raise ValueError("Word limit must be greater than 0")
-
-    if temperature < -2.0 or temperature > 2.0:
-        raise ValueError("Temperature must be in between -2 and 2")
+    if profile.funding <= 0:
+        raise HTTPException(status_code=402, detail="Insufficient funds")
 
     with open(
         Path(os.getcwd(), "src", "prompts", "improve", prompt_type + ".md"),
@@ -83,6 +90,23 @@ def improve_prompt(
         frequency_penalty=0.1,
         presence_penalty=0.1,
     )
+    logging.info(result)
+    if not result.usage:
+        raise HTTPException(
+            status_code=500, detail='Result from OpenAI had no "usage" attribute'
+        )
+
+    input_cost = int(result.usage.prompt_tokens * 0.00001 * int(ACCURACY))
+    output_cost = int(result.usage.completion_tokens * 0.00003 * int(ACCURACY))
+    total_cost = input_cost + output_cost
+    logging.info(
+        f"Input cost: {input_cost}, Output cost: {output_cost}, total cost: {total_cost}"
+    )
+
+    # could consider adding margin to this
+    # should also consider passing the profile id and funding
+    # instead of making a db call to get the profile
+    db.update_funding(profile_id, profile.funding - total_cost)
 
     content = result.choices[0].message.content
     return content if content else "error"

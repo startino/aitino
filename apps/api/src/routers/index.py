@@ -5,8 +5,8 @@ from fastapi.responses import RedirectResponse
 from src.autobuilder import build_agents
 from src.dependencies import rate_limit_profile
 from src.lib.auth import get_current_user
-from src.lib.improver import PromptType, improve_prompt
-from src.models import Profile
+from src.lib.improver import improve_prompt
+from src.models import Profile, ImproveInsertRequest
 
 router = APIRouter()
 
@@ -16,13 +16,17 @@ def redirect_to_docs() -> RedirectResponse:
     return RedirectResponse(url="/docs")
 
 
-@router.get(
-    "/improve", dependencies=[Depends(rate_limit_profile(limit=4, period_seconds=60))]
-)
+@router.post("/improve")
 def improve(
-    word_limit: int, prompt: str, prompt_type: PromptType, temperature: float
+    request: ImproveInsertRequest,
 ) -> str:
-    return improve_prompt(word_limit, prompt, prompt_type, temperature)
+    return improve_prompt(
+        request.prompt,
+        request.word_limit,
+        request.prompt_type,
+        request.profile_id,
+        request.temperature,
+    )
 
 
 @router.get(
