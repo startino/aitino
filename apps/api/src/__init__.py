@@ -66,10 +66,12 @@ def create_app() -> FastAPI:
     return app
 
 
+app = create_app()
+sandbox_app = sandbox.create_app()
+app.mount("/sandbox", sandbox_app)
+
+
 def run():
-    app = create_app()
-    sandbox_app = sandbox.create_app()
-    app.mount("/sandbox", sandbox_app)
 
     try:
         PORT = os.environ.get("PORT")
@@ -83,7 +85,13 @@ def run():
     except Exception:
         raise ValueError("PORT is not an integer")
 
-    uvicorn.run(app, host="0.0.0.0", port=PORT, log_config="logging.yaml")
+    uvicorn.run(
+        "__init__:app",
+        host="0.0.0.0",
+        port=PORT,
+        log_config="logging.yaml",
+        reload=True,
+    )
 
 
 if __name__ == "__main__":
