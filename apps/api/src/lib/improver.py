@@ -67,6 +67,9 @@ def improve_prompt(
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
+    if profile.funding <= 0:
+        raise HTTPException(status_code=402, detail="Insufficient funds")
+
     with open(
         Path(os.getcwd(), "src", "prompts", "improve", prompt_type + ".md"),
         "r",
