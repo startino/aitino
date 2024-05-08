@@ -16,7 +16,7 @@ from .models import (
     GenerateCommentRequest,
     FalseLead,
 )
-from reddit_worker import RedditStreamWorker
+from .reddit_worker import RedditStreamWorker
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
