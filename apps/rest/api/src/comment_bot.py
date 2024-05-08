@@ -1,5 +1,5 @@
 import logging
-from langchain_openai import AzureChatOpenAI, ChatOpenAI
+from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from .models import EvaluatedSubmission, RedditComment, PublishCommentResponse
