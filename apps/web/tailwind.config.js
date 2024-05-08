@@ -11,6 +11,23 @@ const config = {
 	darkMode: ['class'],
 	content: ['./src/**/*.{html,js,svelte,ts}', './theme/*.{html,js,svelte,ts,ttf,cjs}'],
 	safelist: ['dark'],
+	daisyui: {
+		themes: [
+			{
+				futino: {
+					primary: '#45dfa4',
+					secondary: '#3cddc7',
+					accent: '#ffafd3',
+					neutral: '#333333',
+					'base-100': '#171919',
+					info: '#ffafd3',
+					success: '#45dfa4',
+					warning: '#ffb4ab',
+					error: '#690005'
+				}
+			}
+		]
+	},
 	theme: {
 		container: {
 			center: true,
@@ -48,7 +65,8 @@ const config = {
 	plugins: [
 		require('@tailwindcss/forms'),
 		require('@tailwindcss/typography'),
-		require('@tailwindcss/aspect-ratio')
+		require('@tailwindcss/aspect-ratio'),
+		require('daisyui')
 	]
 };
 
