@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from gptrim import trim
 from praw.models import Submission
-from langchain_openai import ChatOpenAI
+from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_community.callbacks import get_openai_callback
@@ -35,7 +35,10 @@ def create_chain(model: str):
     - A processing chain configured to use the specified language model and to parse its output.
     """
 
-    llm = ChatOpenAI(model=model, temperature=0.1)
+    llm = AzureChatOpenAI(
+        azure_deployment="gpt-4-turbo",
+        temperature=0.1,
+    )
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RelevanceResult)
@@ -77,8 +80,8 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
             time.sleep(10)  # Wait for 10 seconds before trying again
 
     raise RuntimeError(
-    "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
-)
+        "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
+    )
 
 
 def summarize_submission(submission: Submission) -> Submission:
@@ -93,7 +96,10 @@ def summarize_submission(submission: Submission) -> Submission:
     Returns:
     - The submission object with the selftext replaced with a shorter version (the summary).
     """
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    llm = AzureChatOpenAI(
+        azure_deployment="gpt-4-turbo",
+        temperature=0,
+    )
 
     # Trim the submission content for cost savings
     selftext = trim(submission.selftext)
@@ -170,7 +176,10 @@ def filter_with_questions(
 
     cost = 0
 
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    llm = AzureChatOpenAI(
+        azure_deployment="gpt-4-turbo",
+        temperature=0,
+    )
     parser = PydanticOutputParser(pydantic_object=FilterOutput)
 
     template = """
