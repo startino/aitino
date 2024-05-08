@@ -343,6 +343,8 @@ class AutogenCrew:
                     system_message
                     + "\nReply 'Admin' if all tasks has been solved at full satisfaction."
                 )
+                self.receiver_name = agent_instance.name
+
             if self.on_reply:
                 agent_instance.register_reply([autogen.Agent, None], self._on_reply)
 
@@ -410,10 +412,14 @@ class AutogenCrew:
             speaker_selection_method="auto",
             # TODO: Fix auto method to not spam route to admin
             send_introductions=True,
-            select_speaker_message_template="""You are in a role play game. The following roles are available:
-                {roles}.
-                Read the following conversation.
-                Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
+            # hopefully this auto concatenates all the strings below
+            select_speaker_message_template=(
+                "You are in a role play game. The following roles are available:"
+                "{roles}."
+                "Read the following conversation."
+                f"Start by selecting {self.receiver_name}"
+                "Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool"
+            ),
             select_speaker_prompt_template="""Read the above conversation. 
                 Then select the next role from {agentlist} to play. Only return the role. Select admin if the task is done or to execute code or to use a tool""",
         )
