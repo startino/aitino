@@ -114,7 +114,5 @@ export const actions = {
 				message: 'Agent create failed. Please try again. If the problem persists, contact support.'
 			});
 		}
-
-		throw redirect(303, `/app/agents/${agent.id}`);
 	}
 };
