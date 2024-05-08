@@ -77,7 +77,7 @@ def improve_prompt(
     ) as f:
         system_prompt = f.read()
         system_prompt += (
-            f"\n4. Limit the amount of words in this prompt to {word_limit} words"
+            f"\n Lastly, limit the amount of words in this prompt to {word_limit} words"
         )
 
     result = client.chat.completions.create(
