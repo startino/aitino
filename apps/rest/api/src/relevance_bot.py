@@ -29,14 +29,14 @@ def create_chain(model: str):
     The chain is composed of a prompt template, a language model, and a parser to interpret the model's output as a Pydantic object.
 
     Parameters:
-    - model (str): The name of the language model to be used for generating responses.
+    - model (str): The name of the deployed azure model to be used for generating responses.
 
     Returns:
-    - A processing chain configured to use the specified language model and to parse its output.
+    - A processing chain configured to use the specified azure language model and to parse its output.
     """
 
     llm = AzureChatOpenAI(
-        azure_deployment="gpt-4-turbo",
+        azure_deployment=model,
         temperature=0.1,
     )
 
@@ -97,7 +97,7 @@ def summarize_submission(submission: Submission) -> Submission:
     - The submission object with the selftext replaced with a shorter version (the summary).
     """
     llm = AzureChatOpenAI(
-        azure_deployment="gpt-4-turbo",
+        azure_deployment="gpt-35-turbo",
         temperature=0,
     )
 
@@ -177,7 +177,7 @@ def filter_with_questions(
     cost = 0
 
     llm = AzureChatOpenAI(
-        azure_deployment="gpt-4-turbo",
+        azure_deployment="gpt-35-turbo",
         temperature=0,
     )
     parser = PydanticOutputParser(pydantic_object=FilterOutput)
@@ -345,9 +345,9 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
                 submission=submission, is_relevant=False, cost=cost, reason=source
             )
 
-    evalualuated_submission = calculate_relevance("gpt-4-turbo-preview", 1, submission)
+    evalualuated_submission = calculate_relevance("gpt-4-turbo", 1, submission)
     log_relevance_calculation(
-        "gpt-4-turbo-preview",
+        "gpt-4-turbo",
         submission,
         evalualuated_submission.is_relevant,
         evalualuated_submission.cost,
