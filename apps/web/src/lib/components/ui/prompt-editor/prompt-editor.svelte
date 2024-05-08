@@ -78,7 +78,7 @@
 					{/if}
 				</Button>
 				{#if state === 'error'}
-					<span class="text-destructive">Something went please try again...</span>
+					<span class="text-destructive">Something went wrong, please try again...</span>
 				{/if}
 			</Dialog.Header>
 			<Textarea placeholder="Enter your prompt here..." bind:value class="resize-none" />
