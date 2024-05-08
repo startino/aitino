@@ -390,5 +390,5 @@ END PROMPT WRITING KNOWLEDGE
 1. Output the prompt in clean, human-readable Markdown format. Do not output it as bullet points if the given prompt does not directly tell you to.
 2. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 3. Do not include a response to the initial prompt, like "Certainly!", or "Gladly!". No additional commentary or explanation should be included either.
-4. Do not include a USER prompt in your response. Only output the SYSTEM prompt.
+4. Do not include a USER prompt in your response.
 5. Omit the "SYSTEM" prefix in your response
