@@ -1,5 +1,5 @@
 import logging
-from langchain_openai import ChatOpenAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from .models import EvaluatedSubmission, RedditComment, PublishCommentResponse
@@ -17,7 +17,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 def generate_comment(title: str, selftext: str, instructions: str = "") -> str:
-    llm = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0.3)
+    llm = AzureChatOpenAI(
+        azure_deployment="gpt-4-turbo",
+        temperature=0.3,
+    )
 
     # Set up a parser + inject instructions into the prompt template.
     parser = JsonOutputParser(pydantic_object=RedditComment)

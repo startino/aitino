@@ -1,22 +1,23 @@
 import os
+import uvicorn
 from dotenv import load_dotenv
 import logging
 import diskcache as dc
 import threading
 from uuid import uuid4
 
-from .saving import update_db_with_submission
-from . import mail
-from .reddit_utils import get_subreddits
-from .relevance_bot import evaluate_relevance
-from .interfaces import db
-from . import comment_bot
-from .models import (
+from src.saving import update_db_with_submission
+from src import mail
+from src.reddit_utils import get_subreddits
+from src.relevance_bot import evaluate_relevance
+from src.interfaces import db
+from src import comment_bot
+from src.models import (
     PublishCommentRequest,
     GenerateCommentRequest,
     FalseLead,
 )
-from .reddit_worker import RedditStreamWorker
+from src.reddit_worker import RedditStreamWorker
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -146,3 +147,7 @@ def publish_comment(publish_request: PublishCommentRequest):
         raise HTTPException(404, "lead not found")
 
     return updated_content
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
