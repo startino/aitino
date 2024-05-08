@@ -11,7 +11,7 @@ export interface paths {
   };
   "/improve": {
     /** Improve */
-    get: operations["improve_improve_get"];
+    post: operations["improve_improve_post"];
   };
   "/auto-build": {
     /** Auto Build Crew */
@@ -295,7 +295,7 @@ export interface components {
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo";
+      model: "gpt-35-turbo" | "gpt-4-turbo" | "gpt-4";
       /** Tools */
       tools: Record<string, never>[];
       /** Description */
@@ -324,7 +324,7 @@ export interface components {
        * Model
        * @enum {string}
        */
-      model: "gpt-3.5-turbo" | "gpt-4-turbo";
+      model: "gpt-35-turbo" | "gpt-4-turbo" | "gpt-4";
       /** Tools */
       tools: Record<string, never>[];
       /**
@@ -358,7 +358,7 @@ export interface components {
       /** Published */
       published?: boolean | null;
       /** Model */
-      model?: ("gpt-3.5-turbo" | "gpt-4-turbo") | null;
+      model?: ("gpt-35-turbo" | "gpt-4-turbo" | "gpt-4") | null;
       /** Tools */
       tools?: Record<string, never>[] | null;
       /** Description */
@@ -514,6 +514,25 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** ImproveInsertRequest */
+    ImproveInsertRequest: {
+      /** Prompt */
+      prompt: string;
+      /** Word Limit */
+      word_limit: number;
+      /**
+       * Prompt Type
+       * @enum {string}
+       */
+      prompt_type: "generic" | "system" | "user";
+      /**
+       * Profile Id
+       * Format: uuid
+       */
+      profile_id: string;
+      /** Temperature */
+      temperature: number;
     };
     /** Message */
     Message: {
@@ -939,14 +958,10 @@ export interface operations {
     };
   };
   /** Improve */
-  improve_improve_get: {
-    parameters: {
-      query: {
-        word_limit: number;
-        prompt: string;
-        prompt_type: "generic" | "system" | "user";
-        temperature: number;
-        profile_id: string;
+  improve_improve_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImproveInsertRequest"];
       };
     };
     responses: {
