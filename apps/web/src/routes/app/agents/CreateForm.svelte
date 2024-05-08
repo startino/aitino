@@ -52,7 +52,7 @@
 			<Form.Label>Publish</Form.Label>
 			<Checkbox {...attrs} bind:checked={$formData.published} />
 		</Form.Control>
-		<Form.Description class="inline">Check this to publish the crew.</Form.Description>
+		<Form.Description class="inline">Check this to publish the agent.</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 
