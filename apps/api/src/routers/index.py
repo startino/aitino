@@ -1,4 +1,5 @@
 import autogen
+import logging
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 
@@ -20,13 +21,17 @@ def redirect_to_docs() -> RedirectResponse:
 def improve(
     request: ImproveInsertRequest,
 ) -> str:
-    return improve_prompt(
-        request.prompt,
-        request.word_limit,
-        request.prompt_type,
-        request.profile_id,
-        request.temperature,
-    )
+    try:
+        return improve_prompt(
+            request.prompt,
+            request.word_limit,
+            request.prompt_type,
+            request.profile_id,
+            request.temperature,
+        )
+    except Exception as e:
+        logging.error(f"got error when improving prompt: {e}")
+        raise e
 
 
 @router.get(
