@@ -9,9 +9,9 @@
 	import { getContext } from '$lib/context';
 	import { crewSchema } from '$lib/schema';
 
-	let { forms } = getContext('root');
+	const { forms } = getContext('root');
 
-	const form = superForm($forms.crew.sv, {
+	const form = superForm($forms.crew, {
 		validators: zodClient(crewSchema)
 	});
 

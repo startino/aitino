@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import api from '$lib/api';
-import { fail, superValidate } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { agentSchema } from '$lib/schema';
 
-export const load = async ({ locals: { authGetSession }, params }) => {
+export const load = async ({ locals: { authGetUser }, params }) => {
 	const { id } = params;
-	const userSession = await authGetSession();
+	const user = await authGetUser();
 
 	const agent = await api
 		.GET('/agents/{id}', {
@@ -32,10 +32,17 @@ export const load = async ({ locals: { authGetSession }, params }) => {
 		console.error(`Redirecting to '/app/agents': No crew found with id ${id}`);
 		throw redirect(303, '/app/agents');
 	}
-	const form = await superValidate(zod(agentSchema));
+
+	// TODO: do some fancy preview + clone stuff if the agent is published so the users can share agents
+	if (agent.profile_id !== user.id) {
+		console.error(
+			`Redirecting to '/app/crews': Profile ${user.id} does not have access to crew ${id}`
+		);
+		throw redirect(303, '/app/crews');
+	}
+
 
 	return {
-		agent,
-		form
+		agent
 	};
 };

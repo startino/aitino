@@ -10,9 +10,9 @@
 	import { getContext } from '$lib/context';
 	import { agentSchema } from '$lib/schema';
 
-	let { forms } = getContext('root');
+	const { forms } = getContext('root');
 
-	const form = superForm($forms.agent.sv, {
+	const form = superForm($forms.agent, {
 		validators: zodClient(agentSchema)
 	});
 

@@ -6,10 +6,11 @@
 	import AgentLibrary from './AgentLibrary.svelte';
 	import { goto } from '$app/navigation';
 	import type { PanelAction } from '$lib/types';
-	import { saveCrew, getContext } from '$lib/context';
+	import { saveCrew } from '$lib/utils';
+	import { getContext } from '$lib/context';
 	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 
-	let { crew } = getContext('crew');
+	const { crew } = getContext('crew');
 
 	let openAgentLibrary = false;
 

@@ -12,7 +12,7 @@
 	];
 </script>
 
-<AppShell>
+<div class="flex flex-col p-4">
 	<Tabs.Root value={$page.url.pathname}>
 		<Tabs.List class="grid w-full grid-cols-3">
 			{#each navItems as { href, label }}
@@ -21,4 +21,4 @@
 		</Tabs.List>
 		<slot />
 	</Tabs.Root>
-</AppShell>
+</div>

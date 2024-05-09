@@ -4,7 +4,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Library } from '$lib/components/ui/community-details';
 	import AgentRow from '$lib/components/ui/community-details/agent-row.svelte';
@@ -13,7 +12,8 @@
 	import { useSvelteFlow } from '@xyflow/svelte';
 	import { AGENT_LIMIT } from '$lib/config';
 
-	let { crew, agents, publishedAgents, nodes } = getContext('crew');
+	const { agents, publishedAgents } = getContext('root');
+	const { nodes } = getContext('crew');
 
 	let searchQuery = '';
 	let filterPublished = false;

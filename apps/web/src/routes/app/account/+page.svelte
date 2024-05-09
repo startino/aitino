@@ -8,8 +8,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { browser } from '$app/environment';
 	import { getPremadeInputsMap } from '$lib/utils';
+	import { getContext } from '$lib/context';
 
-	export let data;
+    const { user } = getContext('root');
 
 	let inputs: { name: string; value: string }[] = [];
 
@@ -52,7 +53,7 @@
 <Tabs.Content value="/app/account">
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Profile - {data.user.email}</Card.Title>
+			<Card.Title>Profile - {$user?.email}</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<h2

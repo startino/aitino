@@ -9,12 +9,15 @@
 	import * as Select from '$lib/components/ui/select';
 	import api from '$lib/api';
 	import { goto } from '$app/navigation';
+	import { getContext } from '$lib/context';
 
 	export let data;
 
-	let { agent, form: formUpdate } = data;
+	let { agent } = data;
 
-	const form = superForm(formUpdate, {
+	const { forms } = getContext('root');
+
+	const form = superForm($forms.agent, {
 		validators: zodClient(agentSchema)
 	});
 

@@ -36,12 +36,8 @@ export interface RootContext {
 	sessions: Writable<schemas['Session'][]>;
 	apiKeys: Writable<schemas['APIKey'][]>;
 	forms: Writable<{
-		agent: {
-			sv: SuperValidated<Infer<AgentSchema>>;
-		};
-		crew: {
-			sv: SuperValidated<Infer<CrewSchema>>;
-		};
+		agent: SuperValidated<Infer<AgentSchema>>;
+		crew: SuperValidated<Infer<CrewSchema>>;
 	}>;
 }
 

@@ -8,9 +8,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { getContext } from '$lib/context';
-	import { toast } from 'svelte-sonner';
 
-	const { agents, publishedAgents } = getContext('crew');
+	const { agents, publishedAgents } = getContext('root');
 
 	type $$Props = NodeProps;
 

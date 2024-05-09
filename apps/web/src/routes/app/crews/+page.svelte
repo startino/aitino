@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 	import { getContext } from '$lib/context';
 
-    let { crews } = getContext('root');
+	const { crews } = getContext('root');
 
 	const deleteCrew = (id: string) => {
 		api

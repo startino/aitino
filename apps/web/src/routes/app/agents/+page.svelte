@@ -10,7 +10,7 @@
 
 	export let data;
 
-	let { agents } = getContext('root');
+	const { agents } = getContext('root');
 
 	const deleteAgent = (id: string) => {
 		api

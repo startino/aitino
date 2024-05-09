@@ -1,6 +1,6 @@
-import { fail, error, redirect, type ActionFailure } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
-import { AVATARS, SAMPLE_FULL_NAMES } from '$lib/config';
+import { SAMPLE_FULL_NAMES } from '$lib/config';
 import { agentSchema } from '$lib/schema';
 import { superValidate } from 'sveltekit-superforms/server';
 import api from '$lib/api';
