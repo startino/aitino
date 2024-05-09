@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Plus } from 'lucide-svelte';
+	import { ScrollArea } from '../scroll-area';
 
 	let open = false;
 </script>
@@ -12,7 +13,9 @@
 	>
 		<Plus class="z-10 text-primary transition-all duration-300 group-hover:scale-150 " size="120" />
 	</Dialog.Trigger>
-	<Dialog.Content class="w-full sm:max-w-full lg:max-w-4xl">
-		<slot />
+	<Dialog.Content class="mt-2 flex h-[calc(100vh-4rem)] w-full flex-col sm:max-w-full lg:max-w-4xl">
+		<ScrollArea class="p-4">
+			<slot />
+		</ScrollArea>
 	</Dialog.Content>
 </Dialog.Root>
