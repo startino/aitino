@@ -42,6 +42,34 @@ export const load = async ({ url, locals: { getUser, supabase } }) => {
 			return [];
 		});
 
+    const publishedAgents = await api
+        .GET('/agents/', {
+            params: {
+                query: {
+                    published: true
+                }
+            }
+        })
+        .then(({ data: d, error: e }) => {
+            if (e) {
+                console.error(`Error retrieving published agents: ${e.detail}`);
+                return [];
+            }
+            if (!d) {
+                console.warn(`No data returned from published agents`);
+                return [];
+            }
+            if (d.length === 0) {
+                console.info(`No published agents found`);
+                return [];
+            }
+            return d;
+        })
+        .catch((e) => {
+            console.error(`Error retrieving published agents: ${e}`);
+            return [];
+        });
+
 	const crews = await api
 		.GET('/crews/', {
 			params: {
@@ -138,6 +166,7 @@ export const load = async ({ url, locals: { getUser, supabase } }) => {
 	return {
 		user,
 		agents,
+        publishedAgents,
 		crews,
 		sessions,
 		apiKeys,

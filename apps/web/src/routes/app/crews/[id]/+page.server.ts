@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import api, { type schemas } from '$lib/api';
 import { type Node } from '@xyflow/svelte';
 
@@ -31,61 +31,16 @@ export const load = async ({ locals: { authGetUser }, params }) => {
 		throw redirect(303, '/app/crews');
 	}
 
-	const userAgents = await api
-		.GET('/agents/', {
-			params: {
-				query: {
-					profile_id: user.id
-				}
-			}
-		})
-		.then(({ data: d, error: e }) => {
-			if (e) {
-				console.error(`Error retrieving agents for profile ${user.id}: ${e.detail}`);
-				throw error(500, `Failed to load agents for profile ${user.id}`);
-			}
-			if (!d) {
-				console.error(`No data returned from agents`);
-				return [];
-			}
-			return d;
-		});
-
-	const publishedAgents = await api
-		.GET('/agents/', {
-			params: {
-				query: {
-					published: true
-				}
-			}
-		})
-		.then(({ data: d, error: e }) => {
-			if (e) {
-				console.error(`Error retrieving published agents: ${e.detail}`);
-				throw error(500, `Failed to load published agents`);
-			}
-			if (!d) {
-				console.error(`No data returned from agents`);
-				return [];
-			}
-			return d;
-		});
-
-	// null check
-	if (!userAgents) {
-		throw error(500, 'Failed to load user agents');
-	}
-	if (!publishedAgents) {
-		throw error(500, 'Failed to load published agents');
-	}
+    // TODO: do some fancy preview + clone stuff if the crew is published so the users can share crews
+    if (crew.profile_id !== user.id) {
+        console.error(`Redirecting to '/app/crews': Profile ${user.id} does not have access to crew ${id}`);
+        throw redirect(303, '/app/crews');
+    }
 
 	const nodes: Node[] = [];
 
 	return {
-		profileId: user.id,
 		crew: crew,
-		agents: userAgents,
-		publishedAgents: publishedAgents,
 		nodes: nodes,
 		startNodes: crew.agents
 	};

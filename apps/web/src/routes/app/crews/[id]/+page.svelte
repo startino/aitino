@@ -2,18 +2,15 @@
 	import { SvelteFlow, Background, ConnectionLineType, useSvelteFlow } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 	import * as Nodes from './nodes';
-	import { setContext, getContext, saveCrew } from '$lib/utils';
-	import type { CrewContext } from '$lib/types';
+    import { saveCrew } from '$lib/utils';
+	import { setContext, getContext, type CrewContext } from '$lib/context';
 	import { writable } from 'svelte/store';
 	import CrewPanel from './CrewPanel.svelte';
 
 	export let data;
 
 	let writableData: CrewContext = {
-		profileId: writable(data.profileId),
 		crew: writable(data.crew),
-		agents: writable(data.agents),
-		publishedAgents: writable(data.publishedAgents),
 		nodes: writable(data.nodes)
 	};
 

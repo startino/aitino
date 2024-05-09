@@ -31,6 +31,7 @@ export interface ContextMap {
 export interface RootContext {
 	user: Writable<(User & schemas['Profile']) | null>;
 	agents: Writable<schemas['Agent'][]>;
+	publishedAgents: Writable<schemas['Agent'][]>;
 	crews: Writable<schemas['Crew'][]>;
 	sessions: Writable<schemas['Session'][]>;
 	apiKeys: Writable<schemas['APIKey'][]>;
@@ -46,8 +47,6 @@ export interface RootContext {
 
 export interface CrewContext {
 	crew: Writable<schemas['Crew']>;
-	agents: Writable<schemas['Agent'][]>;
-	publishedAgents: Writable<schemas['Agent'][]>;
 	nodes: Writable<Node[]>;
 }
 

@@ -12,6 +12,7 @@
 	let writableData: RootContext = {
 		user: writable(data.user),
 		agents: writable(data.agents),
+        publishedAgents: writable(data.publishedAgents),
 		crews: writable(data.crews),
 		sessions: writable(data.sessions),
 		apiKeys: writable(data.apiKeys),
