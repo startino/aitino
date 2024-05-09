@@ -46,7 +46,7 @@ export const agentSchema = z.object({
 	role: z.string().min(1).max(50),
 	tools: z.array(z.any()),
 	system_message: z.string().min(20),
-	model: z.union([z.literal('gpt-4-turbo'), z.literal('gpt-3.5-turbo')], z.literal('gpt-4'))
+	model: z.union([z.literal('gpt-4-turbo'), z.literal('gpt-35-turbo')], z.literal('gpt-4'))
 });
 export type AgentSchema = typeof agentSchema;
 
