@@ -6,9 +6,7 @@
 	import AgentLibrary from './AgentLibrary.svelte';
 	import { goto } from '$app/navigation';
 	import type { PanelAction } from '$lib/types';
-	import { toast } from 'svelte-sonner';
-	import { getContext } from '$lib/utils';
-	import api from '$lib/api';
+	import { saveCrew, getContext } from '$lib/utils';
 	import { PromptEditor } from '$lib/components/ui/prompt-editor';
 
 	let { crew } = getContext('crew');
@@ -46,52 +44,7 @@
 		{
 			name: 'Save',
 			onclick: async () => {
-				toast.message('Saving crew...');
-
-				const response = await api
-					.PATCH('/crews/{id}', {
-						params: {
-							path: {
-								id: $crew.id
-							}
-						},
-						body: {
-							receiver_id: $crew.receiver_id,
-							prompt: $crew.prompt,
-							profile_id: $crew.profile_id,
-							title: $crew.title,
-							published: $crew.published,
-							description: $crew.description,
-							agents: $crew.agents
-						}
-					})
-					.then(({ data: d, error: e }) => {
-						if (e) {
-							console.error(`Error saving crew: ${e.detail}`);
-							toast.error(
-								`Failed to save crew! Please report to dev team with logs from the console.`
-							);
-							return null;
-						}
-						if (!d) {
-							console.error(`No data returned from agents`);
-							toast.error(
-								`Failed to save crew! Please report to dev team with logs from the console.`
-							);
-							return null;
-						}
-						toast.success('Crew successfully saved!');
-						return d;
-					})
-					.catch((e) => {
-						console.error(`Error saving crew: ${e}`);
-						toast.error(
-							`Failed to save crew! Please report to dev team with logs from the console.`
-						);
-						return null;
-					});
-
-				return response ? true : false;
+				await saveCrew($crew);
 			}
 		}
 	];

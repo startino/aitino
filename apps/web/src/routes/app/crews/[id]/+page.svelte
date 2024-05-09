@@ -2,7 +2,7 @@
 	import { SvelteFlow, Background, ConnectionLineType, useSvelteFlow } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 	import * as Nodes from './nodes';
-	import { setContext, getContext } from '$lib/utils';
+	import { setContext, getContext, saveCrew } from '$lib/utils';
 	import type { CrewContext } from '$lib/types';
 	import { writable } from 'svelte/store';
 	import CrewPanel from './CrewPanel.svelte';
@@ -22,9 +22,19 @@
 
 	// update $crew.agents to n.id where it is of type 'agent'
 	$: {
-		console.log('Updating agents');
 		$crew.agents = $nodes.filter((n) => n.type === 'agent').map((n) => n.id);
-		console.log($crew.agents);
+	}
+
+	// may be able to do some cool localStorage/cookie saving and be more selective
+	// about pushing to db and using the api
+	let oldCrew = JSON.stringify($crew);
+	let lastSaveDate = new Date().getTime();
+	$: if (oldCrew !== JSON.stringify($crew) && new Date().getTime() - lastSaveDate > 2000) {
+		oldCrew = JSON.stringify($crew);
+		lastSaveDate = new Date().getTime();
+		(async () => {
+			await saveCrew($crew);
+		})();
 	}
 
 	const nodeTypes = {
