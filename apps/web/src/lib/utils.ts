@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from 'clsx';
-import { get } from 'svelte/store';
 import type { Node } from '@xyflow/svelte';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
@@ -11,8 +10,51 @@ import type { ContextMap } from '$lib/types';
 import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import api, { type schemas } from './api';
+import { toast } from 'svelte-sonner';
 
 dayjs.extend(relativeTime);
+
+export const saveCrew = async (crew: schemas['Crew']) => {
+	const response = await api
+		.PATCH('/crews/{id}', {
+			params: {
+				path: {
+					id: crew.id
+				}
+			},
+			body: {
+				receiver_id: crew.receiver_id,
+				prompt: crew.prompt,
+				profile_id: crew.profile_id,
+				title: crew.title,
+				published: crew.published,
+				description: crew.description,
+				agents: crew.agents
+			}
+		})
+		.then(({ data: d, error: e }) => {
+			if (e) {
+				console.error(`Error saving crew: ${e.detail}`);
+				toast.error(`Failed to save crew! Please report to dev team with logs from the console.`);
+				return null;
+			}
+			if (!d) {
+				console.error(`No data returned from crew creation`);
+				toast.error(`Failed to save crew! Please report to dev team with logs from the console.`);
+				return null;
+			}
+			toast.success('Crew saved.');
+			return d;
+		})
+		.catch((e) => {
+			console.error(`Error saving crew: ${e}`);
+			toast.error(`Failed to save crew! Please report to dev team with logs from the console.`);
+			return null;
+		});
+
+	return response ? true : false;
+};
 
 export const authenticateUser = ({ cookies }: RequestEvent) => {
 	if (cookies.get('profileId')) return;
