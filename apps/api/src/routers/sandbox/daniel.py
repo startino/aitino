@@ -10,13 +10,13 @@ router = APIRouter(
 logger = logging.getLogger("root")
 
 
-@router.get("/")
-def read_sub():
-    return {"message": "Hello World from sub API"}
+# @router.get("/")
+# def read_sub():
+#     return {"message": "Hello World from sub API"}
 
 
-@router.get("/test")
-def read_test():
+@router.get("/some-thing")
+def read_subtest():
     return {"message": "Hello  from sub API"}
 
 
