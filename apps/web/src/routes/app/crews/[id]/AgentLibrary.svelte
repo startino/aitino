@@ -115,8 +115,8 @@
 							Published
 						</DropdownMenu.CheckboxItem>
 						<DropdownMenu.CheckboxItem
-							checked={filterModel === 'gpt-3.5-turbo'}
-							on:click={() => updateFilterModel('gpt-3.5-turbo')}
+							checked={filterModel === 'gpt-35-turbo'}
+							on:click={() => updateFilterModel('gpt-35-turbo')}
 						>
 							GPT-3.5-turbo
 						</DropdownMenu.CheckboxItem>
