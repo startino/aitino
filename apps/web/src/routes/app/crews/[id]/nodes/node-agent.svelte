@@ -54,8 +54,6 @@
 
 		<button
 			on:click={() => {
-				toast.error(`Error: Agent ${id} not found, please refresh the page.`);
-
 				deleteAgent();
 			}}
 			aria-label="delete agent"
