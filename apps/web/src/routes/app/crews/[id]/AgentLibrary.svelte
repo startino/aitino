@@ -13,9 +13,7 @@
 	import { useSvelteFlow } from '@xyflow/svelte';
 	import { AGENT_LIMIT } from '$lib/config';
 
-	const loadAgentDispatch = createEventDispatcher<{ 'load-agent': schemas['Agent'] }>();
-
-	let { agents, publishedAgents, nodes } = getContext('crew');
+	let { crew, agents, publishedAgents, nodes } = getContext('crew');
 
 	let searchQuery = '';
 	let filterPublished = false;
@@ -63,7 +61,7 @@
 	}
 
 	const { getViewport } = useSvelteFlow();
-	function addAgent(agent: schemas['Agent']) {
+	const addAgent = async (agent: schemas['Agent']) => {
 		if ($nodes.length >= AGENT_LIMIT) {
 			toast.error(`You have reached the maximum limit of ${AGENT_LIMIT} agents.`);
 			return;
@@ -89,7 +87,7 @@
 			}
 		]);
 		toast.success(`Added a new agent ${agent.title}`);
-	}
+	};
 </script>
 
 <div class="w-full max-w-6xl py-4">
