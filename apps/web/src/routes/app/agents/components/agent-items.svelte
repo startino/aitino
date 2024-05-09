@@ -45,7 +45,7 @@
 
 	const models = [
 		{ value: 'gpt-4-turbo-preview', label: 'gpt-4-turbo-preview' },
-		{ value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
+		{ value: 'gpt-35-turbo', label: 'gpt-3.5-turbo' }
 	];
 
 	$: published = isCreate ? $formAgent?.published === 'true' : selectedAgent?.published || false;

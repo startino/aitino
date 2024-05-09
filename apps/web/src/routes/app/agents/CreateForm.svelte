@@ -74,7 +74,7 @@
 					<Select.Group>
 						<Select.Label>Models</Select.Label>
 						<Select.Item value="gpt-4-turbo" label="gpt-4-turbo">gpt-4-turbo</Select.Item>
-						<Select.Item value="gpt-3.5-turbo" label="gpt-3.5-turbo">gpt-3.5-turbo</Select.Item>
+						<Select.Item value="gpt-35-turbo" label="gpt-3.5-turbo">gpt-3.5-turbo</Select.Item>
 					</Select.Group>
 				</Select.Content>
 			</Select.Root>
