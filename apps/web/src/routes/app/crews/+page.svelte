@@ -1,14 +1,14 @@
 <script lang="ts">
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import { X } from 'lucide-svelte';
 	import CreateForm from './CreateForm.svelte';
 	import * as Library from '$lib/components/ui/library';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import api from '$lib/api';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { getContext } from '$lib/context';
 
-	export let data;
+    let { crews } = getContext('root');
 
 	const deleteCrew = (id: string) => {
 		api
@@ -31,9 +31,9 @@
 
 <Library.Root>
 	<Library.CreateButton>
-		<CreateForm formCreate={data.form.create} />
+		<CreateForm />
 	</Library.CreateButton>
-	{#each data.crews as crew (crew.id)}
+	{#each $crews as crew (crew.id)}
 		<Library.Entry
 			on:click={() => goto(`/app/crews/${crew.id}`)}
 			avatar={'https://images.unsplash.com/photo-1608303588026-884930af2559'}
@@ -59,7 +59,7 @@
 					<Button
 						on:click={() => {
 							deleteCrew(crew.id);
-							data.crews = data.crews.filter((c) => c.id !== crew.id);
+							$crews = $crews.filter((c) => c.id !== crew.id);
 						}}
 						variant="destructive"
 						class="bg-red-900">Delete</Button

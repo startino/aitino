@@ -4,9 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { TransitionConfig } from 'svelte/transition';
-import { getContext as getSvelteContext, setContext as setSvelteContext } from 'svelte';
 import { writable } from 'svelte/store';
-import type { ContextMap } from '$lib/types';
 import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -128,13 +126,6 @@ export function getWritablePrompt(nodes: Node[]): Node[] {
 	];
 }
 
-export function setContext<K extends keyof ContextMap>(key: K, value: ContextMap[K]) {
-	return setSvelteContext(key, value);
-}
-
-export function getContext<K extends keyof ContextMap>(key: K): ContextMap[K] {
-	return getSvelteContext<ContextMap[K]>(key);
-}
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

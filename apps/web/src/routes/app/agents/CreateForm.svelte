@@ -2,16 +2,17 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { agentSchema, type AgentSchema } from '$lib/schema';
-	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/select';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import { getContext } from '$lib/context';
+	import { agentSchema } from '$lib/schema';
 
-	export let formCreate: SuperValidated<Infer<AgentSchema>>;
+	let { forms } = getContext('root');
 
-	const form = superForm(formCreate, {
+	const form = superForm($forms.agent.sv, {
 		validators: zodClient(agentSchema)
 	});
 

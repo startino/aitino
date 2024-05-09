@@ -7,8 +7,6 @@
 
 	export let data;
 
-	setContext('splitTestIdentifier', data?.splitTestIdentifier);
-
 	export let CTAButtons: {
 		[label: string]: { href: string; highlight: boolean };
 	} = {

@@ -33,46 +33,10 @@ const pickRandomAvatar = (supabase: SupabaseClient) => {
 	return { name, avatarUrl: data.publicUrl };
 };
 
-export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
-	const userSession = await authGetSession();
-	const agents = await api
-		.GET('/agents/', {
-			params: {
-				query: {
-					profile_id: userSession.user.id
-				}
-			}
-		})
-		.then(({ data: d, error: e }) => {
-			if (e) {
-				console.error(`Error retrieving agents for profile ${userSession.user.id}: ${e.detail}`);
-				throw error(500, `Failed to load agents for profile ${userSession.user.id}`);
-			}
-			if (!d) {
-				console.error(`No data returned from agents`);
-				return [];
-			}
-			if (d.length === 0) {
-				console.warn(`No agents found for profile ${userSession.user.id}`);
-				return d;
-			}
-			return d;
-		});
-
-	const form = {
-		agent: await superValidate(zod(agentSchema))
-	};
-
-	return {
-		agents,
-		form
-	};
-};
-
 export const actions = {
-	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession } }) => {
+	create: async ({ request, locals: { supabase, authGetUser } }) => {
 		console.log('create agent');
-		const userSession = await authGetSession();
+		const userSession = await authGetUser();
 
 		const form = await superValidate(request, zod(agentSchema));
 
@@ -85,7 +49,7 @@ export const actions = {
 		const agent = await api
 			.POST('/agents/', {
 				body: {
-					profile_id: userSession.user.id,
+					profile_id: userSession.id,
 					avatar: randomAvatar.avatarUrl,
 					title: form.data.title,
 					description: form.data.description,

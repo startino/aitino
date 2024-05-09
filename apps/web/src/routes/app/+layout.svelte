@@ -7,19 +7,10 @@
 	import { CircleUserRound, Dna, LogOut, MessagesSquare, UsersRound, Zap } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import { type Icon } from 'lucide-svelte';
-	import { setContext } from '$lib/utils';
+	import { setContext } from '$lib/context';
 
 	export let data;
 
-	const subscriptionStore = writable({
-		sub: data.stripeSub,
-		tier: data.userTier,
-		paymentMethod: data.paymentMethod
-	});
-
-	setContext('subscriptionStore', subscriptionStore);
-
-	$: subscribed = Boolean($subscriptionStore.sub);
 
 	let navigations: {
 		name: string;
@@ -77,9 +68,7 @@
 
 <Shell class="h-screen">
 	<svelte:fragment slot="sidebarLeft">
-		{#key subscribed}
-			<SideNav user={data.user} {navigations} {bottomNavigation} {subscribed} />
-		{/key}
+        <SideNav user={data.user} {navigations} {bottomNavigation} />
 	</svelte:fragment>
 
 	<slot />

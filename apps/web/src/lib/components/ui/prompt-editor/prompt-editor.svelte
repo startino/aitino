@@ -4,6 +4,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import api from '$lib/api';
 
 	export let value: string;
 
@@ -20,9 +21,18 @@
 
 		try {
 			const wordLimit = 300; // Default to 300 if not provided
-			const temperature = 0; // Default to 0 if not provided
+			const temperature = 0.3; // Default to 0 if not provided
 			const prompt_type = 'generic'; // Default to generic if not provided
 
+			const response = await api.POST('/improve', {
+				body: {
+					prompt: value,
+					word_limit: wordLimit,
+					prompt_type: prompt_type,
+					profile_id: data.user.id,
+					temperature: temperature
+				}
+			});
 			// TODO: implement openapi fetche
 			// 	const apiUrl = `${PUBLIC_API_URL}/improve?word_limit=${wordLimit}&prompt=${encodeURIComponent(value)}&temperature=${temperature}&prompt_type=${prompt_type}`;
 			//

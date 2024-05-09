@@ -9,7 +9,7 @@
 	import { Library } from '$lib/components/ui/community-details';
 	import AgentRow from '$lib/components/ui/community-details/agent-row.svelte';
 	import type { schemas } from '$lib/api';
-	import { getContext } from '$lib/utils';
+	import { getContext } from '$lib/context';
 	import { useSvelteFlow } from '@xyflow/svelte';
 	import { AGENT_LIMIT } from '$lib/config';
 

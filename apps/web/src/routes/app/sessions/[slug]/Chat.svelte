@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MessageItem from './Message.svelte';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
-	import { getContext } from '$lib/utils';
+	import { getContext } from '$lib/context';
 	import { Separator } from '$lib/components/ui/separator';
 
 	let { messages, agents } = getContext('session');

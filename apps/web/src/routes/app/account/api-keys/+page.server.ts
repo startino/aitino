@@ -1,18 +1,18 @@
-import { error, fail } from '@sveltejs/kit';
-import { message, setError, superValidate } from 'sveltekit-superforms';
+import { fail } from '@sveltejs/kit';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import api from '$lib/api';
 
 import { apiKeySchema } from '$lib/schema';
 
-export const load = async ({ locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
-	const userSession = await authGetSession();
+export const load = async ({ locals: { authGetUser: authGetUser }}) => {
+	const userSession = await authGetUser();
 
 	const userApiKeys = await api
 		.GET('/api-keys/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: userSession.id
 				}
 			}
 		})
@@ -28,7 +28,7 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 			return d;
 		});
 
-	const apiKeyTypes = await api.GET('/api_providers/').then(({ data: d, error: e }) => {
+	const apiKeyTypes = await api.GET('/api-provider/').then(({ data: d, error: e }) => {
 		if (e) {
 			console.error(`Error retrieving api key types: ${e}`);
 			return [];
@@ -45,8 +45,8 @@ export const load = async ({ locals: { supabase, stripe, authGetSession, safeGet
 };
 
 export const actions = {
-	create: async ({ request, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
-		const userSession = await authGetSession();
+	create: async ({ request, locals: { authGetUser }}) => {
+		const userSession = await authGetUser();
 
 		const form = await superValidate(request, zod(apiKeySchema));
 
@@ -57,7 +57,7 @@ export const actions = {
 		await api
 			.POST('/api-keys/', {
 				body: {
-					profile_id: userSession.user.id,
+					profile_id: userSession.id,
 					api_key: form.data.value,
 					api_provider_id: form.data.typeId
 				}
@@ -80,8 +80,8 @@ export const actions = {
 		}
 
 		await api
-			.DELETE(`/api-keys/{api_key_id}`, {
-				params: { path: { api_key_id: id } }
+			.DELETE(`/api-keys/{id}`, {
+				params: { path: { id } }
 			})
 			.then(({ data: d, error: e }) => {
 				if (e) {

@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import api from '$lib/api';
 
-export const load = async ({ params, locals: { supabase, stripe, authGetSession, safeGetSession }}) => {
-	const userSession = await authGetSession();
+export const load = async ({ params, locals: { supabase, stripe, authGetUser, safeGetSession }}) => {
+	const userSession = await authGetUser();
 
 	const session = await api
 		.GET('/sessions/{id}', {
@@ -28,7 +28,7 @@ export const load = async ({ params, locals: { supabase, stripe, authGetSession,
 		.GET('/sessions/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: userSession.id
 				}
 			}
 		})
@@ -80,7 +80,7 @@ export const load = async ({ params, locals: { supabase, stripe, authGetSession,
 		.GET('/crews/', {
 			params: {
 				query: {
-					profile_id: userSession.user.id
+					profile_id: userSession.id
 				}
 			}
 		})
@@ -129,7 +129,7 @@ export const load = async ({ params, locals: { supabase, stripe, authGetSession,
 	});
 
 	return {
-		profileId: userSession.user.id,
+		profileId: userSession.id,
 		session: session,
 		sessions: sessions,
 		crew: crew,

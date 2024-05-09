@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import { getContext } from '$lib/utils.js';
+	import { getContext } from '$lib/context';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import PricingTiers from '$lib/components/pricing/PricingTiers.svelte';
 

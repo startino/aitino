@@ -23,20 +23,12 @@ export const apiKeySchema = z.object({
 });
 export type ApiKeySchema = typeof apiKeySchema;
 
-export const editCrewSchema = z.object({
-	id: z.string(),
-	title: z.string().default('Untitled'),
-	description: z.string().default('No description'),
-	published: z.boolean().default(false)
-});
-export type EditCrewSchema = typeof editCrewSchema;
-
-export const createCrewSchema = z.object({
+export const crewSchema = z.object({
 	title: z.string().min(1).max(50),
 	description: z.string().max(500).default(''),
 	published: z.boolean().default(false)
 });
-export type CreateCrewSchema = typeof createCrewSchema;
+export type CrewSchema = typeof crewSchema;
 
 export const agentSchema = z.object({
 	id: z.string(),

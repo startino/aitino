@@ -13,7 +13,7 @@
 	} from '@stripe/stripe-js';
 	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';
-	import { getContext } from '$lib/utils';
+	import { getContext } from '$lib/context';
 
 	export let clientSecret: string;
 	export let returnUrl: string;

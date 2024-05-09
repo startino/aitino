@@ -3,15 +3,16 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { createCrewSchema, type CreateCrewSchema } from '$lib/schema';
-	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import { getContext } from '$lib/context';
+	import { crewSchema } from '$lib/schema';
 
-	export let formCreate: SuperValidated<Infer<CreateCrewSchema>>;
+	let { forms } = getContext('root');
 
-	const form = superForm(formCreate, {
-		validators: zodClient(createCrewSchema)
+	const form = superForm($forms.crew.sv, {
+		validators: zodClient(crewSchema)
 	});
 
 	const { form: formData, enhance } = form;

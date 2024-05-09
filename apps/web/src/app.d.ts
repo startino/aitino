@@ -13,7 +13,6 @@ declare global {
 			getUser(): Promise<(User & schemas['Profile']) | null>;
 			authGetUser(): Promise<User & schemas['Profile']>;
 			safeGetSession(): Promise<(Session & User & schemas['Profile']) | null>;
-			authGetSession(): Promise<Session & User & schemas['Profile']>;
 		}
 		interface PageData {
 			session: Session | null;

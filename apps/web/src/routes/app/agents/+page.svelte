@@ -6,8 +6,11 @@
 	import { toast } from 'svelte-sonner';
 	import * as Library from '$lib/components/ui/library';
 	import { goto } from '$app/navigation';
+	import { getContext } from '$lib/context';
 
 	export let data;
+
+	let { agents } = getContext('root');
 
 	const deleteAgent = (id: string) => {
 		api
@@ -30,9 +33,9 @@
 
 <Library.Root>
 	<Library.CreateButton>
-		<CreateForm formCreate={data.form.agent} />
+		<CreateForm />
 	</Library.CreateButton>
-	{#each data.agents as agent}
+	{#each $agents as agent}
 		<Library.Entry on:click={() => goto(`/app/agents/${agent.id}`)} avatar={agent.avatar}>
 			<div slot="content">
 				<Library.EntryHeader>

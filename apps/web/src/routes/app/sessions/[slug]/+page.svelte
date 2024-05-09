@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getContext, setContext } from '$lib/utils';
+	import { getContext, setContext } from '$lib/context';
 	import { writable } from 'svelte/store';
 	import Chat from './Chat.svelte';
 	import SessionNavigator from './SessionNavigator.svelte';
