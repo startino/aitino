@@ -1,0 +1,326 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Custom */
+  .link {
+    @apply underline;
+    @apply text-tertiary;
+  }
+
+  /* There's for sure some way to make this one class and just prefix the group when it's being used but I couldn't find the solution.*/
+  .underline-animation-group {
+    @apply bg-left-bottom bg-gradient-to-r from-tertiary to-tertiary bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500;
+  }
+  .underline-animation {
+    @apply bg-left-bottom bg-gradient-to-r from-tertiary to-tertiary bg-[length:0%_2px] bg-no-repeat hover:bg-[length:100%_2px] transition-all duration-500;
+  }
+
+  /* Prevents default button highlighting when pressed.*/
+  .no-highlights {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Material Design */
+  .display-large {
+    font-family: var(--md-sys-typescale-display-large-font-family-name);
+    font-style: var(--md-sys-typescale-display-large-font-family-style);
+    font-weight: var(--md-sys-typescale-display-large-font-weight);
+    font-size: var(--md-sys-typescale-display-large-font-size);
+    letter-spacing: var(--md-sys-typescale-display-large-tracking);
+    line-height: var(--md-sys-typescale-display-large-height);
+    text-transform: var(--md-sys-typescale-display-large-text-transform);
+    text-decoration: var(--md-sys-typescale-display-large-text-decoration);
+  }
+  .display-medium {
+    font-family: var(--md-sys-typescale-display-medium-font-family-name);
+    font-style: var(--md-sys-typescale-display-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-display-medium-font-weight);
+    font-size: var(--md-sys-typescale-display-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+    line-height: var(--md-sys-typescale-display-medium-height);
+    text-transform: var(--md-sys-typescale-display-medium-text-transform);
+    text-decoration: var(--md-sys-typescale-display-medium-text-decoration);
+  }
+  .display-small {
+    font-family: var(--md-sys-typescale-display-small-font-family-name);
+    font-style: var(--md-sys-typescale-display-small-font-family-style);
+    font-weight: var(--md-sys-typescale-display-small-font-weight);
+    font-size: var(--md-sys-typescale-display-small-font-size);
+    letter-spacing: var(--md-sys-typescale-display-small-tracking);
+    line-height: var(--md-sys-typescale-display-small-height);
+    text-transform: var(--md-sys-typescale-display-small-text-transform);
+    text-decoration: var(--md-sys-typescale-display-small-text-decoration);
+  }
+  .headline-large {
+    font-family: var(--md-sys-typescale-headline-large-font-family-name);
+    font-style: var(--md-sys-typescale-headline-large-font-family-style);
+    font-weight: var(--md-sys-typescale-headline-large-font-weight);
+    font-size: var(--md-sys-typescale-headline-large-font-size);
+    letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+    line-height: var(--md-sys-typescale-headline-large-height);
+    text-transform: var(--md-sys-typescale-headline-large-text-transform);
+    text-decoration: var(--md-sys-typescale-headline-large-text-decoration);
+  }
+  .headline-medium {
+    font-family: var(--md-sys-typescale-headline-medium-font-family-name);
+    font-style: var(--md-sys-typescale-headline-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-headline-medium-font-weight);
+    font-size: var(--md-sys-typescale-headline-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+    line-height: var(--md-sys-typescale-headline-medium-height);
+    text-transform: var(--md-sys-typescale-headline-medium-text-transform);
+    text-decoration: var(--md-sys-typescale-headline-medium-text-decoration);
+  }
+  .headline-small {
+    font-family: var(--md-sys-typescale-headline-small-font-family-name);
+    font-style: var(--md-sys-typescale-headline-small-font-family-style);
+    font-weight: var(--md-sys-typescale-headline-small-font-weight);
+    font-size: var(--md-sys-typescale-headline-small-font-size);
+    letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+    line-height: var(--md-sys-typescale-headline-small-height);
+    text-transform: var(--md-sys-typescale-headline-small-text-transform);
+    text-decoration: var(--md-sys-typescale-headline-small-text-decoration);
+  }
+  .body-large {
+    font-family: var(--md-sys-typescale-body-large-font-family-name);
+    font-style: var(--md-sys-typescale-body-large-font-family-style);
+    font-weight: var(--md-sys-typescale-body-large-font-weight);
+    font-size: var(--md-sys-typescale-body-large-font-size);
+    letter-spacing: var(--md-sys-typescale-body-large-tracking);
+    line-height: var(--md-sys-typescale-body-large-height);
+    text-transform: var(--md-sys-typescale-body-large-text-transform);
+    text-decoration: var(--md-sys-typescale-body-large-text-decoration);
+  }
+  .body-medium {
+    font-family: var(--md-sys-typescale-body-medium-font-family-name);
+    font-style: var(--md-sys-typescale-body-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-body-medium-font-weight);
+    font-size: var(--md-sys-typescale-body-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+    line-height: var(--md-sys-typescale-body-medium-height);
+    text-transform: var(--md-sys-typescale-body-medium-text-transform);
+    text-decoration: var(--md-sys-typescale-body-medium-text-decoration);
+  }
+  .body-small {
+    font-family: var(--md-sys-typescale-body-small-font-family-name);
+    font-style: var(--md-sys-typescale-body-small-font-family-style);
+    font-weight: var(--md-sys-typescale-body-small-font-weight);
+    font-size: var(--md-sys-typescale-body-small-font-size);
+    letter-spacing: var(--md-sys-typescale-body-small-tracking);
+    line-height: var(--md-sys-typescale-body-small-height);
+    text-transform: var(--md-sys-typescale-body-small-text-transform);
+    text-decoration: var(--md-sys-typescale-body-small-text-decoration);
+  }
+  .label-large {
+    font-family: var(--md-sys-typescale-label-large-font-family-name);
+    font-style: var(--md-sys-typescale-label-large-font-family-style);
+    font-weight: var(--md-sys-typescale-label-large-font-weight);
+    font-size: var(--md-sys-typescale-label-large-font-size);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    line-height: var(--md-sys-typescale-label-large-height);
+    text-transform: var(--md-sys-typescale-label-large-text-transform);
+    text-decoration: var(--md-sys-typescale-label-large-text-decoration);
+  }
+  .label-medium {
+    font-family: var(--md-sys-typescale-label-medium-font-family-name);
+    font-style: var(--md-sys-typescale-label-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-label-medium-font-weight);
+    font-size: var(--md-sys-typescale-label-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    line-height: var(--md-sys-typescale-label-medium-height);
+    text-transform: var(--md-sys-typescale-label-medium-text-transform);
+    text-decoration: var(--md-sys-typescale-label-medium-text-decoration);
+  }
+  .label-small {
+    font-family: var(--md-sys-typescale-label-small-font-family-name);
+    font-style: var(--md-sys-typescale-label-small-font-family-style);
+    font-weight: var(--md-sys-typescale-label-small-font-weight);
+    font-size: var(--md-sys-typescale-label-small-font-size);
+    letter-spacing: var(--md-sys-typescale-label-small-tracking);
+    line-height: var(--md-sys-typescale-label-small-height);
+    text-transform: var(--md-sys-typescale-label-small-text-transform);
+    text-decoration: var(--md-sys-typescale-label-small-text-decoration);
+  }
+  .title-large {
+    font-family: var(--md-sys-typescale-title-large-font-family-name);
+    font-style: var(--md-sys-typescale-title-large-font-family-style);
+    font-weight: var(--md-sys-typescale-title-large-font-weight);
+    font-size: var(--md-sys-typescale-title-large-font-size);
+    letter-spacing: var(--md-sys-typescale-title-large-tracking);
+    line-height: var(--md-sys-typescale-title-large-height);
+    text-transform: var(--md-sys-typescale-title-large-text-transform);
+    text-decoration: var(--md-sys-typescale-title-large-text-decoration);
+  }
+  .title-medium {
+    font-family: var(--md-sys-typescale-title-medium-font-family-name);
+    font-style: var(--md-sys-typescale-title-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-title-medium-font-weight);
+    font-size: var(--md-sys-typescale-title-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    line-height: var(--md-sys-typescale-title-medium-height);
+    text-transform: var(--md-sys-typescale-title-medium-text-transform);
+    text-decoration: var(--md-sys-typescale-title-medium-text-decoration);
+  }
+  .title-small {
+    font-family: var(--md-sys-typescale-title-small-font-family-name);
+    font-style: var(--md-sys-typescale-title-small-font-family-style);
+    font-weight: var(--md-sys-typescale-title-small-font-weight);
+    font-size: var(--md-sys-typescale-title-small-font-size);
+    letter-spacing: var(--md-sys-typescale-title-small-tracking);
+    line-height: var(--md-sys-typescale-title-small-height);
+    text-transform: var(--md-sys-typescale-title-small-text-transform);
+    text-decoration: var(--md-sys-typescale-title-small-text-decoration);
+  }
+}
+
+@layer base {
+  :root {
+    --md-source: 77 49 49;
+    /* dark */
+    --md-sys-color-primary: 255 179 179;
+    --md-sys-color-on-primary: 95 19 27;
+    --md-sys-color-primary-container: 126 42 47;
+    --md-sys-color-on-primary-container: 255 218 217;
+    --md-sys-color-secondary: 230 189 188;
+    --md-sys-color-on-secondary: 68 41 41;
+    --md-sys-color-secondary-container: 93 63 63;
+    --md-sys-color-on-secondary-container: 255 218 217;
+    --md-sys-color-tertiary: 229 193 141;
+    --md-sys-color-on-tertiary: 66 44 5;
+    --md-sys-color-tertiary-container: 91 66 26;
+    --md-sys-color-on-tertiary-container: 255 222 174;
+    --md-sys-color-error: 255 180 171;
+    --md-sys-color-error-container: 147 0 10;
+    --md-sys-color-on-error: 105 0 5;
+    --md-sys-color-on-error-container: 255 218 214;
+    --md-sys-color-background: 32 26 26;
+    --md-sys-color-on-background: 236 224 223;
+    --md-sys-color-surface: 32 26 26;
+    --md-sys-color-on-surface: 236 224 223;
+    --md-sys-color-surface-variant: 82 67 67;
+    --md-sys-color-on-surface-variant: 215 193 193;
+    --md-sys-color-outline: 160 140 140;
+    --md-sys-color-inverse-on-surface: 32 26 26;
+    --md-sys-color-inverse-surface: 236 224 223;
+    --md-sys-color-inverse-primary: 156 65 69;
+    --md-sys-color-shadow: 0 0 0;
+    --md-sys-color-surface-tint: 255 179 179;
+    --md-sys-color-outline-variant: 82 67 67;
+    --md-sys-color-scrim: 0 0 0;
+
+    /* display - large */
+    --md-sys-typescale-display-large-font-family-name: Playfair Display;
+    --md-sys-typescale-display-large-font-family-style: Regular;
+    --md-sys-typescale-display-large-font-weight: 400px;
+    --md-sys-typescale-display-large-font-size: 64px;
+    --md-sys-typescale-display-large-line-height: 72px;
+    --md-sys-typescale-display-large-letter-spacing: -0.25px;
+    /* display - medium */
+    --md-sys-typescale-display-medium-font-family-name: Playfair Display;
+    --md-sys-typescale-display-medium-font-family-style: Regular;
+    --md-sys-typescale-display-medium-font-weight: 400px;
+    --md-sys-typescale-display-medium-font-size: 45px;
+    --md-sys-typescale-display-medium-line-height: 52px;
+    --md-sys-typescale-display-medium-letter-spacing: 0px;
+    /* display - small */
+    --md-sys-typescale-display-small-font-family-name: Playfair Display;
+    --md-sys-typescale-display-small-font-family-style: Regular;
+    --md-sys-typescale-display-small-font-weight: 400px;
+    --md-sys-typescale-display-small-font-size: 36px;
+    --md-sys-typescale-display-small-line-height: 44px;
+    --md-sys-typescale-display-small-letter-spacing: 0px;
+    /* headline - large */
+    --md-sys-typescale-headline-large-font-family-name: Playfair Display;
+    --md-sys-typescale-headline-large-font-family-style: Regular;
+    --md-sys-typescale-headline-large-font-weight: 400px;
+    --md-sys-typescale-headline-large-font-size: 32px;
+    --md-sys-typescale-headline-large-line-height: 40px;
+    --md-sys-typescale-headline-large-letter-spacing: 0px;
+    /* headline - medium */
+    --md-sys-typescale-headline-medium-font-family-name: Playfair Display;
+    --md-sys-typescale-headline-medium-font-family-style: Regular;
+    --md-sys-typescale-headline-medium-font-weight: 400px;
+    --md-sys-typescale-headline-medium-font-size: 28px;
+    --md-sys-typescale-headline-medium-line-height: 36px;
+    --md-sys-typescale-headline-medium-letter-spacing: 0px;
+    /* headline - small */
+    --md-sys-typescale-headline-small-font-family-name: Playfair Display;
+    --md-sys-typescale-headline-small-font-family-style: Regular;
+    --md-sys-typescale-headline-small-font-weight: 400px;
+    --md-sys-typescale-headline-small-font-size: 24px;
+    --md-sys-typescale-headline-small-line-height: 32px;
+    --md-sys-typescale-headline-small-letter-spacing: 0px;
+    /* body - large */
+    --md-sys-typescale-body-large-font-family-name: Playfair Display;
+    --md-sys-typescale-body-large-font-family-style: Regular;
+    --md-sys-typescale-body-large-font-weight: 400px;
+    --md-sys-typescale-body-large-font-size: 16px;
+    --md-sys-typescale-body-large-line-height: 24px;
+    --md-sys-typescale-body-large-letter-spacing: 0.5px;
+    /* body - medium */
+    --md-sys-typescale-body-medium-font-family-name: Playfair Display;
+    --md-sys-typescale-body-medium-font-family-style: Regular;
+    --md-sys-typescale-body-medium-font-weight: 400px;
+    --md-sys-typescale-body-medium-font-size: 14px;
+    --md-sys-typescale-body-medium-line-height: 20px;
+    --md-sys-typescale-body-medium-letter-spacing: 0.25px;
+    /* body - small */
+    --md-sys-typescale-body-small-font-family-name: Playfair Display;
+    --md-sys-typescale-body-small-font-family-style: Regular;
+    --md-sys-typescale-body-small-font-weight: 400px;
+    --md-sys-typescale-body-small-font-size: 12px;
+    --md-sys-typescale-body-small-line-height: 16px;
+    --md-sys-typescale-body-small-letter-spacing: 0.4px;
+    /* label - large */
+    --md-sys-typescale-label-large-font-family-name: Playfair Display;
+    --md-sys-typescale-label-large-font-family-style: Medium;
+    --md-sys-typescale-label-large-font-weight: 500px;
+    --md-sys-typescale-label-large-font-size: 14px;
+    --md-sys-typescale-label-large-line-height: 20px;
+    --md-sys-typescale-label-large-letter-spacing: 0.1px;
+    /* label - medium */
+    --md-sys-typescale-label-medium-font-family-name: Playfair Display;
+    --md-sys-typescale-label-medium-font-family-style: Medium;
+    --md-sys-typescale-label-medium-font-weight: 500px;
+    --md-sys-typescale-label-medium-font-size: 12px;
+    --md-sys-typescale-label-medium-line-height: 16px;
+    --md-sys-typescale-label-medium-letter-spacing: 0.5px;
+    /* label - small */
+    --md-sys-typescale-label-small-font-family-name: Playfair Display;
+    --md-sys-typescale-label-small-font-family-style: Medium;
+    --md-sys-typescale-label-small-font-weight: 500px;
+    --md-sys-typescale-label-small-font-size: 11px;
+    --md-sys-typescale-label-small-line-height: 16px;
+    --md-sys-typescale-label-small-letter-spacing: 0.5px;
+    /* title - large */
+    --md-sys-typescale-title-large-font-family-name: Playfair Display;
+    --md-sys-typescale-title-large-font-family-style: Regular;
+    --md-sys-typescale-title-large-font-weight: 400px;
+    --md-sys-typescale-title-large-font-size: 22px;
+    --md-sys-typescale-title-large-line-height: 28px;
+    --md-sys-typescale-title-large-letter-spacing: 0px;
+    /* title - medium */
+    --md-sys-typescale-title-medium-font-family-name: Playfair Display;
+    --md-sys-typescale-title-medium-font-family-style: Medium;
+    --md-sys-typescale-title-medium-font-weight: 500px;
+    --md-sys-typescale-title-medium-font-size: 16px;
+    --md-sys-typescale-title-medium-line-height: 24px;
+    --md-sys-typescale-title-medium-letter-spacing: 0.15px;
+    /* title - small */
+    --md-sys-typescale-title-small-font-family-name: Playfair Display;
+    --md-sys-typescale-title-small-font-family-style: Medium;
+    --md-sys-typescale-title-small-font-weight: 500px;
+    --md-sys-typescale-title-small-font-size: 14px;
+    --md-sys-typescale-title-small-line-height: 20px;
+    --md-sys-typescale-title-small-letter-spacing: 0.1px;
+  }
+}
