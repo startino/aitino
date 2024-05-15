@@ -1,8 +1,8 @@
-# Futino Business Plan
+# Startino Business Plan
 
 ### Identity
 
-Futino combines the upsides of a tech co-founder with a development agency, eliminating the downsides typically associated with each.
+Startino combines the upsides of a tech co-founder with a development agency, eliminating the downsides typically associated with each.
 
 ### Problem
 

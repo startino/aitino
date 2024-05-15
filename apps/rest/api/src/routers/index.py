@@ -17,7 +17,7 @@ from fastapi.responses import RedirectResponse
 
 # Relevant subreddits to Startino
 SUBREDDIT_NAMES = (
-    "SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur"
+    "SaaS+SaaSy+startups+YoungEntrepreneurs+NoCodeSaas+nocode+cofounder+Entrepreneur+futino"
 )
 
 load_dotenv()
@@ -87,6 +87,7 @@ def generate_comment(generate_request: GenerateCommentRequest):
     comment: str = comment_bot.generate_comment(
         generate_request.title,
         generate_request.selftext,
+        generate_request.instructions
     )
     if comment is None:
         raise HTTPException(404, "comment not found")
