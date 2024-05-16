@@ -34,12 +34,15 @@ def generate_comment(title: str, selftext: str, instructions: str = "") -> str:
     # Post
     Title: {title}
     Content: {selftext}
+
+    # Additional instructions
+    {instructions}
     """
     )
 
     prompt = PromptTemplate(
         template=template,
-        input_variables=["title", "selftext"],
+        input_variables=["title", "selftext", "instructions"],
         partial_variables={"format_instructions": parser.get_format_instructions()},
     )
 
@@ -50,6 +53,7 @@ def generate_comment(title: str, selftext: str, instructions: str = "") -> str:
         {
             "title": title,
             "selftext": selftext,
+            "instructions": instructions,
         }
     )
 
@@ -60,7 +64,8 @@ def publish_comment(
     id, text: str, username: str, password: str
 ) -> PublishCommentResponse | None:
     lead = db.get_lead(id)
-    if lead is None:
+    print(lead)
+    if lead is None or lead.status == "subscriber":
         logging.error(f"Lead with id {id} not found")
         return None
 

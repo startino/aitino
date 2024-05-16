@@ -71,8 +71,20 @@ def post_lead(lead: Lead) -> None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Posting lead: {lead}")
+
+    # Check if lead already exists (temporary until supabase-py supports onConflict)
+    existing_lead = (
+        supabase.table("leads")
+        .select("*")
+        .eq("prospect_username", lead.prospect_username)
+        .execute()
+    )
+
+    if len(existing_lead.data) > 0:
+        return
+
     supabase.table("leads").insert(
-        json.loads(json.dumps(lead.model_dump(), default=str))
+        json.loads(json.dumps(lead.dict(), default=str))
     ).execute()
 
 
@@ -83,8 +95,28 @@ def update_lead(
     Update a lead in the database.
     """
     supabase: Client = create_client(url, key)
-    # Create a dictionary with only non-empty values
-    data = {k: v for k, v in {"status": status, "last_event": last_event}.items() if v}
+
+    if status is "subscriber":
+        last_contacted_at = datetime.now()
+        # Create a dictionary with only non-empty values
+        data = {
+            k: v
+            for k, v in {
+                "status": status,
+                "last_event": last_event,
+                "last_contacted_at": str(last_contacted_at),
+            }.items()
+            if v
+        }
+    else:
+        data = {
+            k: v
+            for k, v in {
+                "status": status,
+                "last_event": last_event,
+            }.items()
+            if v
+        }
 
     logger.debug(f"Updating lead with data: {data}")
     response = supabase.table("leads").update(data).eq("id", str(id)).execute()
@@ -124,6 +156,17 @@ def post_evaluated_submission(saved_submission: SavedSubmission) -> None:
     """
     supabase: Client = create_client(url, key)
     logger.debug(f"Posting submission: {saved_submission}")
+
+    # Check if submission already exists (temporary until supabase-py supports onConflict)
+    existing_submission = (
+        supabase.table("evaluated_submissions")
+        .select("*")
+        .eq("body", saved_submission.body)
+        .execute()
+    )
+
+    if len(existing_submission.data) > 0:
+        return
 
     supabase.table("evaluated_submissions").insert(
         json.loads(json.dumps(saved_submission.model_dump(), default=str))

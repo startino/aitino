@@ -26,8 +26,6 @@ def create_chain(model: str):
     """
     Creates a processing chain for evaluating the relevance of a submission using a specified language model.
 
-    The chain is composed of a prompt template, a language model, and a parser to interpret the model's output as a Pydantic object.
-
     Parameters:
     - model (str): The name of the deployed azure model to be used for generating responses.
 
@@ -77,7 +75,7 @@ def invoke_chain(chain, submission: Submission) -> tuple[RelevanceResult, float]
                 return result, cb.total_cost
         except Exception as e:
             print(f"An error occurred while invoke_chain: {e}")
-            time.sleep(10)  # Wait for 10 seconds before trying again
+            time.sleep(2)  # Wait for 10 seconds before trying again
 
     raise RuntimeError(
         "Failed to invoke chain after 3 attempts. Most likely no more credits left or usage limit has been reached."
@@ -318,11 +316,8 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
     if filter:
         questions = [
             FilterQuestion(
-                question="Is the author himself a technical person? is/was he a programmer? is/was he a software developer?",
+                question="Is the author himself an IT person? is/was he a programmer? is/was he a software developer?",
                 reject_on=True,
-            ),
-            FilterQuestion(
-                question="Has the project already started development?", reject_on=True
             ),
             FilterQuestion(
                 question="Is the author currently engaged in job searching activities and promoting their technical expertise?",

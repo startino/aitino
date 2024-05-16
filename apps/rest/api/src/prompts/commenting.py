@@ -14,11 +14,12 @@ with open(
 ) as file:
     good_examples = file.read()
 
-with open(os.path.join(script_dir, "bad_examples.md"), "r", encoding="utf-8") as file:
+with open(os.path.join(script_dir, "bad_comment_examples.md"), "r", encoding="utf-8") as file:
     bad_examples = file.read()
 
 purpose = """
-Introduce myself and Futino and quickly capture interest with a relevant value proposition, setting the stage for further engagement and relationship building.
+Introduce myself and Startino and quickly capture interest with a relevant value proposition, setting the stage for further engagement and relationship building.
+Sometimes, if they are simply looking for advice, write a valuable comment, rather than trying to sell them. This is because I will later try to sell them after they respond.
 """
 
 context = f"""
@@ -27,8 +28,10 @@ context = f"""
 
 guidance = """
 - Keep the comment concise and to the point.
-- Don't mention about cost effectiveness of Futino.
-- Mention how we gaurantee our dedication through our services for equity model.
+- Don't mention about cost effectiveness of Startino.
+- Do not mention how we gaurantee our dedication through our services for equity model.
+- Do not mention the equity for services model or anything about equity.
+- You may mention that we sometimes take equity if the post is a startup.
 - Do not use more than 50 words.
 """
 
