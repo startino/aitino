@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		/* Universal */
+		--md-sys-color-primary: 69 223 164;
+		--md-sys-color-on-primary: 0 56 37;
+		--md-sys-color-primary-container: 0 81 55;
+		--md-sys-color-on-primary-container: 104 252 191;
+		--md-sys-color-secondary: 60 221 199;
+		--md-sys-color-on-secondary: 0 55 49;
+		--md-sys-color-secondary-container: 0 80 71;
+		--md-sys-color-on-secondary-container: 98 250 227;
+		--md-sys-color-tertiary: 255 175 211;
+		--md-sys-color-on-tertiary: 98 0 64;
+		--md-sys-color-tertiary-container: 133 20 90;
+		--md-sys-color-on-tertiary-container: 255 216 231;
+		--md-sys-color-error: 255 180 171;
+		--md-sys-color-error-container: 147 0 10;
+		--md-sys-color-on-error: 105 0 5;
+		--md-sys-color-on-error-container: 255 218 214;
+		--md-sys-color-background: 23 25 25;
+		--md-sys-color-on-background: 225 227 223;
+		--md-sys-color-surface: 30 30 30;
+		--md-sys-color-on-surface: 225 227 223;
+		--md-sys-color-surface-variant: 64 73 67;
+		--md-sys-color-on-surface-variant: 191 201 193;
+		--md-sys-color-outline: 138 147 140;
+		--md-sys-color-inverse-on-surface: 25 28 26;
+		--md-sys-color-inverse-surface: 225 227 223;
+		--md-sys-color-inverse-primary: 0 108 75;
+		--md-sys-color-shadow: 0 0 0;
+		--md-sys-color-surface-tint: 69 223 164;
+		--md-sys-color-outline-variant: 64 73 67;
+		--md-sys-color-scrim: 0 0 0;
+
+		--radius: 0.5rem;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
+	}
+}
