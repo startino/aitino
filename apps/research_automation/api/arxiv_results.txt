@@ -1,0 +1,52 @@
+Title: Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image
+Published: 2024-05-30 17:59:54+00:00
+Link: http://arxiv.org/pdf/2405.20343v1
+Abstract: In this work, we introduce Unique3D, a novel image-to-3D framework for
+efficiently generating high-quality 3D meshes from single-view images,
+featuring state-of-the-art generation fidelity and strong generalizability.
+Previous methods based on Score Distillation Sampling (SDS) can produce
+diversified 3D results by distilling 3D knowledge from large 2D diffusion
+models, but they usually suffer from long per-case optimization time with
+inconsistent issues. Recent works address the problem and generate better 3D
+results either by finetuning a multi-view diffusion model or training a fast
+feed-forward model. However, they still lack intricate textures and complex
+geometries due to inconsistency and limited generated resolution. To
+simultaneously achieve high fidelity, consistency, and efficiency in single
+image-to-3D, we propose a novel framework Unique3D that includes a multi-view
+diffusion model with a corresponding normal diffusion model to generate
+multi-view images with their normal maps, a multi-level upscale process to
+progressively improve the resolution of generated orthographic multi-views, as
+well as an instant and consistent mesh reconstruction algorithm called ISOMER,
+which fully integrates the color and geometric priors into mesh results.
+Extensive experiments demonstrate that our Unique3D significantly outperforms
+other image-to-3D baselines in terms of geometric and textural details.
+
+Title: From Zero to Hero: Cold-Start Anomaly Detection
+Published: 2024-05-30 17:59:51+00:00
+Link: http://arxiv.org/pdf/2405.20341v1
+Abstract: When first deploying an anomaly detection system, e.g., to detect
+out-of-scope queries in chatbots, there are no observed data, making
+data-driven approaches ineffective. Zero-shot anomaly detection methods offer a
+solution to such "cold-start" cases, but unfortunately they are often not
+accurate enough. This paper studies the realistic but underexplored cold-start
+setting where an anomaly detection model is initialized using zero-shot
+guidance, but subsequently receives a small number of contaminated observations
+(namely, that may include anomalies). The goal is to make efficient use of both
+the zero-shot guidance and the observations. We propose ColdFusion, a method
+that effectively adapts the zero-shot anomaly detector to contaminated
+observations. To support future development of this new setting, we propose an
+evaluation suite consisting of evaluation protocols and metrics.
+
+Title: Evaluating Approximations of Count Distributions and Forecasts for Poisson-Lindley Integer Autoregressive Processes
+Published: 2024-05-30 17:59:51+00:00
+Link: http://arxiv.org/pdf/2405.20342v1
+Abstract: Although many time series are realizations from discrete processes, it is
+often that a continuous Gaussian model is implemented for modeling and
+forecasting the data, resulting in incoherent forecasts. Forecasts using a
+Poisson-Lindley integer autoregressive (PLINAR) model are compared to
+variations of Gaussian forecasts via simulation by equating relevant moments of
+the marginals of the PLINAR to the Gaussian AR. To illustrate utility, the
+methods discussed are applied and compared using a discrete series with model
+parameters being estimated using each of conditional least squares,
+Yule-Walker, and maximum likelihood.
+
