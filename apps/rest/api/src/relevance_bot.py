@@ -95,7 +95,7 @@ def summarize_submission(submission: Submission) -> Submission:
     - The submission object with the selftext replaced with a shorter version (the summary).
     """
     llm = AzureChatOpenAI(
-        azure_deployment="gpt-35-turbo",
+        azure_deployment="gpt-4-turbo",
         temperature=0,
     )
 
@@ -175,7 +175,7 @@ def filter_with_questions(
     cost = 0
 
     llm = AzureChatOpenAI(
-        azure_deployment="gpt-35-turbo",
+        azure_deployment="gpt-4-turbo",
         temperature=0,
     )
     parser = PydanticOutputParser(pydantic_object=FilterOutput)
@@ -340,9 +340,9 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
                 submission=submission, is_relevant=False, cost=cost, reason=source
             )
 
-    evalualuated_submission = calculate_relevance("gpt-4-turbo", 1, submission)
+    evalualuated_submission = calculate_relevance("gpt-4o", 1, submission)
     log_relevance_calculation(
-        "gpt-4-turbo",
+        "gpt-4o",
         submission,
         evalualuated_submission.is_relevant,
         evalualuated_submission.cost,

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.routers import index
 
+
 def create_app() -> FastAPI:
     app = FastAPI()
 
@@ -36,7 +37,7 @@ def create_app() -> FastAPI:
 def run():
     app = create_app()
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_config="logging.yaml")
+    uvicorn.run(app, host="0.0.0.0", port=8080, log_config="logging.yaml")
 
 
 if __name__ == "__main__":
