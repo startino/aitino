@@ -340,9 +340,9 @@ def evaluate_relevance(submission: Submission, filter: bool) -> EvaluatedSubmiss
                 submission=submission, is_relevant=False, cost=cost, reason=source
             )
 
-    evalualuated_submission = calculate_relevance("gpt-4o", 1, submission)
+    evalualuated_submission = calculate_relevance("gpt-4-turbo", 1, submission)
     log_relevance_calculation(
-        "gpt-4o",
+        "gpt-4-turbo",
         submission,
         evalualuated_submission.is_relevant,
         evalualuated_submission.cost,
