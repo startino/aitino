@@ -1,10 +1,14 @@
-from .relevance import calculate_relevance_prompt, purpose, ideal_customer_profile, context, good_examples, bad_examples
-from .commenting import generate_comment_prompt
+from .relevance import (
+    evaluate_relevance,
+    purpose,
+    context,
+    good_examples,
+    bad_examples,
+)
 
 __all__ = [
-    "calculate_relevance_prompt",
+    "evaluate_relevance",
     "purpose",
-    "ideal_customer_profile",
     "context",
     "good_examples",
     "bad_examples",

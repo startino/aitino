@@ -19,7 +19,7 @@ def get_papers(query: str) -> list[Result]:
     # Search for the 100 most recent articles matching the keywords.
     search = arxiv.Search(
         query,
-        max_results=1000,
+        max_results=5,
         sort_by=arxiv.SortCriterion.SubmittedDate,
     )
 
@@ -47,16 +47,14 @@ def get_papers(query: str) -> list[Result]:
             continue
 
         # Add the article to the cache
-        cache.add(cache_key, True)
+        # cache.add(cache_key, True)
 
         papers.append(r)
 
     # Close the cache
     cache.close()
 
-    print(len(papers))
-
     return papers
 
 
-get_papers("language model ai artificial intelligence machine learning agents cat:cs")
+# get_papers("language model ai artificial intelligence machine learning agents cat:cs")

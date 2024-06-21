@@ -5,8 +5,6 @@ from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import diskcache as dc
-from .models import EvaluatedSubmission
 import markdown
 
 load_dotenv()
@@ -53,10 +51,7 @@ def email_articles(results: list[Result]):
     msg.attach(html_part)
 
     # Setup server and send email
-    with smtplib.SMTP("127.0.0.1", 1025) as server:
+    with smtplib.SMTP("smtp.protonmail.ch", 587) as server:
+        server.starttls()
         server.login(sender, SMTP_PASSWORD)
         server.sendmail(sender, receiver, msg.as_string())
-
-
-# Example usage
-send_submission_via_email(results)  # results should be a list of arxiv.Result objects

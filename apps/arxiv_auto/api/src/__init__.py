@@ -4,6 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.routers import index
 
+from arxiv_utils import get_papers
+from relevance_bot import filter_papers
+
 
 def create_app() -> FastAPI:
     app = FastAPI()
@@ -35,8 +38,18 @@ def create_app() -> FastAPI:
 def run():
     app = create_app()
 
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_config="logging.yaml")
+    uvicorn.run(app, host="0.0.0.0", port=5050, log_config="logging.yaml")
+
+
+def api_replacement():
+    papers = get_papers(
+        "language model ai artificial intelligence machine learning agents cat:cs"
+    )
+    papers = filter_papers(papers)
+    print(papers)
+    # email_articles(papers)
+    return {"success": "true"}
 
 
 if __name__ == "__main__":
-    run()
+    api_replacement()
