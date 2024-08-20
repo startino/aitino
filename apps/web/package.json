@@ -55,7 +55,7 @@
 		"@sveltejs/site-kit": "^5.2.2",
 		"@types/wicg-file-system-access": "^2023.10.5",
 		"@xyflow/svelte": "^0.0.41",
-		"axios": "^1.6.8",
+		"axios": "^1.7.4",
 		"bits-ui": "^0.21.5",
 		"carta-md": "^4.0.0",
 		"clsx": "^2.1.1",
