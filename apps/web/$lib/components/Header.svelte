@@ -28,7 +28,7 @@
 	} = {};
 	/**Property to determine if the class 'fixed' is applied to the header.*/
 	export let sticky: boolean = true;
-	export let disabled: boolean = false;
+	export let disabled = false;
 
 	// Constant Classes
 	/** Default header class; user hasn't scrolled */
@@ -89,20 +89,13 @@
 
 	<div class="hidden place-items-center lg:flex lg:gap-x-12">
 		{#each pages as { name, href }}
-			{#if disabled}
-				<span
-					class="text-md m-0 cursor-not-allowed font-semibold leading-6 text-card-foreground/50 sm:m-0"
-				>
-					{name}
-				</span>
-			{:else}
-				<a
-					{href}
-					class="text-md m-0 font-semibold leading-6 text-card-foreground hover:text-accent sm:m-0"
-				>
-					{name}
-				</a>
-			{/if}
+			<span
+				class="text-md m-0 font-semibold leading-6 {disabled
+					? 'cursor-not-allowed text-card-foreground/50'
+					: 'text-card-foreground hover:text-accent'} sm:m-0"
+			>
+				{name}
+			</span>
 		{/each}
 		<div class="grid {CTAButtons.length == 2 ? 'grid-cols-2' : 'grid-cols-1'} gap-x-4">
 			{#each Object.entries(CTAButtons) as [name, { href, highlight }]}
@@ -154,21 +147,13 @@
 				<div class="-my-6 divide-y divide-gray-500/10">
 					<div class="space-y-2 py-6">
 						{#each pages as { name, href }}
-							{#if disabled}
-								<span
-									class="-mx-3 block cursor-not-allowed rounded-lg px-3 py-2 text-base font-semibold leading-7 text-card-foreground/50"
-								>
-									{name}
-								</span>
-							{:else}
-								<a
-									{href}
-									on:click={() => toggleMenu()}
-									class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-card-foreground hover:bg-accent hover:text-accent-foreground"
-								>
-									{name}
-								</a>
-							{/if}
+							<span
+								class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 {disabled
+									? 'cursor-not-allowed text-card-foreground/50'
+									: 'text-card-foreground hover:bg-accent hover:text-accent-foreground'}"
+							>
+								{name}
+							</span>
 						{/each}
 					</div>
 					<div class="grid grid-cols-2 gap-x-4 py-6">
@@ -177,7 +162,6 @@
 								href={disabled ? '#' : href}
 								class="w-full {disabled ? 'cursor-not-allowed opacity-50' : ''}"
 								{disabled}
-								on:click={() => !disabled && toggleMenu()}
 							>
 								{name}
 							</Button>
