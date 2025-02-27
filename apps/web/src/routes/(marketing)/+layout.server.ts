@@ -1,9 +1,1 @@
-import { serverGetSplitTestIdentifier } from 'svelte-split-testing';
-
-export async function load({ cookies }) {
-	const splitTestIdentifier = serverGetSplitTestIdentifier(cookies);
-
-	return {
-		splitTestIdentifier
-	};
-}
+// This file can be deleted if it only contained Supabase logic
