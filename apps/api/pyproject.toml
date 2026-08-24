@@ -19,7 +19,7 @@ uvicorn = "^0.27.1"
 fastapi = "^0.110.0"
 tenacity = "^8.2.3"
 pyautogen = { extras = ["retrievechat"], version = "^0.2.22" }
-chromadb = "^0.4.24"
+chromadb = "^1.5.9"
 supabase = "^2.4.0"
 aiohttp = "^3.14.3"
 redis = "^5.0.2"
